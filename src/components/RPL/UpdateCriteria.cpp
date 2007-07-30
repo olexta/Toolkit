@@ -96,9 +96,9 @@ void CUpdateCriteria::OnTransactionRollback( void )
 void CUpdateCriteria::OnPerformComplete( void )
 {
 	// now, i set all needed properties to founded objects
-	for each ( CPersistentObject ^obj in m_list ) {
+	for each( CPersistentObject ^obj in m_list ) {
 		// pass throught all properties to modify
-		for each ( CPersistentProperty ^prop in m_props ) {
+		for each( CPersistentProperty ^prop in m_props ) {
 			// retrieve object from storage (now it's proxy)
 			obj->Retrieve();
 			// set property value

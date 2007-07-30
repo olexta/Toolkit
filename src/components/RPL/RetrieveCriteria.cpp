@@ -122,9 +122,9 @@ void CRetrieveCriteria::OnTransactionRollback( void )
 void CRetrieveCriteria::OnPerformComplete( void )
 {
 	// we got objects as proxies already
-	if ( !m_asProxies ) {
+	if( !m_asProxies ) {
 		// pass througght all founded objects
-		for each ( CPersistentObject ^obj in m_list ) {
+		for each( CPersistentObject ^obj in m_list ) {
 			// and retrieve links and properties
 			obj->Retrieve();
 		}
@@ -231,11 +231,11 @@ bool CRetrieveCriteria::Move( int count )
 	// init cursor position for first request.
 	// m_pos identify current cursor location for
 	// request without top and count limits
-	if ( m_pos < 0 ) m_pos = m_bottom;
+	if( m_pos < 0 ) m_pos = m_bottom;
 
 	// set new bottom and count limits according
 	// to current cursor position and requested offset
-	if ( count > 0 ) {
+	if( count > 0 ) {
 
 		m_count = MIN(count, m_bottom + m_count - m_pos);
 		m_bottom = MAX(m_bottom, m_pos);

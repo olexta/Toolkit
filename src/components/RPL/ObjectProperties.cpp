@@ -35,7 +35,7 @@ CObjectProperties::CObjectProperties( CPersistentObject^ owner ): \
 	m_changed(false)
 {
 	// check for initialized reference
-	if ( owner == nullptr ) throw gcnew ArgumentNullException( "owner" );
+	if( owner == nullptr ) throw gcnew ArgumentNullException("owner");
 
 	m_owner = owner;
 }
@@ -57,14 +57,14 @@ CObjectProperties::CObjectProperties( CPersistentObject^ owner,
 	CPersistentProperties(e), m_changed(false)
 {
 	// check for initialized references
-	if ( owner == nullptr ) throw gcnew ArgumentNullException( "owner" );
+	if( owner == nullptr ) throw gcnew ArgumentNullException("owner");
 
 	m_owner = owner;
 
 	// pass through all stored properties
-	for each ( IIPersistentProperty ^prop in m_dict.Values ) {
+	for each( IIPersistentProperty ^prop in m_dict.Values ) {
 		// and subscribe for events
-		prop->OnChange += gcnew PP_CHANGE( m_owner, &IIPersistentObject::on_change );
+		prop->OnChange += gcnew PP_CHANGE(m_owner, &IIPersistentObject::on_change);
 	}
 }
 
@@ -84,8 +84,8 @@ CObjectProperties::CObjectProperties( const CObjectProperties %props )
 	m_changed = props.m_changed;
 	
 	// path through collection
-	for each ( CPersistentProperty ^prop in
-			   (const_cast<CObjectProperties%> (props)).m_dict.Values ) {
+	for each( CPersistentProperty ^prop in
+			  (const_cast<CObjectProperties%> (props)).m_dict.Values ) {
 		// always build new property instance using copy
 		// constructor and store it for corespondin key in
 		// dictionary.
@@ -105,16 +105,16 @@ CObjectProperties::CObjectProperties( const CObjectProperties %props )
 void CObjectProperties::OnClear( void )
 {
 	// pass throught all items and notify parent about changes
-	for each ( CPersistentProperty ^prop in m_dict.Values ) {
+	for each( CPersistentProperty ^prop in m_dict.Values ) {
 		// call parent method to perform addition processing
 		((IIPersistentObject^) m_owner)->on_change( prop, prop->Value, nullptr );
 	}
-	for each ( IIPersistentProperty ^prop in m_dict.Values ) {
+	for each( IIPersistentProperty ^prop in m_dict.Values ) {
 		// usubscribe from old events
-		prop->OnChange -= gcnew PP_CHANGE( m_owner, &IIPersistentObject::on_change );
+		prop->OnChange -= gcnew PP_CHANGE(m_owner, &IIPersistentObject::on_change);
 	}
 	// and mark collection as changed
-	if ( m_dict.Count > 0 ) m_changed = true;
+	if( m_dict.Count > 0 ) m_changed = true;
 }
 
 
@@ -160,7 +160,7 @@ void CObjectProperties::OnRemoveComplete( CPersistentProperty ^prop )
 {
 	// unsubscribe from old events
 	((IIPersistentProperty^) prop)->OnChange -= 
-			gcnew PP_CHANGE( m_owner, &IIPersistentObject::on_change );
+			gcnew PP_CHANGE(m_owner, &IIPersistentObject::on_change);
 	
 	// mark collection as changed
 	m_changed = true;
@@ -181,7 +181,7 @@ void CObjectProperties::OnInsertComplete( CPersistentProperty ^prop )
 {
 	// subscribe for events
 	((IIPersistentProperty^) prop)->OnChange +=
-			gcnew PP_CHANGE( m_owner, &IIPersistentObject::on_change );
+			gcnew PP_CHANGE(m_owner, &IIPersistentObject::on_change);
 	// mark property as changed to use in update
 	((IIPersistentProperty^) prop)->SetChanged( true );
 
@@ -199,9 +199,9 @@ void CObjectProperties::OnInsertComplete( CPersistentProperty ^prop )
 //-------------------------------------------------------------------
 bool CObjectProperties::IsChanged::get( void )
 {
-	for each ( CPersistentProperty ^prop in m_dict.Values ) {
+	for each( CPersistentProperty ^prop in m_dict.Values ) {
 
-		if ( prop->IsChanged ) return true;
+		if( prop->IsChanged ) return true;
 	}
 	return false;
 }

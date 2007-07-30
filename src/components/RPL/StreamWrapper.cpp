@@ -50,7 +50,7 @@ void StreamWrapper::OnChange::remove( SW_CHANGE ^d )
 
 void StreamWrapper::OnChange::raise( StreamWrapper ^sender )
 {
-	if ( m_on_change != nullptr ) {
+	if( m_on_change != nullptr ) {
 		// perform all delegates in event
 		m_on_change->Invoke( sender );
 	}
@@ -78,11 +78,11 @@ StreamWrapper::StreamWrapper( Stream ^stream ): \
 {
 	dbgprint( String::Format( "-> {0}", stream ) );
 
-	if ( stream == nullptr ) throw gcnew ArgumentNullException( "stream" );
+	if( stream == nullptr ) throw gcnew ArgumentNullException("stream");
 
 	// get real stream if internal stream is StreamWrapper
 	IIStreamWrapper ^sw = dynamic_cast<StreamWrapper^> (stream);
-	if ( sw != nullptr ) stream = sw->RealValue;
+	if( sw != nullptr ) stream = sw->RealValue;
 
 	m_stream = stream;
 

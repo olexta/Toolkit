@@ -233,12 +233,12 @@ CPersistentObjects::CPersistentObjects( IEnumerable<CPersistentObject^> ^e ): \
 	_lock_this(gcnew Object())
 {
 	// pass entire through collection
-	for each ( CPersistentObject ^obj in e ) {
+	for each( CPersistentObject ^obj in e ) {
 		// disable add null references
-		if ( obj == nullptr ) continue;
+		if( obj == nullptr ) continue;
 		// and add object if it is not
 		// in collection already
-		if ( !Contains( obj ) ) m_list.Add( obj );
+		if( !Contains( obj ) ) m_list.Add( obj );
 	}
 }
 
@@ -257,15 +257,15 @@ bool CPersistentObjects::operator==( const CPersistentObjects %objs )
 
 
 	// check for same instance
-	if ( this == %objs ) return true;
+	if( this == %objs ) return true;
 
 	// this is shallow check for equal
-	if ( m_list.Count != val.m_list.Count ) return false;
+	if( m_list.Count != val.m_list.Count ) return false;
 
 	// and this is deep check by content
-	for each ( CPersistentObject ^obj in val.m_list ) {
+	for each( CPersistentObject ^obj in val.m_list ) {
 		// check for exists in this instance
-		if ( !Contains( obj ) ) return false;
+		if( !Contains( obj ) ) return false;
 	}
 	return true;
 }
@@ -332,11 +332,11 @@ void CPersistentObjects::Add( CPersistentObject ^obj )
 {ENTER(_lock_this)
 
 	// validate object
-	if ( obj == nullptr ) throw gcnew ArgumentNullException("obj");
+	if( obj == nullptr ) throw gcnew ArgumentNullException("obj");
 	// check for object already exists in the collection
-	if ( Contains( obj ) ) {
+	if( Contains( obj ) ) {
 	
-		throw gcnew ArgumentException( "An object already exists in the collection!" );
+		throw gcnew ArgumentException("An object already exists in the collection!");
 	}
 	//fire event before the action
 	OnInsert( obj );
@@ -345,7 +345,7 @@ void CPersistentObjects::Add( CPersistentObject ^obj )
 	// fire event after the action 
 	try {
 		OnInsertComplete( obj );
-	} catch ( Exception^ ) {
+	} catch( Exception^ ) {
 		// roll back changes
 		m_list.Remove( obj );
 		throw;
@@ -403,7 +403,7 @@ bool CPersistentObjects::Remove( CPersistentObject ^obj )
 
 	// OnRemove event must be fired before action, but
 	// for allowed action only, so check for object exists
-	if ( !Contains( obj ) ) return false;
+	if( !Contains( obj ) ) return false;
 
 	// fire event before action
 	OnRemove( obj );
@@ -412,7 +412,7 @@ bool CPersistentObjects::Remove( CPersistentObject ^obj )
 	// fire event after action
 	try {
 		OnRemoveComplete( obj );
-	} catch ( Exception^ ) {
+	} catch( Exception^ ) {
 		// roll back changes
 		m_list.Add( obj );
 		throw;

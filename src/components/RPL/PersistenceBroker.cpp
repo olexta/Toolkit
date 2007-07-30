@@ -75,17 +75,17 @@ void thread_clear_cache( Object ^param )
 
 
 	// check for null reference
-	if ( param == nullptr ) throw gcnew ArgumentNullException( "param" );
+	if( param == nullptr ) throw gcnew ArgumentNullException("param");
 
 	// check for right object passed to thread function
 	fnClear = dynamic_cast<CLEAR_CACHE^> (param);
-	if ( fnClear == nullptr ) {
+	if( fnClear == nullptr ) {
 
-		throw gcnew ArgumentException( "Specified parameter is not CLEAR_CACHE delegate!" );
+		throw gcnew ArgumentException("Specified parameter is not CLEAR_CACHE delegate!");
 	}
 
 	// this is clearing cycle
-	while ( true ) {
+	while( true ) {
 
 		Thread::Sleep( CLEAR_TIMEOUT );
 
@@ -108,7 +108,7 @@ void thread_clear_cache( Object ^param )
 //-------------------------------------------------------------------
 String^	CPersistenceBroker::CBrokerCache::key( int id, String ^type )
 {
-	if ( type == nullptr ) throw gcnew ArgumentNullException("type");
+	if( type == nullptr ) throw gcnew ArgumentNullException("type");
 	
 	return (type + "_" + id.ToString());
 }
@@ -122,7 +122,7 @@ String^	CPersistenceBroker::CBrokerCache::key( int id, String ^type )
 //-------------------------------------------------------------------
 String^ CPersistenceBroker::CBrokerCache::key( IID ^iid )
 {
-	if ( iid == nullptr ) throw gcnew ArgumentNullException("iid");
+	if( iid == nullptr ) throw gcnew ArgumentNullException("iid");
 
 	return key( iid->ID, iid->Type );
 }
@@ -160,7 +160,7 @@ CPersistenceBroker::CBrokerCache::~CBrokerCache( void )
 	m_rw_lock->AcquireReaderLock( Timeout::Infinite );
 	try {
 		// check for disposer was not called
-		if ( m_clear_thread != nullptr ) {
+		if( m_clear_thread != nullptr ) {
 			// clear internal storage (i use public function
 			// having it's own thread-safe implementation, so
 			// i not modify type of lock)
@@ -199,12 +199,12 @@ void CPersistenceBroker::CBrokerCache::Add( CPersistentObject ^obj )
 	m_rw_lock->AcquireReaderLock( Timeout::Infinite );
 	try {
 		// check for disposed state
-		if ( m_clear_thread == nullptr ) throw gcnew ObjectDisposedException("BrokerCache");
+		if( m_clear_thread == nullptr ) throw gcnew ObjectDisposedException("BrokerCache");
 
 		LockCookie lc = m_rw_lock->UpgradeToWriterLock( Timeout::Infinite );
 		try {
 			// create week references to object
-			m_cache[key(obj)] = gcnew WeakReference( obj );
+			m_cache[key(obj)] = gcnew WeakReference(obj);
 		} finally {
 			// ensure that the lock is released
 			m_rw_lock->DowngradeFromWriterLock( lc );
@@ -226,12 +226,12 @@ void CPersistenceBroker::CBrokerCache::Add( IEnumerable<CPersistentObject^> ^obj
 	m_rw_lock->AcquireReaderLock( Timeout::Infinite );
 	try {
 		// check for disposed state
-		if ( m_clear_thread == nullptr ) throw gcnew ObjectDisposedException("BrokerCache");
+		if( m_clear_thread == nullptr ) throw gcnew ObjectDisposedException("BrokerCache");
 
 		// pass through all objects in collection and add each of it
 		// to cache (i use here public method "Add" that has it's own
 		// thread-safe implementation, so i not modify lock state)
-		for each ( CPersistentObject ^obj in objs ) Add( obj );
+		for each( CPersistentObject ^obj in objs ) Add( obj );
 	} finally {
 		// ensure that the lock is released
 		m_rw_lock->ReleaseReaderLock();
@@ -251,24 +251,24 @@ void CPersistenceBroker::CBrokerCache::Clear( bool bInaccessibleOnly )
 	m_rw_lock->AcquireReaderLock( Timeout::Infinite );
 	try {
 		// check for disposed state
-		if ( m_clear_thread == nullptr ) throw gcnew ObjectDisposedException("BrokerCache");
+		if( m_clear_thread == nullptr ) throw gcnew ObjectDisposedException("BrokerCache");
 
 		LockCookie lc = m_rw_lock->UpgradeToWriterLock( Timeout::Infinite );
 		try {
 			// remove inaccessible weak references
 			List<String^>	^keys = gcnew List<String^>(m_cache.Keys);
-			for each ( String^ key in keys ) {
+			for each( String^ key in keys ) {
 				// check for null references
-				if ( m_cache[key]->Target == nullptr ) m_cache.Remove( key );
+				if( m_cache[key]->Target == nullptr ) m_cache.Remove( key );
 			}
 
 			// and dispose all objects if needed
-			if ( !bInaccessibleOnly ) {
+			if( !bInaccessibleOnly ) {
 				// pass through all references
-				for each ( WeakReference ^wr in m_cache.Values ) {
+				for each( WeakReference ^wr in m_cache.Values ) {
 					// check for object exists
 					CPersistentObject ^obj = dynamic_cast<CPersistentObject^> (wr->Target);
-					if ( obj != nullptr ) {
+					if( obj != nullptr ) {
 						// and dispose links and properties
 						delete ((IIPersistentObject^) obj)->Links;
 						delete ((IIPersistentObject^) obj)->Properties;
@@ -298,10 +298,10 @@ CPersistentObject^ CPersistenceBroker::CBrokerCache::Search( int id, String ^typ
 	m_rw_lock->AcquireReaderLock( Timeout::Infinite );
 	try {
 		// check for disposed state
-		if ( m_clear_thread == nullptr ) throw gcnew ObjectDisposedException("BrokerCache");
+		if( m_clear_thread == nullptr ) throw gcnew ObjectDisposedException("BrokerCache");
 
 		// check for weak reference for object exists
-		if ( m_cache.ContainsKey( key(id, type) ) ) {
+		if( m_cache.ContainsKey( key(id, type) ) ) {
 			// and return target object
 			return static_cast<CPersistentObject^> (m_cache[key(id, type)]->Target);
 		}
@@ -331,16 +331,16 @@ CPersistentObject^ CPersistenceBroker::CBrokerCache::Search(
 	m_rw_lock->AcquireReaderLock( Timeout::Infinite );
 	try {
 		// check for disposed state
-		if ( m_clear_thread == nullptr ) throw gcnew ObjectDisposedException("BrokerCache");
+		if( m_clear_thread == nullptr ) throw gcnew ObjectDisposedException("BrokerCache");
 
 		// search cached object
 		CPersistentObject ^obj = Search( id, type );
-		if ( obj != nullptr ) {
+		if( obj != nullptr ) {
 			// add to transaction if it exists
 			m_fnAddToTrans( obj );
 		
 			// update proxy and check that retrieve is needed
-			if ( !((IIPersistentObject^) obj)->on_retrieve( id, stamp, name ) ) {
+			if( !((IIPersistentObject^) obj)->on_retrieve( id, stamp, name ) ) {
 				// request for new links and properties
 				m_fnStorage()->Retrieve( obj, links, props );
 				// and update object by it
@@ -368,10 +368,10 @@ CPersistentObject^ CPersistenceBroker::CBrokerCache::Search(
 void CPersistenceBroker::check_state( void )
 {
 	// check for object disposed
-	if ( m_cache == nullptr ) throw gcnew ObjectDisposedException("PersistenceBroker");
+	if( m_cache == nullptr ) throw gcnew ObjectDisposedException("PersistenceBroker");
 	// check for disconnected state
-	if ( !IsConnected ) throw gcnew InvalidOperationException( 
-							"Operation is not allowed while in disconnected state!" );
+	if( !IsConnected ) throw gcnew InvalidOperationException( 
+							"Operation is not allowed while in disconnected state!");
 }
 
 
@@ -387,10 +387,10 @@ void CPersistenceBroker::check_state( void )
 void CPersistenceBroker::add_to_trans( ITransactionSupport ^tobj )
 {
 	// check for started transaction
-	if ( m_trans_stack == nullptr ) return;
+	if( m_trans_stack == nullptr ) return;
 
 	// check for object is in transaction already 
-	if ( !m_trans_stack->Contains( tobj ) ) {
+	if( !m_trans_stack->Contains( tobj ) ) {
 		// create save point for object
 		tobj->TransactionBegin();
 		// and add to transaction stack
@@ -443,7 +443,7 @@ void CPersistenceBroker::RetrieveObject( CPersistentObject ^obj )
 
 	// update proxy and check of needed links
 	// and properties update 
-	if ( !((IIPersistentObject^) obj)->on_retrieve( obj->ID, stamp, name ) ) {
+	if( !((IIPersistentObject^) obj)->on_retrieve( obj->ID, stamp, name ) ) {
 
 		IEnumerable<CPersistentObject^>		^links = nullptr;
 		IEnumerable<CPersistentProperty^>	^props = nullptr;
@@ -490,7 +490,7 @@ void CPersistenceBroker::SaveObject( CPersistentObject ^obj )
 	// and properties needed (in this case on_retrieve
 	// always return false because of object stamb will be
 	// changed by Save, but i write such code for customization)
-	if ( !((IIPersistentObject^) obj)->on_retrieve( id, stamp, name ) ) {
+	if( !((IIPersistentObject^) obj)->on_retrieve( id, stamp, name ) ) {
 		// update links and properties
 		((IIPersistentObject^) obj)->on_retrieve( links, props );
 	}
@@ -565,7 +565,7 @@ void CPersistenceBroker::Process( CPersistentCriteria ^crit )
 	// i need store object state here, because of update criteria
 	// can change some options before Save will be called, so it's
 	// possible to lost data
-	for each ( ITransactionSupport ^tobj in objs ) add_to_trans( tobj );
+	for each( ITransactionSupport ^tobj in objs ) add_to_trans( tobj );
 
 	// and add objects to cache
 	m_cache->Add( objs );
@@ -601,15 +601,15 @@ void CPersistenceBroker::Process( CPersistentTransaction ^trans )
 		// attempt to commit the transaction.
 		m_storage->TransactionCommit();
 
-		for each ( ITransactionSupport ^tobj in m_trans_stack ) {
+		for each( ITransactionSupport ^tobj in m_trans_stack ) {
 			// commit object changes (delete save point for object)
 			tobj->TransactionCommit();
 		}
-	} catch ( Exception^ ) {
+	} catch( Exception^ ) {
 		// attempt to roll back the transaction in DB
 		TRY( m_storage->TransactionRollback() );
 		
-		for each ( ITransactionSupport ^tobj in m_trans_stack ) {
+		for each( ITransactionSupport ^tobj in m_trans_stack ) {
 			// and restore from savepoint
 			tobj->TransactionRollback();
 		}
@@ -643,7 +643,7 @@ IDataReader^ CPersistenceBroker::Process( String ^SQL )
 	cmd-> CommandType = CommandType::Text;
 
 	// open connection
-	if ( m_cnn->State == ConnectionState::Closed ) m_cnn->Open();
+	if( m_cnn->State == ConnectionState::Closed ) m_cnn->Open();
 	
 	// process SQL request (i must close connection after recordset
 	// reading, so i set specified command behavior)
@@ -679,7 +679,7 @@ CPersistenceBroker::CPersistenceBroker( void ): \
 	// create cache of objects in this session
 	m_cache = gcnew CBrokerCache(
 				gcnew GET_STORAGE(this, &CPersistenceBroker::get_storage),
-				gcnew ADD_TO_TRANS(this, &CPersistenceBroker::add_to_trans) );
+				gcnew ADD_TO_TRANS(this, &CPersistenceBroker::add_to_trans));
 
 	// store instance in static variable (this is needed
 	// for reflection creation of object)
@@ -705,7 +705,7 @@ CPersistenceBroker::~CPersistenceBroker( void )
 {	
 	dbgprint( "-> [" + AppDomain::CurrentDomain->FriendlyName + "]" );
 
-	if ( m_cache != nullptr ) {
+	if( m_cache != nullptr ) {
 		// dispose cache of objects
 		delete m_cache;
 		// and prevent from future calls
@@ -736,11 +736,11 @@ void CPersistenceBroker::Factory::set( IBrokerFactory^ factory )
 //-------------------------------------------------------------------
 CPersistenceBroker^ CPersistenceBroker::Instance::get( void )
 {
-	if ( m_instance == nullptr ) {
+	if( m_instance == nullptr ) {
 		// now we must create new object instance (constructor
 		// of this object init m_instance themself, so i can
 		// pass store of it)
-		if ( m_factory != nullptr ) {
+		if( m_factory != nullptr ) {
 			// use factory for custom creation
 			m_instance = m_factory->CreateInstance();
 		} else {
@@ -760,7 +760,7 @@ CPersistenceBroker^ CPersistenceBroker::Instance::get( void )
 bool CPersistenceBroker::IsConnected::get( void )
 {
 	// check for object disposed
-	if ( m_cache == nullptr ) throw gcnew ObjectDisposedException("PersistenceBroker");
+	if( m_cache == nullptr ) throw gcnew ObjectDisposedException("PersistenceBroker");
 
 	return !(m_storage == nullptr);
 }
@@ -775,13 +775,13 @@ void CPersistenceBroker::Connect( IDbConnection ^cnn, IPersistenceStorage ^stora
 {ENTER(_lock_trans) ENTER(_lock_crit) ENTER(_lock_obj)
 
 	// check for object disposed
-	if ( m_cache == nullptr ) throw gcnew ObjectDisposedException("PersistenceBroker");
+	if( m_cache == nullptr ) throw gcnew ObjectDisposedException("PersistenceBroker");
 	
-	if ( cnn == nullptr ) throw gcnew ArgumentNullException( "cnn" );
-	if ( storage == nullptr ) throw gcnew ArgumentNullException( "storage" );
+	if( cnn == nullptr ) throw gcnew ArgumentNullException("cnn");
+	if( storage == nullptr ) throw gcnew ArgumentNullException("storage");
 
 	// disconnect if is connected now
-	if ( IsConnected ) Disconnect();
+	if( IsConnected ) Disconnect();
 
 	// open persistent storage connection
 	storage->Open( cnn, m_cache );
@@ -808,9 +808,9 @@ void CPersistenceBroker::Disconnect( void )
 {ENTER(_lock_trans) ENTER(_lock_crit) ENTER(_lock_obj)
 
 	// check for object disposed
-	if ( m_cache == nullptr ) throw gcnew ObjectDisposedException("PersistenceBroker");	
+	if( m_cache == nullptr ) throw gcnew ObjectDisposedException("PersistenceBroker");	
 
-	if ( IsConnected ) m_storage->Close();
+	if( IsConnected ) m_storage->Close();
 
 	m_cnn = nullptr;
 	m_storage = nullptr;

@@ -47,12 +47,12 @@ void CPersistentCriteria::on_perform( int found, IEnumerable<CPersistentObject^>
 	// first of all clear current list
 	m_list.Clear();
 	// and add elements to the end of it
-	for each ( CPersistentObject ^obj in objs ) {
+	for each( CPersistentObject ^obj in objs ) {
 		// disable add null references
-		if ( obj == nullptr ) continue;
+		if( obj == nullptr ) continue;
 		// and add object if it is not
 		// in collection already
-		if ( !Contains( obj ) ) m_list.Add( obj );
+		if( !Contains( obj ) ) m_list.Add( obj );
 	}
 	
 	// now we must process all addition actions
@@ -60,7 +60,7 @@ void CPersistentCriteria::on_perform( int found, IEnumerable<CPersistentObject^>
 	try {
 		// notify about perfom complete
 		OnPerformComplete();
-	} catch ( Exception^ ) {
+	} catch( Exception^ ) {
 		// clear collection
 		ResetResults();
 		// and rerise exception
@@ -156,7 +156,7 @@ CPersistentCriteria::CPersistentCriteria( String ^type ): \
 							  this->GetType(), type ) );
 
 	// check for initialized reference
-	if ( type == nullptr ) throw gcnew ArgumentNullException( "type" );
+	if( type == nullptr ) throw gcnew ArgumentNullException("type");
 
 	m_type = type;
 
@@ -272,7 +272,7 @@ void CPersistentCriteria::OnPerformComplete( void )
 //-------------------------------------------------------------------
 void CPersistentCriteria::OnClear( void )
 {
-	throw gcnew InvalidOperationException( "The collection is read-only!" );
+	throw gcnew InvalidOperationException("The collection is read-only!");
 }
 
 
@@ -286,7 +286,7 @@ void CPersistentCriteria::OnClear( void )
 //-------------------------------------------------------------------
 void CPersistentCriteria::OnRemove( CPersistentObject ^obj )
 {
-	throw gcnew InvalidOperationException( "The collection is read-only!" );
+	throw gcnew InvalidOperationException("The collection is read-only!");
 }
 
 
@@ -300,7 +300,7 @@ void CPersistentCriteria::OnRemove( CPersistentObject ^obj )
 //-------------------------------------------------------------------
 void CPersistentCriteria::OnInsert( CPersistentObject ^obj )
 {
-	throw gcnew InvalidOperationException( "The collection is read-only!" );
+	throw gcnew InvalidOperationException("The collection is read-only!");
 }
 
 
@@ -336,7 +336,7 @@ void CPersistentCriteria::InnerQuery::set( String ^value )
 {ENTER(_lock_this)
 
 	// check for initialized reference
-	if ( value == nullptr ) throw gcnew ArgumentNullException( "value" );
+	if( value == nullptr ) throw gcnew ArgumentNullException("value");
 	// clear content to prevent request-result collisions
 	ResetResults();
 
@@ -364,7 +364,7 @@ void CPersistentCriteria::Where::set( String ^value )
 {ENTER(_lock_this)
 	
 	// check for initialized reference
-	if ( value == nullptr ) throw gcnew ArgumentNullException( "value" );
+	if( value == nullptr ) throw gcnew ArgumentNullException("value");
 	// clear content to prevent request-result collisions
 	ResetResults();
 
@@ -391,7 +391,7 @@ void CPersistentCriteria::OrderBy::set( String ^value )
 {ENTER(_lock_this)
 
 	// check for initialized reference
-	if ( value == nullptr ) throw gcnew ArgumentNullException( "value" );
+	if( value == nullptr ) throw gcnew ArgumentNullException("value");
 	// clear content to prevent request-result collisions
 	ResetResults();
 	
@@ -418,9 +418,9 @@ int CPersistentCriteria::BottomLimit::get( void )
 void CPersistentCriteria::BottomLimit::set( int value )
 {ENTER(_lock_this)
 
-	if ( value < 0 ) {
+	if( value < 0 ) {
 
-		throw gcnew ArgumentException( "Incorrect Bottom value!" );
+		throw gcnew ArgumentException("Incorrect Bottom value!");
 	}
 	// clear content to prevent request-result collisions
 	ResetResults();
@@ -447,9 +447,9 @@ int CPersistentCriteria::CountLimit::get( void )
 void CPersistentCriteria::CountLimit::set( int value )
 {ENTER(_lock_this)
 
-	if ( value < 0 ) {
+	if( value < 0 ) {
 
-		throw gcnew ArgumentException( "Incorrect CountLimit value!" );
+		throw gcnew ArgumentException("Incorrect CountLimit value!");
 	}
 	// clear content to prevent request-result collisions
 	ResetResults();

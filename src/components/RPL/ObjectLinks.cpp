@@ -33,7 +33,7 @@ CObjectLinks::CObjectLinks( CPersistentObject ^owner ): \
 	m_changed(false)
 {
 	// check for initialized reference
-	if ( owner == nullptr ) throw gcnew ArgumentNullException( "owner" );
+	if( owner == nullptr ) throw gcnew ArgumentNullException("owner");
 
 	m_owner = owner;
 }
@@ -53,7 +53,7 @@ CObjectLinks::CObjectLinks( CPersistentObject ^owner, \
 	CPersistentObjects(e), m_changed(false)
 {
 	// check for initialized references
-	if ( owner == nullptr ) throw gcnew ArgumentNullException( "owner" );
+	if( owner == nullptr ) throw gcnew ArgumentNullException("owner");
 	
 	m_owner = owner;
 }
@@ -86,9 +86,9 @@ CObjectLinks::CObjectLinks( const CObjectLinks %links )
 //-------------------------------------------------------------------
 void CObjectLinks::OnClear( void )
 {
-	if ( m_list.Count > 0 )  {
+	if( m_list.Count > 0 )  {
 		
-		for each ( CPersistentObject ^obj in m_list ) {
+		for each( CPersistentObject ^obj in m_list ) {
 			// call parent method to perform addition processing
 			((IIPersistentObject^) m_owner)->on_change( obj );
 		}

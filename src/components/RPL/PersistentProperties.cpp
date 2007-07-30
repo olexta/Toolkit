@@ -76,10 +76,10 @@ Object^ CPersistentProperties::SyncRoot::get( void  )
 bool CPersistentProperties::Contains( CPersistentProperty ^prop )
 {
 	// check for initialized value
-	if ( prop == nullptr ) throw gcnew ArgumentNullException( "prop" );
+	if( prop == nullptr ) throw gcnew ArgumentNullException("prop");
 
 	// get stored property by name, if exists 
-	if ( Contains( prop->Name ) ) return (*prop == *m_dict[prop->Name]);
+	if( Contains( prop->Name ) ) return (*prop == *m_dict[prop->Name]);
 
 	// in other case return falsd
 	return false;
@@ -148,7 +148,7 @@ bool CPersistentProperties::Remove( CPersistentProperty ^prop )
 
 	// i cann't use access only by property name to
 	// prevent data loss, so check for property exists
-	if ( !Contains( prop ) ) return false;
+	if( !Contains( prop ) ) return false;
 
 	// fire event before action
 	OnRemove( prop );
@@ -285,9 +285,9 @@ CPersistentProperties::CPersistentProperties( IEnumerable<CPersistentProperty^> 
 	_lock_this(gcnew Object())
 {
 	// path through collection
-	for each ( CPersistentProperty ^prop in e ) {
+	for each( CPersistentProperty ^prop in e ) {
 		// prevent errors by null references
-		if ( prop != nullptr ) {
+		if( prop != nullptr ) {
 			// always build new property instance and store
 			// it for corespondin key in dictionary
 			m_dict[prop->Name] = gcnew CPersistentProperty(prop->Name, prop->Value);
@@ -304,7 +304,7 @@ CPersistentProperties::CPersistentProperties( IEnumerable<CPersistentProperty^> 
 CPersistentProperties::~CPersistentProperties( void )
 {ENTER(_lock_this)
 
-	for each ( CPersistentProperty ^prop in m_dict.Values ) {
+	for each( CPersistentProperty ^prop in m_dict.Values ) {
 		// dispose all properties in collection
 		delete prop;
 	}
@@ -326,17 +326,17 @@ bool CPersistentProperties::operator==( const CPersistentProperties %props )
 
 
 	// check for same instance
-	if ( this == %props ) return true;
+	if( this == %props ) return true;
 
 	// this is shallow check for equal
-	if ( m_dict.Count != val.m_dict.Count ) return false;
+	if( m_dict.Count != val.m_dict.Count ) return false;
 
 	// and this is deep check by content
-	for each ( CPersistentProperty ^prop in val.m_dict.Values ) {
+	for each( CPersistentProperty ^prop in val.m_dict.Values ) {
 		// check for exists and for property equivalent.
 		// i can use only Contains call because it check
 		// for property equivalent stored in collection.
-		if ( !Contains( prop ) ) return false;
+		if( !Contains( prop ) ) return false;
 	}
 	return true;
 }
@@ -385,7 +385,7 @@ CPersistentProperty% CPersistentProperties::operator[]( String ^name )
 CPersistentProperty^ CPersistentProperties::Item::get( String ^name )
 {
 	// add property if it doesn't exists yet
-	if ( !Contains( name ) ) Add( gcnew CPersistentProperty(name) );
+	if( !Contains( name ) ) Add( gcnew CPersistentProperty(name) );
 	
 	// return property reference
 	return m_dict[name];
@@ -437,7 +437,7 @@ bool CPersistentProperties::Remove( String ^name )
 {ENTER(_lock_this)
 
 	// check for property exists
-	if ( !Contains( name ) ) return false;
+	if( !Contains( name ) ) return false;
 
 	// get property to use in events
 	CPersistentProperty	^prop = Item[name];
@@ -449,7 +449,7 @@ bool CPersistentProperties::Remove( String ^name )
 	// fire event after action
 	try {
 		OnRemoveComplete( prop );
-	} catch ( Exception^ ) {
+	} catch( Exception^ ) {
 		// roll back changes
 		m_dict.Add( prop->Name, prop );
 		throw;
@@ -469,11 +469,11 @@ void CPersistentProperties::Add( CPersistentProperty ^prop )
 {ENTER(_lock_this)
 
 	// validate property
-	if ( prop == nullptr ) throw gcnew ArgumentNullException("prop");
+	if( prop == nullptr ) throw gcnew ArgumentNullException("prop");
 	// check for property exists
-	if ( Contains( prop->Name ) ) {
+	if( Contains( prop->Name ) ) {
 
-		throw gcnew ArgumentException( "An property with the same name already exists!" );
+		throw gcnew ArgumentException("An property with the same name already exists!");
 	}
 	//fire event before the action
 	OnInsert( prop );
@@ -483,7 +483,7 @@ void CPersistentProperties::Add( CPersistentProperty ^prop )
 	// all changes will be rolled back)
 	try {
 		OnInsertComplete( prop );
-	} catch ( Exception^ ) {
+	} catch( Exception^ ) {
 		// roll back changes
 		m_dict.Remove( prop->Name );
 		throw;

@@ -35,7 +35,7 @@ using namespace RPL;
 void CDeleteCriteria::OnPerformComplete( void )
 {
 	// pass throught all founded objects
-	for each ( CPersistentObject ^obj in m_list ) {
+	for each( CPersistentObject ^obj in m_list ) {
 		// call method of deletion
 		obj->Delete();
 	}

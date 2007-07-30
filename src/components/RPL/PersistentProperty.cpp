@@ -45,17 +45,17 @@ void CPersistentProperty::set_value( Object ^value )
 
 	// check for existing value is StreamWrapper
 	sw = dynamic_cast<IIStreamWrapper^> (m_value);
-	if ( sw != nullptr ) {
+	if( sw != nullptr ) {
 		// unsubscribe from wrapper events
-		sw->OnChange -= gcnew SW_CHANGE( this, &CPersistentProperty::on_change );
+		sw->OnChange -= gcnew SW_CHANGE(this, &CPersistentProperty::on_change);
 	}
 
 	// check for new value is Stream
-	if ( dynamic_cast<Stream^> (value) != nullptr ) {
+	if( dynamic_cast<Stream^> (value) != nullptr ) {
 		// create wrapper for stream
 		sw = gcnew StreamWrapper(dynamic_cast<Stream^> (value));
 		// subscribe to wrapper events
-		sw->OnChange += gcnew SW_CHANGE( this, &CPersistentProperty::on_change );
+		sw->OnChange += gcnew SW_CHANGE(this, &CPersistentProperty::on_change);
 		// change value
 		value = sw;
 	}
@@ -109,7 +109,7 @@ void CPersistentProperty::OnChange::remove( PP_CHANGE ^d )
 void CPersistentProperty::OnChange::raise( CPersistentProperty ^sender,
 										   Object ^oldValue, Object ^newValue )
 {
-	if ( m_on_change != nullptr ) {
+	if( m_on_change != nullptr ) {
 		// perform all delegates in event
 		m_on_change->Invoke( sender, oldValue, newValue );
 	}
@@ -146,18 +146,18 @@ void CPersistentProperty::OnValidate( Object^ value )
 
 
 	// check for initialized reference
-	if ( value == nullptr ) throw gcnew ArgumentNullException("value");
+	if( value == nullptr ) throw gcnew ArgumentNullException("value");
 
 	t = value->GetType();
 
 	// test for all supported types
-	if ( (t == bool::typeid) || (t == int::typeid) ||
-		 (t == double::typeid) || (t == DateTime::typeid) ||
-		 (t == String::typeid) || (t == DBNull::typeid) ) {
+	if( (t == bool::typeid) || (t == int::typeid) ||
+		(t == double::typeid) || (t == DateTime::typeid) ||
+		(t == String::typeid) || (t == DBNull::typeid) ) {
 
 		// this is system type
 		return;
-	} else if (dynamic_cast<Stream^> (value) != nullptr) {
+	} else if( dynamic_cast<Stream^> (value) != nullptr ) {
 
 		//this is binary stream
 		return;
@@ -165,7 +165,7 @@ void CPersistentProperty::OnValidate( Object^ value )
 
 		//we cann't support this type
 		throw gcnew ArgumentException( \
-			"Type '" + t->ToString() + "' not supported!" );
+			"Type '" + t->ToString() + "' not supported!");
 	}
 }
 
@@ -183,7 +183,7 @@ CPersistentProperty::CPersistentProperty( String ^name ): \
 	dbgprint( "-> " + name );
 
 	// check for initialized reference
-	if ( name == nullptr ) throw gcnew ArgumentNullException( "name" );
+	if( name == nullptr ) throw gcnew ArgumentNullException("name");
 
 	// store property name
 	m_name = name;
@@ -208,7 +208,7 @@ CPersistentProperty::CPersistentProperty( String ^name, Object ^value ): \
 	dbgprint( String::Format( "-> {0}\n{1}", name, value ) );
 
 	// check for initialized reference
-	if ( name == nullptr ) throw gcnew ArgumentNullException( "name" );
+	if( name == nullptr ) throw gcnew ArgumentNullException("name");
 
 	// store property name
 	m_name = name;
@@ -266,7 +266,7 @@ CPersistentProperty::~CPersistentProperty( void )
 	// operator delete, so i use force Close call
 	Stream ^stream = dynamic_cast<Stream^> (m_value);
 	// close stream	
-	if ( stream != nullptr ) stream->Close();
+	if( stream != nullptr ) stream->Close();
 	
 	// dispose value
 	delete m_value;
@@ -285,7 +285,7 @@ EXIT(_lock_this)}
 CPersistentProperty% CPersistentProperty::operator=( Object^ value )
 {
 	// check for initialized reference
-	if ( value == nullptr ) throw gcnew ArgumentNullException( "value" );
+	if( value == nullptr ) throw gcnew ArgumentNullException("value");
 	
 	// try set value
 	Value = value;
@@ -309,12 +309,12 @@ CPersistentProperty% CPersistentProperty::operator=( const CPersistentProperty %
 {ENTER(_lock_this)
 
 	// check for same instance
-	if ( this == %prop ) return *this;
+	if( this == %prop ) return *this;
 	
 	// check for equal names of properties
-	if ( m_name != prop.m_name ) {
+	if( m_name != prop.m_name ) {
 
-		throw gcnew ArgumentException( "Property name differ from this!" );
+		throw gcnew ArgumentException("Property name differ from this!");
 	}
 	// return instance reference to support all brakets placement
 	return (*this = prop.m_value);
@@ -403,7 +403,7 @@ void CPersistentProperty::Value::set( Object ^value )
 	
 	// check for same objects (we cann't use == operator
 	// in case of reference values)
-	if ( Object::Equals( m_value, value ) ) return;
+	if( Object::Equals( m_value, value ) ) return;
 	
 	// store new value
 	set_value( value );
@@ -456,7 +456,7 @@ Object^ CPersistentProperty::SyncRoot::get( void )
 String^ CPersistentProperty::ToString( void )
 {
 	// check for stream type
-	if ( dynamic_cast<Stream^> (m_value) != nullptr ) {
+	if( dynamic_cast<Stream^> (m_value) != nullptr ) {
 		
 		return "<binary data>";
 	} else {

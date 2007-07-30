@@ -76,22 +76,22 @@ private:
 	enum class STATE{ proxy, filling, full };
 
 	typedef ref struct _backup_struct {
-		int			_id;
-		STATE		_state;
-		DateTime	_stamp;
-		String		^_name;
-		bool		_changed;
+		int					_id;
+		STATE				_state;
+		DateTime			_stamp;
+		String				^_name;
+		bool				_changed;
 
 		CObjectLinks		^_links;
 		CObjectProperties	^_props;
 	} BackupStruct;
 
 private:
-	int			m_id;
-	STATE		m_state;
-	DateTime	m_stamp;
-	String		^m_name;
-	bool		m_changed;
+	int					m_id;
+	STATE				m_state;
+	DateTime			m_stamp;
+	String				^m_name;
+	bool				m_changed;
 
 	CObjectLinks		^m_links;
 	CObjectProperties	^m_props;

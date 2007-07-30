@@ -44,18 +44,18 @@ void CPersistentObject::check_state( bool notNew, bool notDelete, bool notProxy 
 {
 	String	^s = nullptr;
 	// get a string representation of object state
-	if ( notNew && (m_id == 0) ) {
+	if( notNew && (m_id == 0) ) {
 		// raise for new state
 		s = "new object";
-	} else if ( notDelete && (m_id < 0) ) {
+	} else if( notDelete && (m_id < 0) ) {
 		// raise for deleted state
 		s = "deleted object";
-	} else if ( notProxy && IsProxy ) {
+	} else if( notProxy && IsProxy ) {
 		// raise for proxy
 		s = "proxy object";
 	}
-	if ( s != nullptr ) throw gcnew InvalidOperationException( 
-							"Cann't perform operation for " + s + "!" );
+	if( s != nullptr ) throw gcnew InvalidOperationException( 
+							"Cann't perform operation for " + s + "!");
 }
 
 
@@ -111,12 +111,12 @@ void CPersistentObject::on_change( CPersistentProperty ^sender,
 	
 	// for stream content change events i must always set
 	// state to changed (to provide ability of Retrieve)
-	if ( content ) m_changed = true;
+	if( content ) m_changed = true;
 	
 	// check object state
 	check_state( false, true, true );
 	// fair OnChange event for non stream content change events
-	if ( !content ) OnChange( sender, oldValue, newValue );
+	if( !content ) OnChange( sender, oldValue, newValue );
 	// mark as changed
 	m_changed = true;
 }
@@ -140,8 +140,8 @@ void CPersistentObject::on_change( CPersistentProperty ^sender,
 bool CPersistentObject::on_retrieve( int id, DateTime stamp, String ^name )
 {
 	// check for up to date in storage
-	if ( (m_stamp == stamp) && !m_changed &&
-		 (m_state != STATE::filling) ) return true;
+	if( (m_stamp == stamp) && !m_changed &&
+		(m_state != STATE::filling) ) return true;
 
 	// clear links and properties by recreate it.
 	// i use Dispose to free tempory resources.
@@ -167,12 +167,12 @@ bool CPersistentObject::on_retrieve( int id, DateTime stamp, String ^name )
 	// i must prevent retrieve by exception in events
 	try {
 		// raise OnChange if needed
-		if ( changed ) OnChange();
+		if( changed ) OnChange();
 		// raise OnRetrieve if needed (this is low-lewel function to 
 		// work with object, so i cann't use upper-level function
 		// Retrieve after it in server, therefore i place here event)
-		if ( retrieve ) OnRetrieve();
-	} catch (Exception^) {
+		if( retrieve ) OnRetrieve();
+	} catch( Exception^ ) {
 		// mark object as proxy and not for future retrieve
 		m_state = STATE::proxy;
 		retrieve = false;
@@ -192,15 +192,15 @@ void CPersistentObject::on_retrieve( IEnumerable<CPersistentObject^> ^links,
 									 IEnumerable<CPersistentProperty^> ^props )
 {
 	// recreate links and properties
-	m_links = gcnew CObjectLinks( this, links );
-	m_props = gcnew CObjectProperties( this, props );
+	m_links = gcnew CObjectLinks(this, links);
+	m_props = gcnew CObjectProperties(this, props);
 	// set state as full object
 	m_state = STATE::full;
 
 	try {
 		// notify about object retrieve
 		OnRetrieveComplete();
-	} catch ( Exception^ ) {
+	} catch( Exception^ ) {
 		// ignore all exceptions in notification routine
 	};
 }
@@ -292,8 +292,8 @@ CPersistentObject::CPersistentObject( void ): \
 	dbgprint( String::Format( "-> {0}", this->GetType() ) );
 	
 	// create empty collections
-	m_links = gcnew CObjectLinks( this );
-	m_props = gcnew CObjectProperties( this );
+	m_links = gcnew CObjectLinks(this);
+	m_props = gcnew CObjectProperties(this);
 
 	dbgprint( String::Format( "<- {0}", this->GetType() ) );
 }
@@ -315,13 +315,13 @@ CPersistentObject::CPersistentObject( int id, DateTime stamp, String ^name ): \
 							  this->GetType(), id, stamp, name ) );
 
 	// check for initialized reference
-	if ( name == nullptr ) throw gcnew ArgumentNullException( "name" );
+	if( name == nullptr ) throw gcnew ArgumentNullException("name");
 
 	m_name = name;
 
 	// create empty collections
-	m_links = gcnew CObjectLinks( this );
-	m_props = gcnew CObjectProperties( this );
+	m_links = gcnew CObjectLinks(this);
+	m_props = gcnew CObjectProperties(this);
 
 	dbgprint( String::Format( "<- {0}", this->GetType() ) );
 }
@@ -342,15 +342,15 @@ CPersistentObject::CPersistentObject( int id, DateTime stamp, String ^name, \
 							  this->GetType(), id, stamp, name, links, props ) );
 
 	// check for initialized references
-	if ( name == nullptr ) throw gcnew ArgumentNullException( "name" );
-	if ( links == nullptr ) throw gcnew ArgumentNullException( "links" );
-	if ( props == nullptr ) throw gcnew ArgumentNullException( "props" );
+	if( name == nullptr ) throw gcnew ArgumentNullException("name");
+	if( links == nullptr ) throw gcnew ArgumentNullException("links");
+	if( props == nullptr ) throw gcnew ArgumentNullException("props");
 
 	m_name = name;
 
 	// create filled collections
-	m_links = gcnew CObjectLinks( this, links );
-	m_props = gcnew CObjectProperties( this, props );
+	m_links = gcnew CObjectLinks(this, links);
+	m_props = gcnew CObjectProperties(this, props);
 
 	dbgprint( String::Format( "<- {0}", this->GetType() ) );
 }
@@ -691,7 +691,7 @@ void CPersistentObject::Retrieve( void )
 
 	// if object is proxy now then
 	// mark it for filling
-	if ( m_state == STATE::proxy ) m_state = STATE::filling;
+	if( m_state == STATE::proxy ) m_state = STATE::filling;
 
 	// call to Broker
 	CPersistenceBroker::Broker->RetrieveObject( this );
