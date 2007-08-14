@@ -7,7 +7,7 @@
 /*	Content:	Definition of CUpdateCriteria class							*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -34,9 +34,9 @@ ref class CPersistentProperties;
 public ref class CUpdateCriteria sealed : CPersistentCriteria
 {
 private:
-	typedef ref struct _backup_struct {
+	ref struct BACKUP_STRUCT {
 		CPersistentProperties	^_props;
-	} BackupStruct;
+	};
 
 private:
 	CPersistentProperties	^m_props;

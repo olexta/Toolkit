@@ -7,7 +7,7 @@
 /*	Content:	Implementation of CPersistentProperty class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -25,7 +25,7 @@ using namespace RPL;
 #define EXIT(lock)		} finally { Monitor::Exit( lock ); }
 
 // Define macros to ignore exceptions
-#define TRY(expr)		try {expr;} catch ( Exception^ ) {};
+#define TRY(expr)		try { expr; } catch( Exception^ ) {};
 
 
 //----------------------------------------------------------------------------
@@ -44,16 +44,16 @@ void CPersistentProperty::set_value( Object ^value )
 
 
 	// check for existing value is StreamWrapper
-	sw = dynamic_cast<IIStreamWrapper^> (m_value);
+	sw = dynamic_cast<IIStreamWrapper^>( m_value );
 	if( sw != nullptr ) {
 		// unsubscribe from wrapper events
 		sw->OnChange -= gcnew SW_CHANGE(this, &CPersistentProperty::on_change);
 	}
 
 	// check for new value is Stream
-	if( dynamic_cast<Stream^> (value) != nullptr ) {
+	if( dynamic_cast<Stream^>( value ) != nullptr ) {
 		// create wrapper for stream
-		sw = gcnew StreamWrapper(dynamic_cast<Stream^> (value));
+		sw = gcnew StreamWrapper(dynamic_cast<Stream^>( value ));
 		// subscribe to wrapper events
 		sw->OnChange += gcnew SW_CHANGE(this, &CPersistentProperty::on_change);
 		// change value
@@ -157,7 +157,7 @@ void CPersistentProperty::OnValidate( Object^ value )
 
 		// this is system type
 		return;
-	} else if( dynamic_cast<Stream^> (value) != nullptr ) {
+	} else if( dynamic_cast<Stream^>( value ) != nullptr ) {
 
 		//this is binary stream
 		return;
@@ -264,7 +264,7 @@ CPersistentProperty::~CPersistentProperty( void )
 	// i don't know why, but for classes inherited
 	// from Stream destructor not call throught
 	// operator delete, so i use force Close call
-	Stream ^stream = dynamic_cast<Stream^> (m_value);
+	Stream ^stream = dynamic_cast<Stream^>( m_value );
 	// close stream	
 	if( stream != nullptr ) stream->Close();
 	
@@ -456,7 +456,7 @@ Object^ CPersistentProperty::SyncRoot::get( void )
 String^ CPersistentProperty::ToString( void )
 {
 	// check for stream type
-	if( dynamic_cast<Stream^> (m_value) != nullptr ) {
+	if( dynamic_cast<Stream^>( m_value ) != nullptr ) {
 		
 		return "<binary data>";
 	} else {

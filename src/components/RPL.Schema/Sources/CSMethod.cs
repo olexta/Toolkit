@@ -1,11 +1,11 @@
-//****************************************************************************
+﻿//****************************************************************************
 //*   Project:   Schema Layer
 //*
 //*   Module:      CSMethod.cs
 //*
 //*   Content:   Implementation of CSMethod class
 //*   Author:      Alexander Kurbatov
-//*   Copyright:   Copyright � 2006 Alexander Kurbatov
+//*   Copyright:   Copyright © 2006 Alexander Kurbatov
 //*
 //*   This class is used to store following some class's method information:
 //*     1) Name - Method name

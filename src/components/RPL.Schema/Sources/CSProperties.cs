@@ -1,11 +1,11 @@
-//****************************************************************************
+﻿//****************************************************************************
 //*   Project:   Schema Layer
 //*
 //*   Module:      CSProperties.cs
 //*
 //*   Content:   Implementation of CSProperties class
 //*   Author:      Alexander Kurbatov
-//*   Copyright:   Copyright � 2006 Alexander Kurbatov
+//*   Copyright:   Copyright © 2006 Alexander Kurbatov
 //*
 //*   This class implements collection of CSProperty based on CollectionBase
 //*

@@ -7,7 +7,7 @@
 /*	Content:	Implementation of CObjectProperties class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -85,7 +85,7 @@ CObjectProperties::CObjectProperties( const CObjectProperties %props )
 	
 	// path through collection
 	for each( CPersistentProperty ^prop in
-			  (const_cast<CObjectProperties%> (props)).m_dict.Values ) {
+			  (const_cast<CObjectProperties%>( props )).m_dict.Values ) {
 		// always build new property instance using copy
 		// constructor and store it for corespondin key in
 		// dictionary.

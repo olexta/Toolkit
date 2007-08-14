@@ -7,7 +7,7 @@
 /*	Content:	Implementation of CUpdateCriteria class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -37,7 +37,7 @@ using namespace RPL;
 void CUpdateCriteria::OnTransactionBegin( void )
 {
 	// create new struct to store backup data
-	BackupStruct ^backup = gcnew BackupStruct();
+	BACKUP_STRUCT ^backup = gcnew BACKUP_STRUCT();
 	
 	// copy properties
 	backup->_props = gcnew CPersistentProperties(m_props);
@@ -73,7 +73,7 @@ void CUpdateCriteria::OnTransactionCommit( void )
 void CUpdateCriteria::OnTransactionRollback( void )
 {
 	// get sored backup data
-	BackupStruct ^backup = static_cast<BackupStruct^> (m_trans_stack.Pop());
+	BACKUP_STRUCT ^backup = static_cast<BACKUP_STRUCT^>( m_trans_stack.Pop() );
 	
 	// restore properties by simple copy reference
 	m_props = backup->_props;
@@ -141,7 +141,7 @@ CUpdateCriteria::CUpdateCriteria( String ^type, String ^sWhere ): \
 //-------------------------------------------------------------------
 /// <summary>
 /// Create instance of the CUpdateCriteria class to update objects of
-/// given type that satisfy spicified WHERE and ORDER BY clauseû.
+/// given type that satisfy spicified WHERE and ORDER BY clauseÑ‹.
 /// </summary>
 //-------------------------------------------------------------------
 CUpdateCriteria::CUpdateCriteria( String ^type, String ^sWhere, String ^orderBy ): \

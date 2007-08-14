@@ -7,7 +7,7 @@
 /*	Content:	Definition of CRetrieveCriteria class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -30,10 +30,10 @@ _RPL_BEGIN
 public ref class CRetrieveCriteria sealed : CPersistentCriteria
 {
 private:
-	typedef ref struct _backup_struct {
+	ref struct BACKUP_STRUCT {
 		bool	_as_proxies;
 		int		_pos;
-	} BackupStruct;
+	};
 
 private:
 	bool	m_asProxies;

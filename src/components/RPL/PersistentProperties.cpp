@@ -7,7 +7,7 @@
 /*	Content:	Implementation of CPersistentProperties class				*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -322,7 +322,7 @@ EXIT(_lock_this)}
 //-------------------------------------------------------------------
 bool CPersistentProperties::operator==( const CPersistentProperties %props )
 {
-	CPersistentProperties	%val = const_cast<CPersistentProperties%> (props);
+	CPersistentProperties	%val = const_cast<CPersistentProperties%>( props );
 
 
 	// check for same instance

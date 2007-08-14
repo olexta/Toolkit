@@ -7,7 +7,7 @@
 /*	Content:	Definition of CPersistentCriteria class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -49,7 +49,7 @@ public ref class CPersistentCriteria abstract : CPersistentObjects,
 												IIPersistentCriteria
 {
 private:
-	typedef ref struct _backup_struct {
+	ref struct BACKUP_STRUCT {
 		String		^_type;
 		String		^_inner_query;
 		String		^_where;
@@ -58,7 +58,7 @@ private:
 		int			_count;
 		int			_count_found;
 		CPersistentObjects	^_objs;
-	} BackupStruct;
+	};
 
 private:
 	String	^m_type;

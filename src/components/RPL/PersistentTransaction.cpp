@@ -7,7 +7,7 @@
 /*	Content:	Implementation of CPersistentTransaction class				*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -45,9 +45,9 @@ void CPersistentTransaction::on_process( void )
 	for each( Task %task in m_tasks ) {
 		// determine type of object in task
 		CPersistentObject ^obj =
-			dynamic_cast<CPersistentObject^> (task.Obj);
+			dynamic_cast<CPersistentObject^>( task.Obj );
 		CPersistentCriteria ^crit =
-			dynamic_cast<CPersistentCriteria^> (task.Obj);
+			dynamic_cast<CPersistentCriteria^>( task.Obj );
 		
 		if( obj != nullptr ) {
 			// check for action and call appropriate

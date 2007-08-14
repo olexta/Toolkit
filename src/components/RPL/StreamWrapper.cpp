@@ -7,7 +7,7 @@
 /*	Content:	Implementation of StreamWrapper class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -23,7 +23,7 @@ using namespace RPL;
 #define EXIT(lock)		} finally { Monitor::Exit( lock ); }
 
 // Define macros to ignore exceptions
-#define TRY(expr)		try {expr;} catch ( Exception^ ) {};
+#define TRY(expr)		try { expr; } catch( Exception^ ) {};
 
 
 //----------------------------------------------------------------------------
@@ -81,7 +81,7 @@ StreamWrapper::StreamWrapper( Stream ^stream ): \
 	if( stream == nullptr ) throw gcnew ArgumentNullException("stream");
 
 	// get real stream if internal stream is StreamWrapper
-	IIStreamWrapper ^sw = dynamic_cast<StreamWrapper^> (stream);
+	IIStreamWrapper ^sw = dynamic_cast<StreamWrapper^>( stream );
 	if( sw != nullptr ) stream = sw->RealValue;
 
 	m_stream = stream;

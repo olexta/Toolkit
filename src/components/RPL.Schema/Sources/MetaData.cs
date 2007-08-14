@@ -1,11 +1,11 @@
-//****************************************************************************
+﻿//****************************************************************************
 //*   Project:   Schema Layer
 //*
 //*   Module:      CSchema.cs
 //*
 //*   Content:   Implementation of CSchema class
 //*   Author:      Alexander Kurbatov
-//*   Copyright:   Copyright � 2006 Alexander Kurbatov
+//*   Copyright:   Copyright © 2006 Alexander Kurbatov
 //*
 //*   This class implements collection of CSClass based on CollectionBase
 //*

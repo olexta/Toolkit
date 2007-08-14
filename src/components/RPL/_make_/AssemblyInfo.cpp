@@ -1,8 +1,21 @@
+/****************************************************************************/
+/*																			*/
+/*	Project:	Robust Persistence Layer									*/
+/*																			*/
+/*	Module:		AssemblyInfo.cpp											*/
+/*																			*/
+/*	Content:	Module provide assembly information and properties.			*/
+/*																			*/
+/*	Author:		Alexey Tkachuk												*/
+/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*				All Rights Reserved											*/
+/*																			*/
+/****************************************************************************/
+
 using namespace System;
 using namespace System::Reflection;
-using namespace System::Runtime::CompilerServices;
 using namespace System::Runtime::InteropServices;
-using namespace System::Security::Permissions;
+
 
 //
 // General Information about an assembly is controlled through the following
@@ -10,13 +23,14 @@ using namespace System::Security::Permissions;
 // associated with an assembly.
 //
 [assembly:AssemblyTitleAttribute("RPL")];
-[assembly:AssemblyDescriptionAttribute("")];
-[assembly:AssemblyConfigurationAttribute("")];
+[assembly:AssemblyDescriptionAttribute("RPL module that provide persistence objects management")];
 [assembly:AssemblyCompanyAttribute("ABBYY Ukraine")];
-[assembly:AssemblyProductAttribute("RPL")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) Alexey Tkachuk 2006-2007")];
-[assembly:AssemblyTrademarkAttribute("")];
-[assembly:AssemblyCultureAttribute("")];
+[assembly:AssemblyProductAttribute("Robust Persistence Layer")];
+[assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2006-2007")];
+[assembly:AssemblyInformationalVersionAttribute("1.0")];
+
+[assembly:ComVisible(false)];
+[assembly:CLSCompliantAttribute(true)];
 
 //
 // Version information for an assembly consists of the following four values:
@@ -28,11 +42,5 @@ using namespace System::Security::Permissions;
 //
 // You can specify all the value or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
-
+//
 [assembly:AssemblyVersionAttribute("1.0.*")];
-
-[assembly:ComVisible(false)];
-
-[assembly:CLSCompliantAttribute(true)];
-
-[assembly:SecurityPermission(SecurityAction::RequestMinimum, UnmanagedCode = true)];

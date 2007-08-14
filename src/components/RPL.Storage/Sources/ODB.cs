@@ -1,11 +1,11 @@
-//****************************************************************************
+ï»¿//****************************************************************************
 //*   Project:   RPL.Storage
 //*
 //*   Module:      ODB.cs
 //*
 //*   Content:   Implements object oriented DB manipulation
 //*   Author:      Alexander Kurbatov
-//*   Copyright:   Copyright © 2006-2007 Alexander Kurbatov
+//*   Copyright:   Copyright Â© 2006-2007 Alexander Kurbatov
 //*
 //*   Implement Search, Retrive, Save, Delete of CPersistentObject in MS SQL DB
 //*
@@ -1200,8 +1200,8 @@ Debug.Print( "<- ODB..ctor()" );
 				}
 				//run the query.
 				//set up the READTEXT command to read the BLOB by passing the following
-				//parameters: @Pointer – pointer to blob, @Offset – number of bytes to
-				//skip before starting the read, @Size – number of bytes to read.
+				//parameters: @Pointer â€“ pointer to blob, @Offset â€“ number of bytes to
+				//skip before starting the read, @Size â€“ number of bytes to read.
 				SqlCommand cmdRead =  m_getcommand(
 							" READTEXT " + m_tableName + "." + m_columnName + 
 			                " @Pointer @Offset @Size HOLDLOCK" );

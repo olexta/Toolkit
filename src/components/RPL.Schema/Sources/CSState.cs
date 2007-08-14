@@ -1,11 +1,11 @@
-//****************************************************************************
+﻿//****************************************************************************
 //*   Project:   Schema Layer
 //*
 //*   Module:      CSState.cs
 //*
 //*   Content:   Implementation of CSState class
 //*   Author:      Alexander Kurbatov
-//*   Copyright:   Copyright � 2006 Alexander Kurbatov
+//*   Copyright:   Copyright © 2006 Alexander Kurbatov
 //*
 //*   This class contain two collections: CSMethods and CSAttributes
 //*

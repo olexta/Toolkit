@@ -7,7 +7,7 @@
 /*	Content:	Implementation of CPersistentObjects class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -253,7 +253,7 @@ CPersistentObjects::CPersistentObjects( IEnumerable<CPersistentObject^> ^e ): \
 //-------------------------------------------------------------------
 bool CPersistentObjects::operator==( const CPersistentObjects %objs )
 {
-	CPersistentObjects	%val = const_cast<CPersistentObjects%> (objs);
+	CPersistentObjects	%val = const_cast<CPersistentObjects%>( objs );
 
 
 	// check for same instance

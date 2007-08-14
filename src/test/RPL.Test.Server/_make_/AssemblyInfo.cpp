@@ -14,7 +14,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("ABBYY Ukraine")];
 [assembly:AssemblyProductAttribute("server")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) ABBYY Ukraine 2007")];
+[assembly:AssemblyCopyrightAttribute("Copyright © ABBYY Ukraine 2007")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 

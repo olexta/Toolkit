@@ -7,7 +7,7 @@
 /*	Content:	Implementation of CPersistenceBroker class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -33,7 +33,7 @@ using namespace RPL::Storage;
 #define EXIT(lock)		} finally { Monitor::Exit( lock ); }
 
 // Define macros to ignore exceptions
-#define TRY(expr)		try {expr;} catch ( Exception^ ) {};
+#define TRY(expr)		try { expr; } catch( Exception^ ) {};
 
 
 //----------------------------------------------------------------------------
@@ -78,7 +78,7 @@ void thread_clear_cache( Object ^param )
 	if( param == nullptr ) throw gcnew ArgumentNullException("param");
 
 	// check for right object passed to thread function
-	fnClear = dynamic_cast<CLEAR_CACHE^> (param);
+	fnClear = dynamic_cast<CLEAR_CACHE^>( param );
 	if( fnClear == nullptr ) {
 
 		throw gcnew ArgumentException("Specified parameter is not CLEAR_CACHE delegate!");
@@ -267,7 +267,7 @@ void CPersistenceBroker::CBrokerCache::Clear( bool bInaccessibleOnly )
 				// pass through all references
 				for each( WeakReference ^wr in m_cache.Values ) {
 					// check for object exists
-					CPersistentObject ^obj = dynamic_cast<CPersistentObject^> (wr->Target);
+					CPersistentObject ^obj = dynamic_cast<CPersistentObject^>( wr->Target );
 					if( obj != nullptr ) {
 						// and dispose links and properties
 						delete ((IIPersistentObject^) obj)->Links;
@@ -303,7 +303,7 @@ CPersistentObject^ CPersistenceBroker::CBrokerCache::Search( int id, String ^typ
 		// check for weak reference for object exists
 		if( m_cache.ContainsKey( key(id, type) ) ) {
 			// and return target object
-			return static_cast<CPersistentObject^> (m_cache[key(id, type)]->Target);
+			return static_cast<CPersistentObject^>( m_cache[key(id, type)]->Target );
 		}
 	} finally {
 		// ensure that the lock is released

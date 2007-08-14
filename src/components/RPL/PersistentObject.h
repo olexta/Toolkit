@@ -7,7 +7,7 @@
 /*	Content:	Definition of CPersistentObject class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -75,7 +75,7 @@ public ref class CPersistentObject abstract : MarshalByRefObject, IID,
 private:
 	enum class STATE{ proxy, filling, full };
 
-	typedef ref struct _backup_struct {
+	ref struct BACKUP_STRUCT {
 		int					_id;
 		STATE				_state;
 		DateTime			_stamp;
@@ -84,7 +84,7 @@ private:
 
 		CObjectLinks		^_links;
 		CObjectProperties	^_props;
-	} BackupStruct;
+	};
 
 private:
 	int					m_id;

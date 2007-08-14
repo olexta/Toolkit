@@ -7,7 +7,7 @@
 /*	Content:	Implementation of CRetrieveCriteria class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -61,7 +61,7 @@ void CRetrieveCriteria::ResetResults( void )
 void CRetrieveCriteria::OnTransactionBegin( void )
 {
 	// create new struct to store backup data
-	BackupStruct ^backup = gcnew BackupStruct();
+	BACKUP_STRUCT ^backup = gcnew BACKUP_STRUCT();
 
 	// copy simple object attributes
 	backup->_as_proxies = m_asProxies;
@@ -98,7 +98,7 @@ void CRetrieveCriteria::OnTransactionCommit( void )
 void CRetrieveCriteria::OnTransactionRollback( void )
 {
 	// get sored backup data
-	BackupStruct ^backup = static_cast<BackupStruct^> (m_trans_stack.Pop());
+	BACKUP_STRUCT ^backup = static_cast<BACKUP_STRUCT^>( m_trans_stack.Pop() );
 	
 	// restore simple object attributes
 	m_asProxies = backup->_as_proxies;

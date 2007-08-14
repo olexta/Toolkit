@@ -7,7 +7,7 @@
 /*	Content:	Implementation of CPersistentObject class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -27,7 +27,7 @@ using namespace RPL;
 #define EXIT(lock)		} finally { Monitor::Exit( lock ); }
 
 // Define macros to ignore exceptions
-#define TRY(expr)		try {expr;} catch ( Exception^ ) {};
+#define TRY(expr)		try { expr; } catch( Exception^ ) {};
 
 
 //----------------------------------------------------------------------------
@@ -106,7 +106,7 @@ void CPersistentObject::on_change( CPersistentProperty ^sender,
 								   Object ^oldValue, Object ^newValue )
 {
 	// determine stream content change events
-	bool	content = (dynamic_cast<Stream^> (newValue)) && 
+	bool	content = (dynamic_cast<Stream^>( newValue )) && 
 					  (newValue == oldValue);
 	
 	// for stream content change events i must always set
@@ -218,7 +218,7 @@ void CPersistentObject::TransactionBegin( void )
 	TRY( OnTransactionBegin() );
 
 	// make object copy
-	BackupStruct ^backup = gcnew BackupStruct();
+	BACKUP_STRUCT ^backup = gcnew BACKUP_STRUCT();
 	
 	// copy simple object attributes
 	backup->_id = m_id;
@@ -263,7 +263,7 @@ void CPersistentObject::TransactionRollback( void )
 	TRY( OnTransactionRollback() );
 
 	// get sored backup data
-	BackupStruct ^backup = static_cast<BackupStruct^> (m_trans_stack.Pop());
+	BACKUP_STRUCT ^backup = static_cast<BACKUP_STRUCT^>( m_trans_stack.Pop() );
 
 	// restore simple object attributes
 	m_id = backup->_id;

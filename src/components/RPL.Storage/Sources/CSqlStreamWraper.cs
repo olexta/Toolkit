@@ -1,11 +1,11 @@
-//****************************************************************************
+﻿//****************************************************************************
 //*   Project:   RPL.Storage
 //*
 //*   Module:      ISqlStream.cs
 //*
 //*   Content:   Interface for writing/reading image data from/to MS SqlServer
 //*   Author:      Alexander Kurbatov
-//*   Copyright:   Copyright � 2006-2007 Alexander Kurbatov
+//*   Copyright:   Copyright © 2006-2007 Alexander Kurbatov
 //*
 //****************************************************************************
 using System;

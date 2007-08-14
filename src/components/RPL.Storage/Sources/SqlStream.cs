@@ -1,11 +1,11 @@
-//****************************************************************************
+﻿//****************************************************************************
 //*   Project:   RPL.Storage
 //*
 //*   Module:      SqlStream.cs
 //*
 //*   Content:   Exposes a System.IO.Stream around a SQL image data type
 //*   Author:      Alexander Kurbatov
-//*   Copyright:   Copyright � 2006-2007 Alexander Kurbatov
+//*   Copyright:   Copyright © 2006-2007 Alexander Kurbatov
 //*
 //*   This class allows to use SQL image data type as System.IO.Stream. 
 //*   Modification of stream is implemented via temporary file which is automaticly disposed upon 

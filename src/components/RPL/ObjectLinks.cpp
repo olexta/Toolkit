@@ -7,7 +7,7 @@
 /*	Content:	Implementation of CObjectLinks class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright Â© 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -71,7 +71,7 @@ CObjectLinks::CObjectLinks( const CObjectLinks %links )
 	m_owner = links.m_owner;
 	m_changed = links.m_changed;
 	// copy content
-	m_list.AddRange( %(const_cast<CObjectLinks%> (links)) );
+	m_list.AddRange( %(const_cast<CObjectLinks%>( links )) );
 }
 
 
