@@ -141,7 +141,7 @@ CUpdateCriteria::CUpdateCriteria( String ^type, String ^sWhere ): \
 //-------------------------------------------------------------------
 /// <summary>
 /// Create instance of the CUpdateCriteria class to update objects of
-/// given type that satisfy spicified WHERE and ORDER BY clauseы.
+/// given type that satisfy spicified WHERE and ORDER BY clause.
 /// </summary>
 //-------------------------------------------------------------------
 CUpdateCriteria::CUpdateCriteria( String ^type, String ^sWhere, String ^orderBy ): \

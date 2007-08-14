@@ -350,7 +350,7 @@ EXIT(_lock_this)}
 /// Gets or sets SQL WHERE clause.
 /// </summary><remarks>
 /// This clause presents in all criterias, but for more capability i
-/// provide it as virtual зкщзукен to give ability to override it if
+/// provide it as virtual property to give ability to override it if
 /// needed.
 /// </remarks>
 //-------------------------------------------------------------------
