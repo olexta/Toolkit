@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual C++ Express 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ABBYY.Toolkit.RPL.Test.Server", "ABBYY.Toolkit.RPL.Test.Server.vcproj", "{177CBAF0-87CB-4282-9612-28AD60566D97}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{177CBAF0-87CB-4282-9612-28AD60566D97}.Debug|Win32.ActiveCfg = Debug|Win32
+		{177CBAF0-87CB-4282-9612-28AD60566D97}.Debug|Win32.Build.0 = Debug|Win32
+		{177CBAF0-87CB-4282-9612-28AD60566D97}.Release|Win32.ActiveCfg = Release|Win32
+		{177CBAF0-87CB-4282-9612-28AD60566D97}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
