@@ -1,6 +1,6 @@
 ﻿/****************************************************************************/
 /*																			*/
-/*	Project:	RPL Server													*/
+/*	Project:	Robust Persistence Layer									*/
 /*																			*/
 /*	Module:		MessageSink.cpp												*/
 /*																			*/
@@ -54,9 +54,9 @@ IMessage^ CMessageSink::SyncProcessMessage( IMessage ^msg )
 	}
 
 	// get client ID from context data
-	LogicalCallContext ^callContext = dynamic_cast<LogicalCallContext^> 
-										(msg->Properties["__CallContext"]);
-	String ^clientID = dynamic_cast<String^> (callContext->GetData("__ClientID"));
+	LogicalCallContext ^callContext = dynamic_cast<LogicalCallContext^>( 
+									  msg->Properties["__CallContext"] );
+	String ^clientID = dynamic_cast<String^>( callContext->GetData("__ClientID") );
 
 	if ( clientID != nullptr ) {
 		// get associated service interface
@@ -64,7 +64,7 @@ IMessage^ CMessageSink::SyncProcessMessage( IMessage ^msg )
 	} else {
 		// no client ID in message, throw exception
 		return gcnew ReturnMessage( gcnew ApplicationException("No __ClientID"), 
-									dynamic_cast <IMethodCallMessage^> (msg) );
+									dynamic_cast<IMethodCallMessage^>( msg ) );
 	}
 }
 

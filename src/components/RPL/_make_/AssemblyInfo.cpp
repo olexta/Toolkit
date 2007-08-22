@@ -22,7 +22,7 @@ using namespace System::Runtime::InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("RPL")];
+[assembly:AssemblyTitleAttribute("ABBYY.Toolkit.RPL")];
 [assembly:AssemblyDescriptionAttribute("RPL module that provide persistence objects management")];
 [assembly:AssemblyCompanyAttribute("ABBYY Ukraine")];
 [assembly:AssemblyProductAttribute("Robust Persistence Layer")];

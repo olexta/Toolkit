@@ -7,8 +7,8 @@
     <ProjectGuid>{408D5906-CBD3-4E96-A8DA-ABDE5E2256BB}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RPL.Test</RootNamespace>
-    <AssemblyName>RPL.Test.Client</AssemblyName>
+    <RootNamespace>ABBYY.Toolkit.RPL.Test</RootNamespace>
+    <AssemblyName>ABBYY.Toolkit.RPL.Test.Client</AssemblyName>
     <TargetZone>LocalIntranet</TargetZone>
     <GenerateManifests>false</GenerateManifests>
     <SccProjectName>
@@ -39,13 +39,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RPL">
+    <Reference Include="ABBYY.Toolkit.RPL, Version=1.0.2790.24635, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\RPL.dll</HintPath>
     </Reference>
-    <Reference Include="RPL.Storage">
+    <Reference Include="ABBYY.Toolkit.RPL.Storage, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\RPL.Storage.dll</HintPath>
+    </Reference>
+    <Reference Include="ABBYY.Toolkit.RPL.Test.Objects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -55,15 +56,6 @@
   <ItemGroup>
     <Compile Include=".\Sources\Program.cs" />
     <Compile Include=".\Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <BaseApplicationManifest Include=".\Resources\app.manifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\RPL.Test.Objects\RPL.Test.Objects.csproj">
-      <Project>{FA1819A3-46BD-4057-A531-043F76B370AD}</Project>
-      <Name>RPL.Test.Objects</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

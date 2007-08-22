@@ -17,7 +17,7 @@
 
 using namespace System::IO;
 using namespace System::Threading;
-using namespace RPL;
+using namespace _RPL;
 
 
 // Define lock macroses

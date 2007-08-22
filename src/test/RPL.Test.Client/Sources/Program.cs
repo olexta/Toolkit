@@ -14,10 +14,10 @@ using System.Net;
 using System.Collections;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Diagnostics;
-using RPL;
-using RPL.Storage;
+using ABBYY.Toolkit.RPL;
+using ABBYY.Toolkit.RPL.Storage;
 
-namespace RPL.Test
+namespace ABBYY.Toolkit.RPL.Test
 {
 	class Program
 	{
@@ -40,6 +40,7 @@ namespace RPL.Test
 		private bool m_transEnabled = false;
 		private RPL.CPersistentTransaction m_trans = null;
 		private string m_hostname;
+		private static string cCnnStr = "Data Source=geser;Initial Catalog=LineNBU;Integrated Security=SSPI;Persist Security Info=False";
 
 		public ConsoleParser()
 		{
@@ -118,7 +119,6 @@ namespace RPL.Test
 			} else {
 				Console.WriteLine( "No transaction is active!" );
 			}
-
 		}
 
 		private void cmdSearch()
@@ -136,7 +136,7 @@ namespace RPL.Test
 				sWhere = "(1 = 1)";
 				Console.WriteLine( "Search Condition assumed as :" + sWhere );
 			}
-			//get Order request from user input
+			// get Order request from user input
 			Console.WriteLine( "Enter Order By clause:" );
 			sOrderBy = Console.ReadLine();
 			if ( string.IsNullOrEmpty( sOrderBy ) )
@@ -148,14 +148,14 @@ namespace RPL.Test
 			} catch { } finally {
 				Console.WriteLine( "Count limit is: " + sCount );
 			}
-			//get bottom count from user input
+			// get bottom count from user input
 			Console.WriteLine( "Bottom count:" );
 			try {
 				sBottom = Convert.ToInt32( Console.ReadLine() );
 			} catch { } finally {
 				Console.WriteLine( "Bottom is: {0}", sBottom );
 			}
-			//do retrive proxy or not objects
+			// do retrive proxy or not objects
 			Console.WriteLine( "Retrive proxy objects? (Y/N)" );
 			if ( string.Compare( Console.ReadLine(), "Y", true ) != 0 ) {
 				sProxy = false;
@@ -362,7 +362,7 @@ namespace RPL.Test
 		{
 			DbProviderFactory prov = DbProviderFactories.GetFactory( "System.Data.SqlClient" );
 			DbConnection con = prov.CreateConnection();
-			con.ConnectionString = "Data Source=CORP;Initial Catalog=LineNBU;Persist Security Info=True;User ID=sa;Password=12345";
+			con.ConnectionString = cCnnStr;
 			ODB adodb = new ODB();
 
 			CPersistenceBroker.Instance.Connect( con, adodb );

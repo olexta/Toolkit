@@ -4,8 +4,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Text;
 using System.Collections.Generic;
-using RPL.Storage;
-using RPL;
+using ABBYY.Toolkit.RPL.Storage;
+using ABBYY.Toolkit.RPL;
 using System.Data.Common;
 using System.IO;
 using System.Runtime.Remoting.Proxies;
@@ -16,20 +16,23 @@ using System.Runtime.Remoting;
 using System.Diagnostics;
 
 
-namespace RPL.Test
+namespace ABBYY.Toolkit.RPL.Test
 {
-	///<summary>This is a test class for RPL.Storage.ODB and is intended
-	///to contain all RPL.Storage.ODB Unit Tests</summary>
+	/// <summary>
+	/// This is a test class for RPL.Storage.ODB and is intended
+	/// to contain all RPL.Storage.ODB Unit Tests
+	/// </summary>
 	[TestClass()]
 	public class ODBTest
 	{
 		private static string  m_obj_name = "VS_Load_Test";
+		private static string cCnnStr = "Data Source=geser;Initial Catalog=LineNBU;Integrated Security=SSPI;Persist Security Info=False";
 		private TestContext testContextInstance;
 
 		/// <summary>
-		///Gets or sets the test context which provides
-		///information about and functionality for the current test run.
-		///</summary>
+		/// Gets or sets the test context which provides
+		/// information about and functionality for the current test run.
+		/// </summary>
 		public TestContext TestContext
 		{
 			get
@@ -43,10 +46,10 @@ namespace RPL.Test
 		}
 		#region Additional test attributes
 		// 
-		//You can use the following additional attributes as you write your tests:
+		// You can use the following additional attributes as you write your tests:
 		//
 		
-		//Use ClassInitialize to run code before running the first test in the class
+		// Use ClassInitialize to run code before running the first test in the class
 		
 		[ClassInitialize()]
 		public static void MyClassInitialize(TestContext testContext)
@@ -64,12 +67,12 @@ namespace RPL.Test
 
 			DbProviderFactory prov = DbProviderFactories.GetFactory( "System.Data.SqlClient" );
 			DbConnection con = prov.CreateConnection();
-			con.ConnectionString = "Data Source=CORP;Initial Catalog=LineNBU;Persist Security Info=True;User ID=sa;Password=12345";
+			con.ConnectionString = cCnnStr;
 			ODB adodb = new ODB();
 			CPersistenceBroker.Instance.Connect( con, adodb );
 		}
 		
-		//Use ClassCleanup to run code after all tests in a class have run
+		// Use ClassCleanup to run code after all tests in a class have run
 		
 		[ClassCleanup()]
 		public static void MyClassCleanup()
@@ -77,20 +80,6 @@ namespace RPL.Test
 			RPL.CPersistenceBroker.Instance.Dispose();
 		}
 		
-		//Use TestInitialize to run code before running each test
-		//
-		//[TestInitialize()]
-		//public void MyTestInitialize()
-		//{
-		//}
-		//
-		//Use TestCleanup to run code after each test has run
-		//
-		//[TestCleanup()]
-		//public void MyTestCleanup()
-		//{
-		//}
-		//
 		#endregion
 
 		[Priority( 1 ), TestMethod()]
@@ -117,7 +106,7 @@ namespace RPL.Test
 			_string_expected = obj._string = @"Test строка (ї,ё) 1@№" + DateTime.Now.ToString();
 			obj._datetime = DateTime.Now;
 			_double_expected = obj._double = 1234567890.123456789012345;
-			//create parent object
+			// create parent object
 			CTestObject parent_obj = new CTestObject();
 			parent_obj.Name = _name_expected;
 			parent_obj._int = _int_expected;
@@ -126,7 +115,7 @@ namespace RPL.Test
 			obj.Save(); //save object
 		
 
-			//save data here because of change that can be during conversion to sql pressision
+			// save data here because of change that can be during conversion to sql pressision
 			_datetime_expected = obj._datetime;
 			_id_expected = obj.ID;
 			_stamp_expected = obj.Stamp;
@@ -138,18 +127,18 @@ namespace RPL.Test
 			Assert.AreEqual( _string_expected, obj._string);
 			Assert.IsTrue( DateTime.Equals( _stamp_expected, obj.Stamp ));
 			Assert.AreEqual( _double_expected, obj._double );
-			//parent check
+			// parent check
 			foreach (CPersistentObject link_obj in obj.GetParents ) {
 				Assert.AreEqual(_name_expected, link_obj.Name );
 			}
 			#endregion
 			
-			//by string equality
+			// by string equality
 			ret_crit = new CRetrieveCriteria( CTestObject.type(), "(_string = '" + _string_expected +"')" );
 			ret_crit.Perform();
 			Assert.IsTrue( ( ret_crit.CountFound == 1 ), "Search by Name failed");
 			Assert.AreEqual( _id_expected, ret_crit[0].ID );
-			//check properties
+			// check properties
 			Assert.AreEqual( _name_expected, ((CTestObject)ret_crit[0]).Name );
 			Assert.AreEqual( _int_expected, ((CTestObject)ret_crit[0])._int );
 			Assert.AreEqual( _boolean_expected, ((CTestObject)ret_crit[0])._boolean );
@@ -158,13 +147,13 @@ namespace RPL.Test
 			Assert.AreEqual( _datetime_expected, ((CTestObject)ret_crit[0])._datetime );
 			Assert.AreEqual( _double_expected, ((CTestObject)ret_crit[0])._double );
 
-			//by LIKE
+			// by LIKE
 			ret_crit = new CRetrieveCriteria( CTestObject.type(), "( _string LIKE '%" + _string_expected.Substring( 2, _string_expected.Length - 2 ) + "%')" );
 			ret_crit.Perform();
 			Assert.IsTrue( ( ret_crit.CountFound == 1 ), "Search by Name failed");
 			Assert.AreEqual( _id_expected, ret_crit[0].ID );
 			
-			//by string NOT LIKE
+			// by string NOT LIKE
 			ret_crit = new CRetrieveCriteria( CTestObject.type(), "( _string NOT LIKE '%" + _string_expected.Substring( 2, _string_expected.Length - 2 ) + "%')" );
 			ret_crit.Perform();
 			bool found = false;
@@ -176,13 +165,13 @@ namespace RPL.Test
 			}
 			Assert.IsFalse( found, "'NOT LIKE' failed" );
 
-			//by ID
+			// by ID
 			ret_crit = new CRetrieveCriteria( CTestObject.type(), "( ID = " + _id_expected +")" );
 			ret_crit.Perform();
 			Assert.IsTrue( ( ret_crit.CountFound == 1 ), "Search by id failed");
 			Assert.AreEqual( _id_expected, ret_crit[0].ID );
 
-			//by NOT ID
+			// by NOT ID
 			ret_crit = new CRetrieveCriteria( CTestObject.type(), "( ID <> " + _id_expected +")" );
 			ret_crit.Perform();
 			found = false;
@@ -195,7 +184,7 @@ namespace RPL.Test
 			Assert.IsFalse( found, "search by '<> ID' condition failed" );
 			
 
-			//by bit
+			// by bit
 			ret_crit = new CRetrieveCriteria( CTestObject.type(), "( _boolean = CAST(" + (_boolean_expected ? 1 : 0) + " as bit))" );
 			ret_crit.Perform();
 			found = false;
@@ -207,7 +196,7 @@ namespace RPL.Test
 			}
 			Assert.IsTrue( found, "search by boolean failed" );
 
-			//by <> bit
+			// by <> bit
 			ret_crit = new CRetrieveCriteria( CTestObject.type(), "( _boolean <> CAST(" + (_boolean_expected ? 1 : 0) + " as bit))" );
 			ret_crit.Perform();
 			found = false;
@@ -220,7 +209,7 @@ namespace RPL.Test
 			Assert.IsFalse( found, "search by '<> boolean' condition failed" );
 
 			#region
-			//by int
+			// by int
 			ret_crit = new CRetrieveCriteria( CTestObject.type(), "( _int = " + _int_expected + ")" );
 			ret_crit.Perform();
 			found = false;
@@ -232,7 +221,7 @@ namespace RPL.Test
 			}
 			Assert.IsTrue( found, "search by int failed" );
 
-			//by <> bit
+			// by <> bit
 			ret_crit = new CRetrieveCriteria( CTestObject.type(), "( _int <> " + _int_expected + ")" );
 			ret_crit.Perform();
 			found = false;
@@ -246,7 +235,7 @@ namespace RPL.Test
 			#endregion
 
 
-			//by datetime
+			// by datetime
 			ret_crit = new CRetrieveCriteria( CTestObject.type(), "( _datetime = CAST('" + _datetime_expected.ToString( "yyyy-MM-dd HH:mm:ss.fff" ) + "' as datetime))" );
 			ret_crit.Perform();
 			found = false;
@@ -270,7 +259,7 @@ namespace RPL.Test
 			}
 			Assert.IsFalse( found, "Search by '<> datetime' condition failed" );
 
-			//by double
+			// by double
 			ret_crit = new CRetrieveCriteria( CTestObject.type(), "( _double = CAST(" + _double_expected.ToString("R") + " as float ))" );
 			ret_crit.Perform();
 			found = false;
@@ -282,7 +271,7 @@ namespace RPL.Test
 			}
 			Assert.IsTrue( found, "Search by double failed" );
 
-			//by NOT double
+			// by NOT double
 			ret_crit = new CRetrieveCriteria( CTestObject.type(), "( _double <> CAST(" + _double_expected.ToString( "R" ) + " as float ))" );
 			ret_crit.Perform();
 			found = false;
@@ -303,7 +292,7 @@ namespace RPL.Test
 			CUpdateCriteria upd_crit;
 			CDeleteCriteria del_crit;
 
-			//common variables
+			// common variables
 			CTestObject obj;
 			int _id_expected;
 			string _name_expected;
@@ -326,12 +315,12 @@ namespace RPL.Test
 
 			#region add/retrive trans
 			trans = new CPersistentTransaction();
-			//trans.Add( obj, CPersistentTransaction.Actions.actSave );
+			// trans.Add( obj, CPersistentTransaction.Actions.actSave );
 			ret_crit = new CRetrieveCriteria( CTestObject.type(), "( _string = '" + _string_expected +"')" );
 			trans.Add( ret_crit );
 			trans.Process();
 
-			//save data here becuse of change that can be during conversion to sql pressision
+			// save data here becuse of change that can be during conversion to sql pressision
 			_datetime_expected = obj._datetime;
 			_id_expected = obj.ID;
 			_stamp_expected = obj.Stamp;
@@ -345,7 +334,7 @@ namespace RPL.Test
 			Assert.AreEqual( _double_expected, obj._double );
 			#endregion
 
-			//by string equality
+			// by string equality
 			Assert.IsTrue( (ret_crit.CountFound == 1), "search by Name failed" );
 			Assert.AreEqual( _id_expected, ret_crit[0].ID );
 			#endregion
@@ -379,11 +368,11 @@ namespace RPL.Test
 				trans.Process();
 				Assert.Fail("Exception wasn't raised");
 			} catch {/*catch exception that will be*/}
-			//retrive objects to chack that nothing was changed
+			// retrive objects to chack that nothing was changed
 			ret_crit.Perform();
 			Assert.IsTrue( (ret_crit.CountFound == 1 ), "search by Name failed" );
 			Assert.AreEqual( _id_expected, ret_crit[0].ID );
-			//value must not be those that was assigned in failed transaction
+			// value must not be those that was assigned in failed transaction
 			Assert.IsFalse( ((CTestObject)ret_crit[0])._int == 9, "update object property failed" );
 			#endregion
 
@@ -396,7 +385,7 @@ namespace RPL.Test
 				Assert.Fail("Exception wasn't raised");
 			} catch {/*catch exception that will be*/}
 			ret_crit.Perform();
-			//object must exist
+			// object must exist
 			Assert.IsTrue( (ret_crit.CountFound == 1 ), "rollbacked transaction didn't recover deleted object" );
 			Assert.AreEqual( _id_expected, ret_crit[0].ID );
 			#endregion
@@ -432,7 +421,9 @@ namespace RPL.Test
 		}
 
 
-		///<summary>A test for Search (CPersistentCriteria, ref IEnumerable&lt;CPersistentObject&gt;)</summary>
+		/// <summary>
+		/// A test for Search (CPersistentCriteria, ref IEnumerable&lt;CPersistentObject&gt;)
+		/// </summary>
 		[Priority( 3 ), TestMethod()]
 		public void DeleteTest()
 		{

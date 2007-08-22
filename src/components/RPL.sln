@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RPL", ".\RPL\_make_\RPL.vcproj", "{6A8B0CAD-71E5-4872-8807-A046E0660E6A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ABBYY.Toolkit.RPL", ".\RPL\_make_\ABBYY.Toolkit.RPL.vcproj", "{6A8B0CAD-71E5-4872-8807-A046E0660E6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPL.Schema", ".\RPL.Schema\RPL.Schema.csproj", "{688FF097-2EDF-426C-A190-6E410F30EF58}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ABBYY.Toolkit.RPL.Schema", ".\RPL.Schema\ABBYY.Toolkit.RPL.Schema.csproj", "{688FF097-2EDF-426C-A190-6E410F30EF58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPL.Storage", ".\RPL.Storage\RPL.Storage.csproj", "{BE56E95A-B4E6-4CAE-B58A-C0D2EF0E63A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ABBYY.Toolkit.RPL.Storage", ".\RPL.Storage\ABBYY.Toolkit.RPL.Storage.csproj", "{BE56E95A-B4E6-4CAE-B58A-C0D2EF0E63A1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{6A8B0CAD-71E5-4872-8807-A046E0660E6A} = {6A8B0CAD-71E5-4872-8807-A046E0660E6A}
 	EndProjectSection

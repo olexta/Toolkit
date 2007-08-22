@@ -1,8 +1,8 @@
 ﻿/****************************************************************************/
 /*																			*/
-/*	Project:	RPL Server													*/
+/*	Project:	Robust Persistence Layer									*/
 /*																			*/
-/*	Module:		RPL.Server.cpp												*/
+/*	Module:		RPL.Test.Server.cpp											*/
 /*																			*/
 /*	Content:	This is the main executable file.							*/
 /*																			*/
@@ -15,17 +15,17 @@
 #include "CrossDomainService.h"
 #include "CrossDomainMarshaller.h"
 
-#using "..\..\..\..\bin\RPL.dll"
-#using "..\..\..\..\bin\RPL.Storage.dll"
-#using "..\..\..\..\bin\RPL.Test.Objects.dll"
+#using "..\..\..\..\bin\ABBYY.Toolkit.RPL.dll"
+#using "..\..\..\..\bin\ABBYY.Toolkit.RPL.Storage.dll"
+#using "..\..\..\..\bin\ABBYY.Toolkit.RPL.Test.Objects.dll"
 
 using namespace System;
 using namespace System::Reflection;
 using namespace System::Runtime::Remoting;
 using namespace System::Runtime::Remoting::Channels;
 using namespace System::Data::SqlClient;
-using namespace RPL;
-using namespace RPL::Test;
+using namespace ABBYY::Toolkit::RPL;
+using namespace ABBYY::Toolkit::RPL::Test;
 
 
 //----------------------------------------------------------------------------
@@ -40,6 +40,11 @@ using namespace RPL::Test;
 // Define server port for comunication
 //
 #define SERVER_PORT			43667
+
+//
+// Connection string to SQL database
+//
+#define cCnnStr				"Data Source=geser;Initial Catalog=LineNBU;Integrated Security=SSPI;Persist Security Info=False"
 
 
 //----------------------------------------------------------------------------
@@ -81,7 +86,7 @@ void CBroker::Init( void )
 		gcnew BinaryClientFormatterSinkProvider();
 	// create properties collection
 	Collections::IDictionary ^props = gcnew Collections::Hashtable();
-	//props["port"] = 0;
+	props["port"] = 0;
 	
 	// register TCP chanel
 	Tcp::TcpChannel ^chan = gcnew Tcp::TcpChannel( props, cliProv, srvProv );
@@ -100,7 +105,7 @@ void CBroker::Init( void )
 	// put initialization code here (this function
 	// will be called in per-client context)
 	CPersistenceBroker::Instance->Connect( 
-		gcnew SqlConnection( "Data Source=CORP;Initial Catalog=LineNBU;Persist Security Info=True;User ID=sa;Password=12345" ),
+		gcnew SqlConnection( cCnnStr ),
 		gcnew Storage::ODB() );
 }
 
@@ -119,9 +124,9 @@ void CBroker::Create( String ^clientID,
 
 	try {
 		// create service instance in new created domain
-		service = dynamic_cast<CBroker^> (domain->CreateInstanceAndUnwrap(
+		service = dynamic_cast<CBroker^>( domain->CreateInstanceAndUnwrap(
 								Assembly::GetExecutingAssembly()->GetName()->Name,
-								CBroker::typeid->ToString() ));
+								CBroker::typeid->ToString() ) );
 
 		// initialize broker in created context
 		domain->DoCallBack( gcnew CrossAppDomainDelegate( &CBroker::Init ) );

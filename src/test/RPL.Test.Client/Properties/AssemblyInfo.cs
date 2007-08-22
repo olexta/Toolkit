@@ -1,4 +1,17 @@
-﻿using System.Reflection;
+﻿/****************************************************************************/
+/*																			*/
+/*	Project:	Robust Persistence Layer									*/
+/*																			*/
+/*	Module:		AssemblyInfo.cpp											*/
+/*																			*/
+/*	Content:	Module provide assembly information and properties.			*/
+/*																			*/
+/*	Author:		Alexander Kurbatov											*/
+/*	Copyright:	Copyright © 2006-2007										*/
+/*																			*/
+/****************************************************************************/
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -7,12 +20,9 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle( "ConsTest" )]
 [assembly: AssemblyDescription( "" )]
-[assembly: AssemblyConfiguration( "" )]
 [assembly: AssemblyCompany( "ABBYY Ukraine" )]
 [assembly: AssemblyProduct( "ConsTest" )]
 [assembly: AssemblyCopyright( "Copyright © ABBYY Ukraine 2007" )]
-[assembly: AssemblyTrademark( "" )]
-[assembly: AssemblyCulture( "" )]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -30,4 +40,3 @@ using System.Runtime.InteropServices;
 //      Revision
 //
 [assembly: AssemblyVersion( "1.0.0.0" )]
-[assembly: AssemblyFileVersion( "1.0.0.0" )]

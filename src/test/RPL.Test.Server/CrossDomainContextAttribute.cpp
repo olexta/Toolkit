@@ -1,6 +1,6 @@
 ﻿/****************************************************************************/
 /*																			*/
-/*	Project:	RPL Server													*/
+/*	Project:	Robust Persistence Layer									*/
 /*																			*/
 /*	Module:		CrossDomainContextAttribute.cpp								*/
 /*																			*/

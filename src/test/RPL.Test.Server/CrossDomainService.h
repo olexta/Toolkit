@@ -1,6 +1,6 @@
 ﻿/****************************************************************************/
 /*																			*/
-/*	Project:	RPL Server													*/
+/*	Project:	Robust Persistence Layer									*/
 /*																			*/
 /*	Module:		CrossDomainService.cpp										*/
 /*																			*/
@@ -14,9 +14,9 @@
 /*	The CrossDomainService implements the ICrossDomainService interface		*/
 /*	method Marshal(IMessage^ msg). The Message object is forwarded into a	*/
 /*	custom proxy which finally resolves the call to needed function. Class	*/
-/*	is presented as template, so you have to specify class for each it will	*/
-/*	provide cross domain marshaling. Also, you have to specify life time of	*/
-/*	the the marshaler in seconds.											*/
+/*	is presented as template, so you have to specify class for each it		*/
+/*	will provide cross domain marshaling. Also, you have to specify life	*/
+/*	time of the the marshaler in seconds.									*/
 /*																			*/
 /****************************************************************************/
 
@@ -115,8 +115,8 @@ CCrossDomainService<T, t>::CCrossDomainService( void )
 template<class T, int t>
 Object^ CCrossDomainService<T, t>::InitializeLifetimeService( void )
 {
-	ILease^ lease = dynamic_cast<ILease^>
-					(MarshalByRefObject::InitializeLifetimeService());
+	ILease^ lease = dynamic_cast<ILease^>( 
+					MarshalByRefObject::InitializeLifetimeService() ) ;
 
 	if ( lease->CurrentState == LeaseState::Initial ) {
 		// initialize to specified timeout

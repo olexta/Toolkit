@@ -4,9 +4,9 @@ using System.Text;
 using System.IO;
 using System.Diagnostics;
 
-namespace RPL.Test
+namespace ABBYY.Toolkit.RPL.Test
 {
-	///Object for use in RPL.Testing project
+	/// Object for use in RPL.Testing project
 	public class CTestObject : CPersistentObject
 	{
 		public CTestObject()
@@ -16,7 +16,9 @@ namespace RPL.Test
 		public CTestObject( int id, DateTime stamp, String name )
 			: base( id, stamp, name ) { }
 
-		///<summary>Name of Object</summary>
+		/// <summary>
+		/// Name of Object
+		/// </summary>
 		public override string Name
 		{
 			get { return base.Name; }
@@ -33,7 +35,9 @@ namespace RPL.Test
 			get { return base.Links; }
 		}
 
-		///<summary>Implemetation of PersistentObject and IClassInfo</summary>
+		/// <summary>
+		/// Implemetation of PersistentObject and IClassInfo
+		/// </summary>
 		public override string Type
 		{
 			get {
@@ -42,8 +46,10 @@ namespace RPL.Test
 			}
 		}
 
-		///<summary>Used to identify full name of this class type</summary>
-		///<returns>String representation of this class</returns>
+		/// <summary>
+		/// Used to identify full name of this class type
+		/// </summary>
+		/// <returns>String representation of this class</returns>
 		public static string type()
 		{
 			// gets name of class.
@@ -52,8 +58,10 @@ namespace RPL.Test
 			   System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 		}
 
-		///<summary>Static method that is used to get RetriveCriteria for searching
-		/// objects of that class</summary>
+		/// <summary>
+		/// Static method that is used to get RetriveCriteria for searching
+		/// objects of that class
+		/// </summary>
 		/// <returns>CRetrieveCriteria build for this class</returns>
 		public static CRetrieveCriteria GetRetriveCriteria
 		{
@@ -62,7 +70,9 @@ namespace RPL.Test
 			}
 		}
 
-		///<summary>Verification of instance integrity</summary>
+		/// <summary>
+		/// Verification of instance integrity
+		/// </summary>
 		/// <returns>true if varificaton succeded</returns>
 		/// <remarks>Before Validation all properties with DBNull must be removed</remarks>
 		/// <exception cref="ArgumentOutOfRangeException">When number of required properties is insufficient</exception>

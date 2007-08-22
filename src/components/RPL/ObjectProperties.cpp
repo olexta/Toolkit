@@ -17,7 +17,7 @@
 #include "ObjectProperties.h"
 
 using namespace System::Threading;
-using namespace RPL;
+using namespace _RPL;
 
 
 //----------------------------------------------------------------------------

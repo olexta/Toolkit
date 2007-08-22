@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="RPL.Test.Server"
-	ProjectGUID="{177CBAF0-87CB-4282-9612-28AD60566D97}"
-	RootNamespace="server"
+	Name="ABBYY.Toolkit.RPL"
+	ProjectGUID="{6A8B0CAD-71E5-4872-8807-A046E0660E6A}"
+	RootNamespace="ABBYY.Toolkit.RPL"
 	Keyword="ManagedCProj"
 	>
 	<Platforms>
@@ -19,7 +19,7 @@
 			Name="Debug|Win32"
 			OutputDirectory="..\..\..\..\bin\"
 			IntermediateDirectory="..\..\..\..\tmp\$(ProjectName)\"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="1"
 			ManagedExtensions="1"
 			>
@@ -44,6 +44,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
+				GenerateXMLDocumentationFiles="true"
 				WarningLevel="3"
 				DebugInformationFormat="1"
 			/>
@@ -59,7 +60,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(NoInherit)"
+				OutputFile="$(OutDir)\$(ProjectName).dll"
 				LinkIncremental="2"
+				IgnoreAllDefaultLibraries="false"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				TargetMachine="1"
@@ -72,6 +75,8 @@
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
+				SuppressStartupBanner="true"
+				ValidateIntelliSense="false"
 			/>
 			<Tool
 				Name="VCBscMakeTool"
@@ -87,13 +92,14 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\..\bin\"
-			IntermediateDirectory="..\..\..\tmp\$(ProjectName)\"
-			ConfigurationType="1"
+			OutputDirectory="..\..\..\..\bin\"
+			IntermediateDirectory="..\..\..\..\tmp\$(ProjectName)\"
+			ConfigurationType="2"
 			CharacterSet="1"
 			ManagedExtensions="1"
 			WholeProgramOptimization="1"
@@ -117,7 +123,6 @@
 				Name="VCCLCompilerTool"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
-				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -133,8 +138,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(NoInherit)"
+				OutputFile="$(OutDir)\$(ProjectName).dll"
 				LinkIncremental="1"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -160,6 +166,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="&quot;$(ProjectDir)XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -167,14 +174,6 @@
 		<AssemblyReference
 			RelativePath="System.dll"
 			AssemblyName="System, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
-		/>
-		<AssemblyReference
-			RelativePath="System.Runtime.Remoting.dll"
-			AssemblyName="System.Runtime.Remoting, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
-		/>
-		<AssemblyReference
-			RelativePath="System.Data.dll"
-			AssemblyName="System.Data, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=x86"
 		/>
 	</References>
 	<Files>
@@ -188,19 +187,59 @@
 				>
 			</File>
 			<File
-				RelativePath="..\CrossDomainContextAttribute.cpp"
+				RelativePath="..\DeleteCriteria.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\CrossDomainMarshaller.cpp"
+				RelativePath="..\ObjectLinks.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\MessageSink.cpp"
+				RelativePath="..\ObjectProperties.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\RPL.Test.Server.cpp"
+				RelativePath="..\PersistenceBroker.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentCriteria.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentObject.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentObjects.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentProperties.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentProperty.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentTransaction.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\RetrieveCriteria.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\RPL.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\StreamWrapper.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\UpdateCriteria.cpp"
 				>
 			</File>
 		</Filter>
@@ -210,26 +249,94 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\CrossDomainContextAttribute.h"
+				RelativePath="..\RPL.h"
 				>
 			</File>
-			<File
-				RelativePath="..\CrossDomainMarshaller.h"
+			<Filter
+				Name="private"
 				>
-			</File>
-			<File
-				RelativePath="..\CrossDomainService.h"
-				>
-			</File>
-			<File
-				RelativePath="..\MessageSink.h"
-				>
-			</File>
+				<File
+					RelativePath="..\StreamWrapper.h"
+					>
+				</File>
+			</Filter>
 			<Filter
 				Name="interfaces"
 				>
 				<File
-					RelativePath="..\ICrossDomainService.h"
+					RelativePath="..\IBrokerCache.h"
+					>
+				</File>
+				<File
+					RelativePath="..\IBrokerFactory.h"
+					>
+				</File>
+				<File
+					RelativePath="..\IID.h"
+					>
+				</File>
+				<File
+					RelativePath="..\IPersistenceStorage.h"
+					>
+				</File>
+				<Filter
+					Name="private"
+					>
+					<File
+						RelativePath="..\ITransactionSupport.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="public"
+				>
+				<File
+					RelativePath="..\DeleteCriteria.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ObjectLinks.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ObjectProperties.h"
+					>
+				</File>
+				<File
+					RelativePath="..\PersistenceBroker.h"
+					>
+				</File>
+				<File
+					RelativePath="..\PersistentCriteria.h"
+					>
+				</File>
+				<File
+					RelativePath="..\PersistentObject.h"
+					>
+				</File>
+				<File
+					RelativePath="..\PersistentObjects.h"
+					>
+				</File>
+				<File
+					RelativePath="..\PersistentProperties.h"
+					>
+				</File>
+				<File
+					RelativePath="..\PersistentProperty.h"
+					>
+				</File>
+				<File
+					RelativePath="..\PersistentTransaction.h"
+					>
+				</File>
+				<File
+					RelativePath="..\RetrieveCriteria.h"
+					>
+				</File>
+				<File
+					RelativePath="..\UpdateCriteria.h"
 					>
 				</File>
 			</Filter>
@@ -239,18 +346,6 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath=".\app.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\app.rc"
-				>
-			</File>
-			<File
-				RelativePath=".\resource.h"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

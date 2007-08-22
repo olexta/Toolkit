@@ -24,8 +24,8 @@
 
 using namespace System::Threading;
 using namespace System::Data::Common;
-using namespace RPL;
-using namespace RPL::Storage;
+using namespace _RPL;
+using namespace _RPL::Storage;
 
 
 // Define lock macroses

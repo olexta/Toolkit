@@ -20,11 +20,11 @@ using namespace System::Diagnostics;
 
 //
 // Define namespace macros definition. All public classes
-// must be difined in this namespace.
+// must be defined in this namespace.
 //
-#define	_RPL_BEGIN		namespace RPL {
-#define	_RPL_END		}
-#define	_RPL			using namespace RPL;
+#define	_RPL			ABBYY::Toolkit::RPL
+#define	_RPL_BEGIN		namespace ABBYY{namespace Toolkit{namespace RPL{
+#define	_RPL_END		}}}
 
 
 //

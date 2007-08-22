@@ -46,7 +46,7 @@ private interface class IIPersistentProperty
 /// String, Stream and DBNull.
 /// </remarks>
 [Serializable]
-public ref class CPersistentProperty sealed : /*MarshalByRefObject,*/
+public ref class CPersistentProperty sealed :/* MarshalByRefObject,*/
 											  IIPersistentProperty
 {
 private:

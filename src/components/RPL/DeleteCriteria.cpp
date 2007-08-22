@@ -15,7 +15,7 @@
 #include "PersistentObject.h"
 #include "DeleteCriteria.h"
 
-using namespace RPL;
+using namespace _RPL;
 
 
 //----------------------------------------------------------------------------

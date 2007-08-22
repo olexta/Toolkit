@@ -1,6 +1,6 @@
 ﻿/****************************************************************************/
 /*																			*/
-/*	Project:	RPL Server													*/
+/*	Project:	Robust Persistence Layer									*/
 /*																			*/
 /*	Module:		CrossDomainMarshaller.cpp									*/
 /*																			*/
@@ -114,8 +114,8 @@ void CrossDomainMarshaller::init( String ^clientID, ServiceSlot ^slot )
 		// create sponsor object
 		slot->Sponsor = gcnew CServiceSponsor(clientID);
 		// register service object with the server's lease manager.
-		ILease ^lease = dynamic_cast<ILease^> (RemotingServices::GetLifetimeService(
-							dynamic_cast<MarshalByRefObject^> (service) ));
+		ILease ^lease = dynamic_cast<ILease^>( RemotingServices::GetLifetimeService(
+							dynamic_cast<MarshalByRefObject^>( service ) ) );
 		lease->Register( slot->Sponsor );
 	}
 }
