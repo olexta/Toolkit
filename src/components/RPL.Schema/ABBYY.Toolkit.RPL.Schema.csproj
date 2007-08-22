@@ -7,8 +7,8 @@
     <ProjectGuid>{688FF097-2EDF-426C-A190-6E410F30EF58}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RPL.Schema</RootNamespace>
-    <AssemblyName>RPL.Schema</AssemblyName>
+    <RootNamespace>ABBYY.Toolkit.RPL.Schema</RootNamespace>
+    <AssemblyName>ABBYY.Toolkit.RPL.Schema</AssemblyName>
     <StartupObject>
     </StartupObject>
     <SignAssembly>false</SignAssembly>
@@ -35,7 +35,7 @@
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <DocumentationFile>..\..\..\bin\RPL.Schema.XML</DocumentationFile>
+    <DocumentationFile>..\..\..\bin\ABBYY.Toolkit.RPL.Schema.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <NoStdLib>false</NoStdLib>
@@ -56,14 +56,14 @@
   <ItemGroup>
     <Compile Include=".\Properties\AssemblyInfo.cs" />
     <Compile Include=".\Sources\IClassInfo.cs" />
-    <Compile Include=".\Sources\CSProperty.cs" />
-    <Compile Include=".\Sources\CSProperties.cs" />
     <Compile Include=".\Sources\MetaData.cs" />
-    <Compile Include=".\Sources\CSClass.cs" />
-    <Compile Include=".\Sources\CSMethod.cs" />
-    <Compile Include=".\Sources\CSMethods.cs" />
-    <Compile Include=".\Sources\CSState.cs" />
     <Compile Include=".\_main.cs" />
+    <Compile Include="Sources\SClass.cs" />
+    <Compile Include="Sources\SMethod.cs" />
+    <Compile Include="Sources\SMethods.cs" />
+    <Compile Include="Sources\SProperties.cs" />
+    <Compile Include="Sources\SProperty.cs" />
+    <Compile Include="Sources\SState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".\Resources\SchemaLayer.cd" />

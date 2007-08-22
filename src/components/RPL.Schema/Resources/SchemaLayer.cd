@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
   <Font Name="Tahoma" Size="8.25" />
-  <Class Name="BLEngine.SchemaLayer.CSProperty" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="ABBYY.Toolkit.BLEngine.SchemaLayer.CSProperty" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="8.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>CSProperty.cs</FileName>
@@ -9,7 +9,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="BLEngine.SchemaLayer.CSProperties" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="ABBYY.Toolkit.BLEngine.SchemaLayer.CSProperties" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="6" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>CSProperties.cs</FileName>
@@ -17,7 +17,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="BLEngine.SchemaLayer.CSchema" BaseTypeListCollapsed="true">
+  <Class Name="ABBYY.Toolkit.BLEngine.SchemaLayer.CSchema" BaseTypeListCollapsed="true">
     <Position X="0.5" Y="0.75" Width="1.75" />
     <TypeIdentifier>
       <FileName>CSchema.cs</FileName>
@@ -25,7 +25,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="BLEngine.SchemaLayer.CSClass" BaseTypeListCollapsed="true">
+  <Class Name="ABBYY.Toolkit.BLEngine.SchemaLayer.CSClass" BaseTypeListCollapsed="true">
     <Position X="2.5" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>CSClass.cs</FileName>
@@ -33,7 +33,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="BLEngine.SchemaLayer.CSMethod" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="ABBYY.Toolkit.BLEngine.SchemaLayer.CSMethod" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="8.25" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>CSMethod.cs</FileName>
@@ -41,7 +41,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="BLEngine.SchemaLayer.CSMethods" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="ABBYY.Toolkit.BLEngine.SchemaLayer.CSMethods" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="6" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>CSMethods.cs</FileName>
@@ -49,7 +49,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="BLEngine.SchemaLayer.CSState" BaseTypeListCollapsed="true">
+  <Class Name="ABBYY.Toolkit.BLEngine.SchemaLayer.CSState" BaseTypeListCollapsed="true">
     <Position X="4.25" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>CSState.cs</FileName>
@@ -59,7 +59,7 @@
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <NestedTypes>
-      <Class Name="BLEngine.SchemaLayer.CSState.CSStateName" Collapsed="true">
+      <Class Name="ABBYY.Toolkit.BLEngine.SchemaLayer.CSState.CSStateName" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>CSState.cs</NewMemberFileName>
         </TypeIdentifier>
@@ -73,7 +73,7 @@
     <TypeIdentifier />
     <Lollipop Position="0.2" />
   </Class>
-  <Interface Name="BLEngine.SchemaLayer.IClassInfo" Collapsed="true">
+  <Interface Name="ABBYY.Toolkit.BLEngine.SchemaLayer.IClassInfo" Collapsed="true">
     <Position X="2.5" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <FileName>IClassInfo.cs</FileName>

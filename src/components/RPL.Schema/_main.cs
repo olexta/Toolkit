@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Runtime.Serialization;
-using BLEngine.SchemaLayer;
+using ABBYY.Toolkit.BLEngine.SchemaLayer;
 using System.Diagnostics;
-using RPL.Schema;
+using ABBYY.Toolkit.RPL.Schema;
 
 
-namespace BLEngine.SchemaLayer
+namespace ABBYY.Toolkit.BLEngine.SchemaLayer
 {
 	class app
 	{
@@ -28,9 +28,9 @@ namespace BLEngine.SchemaLayer
 			SState state;
 			SProperty prop;
 
-			state = new SState("|*|*|*|");
+			state = new SState( "|*|*|*|" );
 			int i = 0;
-			foreach (String item in methods){
+			foreach( String item in methods ) {
 				prop = new SProperty();
 				prop.IsRequired = true;
 				prop.Name = item;
@@ -92,7 +92,7 @@ namespace BLEngine.SchemaLayer
 			//                                    FileShare.Read );
 			//schema.InitSchema( stream );
 
-			
+
 			//#region Deserialize
 			//formatter = new System.Runtime.Serialization.Formatters.Soap.SoapFormatter();
 			////formatter.SurrogateSelector = selector;
