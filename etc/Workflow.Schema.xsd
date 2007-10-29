@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://abbyy.ua/Workflow.Schema"
+	xmlns:target="http://abbyy.ua/Workflow.Schema"
+	elementFormDefault="qualified">
+
+	<xsd:element name="schema" type="target:Schema" />
+	
+	<xsd:complexType name="Schema">
+		<xsd:sequence>
+			<xsd:element name="class" type="target:Class" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+	</xsd:complexType>
+	
+	<xsd:complexType name="Class">
+		<xsd:sequence>
+			<xsd:element name="caption" type="target:LocalizedString" minOccurs="1" maxOccurs="unbounded" />
+			<xsd:element name="properties" type="target:Properties" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="methods" type="target:Methods" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="states" type="target:States" minOccurs="0" maxOccurs="1" />
+		</xsd:sequence>
+		<xsd:attribute name="type" type="xsd:string" use="required" />
+	</xsd:complexType>
+	
+	<xsd:complexType name="Properties">
+		<xsd:sequence>
+			<xsd:element name="property" type="target:Property" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="Property">
+		<xsd:sequence>
+			<xsd:element name="caption" type="target:LocalizedString" minOccurs="1" maxOccurs="unbounded" />
+			<xsd:element name="description" type="target:LocalizedString" minOccurs="1" maxOccurs="unbounded" />
+			<xsd:element name="defaultValue" type="xsd:string" />
+			<xsd:element name="displayOrder" type="xsd:int" />
+			<xsd:element name="isReadOnly" type="xsd:boolean" />
+			<xsd:element name="isRequired" type="xsd:boolean" />
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+	</xsd:complexType>
+	
+	<xsd:complexType name="Methods">
+		<xsd:sequence>
+			<xsd:element name="method" type="target:Method" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="Method">
+		<xsd:sequence>
+			<xsd:element name="caption" type="target:LocalizedString" minOccurs="1" maxOccurs="unbounded" />
+			<xsd:element name="description" type="target:LocalizedString" minOccurs="1" maxOccurs="unbounded" />
+			<xsd:element name="isAvailable" type="xsd:boolean" />
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+	</xsd:complexType>
+	
+	<xsd:complexType name="States">
+		<xsd:sequence>
+			<xsd:element name="state" type="target:State" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="State">
+		<xsd:sequence>
+			<xsd:element name="name" type="target:LocalizedString" minOccurs="1" maxOccurs="unbounded" />
+			<xsd:element name="properties" type="target:OverridenProperties" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="methods" type="target:OverridenMethods" minOccurs="0" maxOccurs="1" />
+		</xsd:sequence>
+		<xsd:attribute name="mask" type="xsd:string" use="required" />
+	</xsd:complexType>
+	
+	<xsd:complexType name="OverridenProperties">
+		<xsd:sequence>
+			<xsd:element name="property" type="target:OverridenProperty" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="OverridenProperty">
+		<xsd:sequence>
+			<xsd:element name="caption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="description" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="defaultValue" type="xsd:string" minOccurs="0" />
+			<xsd:element name="displayOrder" type="xsd:int" minOccurs="0" />
+			<xsd:element name="isReadOnly" type="xsd:boolean" minOccurs="0" />
+			<xsd:element name="isRequired" type="xsd:boolean" minOccurs="0" />
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+	</xsd:complexType>
+	
+	<xsd:complexType name="OverridenMethods">
+		<xsd:sequence>
+			<xsd:element name="method" type="target:OverridenMethod" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="OverridenMethod">
+		<xsd:sequence>
+			<xsd:element name="caption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="description" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="isAvailable" type="xsd:boolean" minOccurs="0" />
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+	</xsd:complexType>
+	
+	<!-- Тип расширяющий xsd:string атрибутом uiculture-->
+	<xsd:complexType name="LocalizedString">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="uiculture" type="xsd:string" use="optional"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	
+</xsd:schema>
