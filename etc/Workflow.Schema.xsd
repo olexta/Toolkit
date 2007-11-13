@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://abbyy.ua/Workflow.Schema"
-	xmlns:target="http://abbyy.ua/Workflow.Schema"
+	targetNamespace="http://abbyy.ua/Toolkit/Workflow.Schema"
+	xmlns:target="http://abbyy.ua/Toolkit/Workflow.Schema"
 	elementFormDefault="qualified">
 
 	<xsd:element name="schema" type="target:Schema" />
@@ -16,7 +16,8 @@
 	
 	<xsd:complexType name="Class">
 		<xsd:sequence>
-			<xsd:element name="caption" type="target:LocalizedString" minOccurs="1" maxOccurs="unbounded" />
+			<xsd:element name="caption" type="xsd:string" />
+			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="properties" type="target:Properties" minOccurs="0" maxOccurs="1" />
 			<xsd:element name="methods" type="target:Methods" minOccurs="0" maxOccurs="1" />
 			<xsd:element name="states" type="target:States" minOccurs="0" maxOccurs="1" />
@@ -32,8 +33,11 @@
 	
 	<xsd:complexType name="Property">
 		<xsd:sequence>
-			<xsd:element name="caption" type="target:LocalizedString" minOccurs="1" maxOccurs="unbounded" />
-			<xsd:element name="description" type="target:LocalizedString" minOccurs="1" maxOccurs="unbounded" />
+			<xsd:element name="caption" type="xsd:string" />
+			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="description" type="xsd:string" />
+			<xsd:element name="localizedDescription" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="type" type="target:PropertyType" />
 			<xsd:element name="defaultValue" type="xsd:string" />
 			<xsd:element name="displayOrder" type="xsd:int" />
 			<xsd:element name="isReadOnly" type="xsd:boolean" />
@@ -50,8 +54,10 @@
 	
 	<xsd:complexType name="Method">
 		<xsd:sequence>
-			<xsd:element name="caption" type="target:LocalizedString" minOccurs="1" maxOccurs="unbounded" />
-			<xsd:element name="description" type="target:LocalizedString" minOccurs="1" maxOccurs="unbounded" />
+			<xsd:element name="caption" type="xsd:string" />
+			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="description" type="xsd:string" />
+			<xsd:element name="localizedDescription" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="isAvailable" type="xsd:boolean" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
@@ -65,7 +71,8 @@
 	
 	<xsd:complexType name="State">
 		<xsd:sequence>
-			<xsd:element name="name" type="target:LocalizedString" minOccurs="1" maxOccurs="unbounded" />
+			<xsd:element name="name" type="xsd:string" />
+			<xsd:element name="localizedName" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="properties" type="target:OverridenProperties" minOccurs="0" maxOccurs="1" />
 			<xsd:element name="methods" type="target:OverridenMethods" minOccurs="0" maxOccurs="1" />
 		</xsd:sequence>
@@ -80,8 +87,10 @@
 	
 	<xsd:complexType name="OverridenProperty">
 		<xsd:sequence>
-			<xsd:element name="caption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="description" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="caption" type="xsd:string" minOccurs="0" />
+			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="description" type="xsd:string" minOccurs="0" />
+			<xsd:element name="localizedDescription" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="defaultValue" type="xsd:string" minOccurs="0" />
 			<xsd:element name="displayOrder" type="xsd:int" minOccurs="0" />
 			<xsd:element name="isReadOnly" type="xsd:boolean" minOccurs="0" />
@@ -98,18 +107,61 @@
 	
 	<xsd:complexType name="OverridenMethod">
 		<xsd:sequence>
-			<xsd:element name="caption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="description" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="caption" type="xsd:string" minOccurs="0" />
+			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="description" type="xsd:string" minOccurs="0" />
+			<xsd:element name="localizedDescription" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="isAvailable" type="xsd:boolean" minOccurs="0" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
+	</xsd:complexType>	
+
+	<!-- Enumeration of acceptable property types -->
+	<xsd:simpleType name="PropertyType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Byte" />
+			<xsd:enumeration value="SByte" />
+			<xsd:enumeration value="Int16" />
+			<xsd:enumeration value="Int32" />
+			<xsd:enumeration value="Int64" />
+			<xsd:enumeration value="UInt16" />
+			<xsd:enumeration value="UInt32" />
+			<xsd:enumeration value="UInt64" />
+			<xsd:enumeration value="Decimal" />
+			<xsd:enumeration value="String" />
+			<xsd:enumeration value="Char" />
+			<xsd:enumeration value="Boolean" />
+			<xsd:enumeration value="Single" />
+			<xsd:enumeration value="Double" />
+			<xsd:enumeration value="DateTime" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<!-- Enumeration of acceptable locale identifiers -->
+	<xsd:simpleType name="LocaleType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="en-US" />
+			<xsd:enumeration value="ru-RU" />
+			<xsd:enumeration value="uk-UA" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<!-- Extending xsd:string type with type attribute -->
+	<!--
+	<xsd:complexType name="DefaultValue">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="type" type="target:PropertyType" use="required" />
+			</xsd:extension>
+		</xsd:simpleContent>
 	</xsd:complexType>
+	-->
 	
-	<!-- Тип расширяющий xsd:string атрибутом uiculture-->
+	<!-- Extending xsd:string type with uiculture attribute -->
 	<xsd:complexType name="LocalizedString">
 		<xsd:simpleContent>
 			<xsd:extension base="xsd:string">
-				<xsd:attribute name="uiculture" type="xsd:string" use="optional"/>
+				<xsd:attribute name="uiculture" type="target:LocaleType" use="required" />
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
