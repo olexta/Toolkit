@@ -18,7 +18,7 @@ using namespace _COLLECTIONS;
 
 
 //----------------------------------------------------------------------------
-//						Map<TKey, TValue>::Enumerator
+//			Toolkit::Collections::Map<TKey, TValue>::Enumerator
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -65,7 +65,7 @@ Object^ Map<TKey, TValue>::Enumerator::Current::get( void )
 
 
 //----------------------------------------------------------------------------
-//							PRIVATE METHODS
+//					Toolkit::Collections::Map<TKey, TValue>
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -146,7 +146,7 @@ void Map<TKey, TValue>::pairs_copy_to( array<KeyValuePair<TKey, TValue>> ^dest,
 	// check for array index is equal to or greater than the length of array
 	// or the number of elements in the source ICollection is greater than
 	// the available space from array index to the end of the destination array.
-	if( (dest->Length - index) < RedBlackTree::Count ) {
+	if( (dest->Length - index) < Size() ) {
 		// throw exception
 		throw gcnew ArgumentException(
 			"Destination array was not long enough. Check destIndex and" + 
@@ -205,10 +205,6 @@ IEnumerator<KeyValuePair<TKey, TValue>>^ Map<TKey, TValue>::pairs_get_enumerator
 	return gcnew Enumerator(this);
 }
 
-
-//----------------------------------------------------------------------------
-//							PROTECTED METHODS
-//----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 /// <summary>
@@ -338,10 +334,6 @@ void Map<TKey, TValue>::OnSetComplete( TKey key, TValue value )
 }
 
 
-//----------------------------------------------------------------------------
-//							CONSTRUCTORS
-//----------------------------------------------------------------------------
-
 //-------------------------------------------------------------------
 /// <summary>
 /// Default class constructor.
@@ -411,9 +403,17 @@ Map<TKey, TValue>::Map( const Map<TKey, TValue> %map )
 }
 
 
-//----------------------------------------------------------------------------
-//								PROPERTIES
-//----------------------------------------------------------------------------
+//-------------------------------------------------------------------
+/// <summary>
+/// Gets an object that can be used to synchronize access to the Map.
+/// </summary>
+//-------------------------------------------------------------------
+generic<typename TKey, typename TValue>
+Object^ Map<TKey, TValue>::SyncRoot::get( void  )
+{
+	return _lock;
+}
+
 
 //-------------------------------------------------------------------
 /// <summary>
@@ -468,13 +468,13 @@ void Map<TKey, TValue>::default::set( TKey key, TValue value )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Gets an object that can be used to synchronize access to the Map.
+/// Gets the number of elements contained in the Map.
 /// </summary>
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
-Object^ Map<TKey, TValue>::SyncRoot::get( void  )
+int Map<TKey, TValue>::Count::get( void )
 {
-	return _lock;
+	return Size();
 }
 
 
@@ -531,10 +531,6 @@ ICollection<TValue>^ Map<TKey, TValue>::Values::get( void )
 	return values->AsReadOnly();
 }
 
-
-//----------------------------------------------------------------------------
-//								METHODS
-//----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 /// <summary>

@@ -183,7 +183,6 @@
 	<References>
 		<AssemblyReference
 			RelativePath="System.dll"
-			AssemblyName="System, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
 	</References>
 	<Files>

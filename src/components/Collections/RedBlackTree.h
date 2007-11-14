@@ -80,7 +80,7 @@ private protected:
 	ref class RedBlackVisitor : Visitor<Association<TKey, TValue>^>
 	{
 	private:
-		RedBlackTree^ const	_rbt;
+		RedBlackTree^	const _rbt;
 		
 	public:
 		RedBlackVisitor( RedBlackTree ^rbt );
@@ -116,7 +116,7 @@ private:
 	RedBlackNode^ find_node( TKey key );
 
 protected:
-	ReaderWriterLock^ const	_lock;
+	ReaderWriterLock^	const _lock;
 
 	RedBlackTree( void );
 
@@ -125,10 +125,6 @@ protected:
 	bool Delete( TKey key );
 	void DeleteAll( void );
 	bool Undo( void );
-
-public:
-	property int Count {
-		virtual int get( void ) sealed;
-	}
+	int Size( void );
 };
 _BINARY_TREE_END

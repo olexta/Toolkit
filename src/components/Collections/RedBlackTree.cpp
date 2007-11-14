@@ -18,7 +18,7 @@ using namespace _BINARY_TREE;
 
 
 //----------------------------------------------------------------------------
-//					RedBlackTree<TKey, TValue>::RedBlackNode
+//		Toolkit::Collections::RedBlackTree<TKey, TValue>::RedBlackNode
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -130,7 +130,7 @@ RedBlackNode::Color::set( COLOR value  )
 
 
 //----------------------------------------------------------------------------
-//				RedBlackTree<TKey, TValue>::RedBlackVisitor
+//		Toolkit::Collections::RedBlackTree<TKey, TValue>::RedBlackVisitor
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -168,7 +168,7 @@ EXIT_WRITE(_lock)}
 
 
 //----------------------------------------------------------------------------
-//							PRIVATE METHODS
+//				Toolkit::Collections::RedBlackTree<TKey, TValue>
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -527,10 +527,19 @@ RedBlackNode^ RedBlackTree<TKey, TValue>::find_node( TKey key )
 }
 
 
+//-------------------------------------------------------------------
+/// <summary>
+/// Default class constructor.
+/// </summary><remarks>
+/// Create a synchronization objects and initialize class members.
+/// </remarks>
+//-------------------------------------------------------------------
+generic<typename TKey, typename TValue>
+RedBlackTree<TKey, TValue>::RedBlackTree( void ):						   \
+	_lock(gcnew ReaderWriterLock()), m_count(0), m_root(RedBlackNode::NIL)
+{
+}
 
-//----------------------------------------------------------------------------
-//							PROTECTED METHODS
-//----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 /// <summary>
@@ -734,35 +743,13 @@ bool RedBlackTree<TKey, TValue>::Undo( void )
 EXIT_WRITE(_lock)}
 	
 
-//----------------------------------------------------------------------------
-//							CONSTRUCTORS
-//----------------------------------------------------------------------------
-
 //-------------------------------------------------------------------
 /// <summary>
-/// Default class constructor.
-/// </summary><remarks>
-/// Create a synchronization objects and initialize class members.
-/// </remarks>
-//-------------------------------------------------------------------
-generic<typename TKey, typename TValue>
-RedBlackTree<TKey, TValue>::RedBlackTree( void ):						   \
-	_lock(gcnew ReaderWriterLock()), m_count(0), m_root(RedBlackNode::NIL)
-{
-}
-
-
-//----------------------------------------------------------------------------
-//								PROPERTIES
-//----------------------------------------------------------------------------
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Gets the number of items contained in the instance of the tree.
+/// Returns the number of items contained in the instance of the tree.
 /// </summary>
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
-int RedBlackTree<TKey, TValue>::Count::get( void )
+int RedBlackTree<TKey, TValue>::Size( void )
 {ENTER_READ(_lock)
 
 	return m_count;

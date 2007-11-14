@@ -82,15 +82,17 @@ public:
 
 	bool operator==( IEnumerable<TItem> ^e );
 	bool operator!=( IEnumerable<TItem> ^e );
-	KeyedMap<TKey, TItem>% operator=( const KeyedMap<TKey, TItem> %map );
 	KeyedMap% operator+=( TItem item );
 	KeyedMap% operator-=( TItem item );
 
+	property Object^ SyncRoot {
+		Object^ get( void );
+	}
 	property TItem default[TKey] {
 		virtual TItem get( TKey key );
 	}
-	property Object^ SyncRoot {
-		Object^ get( void );
+	property int Count {
+		virtual int get( void );
 	}
 
 	virtual void Add( TItem item );

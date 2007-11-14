@@ -45,19 +45,18 @@ private:
 	typedef enum class STATE {Start, Left, Right, Parent, Stop};
 	
 private:
-	Node<T>^ const	_root;		// root node
-	Node<T>^ const	_leaf;		// leaf node
-	TRAVERSE const	_traverse;	// traverse mode
-	
-	Node<T>			^m_node;	// current node
-	STATE			m_state;	// current automation state
+	Node<T>^	const _root;		// root node
+	Node<T>^	const _leaf;		// leaf node
+	TRAVERSE	const _traverse;	// traverse mode
+	Node<T>		^m_node;			// current node
+	STATE		m_state;			// current automation state
 
 	void check_state( void );
 	bool stop_traverse( STATE state );
 
 protected:
-	ReaderWriterLock^ const		_lock;		// lock object
-	bool						m_disposed;	// flag for disposed state
+	ReaderWriterLock^	const _lock;	// lock object
+	bool				m_disposed;		// flag for disposed state
 
 public:
 	Visitor( Node<T> ^root, TRAVERSE traverse );

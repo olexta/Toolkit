@@ -18,7 +18,7 @@ using namespace _COLLECTIONS;
 
 
 //----------------------------------------------------------------------------
-//						KeyedMap<TKey, TItem>::Enumerator
+//			Toolkit::Collections::KeyedMap<TKey, TItem>::Enumerator
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -65,7 +65,7 @@ Object^ KeyedMap<TKey, TItem>::Enumerator::Current::get( void )
 
 
 //----------------------------------------------------------------------------
-//							PRIVATE METHODS
+//				Toolkit::Collections::KeyedMap<TKey, TItem>
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -104,10 +104,6 @@ IEnumerator<TItem>^ KeyedMap<TKey, TItem>::items_get_enumerator( void )
 	return gcnew Enumerator(this);
 }
 
-
-//----------------------------------------------------------------------------
-//							PROTECTED METHODS
-//----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 /// <summary>
@@ -205,10 +201,6 @@ void KeyedMap<TKey, TItem>::OnRemoveComplete( TItem item )
 }
 
 
-//----------------------------------------------------------------------------
-//							CONSTRUCTORS
-//----------------------------------------------------------------------------
-
 //-------------------------------------------------------------------
 /// <summary>
 /// Default class constructor.
@@ -280,10 +272,6 @@ KeyedMap<TKey, TItem>::KeyedMap( const KeyedMap<TKey, TItem> %map )
 }
 
 
-//----------------------------------------------------------------------------
-//								OPERATORS
-//----------------------------------------------------------------------------
-
 //-------------------------------------------------------------------
 /// <summary>
 /// Operator ==. Check for another instance of KeyedMap to be equal
@@ -303,7 +291,7 @@ bool KeyedMap<TKey, TItem>::operator==( IEnumerable<TItem> ^e )
 	// this is shallow check for no equal (by items count)
 	int count = 0;
 	for each( TItem item in e ) count++;
-	if( RedBlackTree::Count != count ) return false;
+	if( Size() != count ) return false;
 
 	// and this is deep check by content
 	for each( TItem item in e ) {
@@ -328,30 +316,6 @@ generic<typename TKey, typename TItem>
 bool KeyedMap<TKey, TItem>::operator!=( IEnumerable<TItem> ^e )
 {
 	return !(*this == e);
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Operator =. Dublicate cpecified directory content to this object.
-/// </summary><remarks>
-/// Current collection will be cleared. This operator provide shallow
-/// copying only.
-/// </remarks>
-//-------------------------------------------------------------------
-generic<typename TKey, typename TItem>
-KeyedMap<TKey, TItem>% KeyedMap<TKey, TItem>::operator=(
-							const KeyedMap<TKey, TItem> %map )
-{
-	// clear target collection
-	Clear();
-
-	// look through entire collection
-	for each( TItem item in const_cast<KeyedMap<TKey, TItem>^>(%map) ) {
-		// add item to collection using standard method
-		Add( item );
-	}
-	return *this;
 }
 
 
@@ -398,9 +362,18 @@ KeyedMap<TKey, TItem>% KeyedMap<TKey, TItem>::operator-=( TItem item )
 }
 
 
-//----------------------------------------------------------------------------
-//								PROPERTIES
-//----------------------------------------------------------------------------
+//-------------------------------------------------------------------
+/// <summary>
+/// Gets an object that can be used to synchronize access to the
+/// KeyedMap.
+/// </summary>
+//-------------------------------------------------------------------
+generic<typename TKey, typename TItem>
+Object^ KeyedMap<TKey, TItem>::SyncRoot::get( void  )
+{
+	return _lock;
+}
+
 
 //-------------------------------------------------------------------
 /// <summary>
@@ -429,20 +402,15 @@ TItem KeyedMap<TKey, TItem>::default::get( TKey key )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Gets an object that can be used to synchronize access to the
-/// KeyedMap.
+/// Gets the number of elements contained in the KeyedMap.
 /// </summary>
 //-------------------------------------------------------------------
 generic<typename TKey, typename TItem>
-Object^ KeyedMap<TKey, TItem>::SyncRoot::get( void  )
+int KeyedMap<TKey, TItem>::Count::get( void )
 {
-	return _lock;
+	return Size();
 }
 
-
-//----------------------------------------------------------------------------
-//								METHODS
-//----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 /// <summary>
@@ -576,7 +544,7 @@ void KeyedMap<TKey, TItem>::CopyTo( array<TItem> ^dest, int index )
 	// check for array index is equal to or greater than the length of array
 	// or the number of elements in the source ICollection is greater than
 	// the available space from array index to the end of the destination array.
-	if( (dest->Length - index) < RedBlackTree::Count ) {
+	if( (dest->Length - index) < Size() ) {
 		// throw exception
 		throw gcnew ArgumentException(
 			"Destination array was not long enough. Check destIndex and " + 

@@ -29,7 +29,7 @@ generic<typename TKey, typename TValue>
 private ref class Association
 {
 private:
-	TKey const	_key;
+	TKey		const _key;
 	TValue		m_value;
 
 public:

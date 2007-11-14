@@ -87,12 +87,15 @@ public:
 	explicit Map( IEnumerable<KeyValuePair<TKey, TValue>> ^e );
 	Map( const Map<TKey, TValue> %map );
 
+	property Object^ SyncRoot {
+		Object^ get( void );
+	}
 	property TValue default[TKey] {
 		virtual TValue get( TKey key );
 		virtual void set( TKey key, TValue value );
 	}
-	property Object^ SyncRoot {
-		Object^ get( void );
+	property int Count {
+		virtual int get( void );
 	}
 	property ICollection<TKey>^ Keys {
 		virtual ICollection<TKey>^ get( void );
