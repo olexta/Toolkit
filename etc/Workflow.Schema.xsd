@@ -3,17 +3,18 @@
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://abbyy.ua/Toolkit/Workflow.Schema"
 	xmlns:target="http://abbyy.ua/Toolkit/Workflow.Schema"
-	elementFormDefault="qualified">
+	elementFormDefault="qualified"
+	attributeFormDefault="qualified">
 
 	<xsd:element name="schema" type="target:Schema" />
-	
+
 	<xsd:complexType name="Schema">
 		<xsd:sequence>
 			<xsd:element name="class" type="target:Class" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="Class">
 		<xsd:sequence>
 			<xsd:element name="caption" type="xsd:string" />
@@ -24,13 +25,13 @@
 		</xsd:sequence>
 		<xsd:attribute name="type" type="xsd:string" use="required" />
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="Properties">
 		<xsd:sequence>
 			<xsd:element name="property" type="target:Property" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="Property">
 		<xsd:sequence>
 			<xsd:element name="caption" type="xsd:string" />
@@ -45,13 +46,13 @@
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="Methods">
 		<xsd:sequence>
 			<xsd:element name="method" type="target:Method" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="Method">
 		<xsd:sequence>
 			<xsd:element name="caption" type="xsd:string" />
@@ -62,13 +63,13 @@
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="States">
 		<xsd:sequence>
 			<xsd:element name="state" type="target:State" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="State">
 		<xsd:sequence>
 			<xsd:element name="name" type="xsd:string" />
@@ -78,13 +79,13 @@
 		</xsd:sequence>
 		<xsd:attribute name="mask" type="xsd:string" use="required" />
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="OverridenProperties">
 		<xsd:sequence>
 			<xsd:element name="property" type="target:OverridenProperty" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="OverridenProperty">
 		<xsd:sequence>
 			<xsd:element name="caption" type="xsd:string" minOccurs="0" />
@@ -98,13 +99,13 @@
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="OverridenMethods">
 		<xsd:sequence>
 			<xsd:element name="method" type="target:OverridenMethod" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="OverridenMethod">
 		<xsd:sequence>
 			<xsd:element name="caption" type="xsd:string" minOccurs="0" />
@@ -156,7 +157,7 @@
 		</xsd:simpleContent>
 	</xsd:complexType>
 	-->
-	
+
 	<!-- Extending xsd:string type with uiculture attribute -->
 	<xsd:complexType name="LocalizedString">
 		<xsd:simpleContent>
@@ -165,5 +166,5 @@
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
-	
+
 </xsd:schema>

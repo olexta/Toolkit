@@ -1,69 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema
-	xmlns="http://abbyy.ua/Toolkit/Workflow.Schema"
+<ws:schema
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://abbyy.ua/Toolkit/Workflow.Schema Workflow.Schema.xsd"
-	name="test schema instance">
-	
-	<class type="Workflow.Schema.Test.TestObject,Workflow.Schema.Test">
-		<caption>Document</caption>
-		<localizedCaption uiculture="uk-UA">Документ</localizedCaption>	
-		<properties>
-			<property name="locked">
-				<caption>Locked</caption>
-				<localizedCaption uiculture="uk-UA">Заблокований</localizedCaption>
-				<description>fsdfasdf</description>
-				<localizedDescription uiculture="uk-UA">авіавіваі</localizedDescription>
-				<type>Boolean</type>
-				<defaultValue>true</defaultValue>
-				<displayOrder>5</displayOrder>
-				<isReadOnly>false</isReadOnly>
-				<isRequired>true</isRequired>
-			</property>
-			<property name="author">
-				<caption>Author</caption>
-				<localizedCaption uiculture="uk-UA">Автор</localizedCaption>
-				<description>Document author</description>
-				<localizedDescription uiculture="uk-UA">Автор документу</localizedDescription>
-				<localizedDescription uiculture="ru-RU">Автор документа</localizedDescription>
-				<type>String</type>
-				<defaultValue></defaultValue>
-				<displayOrder>10</displayOrder>
-				<isReadOnly>false</isReadOnly>
-				<isRequired>true</isRequired>
-			</property>
-		</properties>
-		<methods>
-			<method name="delete">
-				<caption>Delete</caption>
-				<localizedCaption uiculture="uk-UA">Видалити</localizedCaption>
-				<localizedCaption uiculture="uk-UA">Удалить</localizedCaption>
-				<description>Delete document</description>
-				<localizedDescription uiculture="uk-UA">Видалити документ</localizedDescription>
-				<isAvailable>true</isAvailable>
-			</method>
-		</methods>
-		<states>
-			<state mask="|true|*|">
-				<name>Read only state</name>
-				<localizedName uiculture="uk-UA">Тільки для читання</localizedName>
-				<properties>
-					<property name="author">
-						<localizedCaption uiculture="ru-RU">Имя последнего кто имел дело с документом</localizedCaption>
-						<localizedCaption uiculture="uk-UA">Ім'я останньго хто користувався документом</localizedCaption>
-						<defaultValue>abrakadabra</defaultValue>
-						<isReadOnly>true</isReadOnly>
-					</property>
-				</properties>
-				<methods>
-					<method name="delete">
-						<caption>WTF?</caption>						
-						<description>no description</description>
-						<localizedDescription uiculture="ru-RU">Удалить</localizedDescription>						
-						<isAvailable>false</isAvailable>
-					</method>
-				</methods>
-			</state>
-		</states>
-	</class>
-</schema>
+	xmlns:ws="http://abbyy.ua/Toolkit/Workflow.Schema"
+	ws:name="Test schema instance">
+
+	<ws:class ws:type="Workflow.Schema.Test.TestObject,Workflow.Schema.Test">
+		<ws:caption>Document</ws:caption>
+		<ws:localizedCaption ws:uiculture="uk-UA">Документ</ws:localizedCaption>	
+		<ws:properties>
+			<ws:property ws:name="locked">
+				<ws:caption>Locked</ws:caption>
+				<ws:localizedCaption ws:uiculture="uk-UA">Заблокований</ws:localizedCaption>
+				<ws:description>fsdfasdf</ws:description>
+				<ws:localizedDescription ws:uiculture="uk-UA">авіавіваі</ws:localizedDescription>
+				<ws:type>Boolean</ws:type>
+				<ws:defaultValue>true</ws:defaultValue>
+				<ws:displayOrder>5</ws:displayOrder>
+				<ws:isReadOnly>false</ws:isReadOnly>
+				<ws:isRequired>true</ws:isRequired>
+			</ws:property>
+			<ws:property ws:name="author">
+				<ws:caption>Author</ws:caption>
+				<ws:localizedCaption ws:uiculture="uk-UA">Автор</ws:localizedCaption>
+				<ws:description>Document author</ws:description>
+				<ws:localizedDescription ws:uiculture="uk-UA">Автор документу</ws:localizedDescription>
+				<ws:localizedDescription ws:uiculture="ru-RU">Автор документа</ws:localizedDescription>
+				<ws:type>String</ws:type>
+				<ws:defaultValue></ws:defaultValue>
+				<ws:displayOrder>10</ws:displayOrder>
+				<ws:isReadOnly>false</ws:isReadOnly>
+				<ws:isRequired>true</ws:isRequired>
+			</ws:property>
+		</ws:properties>
+		<ws:methods>
+			<ws:method ws:name="delete">
+				<ws:caption>Delete</ws:caption>
+				<ws:localizedCaption ws:uiculture="uk-UA">Видалити</ws:localizedCaption>
+				<ws:localizedCaption ws:uiculture="uk-UA">Удалить</ws:localizedCaption>
+				<ws:description>Delete document</ws:description>
+				<ws:localizedDescription ws:uiculture="uk-UA">Видалити документ</ws:localizedDescription>
+				<ws:isAvailable>true</ws:isAvailable>
+			</ws:method>
+		</ws:methods>
+		<ws:states>
+			<ws:state ws:mask="|true|*|">
+				<ws:name>Read only state</ws:name>
+				<ws:localizedName ws:uiculture="uk-UA">Тільки для читання</ws:localizedName>
+				<ws:properties>
+					<ws:property ws:name="author">
+						<ws:localizedCaption ws:uiculture="ru-RU">Имя последнего кто имел дело с документом</ws:localizedCaption>
+						<ws:localizedCaption ws:uiculture="uk-UA">Ім'я останньго хто користувався документом</ws:localizedCaption>
+						<ws:defaultValue>abrakadabra</ws:defaultValue>
+						<ws:isReadOnly>true</ws:isReadOnly>
+					</ws:property>
+				</ws:properties>
+				<ws:methods>
+					<ws:method ws:name="delete">
+						<ws:caption>WTF?</ws:caption>
+						<ws:description>no description</ws:description>
+						<ws:localizedDescription ws:uiculture="ru-RU">Удалить</ws:localizedDescription>
+						<ws:isAvailable>false</ws:isAvailable>
+					</ws:method>
+				</ws:methods>
+			</ws:state>
+		</ws:states>
+	</ws:class>
+</ws:schema>
