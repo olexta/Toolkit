@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Sources\ClassNode.cs" />
+    <Compile Include="Sources\Exceptions.cs" />
     <Compile Include="Sources\IClassInfo.cs" />
     <Compile Include="Sources\MetaData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

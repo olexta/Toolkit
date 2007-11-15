@@ -11,21 +11,6 @@ namespace Workflow.Schema
 	public class MetaData
 	{
 		/// <summary>
-		/// Error msg.
-		/// </summary>
-		private static readonly string c_AlreadyInitedMsg = "Schema is already inited.";
-		
-		/// <summary>
-		/// Error msg.
-		/// </summary>
-		private static readonly string c_CantChangeMsg = "Can't change value because schema is already inited.";
-		
-		/// <summary>
-		/// Error msg.
-		/// </summary>
-		private static readonly string c_NoInfMsg = "There's no information for specified object.";
-		
-		/// <summary>
 		/// Path to schema instance (.xml file).
 		/// </summary>
 		private static string m_SchemaPath = "schema.xml";
@@ -86,7 +71,7 @@ namespace Workflow.Schema
 			get { return m_CurrentUICulture; }
 			set {
 				if( m_IsInited )
-					throw new ApplicationException( c_CantChangeMsg );
+					throw new CantChangeValueException();
 				m_CurrentUICulture = value;
 			}
 		}
@@ -99,7 +84,7 @@ namespace Workflow.Schema
 			get { return m_SchemaPath; }
 			set {
 				if( m_IsInited )
-					throw new ApplicationException( c_CantChangeMsg );
+					throw new CantChangeValueException();
 				m_SchemaPath = value;
 			}
 		}
@@ -112,7 +97,7 @@ namespace Workflow.Schema
 			get { return m_SchemaDescrPath; }
 			set {
 				if( m_IsInited )
-					throw new ApplicationException( c_CantChangeMsg );
+					throw new CantChangeValueException();
 				m_SchemaDescrPath = value;
 			}
 		}
@@ -132,7 +117,7 @@ namespace Workflow.Schema
 		public void InitSchema()
 		{
 			if( m_IsInited )
-				throw new InvalidOperationException( c_AlreadyInitedMsg );			
+				throw new SchemaIsAlreadyInitedException();
 
             // loading .xml
             m_SchemaXML = new XmlDocument();
@@ -150,7 +135,7 @@ namespace Workflow.Schema
                     String.Format( "Schema validation failed. {0}: {1}", e.Severity, e.Message ),
                     e.Exception ); } );				
 
-            m_Name = m_SchemaXML.DocumentElement.Attributes.GetNamedItem( "name" ).Value;
+            m_Name = m_SchemaXML.DocumentElement.Attributes.GetNamedItem( "ws:name" ).Value;
 
 			m_NsMgr = new XmlNamespaceManager( m_SchemaXML.NameTable );
 			m_NsMgr.AddNamespace( "ws", m_SchemaXML.DocumentElement.NamespaceURI );
@@ -174,7 +159,7 @@ namespace Workflow.Schema
 				if( m_Classes.Contains( instance.Type ) )
 					return new SClass( instance );
 				else
-					throw new ArgumentException( c_NoInfMsg );
+					throw new NoClassInformationException( instance );
 			}
 		}
 

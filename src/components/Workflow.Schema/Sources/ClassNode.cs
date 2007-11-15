@@ -46,7 +46,7 @@ namespace Workflow.Schema
 			m_Properties = new KeyedMap<string, SProperty>();
 			m_Methods = new KeyedMap<string, SMethod>();
 
-			m_Type = classNode.Attributes[ "type" ].Value;	
+			m_Type = classNode.Attributes[ "ws:type" ].Value;
 
 			// searching all properties
 			foreach( XmlNode propertyNode in classNode.SelectNodes(
@@ -57,7 +57,7 @@ namespace Workflow.Schema
 				SProperty property = new SProperty();
 				
 				// gets property name from attribute
-				property.Name = propertyNode.Attributes.GetNamedItem( "name" ).Value;
+				property.Name = propertyNode.Attributes.GetNamedItem( "ws:name" ).Value;
 
 				// finding all property values using XPath
 				property.Caption = Tools.GetLocalizedString( propertyNode, "caption" );
@@ -90,7 +90,7 @@ namespace Workflow.Schema
 				SMethod method = new SMethod();
 
 				// gets property name from attribute
-				method.Name = methodNode.Attributes.GetNamedItem( "name" ).Value;
+				method.Name = methodNode.Attributes.GetNamedItem( "ws:name" ).Value;
 
 				// finding all property values using XPath
 				method.Caption = Tools.GetLocalizedString( methodNode, "caption" );
@@ -107,7 +107,7 @@ namespace Workflow.Schema
 			foreach( XmlNode stateNode in classNode.SelectNodes(
 				"ws:states/ws:state", MetaData.Singleton.XMLNsMgr ) )
 				m_StatesMap.Add(
-					stateNode.Attributes.GetNamedItem( "mask" ).Value,
+					stateNode.Attributes.GetNamedItem( "ws:mask" ).Value,
 					stateNode );			
 		}
 

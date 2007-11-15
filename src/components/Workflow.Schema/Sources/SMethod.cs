@@ -53,7 +53,7 @@ namespace Workflow.Schema
 		/// <summary>
 		/// Internal class ctor.
 		/// </summary>
-		internal SMethod( )
+		internal SMethod()
 		{
 		}
 

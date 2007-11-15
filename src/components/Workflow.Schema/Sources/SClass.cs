@@ -83,15 +83,18 @@ namespace Workflow.Schema
 		}
 
 		/// <summary>
-		/// Gets information aoubt specified property.
+		/// Gets information about specified property.
 		/// </summary>
 		public SProperty GetProperty( string propName )
 		{
+			if( !m_Class.Properties.Contains( propName ) )
+				throw new NoMemberInformationException( propName );
+
 			SProperty prop = new SProperty( m_Class.Properties[ propName ] );
 
 			if( !String.IsNullOrEmpty( m_StateName ) ) {
 				XmlNode propertyNode = m_Class.StatesMap[ m_StateMask ].SelectSingleNode(
-					@"ws:properties/ws:property[@name='" + propName + "']", MetaData.Singleton.XMLNsMgr );
+					@"ws:properties/ws:property[@ws:name='" + propName + "']", MetaData.Singleton.XMLNsMgr );
 
 				if( propertyNode != null ) {
 					XmlNode node;	
@@ -140,11 +143,14 @@ namespace Workflow.Schema
 		/// </summary>
 		public SMethod GetMethod( string methName )
 		{
+			if( !m_Class.Methods.Contains( methName ) )
+				throw new NoMemberInformationException( methName );
+
 			SMethod method = new SMethod( m_Class.Methods[ methName ] );
 
 			if( !String.IsNullOrEmpty( m_StateName ) ) {
 				XmlNode methodNode = m_Class.StatesMap[ m_StateMask ].SelectSingleNode(
-					@"ws:methods/ws:method[@name='" + methName + "']", MetaData.Singleton.XMLNsMgr );
+					@"ws:methods/ws:method[@ws:name='" + methName + "']", MetaData.Singleton.XMLNsMgr );
 
 				if( methodNode != null ) {
 					XmlNode node;

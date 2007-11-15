@@ -20,7 +20,7 @@ namespace Workflow.Schema
 			XmlNode locNode;
 
 			if( (locNode = node.SelectSingleNode(
-				string.Format( "ws:{0}[@uiculture='{1}']", "localized" + suffix.ToUpper()[0] + suffix.Substring(1, suffix.Length - 1),
+				string.Format( "ws:{0}[@ws:uiculture='{1}']", "localized" + suffix.ToUpper()[0] + suffix.Substring(1, suffix.Length - 1),
 				MetaData.CurrentUICulture ), MetaData.Singleton.XMLNsMgr)) == null )
 				locNode = node.SelectSingleNode(
 					string.Format( "ws:{0}", suffix ),					
