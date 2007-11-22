@@ -9,6 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Workflow.Schema</RootNamespace>
     <AssemblyName>Workflow.Schema</AssemblyName>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,6 +48,9 @@
     <Compile Include="Sources\SProperty.cs" />
     <Compile Include="Sources\SMethod.cs" />
     <Compile Include="Sources\Tools.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Diagram\Workflow.Schema.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
