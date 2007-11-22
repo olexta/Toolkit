@@ -1,5 +1,5 @@
 ﻿//****************************************************************************
-//*	Project		:	Robust Persistence Layer
+//*	Project		:	Workflow.Schema
 //*
 //*	Module		:	SProperty.cs
 //*
@@ -12,8 +12,6 @@
 //*   2) IsReadOnly - Indicates that user can or can't change value of this property
 //*	  2) DefaultValue - Default value of property
 //*	  3) DisplayOrder - Order of property according to it's state
-//*
-//*	Class implements ISerializable, so it can serialize/deserialize itself
 //*
 //****************************************************************************
 using System;

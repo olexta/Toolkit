@@ -1,3 +1,14 @@
+//****************************************************************************
+//*	Project		:	Workflow.Schema
+//*
+//*	Module		:	MetaData.cs
+//*
+//*	Content		:	Main library class.
+//*	Author		:	Alexander Kurbatov, Nikita Marunyak
+//*	Copyright	:	Copyright © 2006, 2007 Alexander Kurbatov, Nikita Marunyak
+//*
+//****************************************************************************
+
 using System;
 using System.Collections.Generic;
 using System.Xml;
@@ -100,6 +111,16 @@ namespace Workflow.Schema
 					throw new CantChangeValueException();
 				m_SchemaDescrPath = value;
 			}
+		}
+
+		/// <summary>
+		/// Returns string than represents object type and assembly.
+		/// You can use this function to identify objects types in schema.
+		/// </summary>
+		public static string GetObjectType( object obj )
+		{
+			return obj.GetType().FullName.ToString() + "," +
+				System.Reflection.Assembly.GetAssembly( obj.GetType() ).GetName().Name;
 		}
 
 		/// <summary>

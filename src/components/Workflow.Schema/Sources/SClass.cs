@@ -1,3 +1,14 @@
+//****************************************************************************
+//*	Project		:	Workflow.Schema
+//*
+//*	Module		:	SClass.cs
+//*
+//*	Content		:	Public class witch give information about specific object.
+//*	Author		:	Nikita Marunyak
+//*	Copyright	:	Copyright © 2007 Nikita Marunyak
+//*
+//****************************************************************************
+
 using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;

@@ -1,3 +1,14 @@
+//****************************************************************************
+//*	Project		:	Workflow.Schema
+//*
+//*	Module		:	ClassNode.cs
+//*
+//*	Content		:	Internal class for caching purposes.
+//*	Author		:	Nikita Marunyak
+//*	Copyright	:	Copyright © 2007 Nikita Marunyak
+//*
+//****************************************************************************
+
 using System;
 using System.Collections.Generic;
 using System.Xml;
