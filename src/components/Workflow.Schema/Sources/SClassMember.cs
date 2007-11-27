@@ -17,17 +17,18 @@ namespace Workflow.Schema
 	/// Class member information abstract class.
 	/// Implement shared properties, such as: Name, Caption and Description.
 	/// </summary>
-	public abstract class SClassMember : Toolkit.Collections.IKeyedObject<string>
+	public class SClassMember : Toolkit.Collections.IKeyedObject<string>
 	{
 		private string m_Name;
 		private string m_Caption;
 		private string m_Description;
+		private int m_DisplayOrder;
 
 		/// <summary>
 		/// Gets, sets member's name.
 		/// <remarks>Setter is internal only.</remarks>		
 		/// </summary>
-		public virtual string Name
+		public string Name
 		{
 			get { return m_Name; }
 			internal set { m_Name = value; }
@@ -37,7 +38,7 @@ namespace Workflow.Schema
 		/// Gets, sets class member user acceptance name.
 		/// <remarks>Setter is internal only.</remarks>
 		/// </summary>
-		public virtual string Caption
+		public string Caption
 		{
 			get { return m_Caption; }
 			internal set { m_Caption = value; }
@@ -47,27 +48,54 @@ namespace Workflow.Schema
 		/// Gets, sets class member description msg.
 		/// <remarks>Setter is internal only.</remarks>
 		/// </summary>
-		public virtual string Description
+		public string Description
 		{
 			get { return m_Description; }
 			internal set { m_Description = value; }
 		}
 
 		/// <summary>
-		/// Internal ctor.
+		/// Gets, sets class display position.
+		/// <remarks>Setter is internal only.</remarks>
 		/// </summary>
-		internal SClassMember()
+		public int DisplayOrder
 		{
+			get { return m_DisplayOrder; }
+			internal set { m_DisplayOrder = value; }
 		}
 
 		/// <summary>
-		/// Internal copy ctor.
+		/// Overridden Object.ToString().
 		/// </summary>
-		internal SClassMember( SClassMember member )
+		public override string ToString()
+		{
+			return Name;
+		}
+
+		/// <summary>
+		/// Ctor.
+		/// </summary>
+		protected SClassMember(
+			string name,
+			string caption,
+			string description,
+			int displayOrder)
+		{
+			m_Name = name;
+			m_Caption = caption;
+			m_Description = description;
+			m_DisplayOrder = displayOrder;
+		}
+
+		/// <summary>
+		/// Copy ctor.
+		/// </summary>
+		protected SClassMember( SClassMember member )
 		{
 			Name = member.Name;
 			Caption = member.Caption;
 			Description = member.Description;
+			DisplayOrder = member.DisplayOrder;
 		}		
 		
 		/// <summary>

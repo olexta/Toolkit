@@ -44,13 +44,21 @@ namespace Workflow.Schema
 		/// <summary>
 		/// Internal ctor. 
 		/// </summary>
-		internal SClass( IClassInfo objectInstance )
+		internal SClass( IClassInfo objectInstance, ClassNode classNode )
 		{
 			m_object = objectInstance;
-			m_Class = MetaData.Singleton.Classes[ m_object.Type ];
+			m_Class = classNode;
 
 			defineStateMask();
 			defineStateName();
+		}
+
+		/// <summary>
+		/// Gets class caption.
+		/// </summary>
+		public string Caption
+		{
+			get { return m_Class.Caption; }
 		}
 
 		/// <summary>
@@ -64,7 +72,7 @@ namespace Workflow.Schema
 		/// <summary>
 		/// Gets properties names.
 		/// </summary>
-		public string[] Properties
+		public string[] PropertiesNames
 		{
 			get
 			{
@@ -80,7 +88,7 @@ namespace Workflow.Schema
 		/// <summary>
 		/// Gets methods names.
 		/// </summary>
-		public string[] Methods
+		public string[] MethodsNames
 		{
 			get
 			{
@@ -105,7 +113,7 @@ namespace Workflow.Schema
 
 			if( !String.IsNullOrEmpty( m_StateName ) ) {
 				XmlNode propertyNode = m_Class.StatesMap[ m_StateMask ].SelectSingleNode(
-					@"ws:properties/ws:property[@ws:name='" + propName + "']", MetaData.Singleton.XMLNsMgr );
+					@"ws:properties/ws:property[@ws:name='" + propName + "']", MetaData.Instance.XMLNsMgr );
 
 				if( propertyNode != null ) {
 					XmlNode node;	
@@ -122,25 +130,25 @@ namespace Workflow.Schema
 
 					// default value
 					node = propertyNode.SelectSingleNode( "ws:defaultValue",
-						MetaData.Singleton.XMLNsMgr );
+						MetaData.Instance.XMLNsMgr );
 					if( node != null )
 						prop.SetDefaultValue( node.InnerText );
 
 					// display order
 					node = propertyNode.SelectSingleNode( "ws:displayOrder",
-						MetaData.Singleton.XMLNsMgr );
+						MetaData.Instance.XMLNsMgr );
 					if( node != null )
 						prop.DisplayOrder = int.Parse( node.InnerText );
 
 					// required flag
 					node = propertyNode.SelectSingleNode( "ws:isRequired",
-						MetaData.Singleton.XMLNsMgr );
+						MetaData.Instance.XMLNsMgr );
 					if( node != null )
 						prop.IsRequired = bool.Parse( node.InnerText );
 
 					// read only flag
 					node = propertyNode.SelectSingleNode( "ws:isReadOnly",
-						MetaData.Singleton.XMLNsMgr );
+						MetaData.Instance.XMLNsMgr );
 					if( node != null )
 						prop.IsReadOnly = bool.Parse( node.InnerText );
 				}
@@ -161,7 +169,7 @@ namespace Workflow.Schema
 
 			if( !String.IsNullOrEmpty( m_StateName ) ) {
 				XmlNode methodNode = m_Class.StatesMap[ m_StateMask ].SelectSingleNode(
-					@"ws:methods/ws:method[@ws:name='" + methName + "']", MetaData.Singleton.XMLNsMgr );
+					@"ws:methods/ws:method[@ws:name='" + methName + "']", MetaData.Instance.XMLNsMgr );
 
 				if( methodNode != null ) {
 					XmlNode node;
@@ -176,9 +184,15 @@ namespace Workflow.Schema
 					if( descr != null )
 						method.Description = descr;
 
+					// display position
+					node = methodNode.SelectSingleNode( "ws:displayOrder",
+						MetaData.Instance.XMLNsMgr );
+					if( node != null )
+						method.DisplayOrder = int.Parse( node.InnerText );
+
 					// availability flag
 					node = methodNode.SelectSingleNode( "ws:isAvailable",
-						MetaData.Singleton.XMLNsMgr );
+						MetaData.Instance.XMLNsMgr );
 					if( node != null )
 						method.IsAvailable = bool.Parse( node.InnerText );
 				}

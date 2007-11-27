@@ -20,8 +20,7 @@ namespace Workflow.Schema.Test
 		{
 			get
 			{
-				return this.GetType().FullName.ToString() + "," +
-					System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+				return MetaData.GetObjectType( this );
 			}
 		}
 	}

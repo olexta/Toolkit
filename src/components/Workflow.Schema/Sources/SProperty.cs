@@ -29,7 +29,7 @@ namespace Workflow.Schema
 		/// Byte, SByte, Int16, Int32, Int64, UInt16, UInt32, UInt64, Decimal
 		/// String, Char, Boolean, DateTime, Single, Double
 		/// </summary>
-		private string m_Type;
+		private Type m_Type;
 
 		/// <summary>
 		/// Stores property requirement.
@@ -42,11 +42,6 @@ namespace Workflow.Schema
 		/// in class that uses it.
 		/// </summary>
 		private object m_DefaultValue = null;
-
-		/// <summary>
-		/// Stores iformation about Display Order of Property.
-		/// </summary>
-		private int m_DisplayOrder = 0;
 
 		/// <summary>
 		/// Stores readonly flag
@@ -73,7 +68,7 @@ namespace Workflow.Schema
 		/// <summary>
 		/// Property type.
 		/// </summary>
-		public string Type
+		public Type Type
 		{
 			get
 			{
@@ -103,79 +98,6 @@ namespace Workflow.Schema
 		}
 
 		/// <summary>
-		/// Translates string representation of default value
-		/// to properly type and stores it.
-		/// </summary>
-		/// <param name="strValue"></param>
-		internal void SetDefaultValue( string strValue )
-		{
-			switch( Type ) {
-				case "Byte":
-					DefaultValue = Byte.Parse( strValue );
-					break;
-				case "SByte":
-					DefaultValue = SByte.Parse( strValue );
-					break;
-				case "Int16":
-					DefaultValue = Int16.Parse( strValue );
-					break;
-				case "Int32":
-					DefaultValue = Int32.Parse( strValue );
-					break;
-				case "Int64":
-					DefaultValue = Int64.Parse( strValue );
-					break;
-				case "UInt16":
-					DefaultValue = UInt16.Parse( strValue );
-					break;
-				case "UInt32":
-					DefaultValue = UInt32.Parse( strValue );
-					break;
-				case "UInt64":
-					DefaultValue = UInt64.Parse( strValue );
-					break;
-				case "Decimal":
-					DefaultValue = Decimal.Parse( strValue );
-					break;
-				case "Single":
-					DefaultValue = Single.Parse( strValue );
-					break;
-				case "Double":
-					DefaultValue = Double.Parse( strValue );
-					break;
-				case "Bollean":
-					DefaultValue = Boolean.Parse( strValue );
-					break;
-				case "String":
-					DefaultValue = strValue;
-					break;
-				case "Char":
-					DefaultValue = strValue[ 0 ];
-					break;
-				case "DateTime":
-					DefaultValue = DateTime.Parse( strValue );
-					break;
-			}
-		}
-
-		/// <summary>
-		/// Property accessor to m_defaultValue.
-		/// Set accessor has only internal access modifier
-		/// </summary>
-		public int DisplayOrder
-		{
-			get
-			{
-				return m_DisplayOrder;
-			}
-			// can't change property from out side in security reason
-			internal set
-			{
-				m_DisplayOrder = value;
-			}
-		}
-
-		/// <summary>
 		/// Property accessor to m_IsReadOnly.
 		/// Set accessor has only internal access modifier
 		/// </summary>
@@ -183,6 +105,62 @@ namespace Workflow.Schema
 		{
 			get { return m_IsReadOnly; }
 			internal set { m_IsReadOnly = value; }
+		}
+
+		/// <summary>
+		/// Translates string representation of default value
+		/// to properly type and stores it.
+		/// </summary>
+		/// <param name="strValue"></param>
+		internal void SetDefaultValue( string strValue )
+		{
+			switch( m_Type.ToString() ) {
+				case "System.Byte":
+					DefaultValue = Byte.Parse( strValue );
+					break;
+				case "System.SByte":
+					DefaultValue = SByte.Parse( strValue );
+					break;
+				case "System.Int16":
+					DefaultValue = Int16.Parse( strValue );
+					break;
+				case "System.Int32":
+					DefaultValue = Int32.Parse( strValue );
+					break;
+				case "System.Int64":
+					DefaultValue = Int64.Parse( strValue );
+					break;
+				case "System.UInt16":
+					DefaultValue = UInt16.Parse( strValue );
+					break;
+				case "System.UInt32":
+					DefaultValue = UInt32.Parse( strValue );
+					break;
+				case "System.UInt64":
+					DefaultValue = UInt64.Parse( strValue );
+					break;
+				case "System.Decimal":
+					DefaultValue = Decimal.Parse( strValue );
+					break;
+				case "System.Single":
+					DefaultValue = Single.Parse( strValue );
+					break;
+				case "System.Double":
+					DefaultValue = Double.Parse( strValue );
+					break;
+				case "System.Bollean":
+					DefaultValue = Boolean.Parse( strValue );
+					break;
+				case "System.String":
+					DefaultValue = strValue;
+					break;
+				case "System.Char":
+					DefaultValue = strValue[ 0 ];
+					break;
+				case "System.DateTime":
+					DefaultValue = DateTime.Parse( strValue );
+					break;
+			}
 		}
 
 		/// <summary>
@@ -196,20 +174,32 @@ namespace Workflow.Schema
 		/// <summary>
 		/// Internal class ctor.
 		/// </summary>
-		internal SProperty()
+		public SProperty(
+			string name,
+			string caption,
+			string description,
+			int displayOrder,
+			Type type,
+			bool isReadOnly,
+			bool isRequired,
+			object defaultValue)
+			: base( name, caption, description, displayOrder )
 		{
+			m_Type = type;
+			m_IsReadOnly = isReadOnly;
+			m_IsRequired = isRequired;
+			m_DefaultValue = defaultValue;
 		}
 
 		/// <summary>
 		/// Internal copy ctor.
 		/// </summary>
-		internal SProperty( SProperty prop )
+		public SProperty( SProperty prop )
 			: base( prop )
 		{
 			Type = prop.Type;
 			IsReadOnly = prop.IsReadOnly;
-			IsReadOnly = prop.IsRequired;
-			DisplayOrder = prop.DisplayOrder;
+			IsRequired = prop.IsRequired;
 			DefaultValue = prop.DefaultValue;
 		}
 	}

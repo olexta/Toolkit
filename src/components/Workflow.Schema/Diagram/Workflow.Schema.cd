@@ -1,15 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
   <Font Name="Tahoma" Size="8.25" />
-  <Class Name="Workflow.Schema.CantChangeValueException" Collapsed="true">
-    <Position X="14.75" Y="2.25" Width="2.25" />
-    <TypeIdentifier>
-      <FileName>Sources\Exceptions.cs</FileName>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-    </TypeIdentifier>
-  </Class>
   <Class Name="Workflow.Schema.ClassNode" BaseTypeListCollapsed="true">
-    <Position X="0.5" Y="6.25" Width="3.25" />
+    <Position X="0.5" Y="5.75" Width="3.25" />
     <TypeIdentifier>
       <FileName>Sources\ClassNode.cs</FileName>
       <HashCode>ABAAIAEAAAAAAAQAAAAAAQAAAAAAAAEACQAAAAACAEI=</HashCode>
@@ -20,68 +13,84 @@
     <Position X="0.5" Y="0.5" Width="3.25" />
     <TypeIdentifier>
       <FileName>Sources\MetaData.cs</FileName>
-      <HashCode>EAAGAAAAAAGAAAAUDAAAAAwAAIBABAEACAAEEAAgACA=</HashCode>
+      <HashCode>EAACAAAAAAAAAAAUDIEAAAQAAIBABAAISAAEFAAgACA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Workflow.Schema.NoClassInformationException" Collapsed="true">
-    <Position X="14.75" Y="4.5" Width="2.25" />
+  <Class Name="Workflow.Schema.NoClassInformationException">
+    <Position X="12.25" Y="5.25" Width="2.75" />
     <TypeIdentifier>
       <FileName>Sources\Exceptions.cs</FileName>
       <HashCode>AAAAAAAAAAQAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Workflow.Schema.NoMemberInformationException" Collapsed="true">
-    <Position X="14.75" Y="3.75" Width="2.5" />
+  <Class Name="Workflow.Schema.NoMemberInformationException">
+    <Position X="12.25" Y="3.25" Width="2.75" />
     <TypeIdentifier>
       <FileName>Sources\Exceptions.cs</FileName>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAgA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Workflow.Schema.SchemaIsAlreadyInitedException" Collapsed="true">
-    <Position X="14.75" Y="3" Width="2.75" />
-    <TypeIdentifier>
-      <FileName>Sources\Exceptions.cs</FileName>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-    </TypeIdentifier>
-  </Class>
   <Class Name="Workflow.Schema.SClass">
-    <Position X="4.5" Y="0.5" Width="2.75" />
+    <Position X="4.25" Y="0.5" Width="2.75" />
     <TypeIdentifier>
       <FileName>Sources\SClass.cs</FileName>
-      <HashCode>EABAAAAAAFiAAAAAAAAAAAAAAAAAAAAhAAAAAAECAEA=</HashCode>
+      <HashCode>EABAAAAAAFiAAAQAAAAAAAAAAAACAAAhCAAAAAEAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
   <Class Name="Workflow.Schema.SClassMember">
-    <Position X="8.75" Y="0.5" Width="3.75" />
+    <Position X="7.5" Y="0.5" Width="3.75" />
     <TypeIdentifier>
       <FileName>Sources\SClassMember.cs</FileName>
-      <HashCode>EAAAAAAAQAAgAAAAAAAAAAQAAAAAAAAACAAAAABAAAI=</HashCode>
+      <HashCode>EAAAQAAAQAAgAAAEAAAAAAQAAAAAAAAACAAAAABAAgI=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Workflow.Schema.SMethod">
-    <Position X="8.25" Y="3.75" Width="2.25" />
+    <Position X="7.5" Y="4.25" Width="3.75" />
     <TypeIdentifier>
       <FileName>Sources\SMethod.cs</FileName>
-      <HashCode>AAAAAABAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAIAAAAA=</HashCode>
+      <HashCode>AAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAA=</HashCode>
     </TypeIdentifier>
+    <InheritanceLine Type="Workflow.Schema.SClassMember" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="11.25" Y="1.875" />
+        <Point X="11.625" Y="1.875" />
+        <Point X="11.625" Y="5.5" />
+        <Point X="11.25" Y="5.5" />
+      </Path>
+    </InheritanceLine>
   </Class>
   <Class Name="Workflow.Schema.SProperty">
-    <Position X="10.75" Y="3.75" Width="2.5" />
+    <Position X="7.5" Y="6.75" Width="3.75" />
     <TypeIdentifier>
       <FileName>Sources\SProperty.cs</FileName>
-      <HashCode>AAABYAAAAAAAAAAUAABAAAAgAABAAACAARAAAAAAAgA=</HashCode>
+      <HashCode>AAABIAAAAAAAAAAUAABAAAAgAABAAACAARAAAAAAAAA=</HashCode>
     </TypeIdentifier>
+    <InheritanceLine Type="Workflow.Schema.SClassMember" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="11.25" Y="1.875" />
+        <Point X="11.625" Y="1.875" />
+        <Point X="11.625" Y="8.813" />
+        <Point X="11.25" Y="8.813" />
+      </Path>
+    </InheritanceLine>
   </Class>
   <Class Name="Workflow.Schema.Tools">
-    <Position X="0.5" Y="9.75" Width="3.5" />
+    <Position X="0.5" Y="9.25" Width="3.5" />
     <TypeIdentifier>
       <FileName>Sources\Tools.cs</FileName>
       <HashCode>AAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
+  <Class Name="Workflow.Schema.SchemaIsAlreadyInitializedException">
+    <Position X="12.25" Y="2" Width="2.75" />
+    <TypeIdentifier>
+      <FileName>Sources\Exceptions.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
   <Interface Name="Workflow.Schema.IClassInfo">
-    <Position X="14.75" Y="0.5" Width="2.5" />
+    <Position X="12.25" Y="0.5" Width="2.5" />
     <TypeIdentifier>
       <FileName>Sources\IClassInfo.cs</FileName>
       <HashCode>AAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>

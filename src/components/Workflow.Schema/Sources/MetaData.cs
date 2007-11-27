@@ -22,34 +22,34 @@ namespace Workflow.Schema
 	public class MetaData
 	{
 		/// <summary>
-		/// Path to schema instance (.xml file).
-		/// </summary>
-		private static string m_SchemaPath = "schema.xml";
-
-		/// <summary>
-		/// Path to schema definition (.xsd file).
-		/// </summary>
-		private static string m_SchemaDescrPath = "Workflow.Schema.xsd";
-
-		/// <summary>
-		/// Stores locale for l10n.
-		/// </summary>
-		private static string m_CurrentUICulture = "uk-UA";
-
-		/// <summary>
 		/// This is the one instance of this type.
 		/// </summary>
-		private static readonly MetaData m_Singleton = new MetaData();
-
-		/// <summary>
-		/// Schema name.
-		/// </summary>
-		private string m_Name = string.Empty;
+		private static MetaData m_Instance;
 
 		/// <summary>
 		/// Indicates that schema was already loaded.
 		/// </summary>
-		private static bool m_IsInited = false;
+		private static bool m_IsInitialized = false;
+
+		/// <summary>
+		/// Path to schema instance (.xml file).
+		/// </summary>
+		private string m_SchemaPath;
+
+		/// <summary>
+		/// Path to schema definition (.xsd file).
+		/// </summary>
+		private string m_SchemaDescrPath;
+
+		/// <summary>
+		/// Stores locale for l10n.
+		/// </summary>
+		private string m_CurrentUICulture;
+
+		/// <summary>
+		/// Schema name.
+		/// </summary>
+		private string m_Name;
 
 		/// <summary>
 		/// Namespace manager for internal XPath purposes.
@@ -59,62 +59,47 @@ namespace Workflow.Schema
 		/// <summary>
 		/// Saves a correspondence map: Class type -> Class description.
 		/// </summary>
-		private KeyedMap<string, ClassNode> m_Classes = null;
+		private KeyedMap<string, ClassNode> m_Classes;
 
 		/// <summary>
 		/// Memory copy of schema file.
 		/// </summary>
-		private XmlDocument m_SchemaXML = null;
+		private XmlDocument m_SchemaXML;
 		
 		/// <summary>
 		/// A method returning a reference to the Singleton.
 		/// </summary>
-		public static MetaData Singleton
+		public static MetaData Instance
 		{
-			get { return m_Singleton; }
+			get { return m_Instance; }
 		}
 
 		/// <summary>
 		/// Current culture for UI l10n.
 		/// </summary>
-		public static string CurrentUICulture
+		public string CurrentUICulture
 		{
 			get { return m_CurrentUICulture; }
-			set {
-				if( m_IsInited )
-					throw new CantChangeValueException();
-				m_CurrentUICulture = value;
-			}
 		}
 
 		/// <summary>
 		/// Path to schema instance (.xml file).
 		/// </summary>
-		public static string SchemaPath
+		public string SchemaPath
 		{
 			get { return m_SchemaPath; }
-			set {
-				if( m_IsInited )
-					throw new CantChangeValueException();
-				m_SchemaPath = value;
-			}
 		}
 
 		/// <summary>
 		/// Gets, sets path to schema description (.xsd file).
 		/// </summary>
-		public static string SchemaDescriptionPath
+		public string SchemaDescriptionPath
 		{
 			get { return m_SchemaDescrPath; }
-			set {
-				if( m_IsInited )
-					throw new CantChangeValueException();
-				m_SchemaDescrPath = value;
-			}
 		}
 
 		/// <summary>
-		/// Returns string than represents object type and assembly.
+		/// Returns string than represents object type and its assembly.
 		/// You can use this function to identify objects types in schema.
 		/// </summary>
 		public static string GetObjectType( object obj )
@@ -124,47 +109,32 @@ namespace Workflow.Schema
 		}
 
 		/// <summary>
-		/// Overridden Object.ToString() method.
+		/// Indicates that schema was already loaded.
 		/// </summary>
-		public override string ToString()
+		public static bool IsInitialized
 		{
-			return Name;
+			get { return m_IsInitialized; }
 		}
 
 		/// <summary>
-		/// This method perform loading schema and building program structures.
+		/// This method creates singleton instance of MetaData class.
 		/// You must call this method before using MetaData instance.
+		/// <param name="UICulture">Culture identifier.</param>
+		/// <param name="schemaPath">Path to schema file (.xml).</param>
+		/// <param name="schemaDescrPath">Path to schema description path (.xsd).</param>
 		/// </summary>
-		public void InitSchema()
+		public static void InitSchema( string UICulture, string schemaPath, string schemaDescrPath )
 		{
-			if( m_IsInited )
-				throw new SchemaIsAlreadyInitedException();
+			if( m_IsInitialized )
+			    throw new SchemaIsAlreadyInitializedException();
 
-            // loading .xml
-            m_SchemaXML = new XmlDocument();
-
-            m_SchemaXML.Load( m_SchemaPath );
+			// creating singleton instance of MetaData class
+			m_Instance = new MetaData();
 			
-            // loading .xsd to XmlDocument
-           XmlReader schemareader = XmlReader.Create( m_SchemaDescrPath );
-           m_SchemaXML.Schemas.Add( null, schemareader );
-           schemareader.Close();			
+			// loading schema etc.
+			m_Instance.initialize( UICulture, schemaPath, schemaDescrPath );
 
-            // Validate schema throwing exception on warnings and errors.
-            m_SchemaXML.Validate( delegate( object sender, ValidationEventArgs e ) {
-                throw new ApplicationException(
-                    String.Format( "Schema validation failed. {0}: {1}", e.Severity, e.Message ),
-                    e.Exception ); } );				
-
-            m_Name = m_SchemaXML.DocumentElement.Attributes.GetNamedItem( "ws:name" ).Value;
-
-			m_NsMgr = new XmlNamespaceManager( m_SchemaXML.NameTable );
-			m_NsMgr.AddNamespace( "ws", m_SchemaXML.DocumentElement.NamespaceURI );
-		
-			foreach( XmlNode node in m_SchemaXML.DocumentElement.SelectNodes( "ws:class", m_NsMgr ) )
-				Classes.Add( new ClassNode( node ) );			
-
-			m_IsInited = true;
+			m_IsInitialized = true;
 		}
 
 		/// <summary>
@@ -178,7 +148,7 @@ namespace Workflow.Schema
 					throw new ArgumentNullException( "instance" );
 
 				if( m_Classes.Contains( instance.Type ) )
-					return new SClass( instance );
+					return new SClass( instance, m_Classes[ instance.Type ] );
 				else
 					throw new NoClassInformationException( instance );
 			}
@@ -193,27 +163,13 @@ namespace Workflow.Schema
 		}
 
 		/// <summary>
-		/// Indicates that schema was already loaded.
+		/// Overridden Object.ToString() method.
 		/// </summary>
-		public bool IsInited
+		public override string ToString()
 		{
-			get { return m_IsInited; }
-		}
-
-		/// <summary>
-		/// Gets class name - class information corresponds map.
-		/// </summary>
-		internal KeyedMap<string, ClassNode> Classes
-		{
-			get
-			{		
-				if( m_Classes == null )
-					m_Classes = new KeyedMap<string, ClassNode>();
-
-				return m_Classes;				
-			}
+			return Name;
 		}		
-		
+
 		/// <summary>
 		/// Gets instance of Namespace manager for internal XPath purposes.
 		/// </summary>
@@ -227,6 +183,45 @@ namespace Workflow.Schema
 		/// </summary>
 		private MetaData()
 		{
+		}
+
+		/// <summary>
+		/// This method perform schema loading and building program structures.
+		/// </summary>
+		private void initialize( string UICulture, string schemaPath, string schemaDescrPath )
+		{
+			// initializing values
+			m_CurrentUICulture = UICulture;
+			m_SchemaPath = schemaPath;
+			m_SchemaDescrPath = schemaDescrPath;
+
+			// loading .xml
+			m_SchemaXML = new XmlDocument();
+
+			m_SchemaXML.Load( m_SchemaPath );
+
+			// loading .xsd to XmlDocument
+			XmlReader schemareader = XmlReader.Create( m_SchemaDescrPath );
+			m_SchemaXML.Schemas.Add( null, schemareader );
+			schemareader.Close();
+
+			// Validate schema throwing exception on warnings and errors.
+			m_SchemaXML.Validate( delegate( object sender, ValidationEventArgs e )
+			{
+				throw new ApplicationException(
+					String.Format( "Schema validation failed. {0}: {1}", e.Severity, e.Message ),
+					e.Exception );
+			} );
+
+			m_Name = m_SchemaXML.DocumentElement.Attributes.GetNamedItem( "ws:name" ).Value;
+
+			m_NsMgr = new XmlNamespaceManager( m_SchemaXML.NameTable );
+			m_NsMgr.AddNamespace( "ws", m_SchemaXML.DocumentElement.NamespaceURI );
+
+			m_Classes = new KeyedMap<string, ClassNode>();
+
+			foreach( XmlNode node in m_SchemaXML.DocumentElement.SelectNodes( "ws:class", m_NsMgr ) )
+				m_Classes.Add( new ClassNode( node ) );
 		}
 	}
 }

@@ -29,36 +29,28 @@ namespace Workflow.Schema
 		/// </summary>
 		public bool IsAvailable
 		{
-			get
-			{
-				return m_IsAvailable;
-			}
-			// can't change property from out side in security reason
-			internal set
-			{
-				m_IsAvailable = value;
-			}
+			get	{ return m_IsAvailable;	}
+			internal set { m_IsAvailable = value; }
 		}
 
 		/// <summary>
-		/// Overridden Object.ToString().
+		/// Ctor.
 		/// </summary>
-		public override string ToString()
+		public SMethod(
+			string name,
+			string caption,
+			string description,
+			int displayOrder,
+			bool isAvailable)
+			: base( name, caption, description, displayOrder )
 		{
-			return Name;
-		}
-
-		/// <summary>
-		/// Internal class ctor.
-		/// </summary>
-		internal SMethod()
-		{
+			m_IsAvailable = isAvailable;
 		}
 
 		/// <summary>
 		/// Internal copy ctor.
 		/// </summary>
-		internal SMethod( SMethod method )
+		public SMethod( SMethod method )
 			: base( method )
 		{
 			IsAvailable = method.IsAvailable;

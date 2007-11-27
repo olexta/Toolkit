@@ -13,18 +13,10 @@ using System;
 
 namespace Workflow.Schema
 {
-	public class SchemaIsAlreadyInitedException : ApplicationException
+	public class SchemaIsAlreadyInitializedException : ApplicationException
 	{
-		public SchemaIsAlreadyInitedException()
+		public SchemaIsAlreadyInitializedException()
 			: base( "Schema is already inited." )
-		{
-		}
-	}
-
-	public class CantChangeValueException : ApplicationException
-	{
-		public CantChangeValueException()
-			: base( "Can't change value because schema is already inited." )
 		{
 		}
 	}

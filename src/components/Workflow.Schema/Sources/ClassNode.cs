@@ -21,7 +21,7 @@ namespace Workflow.Schema
 	/// Class that stores information about class node in XML file.
 	/// It obtain information about all properties, method and states.
 	/// </summary>
-	internal class ClassNode: IKeyedObject<string>
+	class ClassNode: IKeyedObject<string>
 	{
 		/// <summary>
 		/// Stores class type for current instance.
@@ -59,13 +59,16 @@ namespace Workflow.Schema
 
 			m_Type = classNode.Attributes[ "ws:type" ].Value;
 
+			m_Caption = Tools.GetLocalizedString( classNode, "caption" );
+
 			// searching all properties
 			foreach( XmlNode propertyNode in classNode.SelectNodes(
 				"ws:properties/ws:property",
-				MetaData.Singleton.XMLNsMgr ) ) {
+				MetaData.Instance.XMLNsMgr ) ) {
 
-				// create instance of SProperty
-				SProperty property = new SProperty();
+				// create instance of SProperty with 0 values
+				SProperty property = new SProperty(
+					null, null, null, -1, null, false, false, null);
 				
 				// gets property name from attribute
 				property.Name = propertyNode.Attributes.GetNamedItem( "ws:name" ).Value;
@@ -73,22 +76,22 @@ namespace Workflow.Schema
 				// finding all property values using XPath
 				property.Caption = Tools.GetLocalizedString( propertyNode, "caption" );
 
-				property.Description = Tools.GetLocalizedString( propertyNode, "description" );
+				property.Description = Tools.GetLocalizedString( propertyNode, "description" );				
 
-				property.Type = propertyNode.SelectSingleNode(
-					"ws:type", MetaData.Singleton.XMLNsMgr ).InnerText;
+				property.Type = System.Type.GetType( "System." + propertyNode.SelectSingleNode(
+					"ws:type", MetaData.Instance.XMLNsMgr ).InnerText );
 
 				property.SetDefaultValue( propertyNode.SelectSingleNode(
-					"ws:defaultValue", MetaData.Singleton.XMLNsMgr ).InnerText );
+					"ws:defaultValue", MetaData.Instance.XMLNsMgr ).InnerText );
 
 				property.DisplayOrder = int.Parse( propertyNode.SelectSingleNode(
-					"ws:displayOrder", MetaData.Singleton.XMLNsMgr ).InnerText );
+					"ws:displayOrder", MetaData.Instance.XMLNsMgr ).InnerText );
 
 				property.IsReadOnly = bool.Parse( propertyNode.SelectSingleNode(
-					"ws:isReadOnly", MetaData.Singleton.XMLNsMgr ).InnerText );
+					"ws:isReadOnly", MetaData.Instance.XMLNsMgr ).InnerText );
 
 				property.IsRequired = bool.Parse( propertyNode.SelectSingleNode(
-					"ws:isRequired", MetaData.Singleton.XMLNsMgr ).InnerText );
+					"ws:isRequired", MetaData.Instance.XMLNsMgr ).InnerText );
 
 				// adds SProperty to cache
 				m_Properties.Add( property );
@@ -96,9 +99,9 @@ namespace Workflow.Schema
 			
 			// getting all methods
 			foreach( XmlNode methodNode in classNode.SelectNodes(
-				"ws:methods/ws:method", MetaData.Singleton.XMLNsMgr ) ) {
+				"ws:methods/ws:method", MetaData.Instance.XMLNsMgr ) ) {
 
-				SMethod method = new SMethod();
+				SMethod method = new SMethod( null, null, null, -1, false );
 
 				// gets property name from attribute
 				method.Name = methodNode.Attributes.GetNamedItem( "ws:name" ).Value;
@@ -108,15 +111,18 @@ namespace Workflow.Schema
 
 				method.Description = Tools.GetLocalizedString( methodNode, "description" );
 
+				method.DisplayOrder = int.Parse( methodNode.SelectSingleNode(
+					"ws:displayOrder", MetaData.Instance.XMLNsMgr ).InnerText ); 
+
 				method.IsAvailable = bool.Parse( methodNode.SelectSingleNode(
-					"ws:isAvailable", MetaData.Singleton.XMLNsMgr ).InnerText );
+					"ws:isAvailable", MetaData.Instance.XMLNsMgr ).InnerText );
 
 				m_Methods.Add( method );
 			}
 
 			// getting all states
 			foreach( XmlNode stateNode in classNode.SelectNodes(
-				"ws:states/ws:state", MetaData.Singleton.XMLNsMgr ) )
+				"ws:states/ws:state", MetaData.Instance.XMLNsMgr ) )
 				m_StatesMap.Add(
 					stateNode.Attributes.GetNamedItem( "ws:mask" ).Value,
 					stateNode );			

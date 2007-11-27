@@ -59,6 +59,7 @@
 			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="description" type="xsd:string" />
 			<xsd:element name="localizedDescription" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="displayOrder" type="xsd:int" />
 			<xsd:element name="isAvailable" type="xsd:boolean" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
@@ -112,6 +113,7 @@
 			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="description" type="xsd:string" minOccurs="0" />
 			<xsd:element name="localizedDescription" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="displayOrder" type="xsd:int" minOccurs="0" />
 			<xsd:element name="isAvailable" type="xsd:boolean" minOccurs="0" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />

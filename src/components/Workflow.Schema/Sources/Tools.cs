@@ -17,7 +17,7 @@ namespace Workflow.Schema
 	/// <summary>
 	/// This class is created only for internal purposes.
 	/// </summary>
-	internal class Tools
+	class Tools
 	{
 		/// <summary>
 		/// Gets localized string for specified node.
@@ -26,16 +26,16 @@ namespace Workflow.Schema
 		/// </summary>
 		/// <returns>Null if string with specified suffix is not founded
 		/// otherwise returns desired value.</returns>
-		internal static string GetLocalizedString( XmlNode node, string suffix )
+		public static string GetLocalizedString( XmlNode node, string suffix )
 		{
 			XmlNode locNode;
 
 			if( (locNode = node.SelectSingleNode(
 				string.Format( "ws:{0}[@ws:uiculture='{1}']", "localized" + suffix.ToUpper()[0] + suffix.Substring(1, suffix.Length - 1),
-				MetaData.CurrentUICulture ), MetaData.Singleton.XMLNsMgr) ) == null )
+				MetaData.Instance.CurrentUICulture ), MetaData.Instance.XMLNsMgr) ) == null )
 				locNode = node.SelectSingleNode(
 					string.Format( "ws:{0}", suffix ),					
-					MetaData.Singleton.XMLNsMgr );
+					MetaData.Instance.XMLNsMgr );
 
 			if( locNode != null )
 				return locNode.InnerText;

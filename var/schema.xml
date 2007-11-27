@@ -40,6 +40,7 @@
 				<ws:localizedCaption ws:uiculture="uk-UA">Удалить</ws:localizedCaption>
 				<ws:description>Delete document</ws:description>
 				<ws:localizedDescription ws:uiculture="uk-UA">Видалити документ</ws:localizedDescription>
+				<ws:displayOrder>0</ws:displayOrder>
 				<ws:isAvailable>true</ws:isAvailable>
 			</ws:method>
 		</ws:methods>
@@ -58,8 +59,10 @@
 				<ws:methods>
 					<ws:method ws:name="delete">
 						<ws:caption>WTF?</ws:caption>
+						<ws:localizedCaption ws:uiculture="uk-UA">???</ws:localizedCaption>
 						<ws:description>no description</ws:description>
 						<ws:localizedDescription ws:uiculture="ru-RU">Удалить</ws:localizedDescription>
+						<ws:displayOrder>-1</ws:displayOrder>
 						<ws:isAvailable>false</ws:isAvailable>
 					</ws:method>
 				</ws:methods>
