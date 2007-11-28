@@ -22,9 +22,8 @@ using namespace System::Runtime::InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("ABBYY.Toolkit.RPL")];
+[assembly:AssemblyTitleAttribute("Toolkit.RPL")];
 [assembly:AssemblyDescriptionAttribute("RPL module that provide persistence objects management")];
-[assembly:AssemblyCompanyAttribute("ABBYY Ukraine")];
 [assembly:AssemblyProductAttribute("Robust Persistence Layer")];
 [assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2006-2007")];
 [assembly:AssemblyInformationalVersionAttribute("1.0")];

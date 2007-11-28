@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		PersistentProperty.cpp										*/
 /*																			*/
-/*	Content:	Implementation of CPersistentProperty class					*/
+/*	Content:	Implementation of PersistentProperty class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -16,20 +16,15 @@
 #include "PersistentProperty.h"
 
 using namespace System::IO;
-using namespace System::Threading;
 using namespace _RPL;
 
-
-// Define lock macroses
-#define ENTER(lock)		try { Monitor::Enter( lock );
-#define EXIT(lock)		} finally { Monitor::Exit( lock ); }
 
 // Define macros to ignore exceptions
 #define TRY(expr)		try { expr; } catch( Exception^ ) {};
 
 
 //----------------------------------------------------------------------------
-//							CPersistentProperty
+//						Toolkit::RPL::PersistentProperty
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -38,16 +33,14 @@ using namespace _RPL;
 // processing for stream wrapper class.
 //
 //-------------------------------------------------------------------
-void CPersistentProperty::set_value( Object ^value )
+void PersistentProperty::set_value( Object ^value )
 {
-	IIStreamWrapper	^sw = nullptr;
-
-
+	IIStreamWrapper	^sw = dynamic_cast<IIStreamWrapper^>( m_value );
+	
 	// check for existing value is StreamWrapper
-	sw = dynamic_cast<IIStreamWrapper^>( m_value );
 	if( sw != nullptr ) {
 		// unsubscribe from wrapper events
-		sw->OnChange -= gcnew SW_CHANGE(this, &CPersistentProperty::on_change);
+		sw->OnChange -= gcnew SW_CHANGE(this, &PersistentProperty::stream_change);
 	}
 
 	// check for new value is Stream
@@ -55,7 +48,7 @@ void CPersistentProperty::set_value( Object ^value )
 		// create wrapper for stream
 		sw = gcnew StreamWrapper(dynamic_cast<Stream^>( value ));
 		// subscribe to wrapper events
-		sw->OnChange += gcnew SW_CHANGE(this, &CPersistentProperty::on_change);
+		sw->OnChange += gcnew SW_CHANGE(this, &PersistentProperty::stream_change);
 		// change value
 		value = sw;
 	}
@@ -72,13 +65,13 @@ void CPersistentProperty::set_value( Object ^value )
 // only.
 //
 //-------------------------------------------------------------------
-void CPersistentProperty::on_change( StreamWrapper ^sender )
+void PersistentProperty::stream_change( StreamWrapper ^sender )
 {
 	// mark property as changed
 	m_changed = true;
 
 	// fair OnChange event
-	TRY( OnChange( this, sender, sender ) );
+	TRY( on_change( this, sender, sender ) );
 }
 
 
@@ -89,7 +82,7 @@ void CPersistentProperty::on_change( StreamWrapper ^sender )
 // our subscribers in copy constructor).
 //
 //-------------------------------------------------------------------
-void CPersistentProperty::OnChange::add( PP_CHANGE ^d )
+void PersistentProperty::on_change::add( PP_CHANGE ^d )
 {
 	// property is corpuskular object and can belong
 	// to only one object, so i need to clear list
@@ -99,14 +92,12 @@ void CPersistentProperty::OnChange::add( PP_CHANGE ^d )
 	m_on_change += d;
 }
 
-
-void CPersistentProperty::OnChange::remove( PP_CHANGE ^d )
+void PersistentProperty::on_change::remove( PP_CHANGE ^d )
 {
 	m_on_change -= d;
 }
 
-
-void CPersistentProperty::OnChange::raise( CPersistentProperty ^sender,
+void PersistentProperty::on_change::raise( PersistentProperty ^sender, \
 										   Object ^oldValue, Object ^newValue )
 {
 	if( m_on_change != nullptr ) {
@@ -124,7 +115,7 @@ void CPersistentProperty::OnChange::raise( CPersistentProperty ^sender,
 // instances to object.
 //
 //-------------------------------------------------------------------
-void CPersistentProperty::SetChanged( bool value )
+void PersistentProperty::set_changed( bool value )
 {
 	m_changed = value;
 }
@@ -140,15 +131,12 @@ void CPersistentProperty::SetChanged( bool value )
 /// check for initialized reference.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentProperty::OnValidate( Object^ value )
+void PersistentProperty::OnValidate( Object ^value )
 {
-	Type	^t;
-
-
 	// check for initialized reference
 	if( value == nullptr ) throw gcnew ArgumentNullException("value");
 
-	t = value->GetType();
+	Type	^t = value->GetType();
 
 	// test for all supported types
 	if( (t == bool::typeid) || (t == int::typeid) ||
@@ -177,8 +165,8 @@ void CPersistentProperty::OnValidate( Object^ value )
 /// It can be useful to declare object scheme.
 /// </remarks>
 //-------------------------------------------------------------------
-CPersistentProperty::CPersistentProperty( String ^name ): \
-	m_value(DBNull::Value), m_changed(false), _lock_this(gcnew Object())
+PersistentProperty::PersistentProperty( String ^name ): \
+	m_value(DBNull::Value), m_changed(false)
 {
 	dbgprint( "-> " + name );
 
@@ -202,8 +190,8 @@ CPersistentProperty::CPersistentProperty( String ^name ): \
 /// type) the ArgumentException will be raised.
 /// </remarks>
 //-------------------------------------------------------------------
-CPersistentProperty::CPersistentProperty( String ^name, Object ^value ): \
-	m_changed(false), _lock_this(gcnew Object())
+PersistentProperty::PersistentProperty( String ^name, Object ^value ): \
+	m_changed(false)
 {
 	dbgprint( String::Format( "-> {0}\n{1}", name, value ) );
 
@@ -224,14 +212,13 @@ CPersistentProperty::CPersistentProperty( String ^name, Object ^value ): \
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create persistent property based on another CPersistentProperty
+/// Create persistent property based on another PersistentProperty
 /// instance.
 /// </summary><remarks>
 /// Copy all internal data (deep coping to dublicate object).
 /// </remarks>
 //-------------------------------------------------------------------
-CPersistentProperty::CPersistentProperty( const CPersistentProperty %prop ): \
-	_lock_this(gcnew Object())
+PersistentProperty::PersistentProperty( const PersistentProperty %prop )
 {
 	dbgprint( String::Format( "-> {0} (copy constructor)\n{1}",
 							  prop.m_name, prop.m_value ) );
@@ -258,9 +245,8 @@ CPersistentProperty::CPersistentProperty( const CPersistentProperty %prop ): \
 /// can use delete operator to try call it.
 /// </remarks>
 //-------------------------------------------------------------------
-CPersistentProperty::~CPersistentProperty( void )
-{ENTER(_lock_this)
-
+PersistentProperty::~PersistentProperty( void )
+{
 	// i don't know why, but for classes inherited
 	// from Stream destructor not call throught
 	// operator delete, so i use force Close call
@@ -270,8 +256,7 @@ CPersistentProperty::~CPersistentProperty( void )
 	
 	// dispose value
 	delete m_value;
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -282,7 +267,7 @@ EXIT(_lock_this)}
 /// provide Value property setter functionality.
 /// </remarks>
 //-------------------------------------------------------------------
-CPersistentProperty% CPersistentProperty::operator=( Object^ value )
+PersistentProperty% PersistentProperty::operator=( Object ^value )
 {
 	// check for initialized reference
 	if( value == nullptr ) throw gcnew ArgumentNullException("value");
@@ -297,17 +282,15 @@ CPersistentProperty% CPersistentProperty::operator=( Object^ value )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Operator =. Assign another instance of CPersistentProperty to
+/// Operator =. Assign another instance of PersistentProperty to
 /// this.
 /// </summary><remarks>
 /// Property is atomic object (such as value class), so i must copy
-/// data only. To make property treadsafe lock another instance while
-/// operation will not be completed.
+/// data only.
 /// </remarks>
 //-------------------------------------------------------------------
-CPersistentProperty% CPersistentProperty::operator=( const CPersistentProperty %prop )
-{ENTER(_lock_this)
-
+PersistentProperty% PersistentProperty::operator=( const PersistentProperty %prop )
+{
 	// check for same instance
 	if( this == %prop ) return *this;
 	
@@ -318,19 +301,18 @@ CPersistentProperty% CPersistentProperty::operator=( const CPersistentProperty %
 	}
 	// return instance reference to support all brakets placement
 	return (*this = prop.m_value);
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Operator ==. Check for another instance of CPersistentProperty to
+/// Operator ==. Check for another instance of PersistentProperty to
 /// be equal to this.
 /// </summary><remarks>
 /// I check for name and value equivalence.
 /// </remarks>
 //-------------------------------------------------------------------
-bool CPersistentProperty::operator==( const CPersistentProperty %prop )
+bool PersistentProperty::operator==( const PersistentProperty %prop )
 {
 	return ((m_name == prop.m_name) &&
 			Object::Equals( m_value, prop.m_value ));
@@ -339,13 +321,13 @@ bool CPersistentProperty::operator==( const CPersistentProperty %prop )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Operator !=. Check for another instance of CPersistentProperty to
+/// Operator !=. Check for another instance of PersistentProperty to
 /// be not equal to this.
 /// </summary><remarks>
 /// I use = (Equal) operator in implementation.
 /// </remarks>
 //-------------------------------------------------------------------
-bool CPersistentProperty::operator!=( const CPersistentProperty %value )
+bool PersistentProperty::operator!=( const PersistentProperty %value )
 {
 	return !(*this == value);
 }
@@ -360,7 +342,7 @@ bool CPersistentProperty::operator!=( const CPersistentProperty %value )
 /// operator. This is only ToString call.
 /// </remarks>
 //-------------------------------------------------------------------
-CPersistentProperty::operator String^( void )
+PersistentProperty::operator String^( void )
 {
 	return ToString();
 }
@@ -371,8 +353,8 @@ CPersistentProperty::operator String^( void )
 /// Gets name of the property.
 /// </summary>
 //-------------------------------------------------------------------
-String^ CPersistentProperty::Name::get( void )
-{	
+String^ PersistentProperty::Name::get( void )
+{
 	return m_name;
 }
 
@@ -386,20 +368,18 @@ String^ CPersistentProperty::Name::get( void )
 /// raised.
 /// </remarks>
 //-------------------------------------------------------------------
-Object^ CPersistentProperty::Value::get( void )
+Object^ PersistentProperty::Value::get( void )
 {
 	return m_value;
 }
 
-
-void CPersistentProperty::Value::set( Object ^value )
-{ENTER(_lock_this)
-
+void PersistentProperty::Value::set( Object ^value )
+{
 	// validate value
 	OnValidate( value );
 
 	// fair OnChange event
-	OnChange( this, m_value, value );
+	on_change( this, m_value, value );
 	
 	// check for same objects (we cann't use == operator
 	// in case of reference values)
@@ -410,8 +390,7 @@ void CPersistentProperty::Value::set( Object ^value )
 
 	// mark property as changed
 	m_changed = true;
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -422,7 +401,7 @@ EXIT(_lock_this)}
 /// will be set to true.
 /// </remarks>
 //-------------------------------------------------------------------
-bool CPersistentProperty::IsChanged::get( void )
+bool PersistentProperty::IsChanged::get( void )
 {
 	return m_changed;
 }
@@ -430,18 +409,21 @@ bool CPersistentProperty::IsChanged::get( void )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Gets an object that can be used to synchronize access to the
-/// CPersistentProperty instance.
+/// Determines whether the specified Object is equal to the current
+/// PersistentProperty instance.
 /// </summary><remarks>
-/// The most common case is using property that contains boxed value.
-/// But in case of using reference class such as Stream you must lock
-/// property access while wiorking with. So, locking trought SyncRoot
-/// will suspend all access to this property.
+/// It uses Equal operator in implementation.
 /// </remarks>
 //-------------------------------------------------------------------
-Object^ CPersistentProperty::SyncRoot::get( void )
+bool PersistentProperty::Equals( Object ^obj )
 {
-	return _lock_this;
+	// attempt object cast to PersistentProperty
+	PersistentProperty	^prop = dynamic_cast<PersistentProperty^>( obj );
+	// in case of unsuccessful return false
+	if( prop == nullptr ) return false;
+
+	// use Equal operator
+	return (*this == *prop);
 }
 
 
@@ -450,17 +432,10 @@ Object^ CPersistentProperty::SyncRoot::get( void )
 /// Returns a String that represents the current Object.
 /// </summary><remarks>
 /// Override standart object method ToString(): must provide special
-/// processing for Stream type.
+/// processing for string representation of internal data.
 /// </remarks>
 //-------------------------------------------------------------------
-String^ CPersistentProperty::ToString( void )
+String^ PersistentProperty::ToString( void )
 {
-	// check for stream type
-	if( dynamic_cast<Stream^>( m_value ) != nullptr ) {
-		
-		return "<binary data>";
-	} else {
-
-		return m_value->ToString();
-	}
+	return m_value->ToString();
 }

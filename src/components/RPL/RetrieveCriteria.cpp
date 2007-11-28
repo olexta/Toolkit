@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		RetrieveCriteria.cpp										*/
 /*																			*/
-/*	Content:	Implementation of CRetrieveCriteria class					*/
+/*	Content:	Implementation of RetrieveCriteria class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -15,13 +15,8 @@
 #include "PersistentObject.h"
 #include "RetrieveCriteria.h"
 
-using namespace System::Threading;
 using namespace _RPL;
 
-
-// Define lock macroses
-#define ENTER(lock)		try { Monitor::Enter( lock );
-#define EXIT(lock)		} finally { Monitor::Exit( lock ); }
 
 // Define macro for MIN and MAX
 #define MIN(x,y) ((x) < (y) ? (x) : (y))
@@ -29,7 +24,7 @@ using namespace _RPL;
 
 
 //----------------------------------------------------------------------------
-//								CRetrieveCriteria
+//						Toolkit::RPL::RetrieveCriteria
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -40,10 +35,10 @@ using namespace _RPL;
 /// that could be modified by using cursor routines: "Move".
 /// </remarks>
 //-------------------------------------------------------------------
-void CRetrieveCriteria::ResetResults( void )
+void RetrieveCriteria::ResetResults( void )
 {
 	// call to base method
-	CPersistentCriteria::ResetResults();
+	PersistentCriteria::ResetResults();
 	// and reset position
 	m_pos = -1;
 }
@@ -58,7 +53,7 @@ void CRetrieveCriteria::ResetResults( void )
 /// data by "OnTransactionRollback".
 /// </remarks>
 //-------------------------------------------------------------------
-void CRetrieveCriteria::OnTransactionBegin( void )
+void RetrieveCriteria::OnTransactionBegin( void )
 {
 	// create new struct to store backup data
 	BACKUP_STRUCT ^backup = gcnew BACKUP_STRUCT();
@@ -80,7 +75,7 @@ void CRetrieveCriteria::OnTransactionBegin( void )
 /// for transaction support (delete object's save point).
 /// </remarks>
 //-------------------------------------------------------------------
-void CRetrieveCriteria::OnTransactionCommit( void )
+void RetrieveCriteria::OnTransactionCommit( void )
 {
 	// remove stored backup data
 	m_trans_stack.Pop();
@@ -95,10 +90,10 @@ void CRetrieveCriteria::OnTransactionCommit( void )
 /// state (object's save point).
 /// </remarks>
 //-------------------------------------------------------------------
-void CRetrieveCriteria::OnTransactionRollback( void )
+void RetrieveCriteria::OnTransactionRollback( void )
 {
 	// get sored backup data
-	BACKUP_STRUCT ^backup = static_cast<BACKUP_STRUCT^>( m_trans_stack.Pop() );
+	BACKUP_STRUCT ^backup = m_trans_stack.Pop();
 	
 	// restore simple object attributes
 	m_asProxies = backup->_as_proxies;
@@ -113,18 +108,18 @@ void CRetrieveCriteria::OnTransactionRollback( void )
 /// </summary><remarks>
 /// Retrieves full objects from persistence storage. Because of many
 /// custom processings exists for each criteria i not retrieve full
-/// objects in CPersistentBroker (even if this option is active for
+/// objects in PersistentBroker (even if this option is active for
 /// retrieve criteria). There are a lot of class schemas that can
 /// have it's own implementation, so i simple call Retrieve for each
 /// object to get it's links and properties from persistent storage.
 /// </remarks>
 //-------------------------------------------------------------------
-void CRetrieveCriteria::OnPerformComplete( void )
+void RetrieveCriteria::OnPerformComplete( void )
 {
 	// we got objects as proxies already
 	if( !m_asProxies ) {
 		// pass througght all founded objects
-		for each( CPersistentObject ^obj in m_list ) {
+		for each( PersistentObject ^obj in m_list ) {
 			// and retrieve links and properties
 			obj->Retrieve();
 		}
@@ -133,24 +128,24 @@ void CRetrieveCriteria::OnPerformComplete( void )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create instance of the CRetrieveCriteria class to retrieve the
+/// Create instance of the RetrieveCriteria class to retrieve the
 /// objects of given type.
 /// </summary>
 //-------------------------------------------------------------------
-CRetrieveCriteria::CRetrieveCriteria( String ^type ): \
-	CPersistentCriteria(type), m_asProxies(false), m_pos(-1)
+RetrieveCriteria::RetrieveCriteria( String ^type ): \
+	PersistentCriteria(type), m_asProxies(false), m_pos(-1)
 {
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create instance of the CRetrieveCriteria class to retrieve the
+/// Create instance of the RetrieveCriteria class to retrieve the
 /// objects of given type that satisfy spicified WHERE clause.
 /// </summary>
 //-------------------------------------------------------------------
-CRetrieveCriteria::CRetrieveCriteria( String ^type, String ^sWhere ): \
-	CPersistentCriteria(type), m_asProxies(false), m_pos(-1)
+RetrieveCriteria::RetrieveCriteria( String ^type, String ^sWhere ): \
+	PersistentCriteria(type), m_asProxies(false), m_pos(-1)
 {
 	Where = sWhere;
 }
@@ -158,13 +153,13 @@ CRetrieveCriteria::CRetrieveCriteria( String ^type, String ^sWhere ): \
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create instance of the CRetrieveCriteria class to retrieve the
+/// Create instance of the RetrieveCriteria class to retrieve the
 /// objects of given type that sutisfy spicified WHERE and ORDER BY
 /// clauses.
 /// </summary>
 //-------------------------------------------------------------------
-CRetrieveCriteria::CRetrieveCriteria( String ^type, String ^sWhere, String ^orderBy ): \
-	CPersistentCriteria(type), m_asProxies(false), m_pos(-1)
+RetrieveCriteria::RetrieveCriteria( String ^type, String ^sWhere, String ^orderBy ): \
+	PersistentCriteria(type), m_asProxies(false), m_pos(-1)
 {
 	Where = sWhere;
 	OrderBy = orderBy;
@@ -173,15 +168,15 @@ CRetrieveCriteria::CRetrieveCriteria( String ^type, String ^sWhere, String ^orde
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create retrieve criteria based on another CPersistentCriteria
+/// Create retrieve criteria based on another PersistentCriteria
 /// instance.
 /// </summary><remarks>
 /// Copy all internal data: base class will copy common propertis
 /// except collection content.
 /// </remarks>
 //-------------------------------------------------------------------
-CRetrieveCriteria::CRetrieveCriteria( const CPersistentCriteria %crit ): \
-	CPersistentCriteria(crit), m_asProxies(false), m_pos(-1)
+RetrieveCriteria::RetrieveCriteria( const PersistentCriteria %crit ): \
+	PersistentCriteria(crit), m_asProxies(false), m_pos(-1)
 {
 }
 
@@ -195,18 +190,15 @@ CRetrieveCriteria::CRetrieveCriteria( const CPersistentCriteria %crit ): \
 /// or to increase perfomance. By default is set to false.
 /// </remarks>
 //-------------------------------------------------------------------
-bool CRetrieveCriteria::AsProxies::get( void )
+bool RetrieveCriteria::AsProxies::get( void )
 {	
 	return m_asProxies;
 }
 
-
-void CRetrieveCriteria::AsProxies::set( bool value )
-{ENTER(_lock_this)
-
+void RetrieveCriteria::AsProxies::set( bool value )
+{
 	m_asProxies = value;
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -221,9 +213,8 @@ EXIT(_lock_this)}
 /// collection.
 /// </remarks>
 //-------------------------------------------------------------------
-bool CRetrieveCriteria::Move( int count )
-{ENTER(_lock_this)
-
+bool RetrieveCriteria::Move( int count )
+{
 	int	oldBottom = m_bottom;
 	int oldCount = m_count;
 
@@ -262,5 +253,4 @@ bool CRetrieveCriteria::Move( int count )
 	}
 
 	return (Count > 0);
-
-EXIT(_lock_this)}
+}

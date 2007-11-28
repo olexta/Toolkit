@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		ObjectLinks.h												*/
 /*																			*/
-/*	Content:	Definition of CObjectLinks class							*/
+/*	Content:	Definition of ObjectLinks class								*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -21,34 +21,33 @@ using namespace System::Collections::Generic;
 
 
 _RPL_BEGIN
-ref class CPersistentObject;
+ref class PersistentObject;
 
 /// <summary>
 /// Store object relations.
 /// </summary><remarks>
-/// Link is only pointer to CPersistentObject object. To add or delete link
+/// Link is only pointer to PersistentObject object. To add or delete link
 /// from parent, making the call with linked object as parameter is all that
-/// you need to do. Class derive from CPersistentObjects and add built in
+/// you need to do. Class derive from PersistentObjects and add built in
 /// event support.
 /// </remarks>
-public ref class CObjectLinks sealed : CPersistentObjects
+public ref class ObjectLinks sealed : PersistentObjects
 {
 private:
 	bool				m_changed;
-	CPersistentObject	^m_owner;
+	PersistentObject	^m_owner;
 
 internal:
-	CObjectLinks( CPersistentObject ^owner );
-	CObjectLinks( CPersistentObject ^owner,
-				  IEnumerable<CPersistentObject^> ^e );
-	explicit CObjectLinks( const CObjectLinks %links );
+	ObjectLinks( PersistentObject ^owner );
+	ObjectLinks( PersistentObject ^owner,
+				 IEnumerable<PersistentObject^> ^e );
+	explicit ObjectLinks( const ObjectLinks %links );
 
 protected:
-	virtual void OnClear( void ) override;
-	virtual void OnInsert( CPersistentObject ^obj ) override;
-	virtual void OnRemove( CPersistentObject ^obj ) override;
-	virtual void OnInsertComplete( CPersistentObject ^obj ) override;
-	virtual void OnRemoveComplete( CPersistentObject ^obj ) override;
+	virtual void OnInsert( PersistentObject ^obj ) override;
+	virtual void OnRemove( PersistentObject ^obj ) override;
+	virtual void OnInsertComplete( PersistentObject ^obj ) override;
+	virtual void OnRemoveComplete( PersistentObject ^obj ) override;
 
 public:
 	property bool IsListChanged {

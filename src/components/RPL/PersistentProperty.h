@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		PersistentProperty.h										*/
 /*																			*/
-/*	Content:	Definition of CPersistentProperty class						*/
+/*	Content:	Definition of PersistentProperty class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -16,16 +16,17 @@
 #include "RPL.h"
 
 using namespace System;
+using namespace _COLLECTIONS;
 
 
 _RPL_BEGIN
 ref class StreamWrapper;
-ref class CPersistentProperty;
-delegate void PP_CHANGE( CPersistentProperty^ sender,
-						 Object^ oldValue, Object ^newValue );
+ref class PersistentProperty;
+delegate void PP_CHANGE( PersistentProperty ^sender,
+						 Object ^oldValue, Object ^newValue );
 
 /// <sumamry>
-/// Provide internal access to the CPersistentProperty class.
+/// Provide internal access to the PersistentProperty class.
 /// </sumamry><remarks>
 /// This is more flexible realisation of a "internal" access modifier. This
 /// interface can be used in .NET Remoting.
@@ -46,50 +47,50 @@ private interface class IIPersistentProperty
 /// String, Stream and DBNull.
 /// </remarks>
 [Serializable]
-public ref class CPersistentProperty sealed :/* MarshalByRefObject,*/
-											  IIPersistentProperty
+public ref class PersistentProperty sealed : //MarshalByRefObject,
+											 IKeyedObject<String^>,
+											 IIPersistentProperty
 {
 private:
-	String		^m_name;
-	Object		^m_value;
-	bool		m_changed;
-	
-	PP_CHANGE	^m_on_change;
-	Object		^_lock_this;
+	String			^m_name;
+	Object			^m_value;
+	bool			m_changed;
+	PP_CHANGE		^m_on_change;
 
 	void set_value( Object ^value );
-	void on_change( StreamWrapper^ sender );
+	void stream_change( StreamWrapper ^sender );
 
 // IIPersistentProperty
 private:
-	event PP_CHANGE ^OnChange {
+	event PP_CHANGE ^on_change {
 		virtual void add( PP_CHANGE ^d ) sealed =
 			IIPersistentProperty::OnChange::add;
 		virtual void remove( PP_CHANGE ^d ) sealed =
 			IIPersistentProperty::OnChange::remove;
-		virtual void raise( CPersistentProperty ^sender,
+		virtual void raise( PersistentProperty ^sender,
 							Object ^oldValue, Object ^newValue ) sealed;
 	}
-	virtual void SetChanged( bool value ) sealed =
+
+	virtual void set_changed( bool value ) sealed =
 		IIPersistentProperty::SetChanged;
 
 protected:
 	void OnValidate( Object^ value );
 
 public:
-	CPersistentProperty( String ^name );
-	CPersistentProperty( String ^name, Object ^value );
-	explicit CPersistentProperty( const CPersistentProperty %prop );
-	~CPersistentProperty( void );
+	PersistentProperty( String ^name );
+	PersistentProperty( String ^name, Object ^value );
+	explicit PersistentProperty( const PersistentProperty %prop );
+	~PersistentProperty( void );
 
-	CPersistentProperty% operator=( Object^ value );
-	CPersistentProperty% operator=( const CPersistentProperty %value );
-	bool operator==( const CPersistentProperty %value );
-	bool operator!=( const CPersistentProperty %value );
+	PersistentProperty% operator=( Object ^value );
+	PersistentProperty% operator=( const PersistentProperty %value );
+	bool operator==( const PersistentProperty %value );
+	bool operator!=( const PersistentProperty %value );
 	operator String^( void );
 	
 	property String^ Name {
-		String^ get( void );
+		virtual String^ get( void ) = IKeyedObject<String^>::Key::get;
 	}
 	property Object^ Value {
 		Object^ get( void );
@@ -98,10 +99,8 @@ public:
 	property bool IsChanged {
 		bool get( void );
 	}
-	property Object^ SyncRoot {
-		Object^ get( void );
-	}
 
+	virtual bool Equals( Object ^obj ) override;
 	virtual String^ ToString( void ) override;
 };
 _RPL_END

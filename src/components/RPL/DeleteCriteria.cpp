@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		DeleteCriteria.cpp											*/
 /*																			*/
-/*	Content:	Implementation of CDeleteCriteria class						*/
+/*	Content:	Implementation of DeleteCriteria class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -19,7 +19,7 @@ using namespace _RPL;
 
 
 //----------------------------------------------------------------------------
-//								CDeleteCriteria
+//							Toolkit::RPL::DeleteCriteria
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -32,14 +32,15 @@ using namespace _RPL;
 /// was raised then criteria will contain set of deleted objects.
 /// </remarks>
 //-------------------------------------------------------------------
-void CDeleteCriteria::OnPerformComplete( void )
+void DeleteCriteria::OnPerformComplete( void )
 {
 	// pass throught all founded objects
-	for each( CPersistentObject ^obj in m_list ) {
+	for each( PersistentObject ^obj in m_list ) {
 		// call method of deletion
 		obj->Delete();
 	}
 }
+
 
 //-------------------------------------------------------------------
 /// <summary>
@@ -47,20 +48,20 @@ void CDeleteCriteria::OnPerformComplete( void )
 /// coresponding to specified object's type.
 /// </summary>
 //-------------------------------------------------------------------
-CDeleteCriteria::CDeleteCriteria( String ^type ): \
-	CPersistentCriteria( type )
+DeleteCriteria::DeleteCriteria( String ^type ): \
+	PersistentCriteria( type )
 {
 };
 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create instance of the CDeleteCriteria class for given object's
+/// Create instance of the DeleteCriteria class for given object's
 /// type that contains specified WHERE clause.
 /// </summary>
 //-------------------------------------------------------------------
-CDeleteCriteria::CDeleteCriteria( String ^type, String ^sWhere ): \
-	CPersistentCriteria( type )
+DeleteCriteria::DeleteCriteria( String ^type, String ^sWhere ): \
+	PersistentCriteria( type )
 {
 	Where = sWhere;
 }
@@ -68,12 +69,13 @@ CDeleteCriteria::CDeleteCriteria( String ^type, String ^sWhere ): \
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create instance of the CDeleteCriteria class for given type that
+/// Create instance of the DeleteCriteria class for given type that
 /// contains spicified WHERE and ORDER BY clauses.
 /// </summary>
 //-------------------------------------------------------------------
-CDeleteCriteria::CDeleteCriteria( String ^type, String ^sWhere, String ^orderBy ): \
-	CPersistentCriteria(type)
+DeleteCriteria::DeleteCriteria( String ^type, String ^sWhere, \
+							    String ^orderBy ):			  \
+	PersistentCriteria(type)
 {
 	Where = sWhere;
 	OrderBy = orderBy;
@@ -82,12 +84,13 @@ CDeleteCriteria::CDeleteCriteria( String ^type, String ^sWhere, String ^orderBy 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create instance of the CDeleteCriteria class based on another
-/// CPersistentCriteria instance.
+/// Create instance of the DeleteCriteria class based on another
+/// PersistentCriteria instance.
 /// </summary><remarks>
 /// Copy common clauses only from the specified instance.
 /// </remarks>
 //-------------------------------------------------------------------
-CDeleteCriteria::CDeleteCriteria( const CPersistentCriteria %crit ): \
-	CPersistentCriteria(crit)
-{}
+DeleteCriteria::DeleteCriteria( const PersistentCriteria %crit ): \
+	PersistentCriteria(crit)
+{
+}

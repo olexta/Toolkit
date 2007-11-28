@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		PersistenceBroker.h											*/
 /*																			*/
-/*	Content:	Definition of CPersistenceBroker class						*/
+/*	Content:	Definition of PersistenceBroker class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -13,7 +13,6 @@
 /****************************************************************************/
 
 #pragma once
-#using <System.Data.dll>
 #include "RPL.h"
 #include "IBrokerCache.h"
 #include "IPersistenceStorage.h"
@@ -22,31 +21,32 @@ using namespace System;
 using namespace System::Data;
 using namespace System::Threading;
 using namespace System::Collections::Generic;
-using namespace _RPL::Storage; 
+using namespace _COLLECTIONS;
+using namespace _RPL::Storage;
 
 
 _RPL_BEGIN
 interface class IID;
 interface class IBrokerFactory;
 interface class ITransactionSupport;
-ref class CPersistentObject;
-ref class CPersistentCriteria;
-ref class CPersistentTransaction;
+ref class PersistentObject;
+ref class PersistentCriteria;
+ref class PersistentTransaction;
 
 /// <sumamry>
-/// Provide internal access to the CPersistenceBroker class.
+/// Provide internal access to the PersistenceBroker class.
 /// </sumamry><remarks>
 /// This is more flexible realisation of a "internal" access modifier. This
 /// interface can be used in .NET Remoting.
 /// </remarks>
 private interface class IIPersistenceBroker
 {
-	void SaveObject( CPersistentObject ^obj );
-	void RetrieveObject( CPersistentObject ^obj );
-	void DeleteObject( CPersistentObject ^obj );
+	void SaveObject( PersistentObject ^obj );
+	void RetrieveObject( PersistentObject ^obj );
+	void DeleteObject( PersistentObject ^obj );
 
-	void Process( CPersistentCriteria ^crit );
-	void Process( CPersistentTransaction ^trans );
+	void Process( PersistentCriteria ^crit );
+	void Process( PersistentTransaction ^trans );
 	IDataReader^ Process( String ^SQL );
 };
 
@@ -57,14 +57,14 @@ private interface class IIPersistenceBroker
 ///	In many ways this class is the key to the persistence layer. This class
 /// follows the Singleton design pattern in that there is only one instance
 /// of it in the object space of the application domain. During run time
-/// CPersistenceBroker maintains connection to persistence mechanism and
+/// PersistenceBroker maintains connection to persistence mechanism and
 /// manages interactions with them. PersistenceBroker effectively acts as a
-/// go between for the classes CPersistentObject, CPersistentCriteria and
-/// CPersistentTransaction as it is where instances of these classes submit
+/// go between for the classes PersistentObject, PersistentCriteria and
+/// PersistentTransaction as it is where instances of these classes submit
 /// themselves to be processed. An important feature of this class is store
 /// founded objects in internal cache, that improve search perfomance.
 /// </remarks>
-public ref class CPersistenceBroker : MarshalByRefObject, IIPersistenceBroker
+public ref class PersistenceBroker : MarshalByRefObject, IIPersistenceBroker
 {
 private:
 	// "interface" to parent IPersistentStorage and IDbConnection
@@ -75,42 +75,44 @@ private:
 	//
 	// This is cache of objects for some session
 	//	
-	ref class CBrokerCache : IBrokerCache
+	ref class BrokerCache : IBrokerCache
 	{
 	private:
-		Dictionary<String^, WeakReference^>	m_cache;
-		GET_STORAGE							^m_fnStorage;
-		ADD_TO_TRANS						^m_fnAddToTrans;
-	
+		ReaderWriterLock^	const _lock;
+		GET_STORAGE^		const _fnStorage;
+		ADD_TO_TRANS^		const _fnAddToTrans;
 		Thread				^m_clear_thread;
-		ReaderWriterLock	^m_rw_lock;
 
+		Map<String^, WeakReference^>	m_cache;
+		
 		String^	key( int id, String ^type );
 		String^ key( IID ^iid );
+		void clear( bool bInacecessibleOnly );
 
 	public:
-		CBrokerCache( GET_STORAGE ^fnStorage, ADD_TO_TRANS ^fnAddToTrans );
-		~CBrokerCache( void );
+		BrokerCache( GET_STORAGE ^fnStorage, ADD_TO_TRANS ^fnAddToTrans );
+		~BrokerCache( void );
 
-		void Add( CPersistentObject ^obj );
-		void Add( IEnumerable<CPersistentObject^> ^objs );
-		void Clear( bool bInaccessibleOnly );
+		void Add( PersistentObject ^obj );
+		void Add( IEnumerable<PersistentObject^> ^objs );
+		void Clear( void );
 
-		virtual CPersistentObject^ Search( int id, String ^type );
-		virtual CPersistentObject^ Search( int id, String ^type,
-										   DateTime stamp, String ^name );
+		virtual PersistentObject^ Search( int id, String ^type );
+		virtual PersistentObject^ Search( int id, String ^type,
+										  DateTime stamp, String ^name );
 	};
 
 private:
+	Object^						const _lock_obj;
+	Object^						const _lock_crit;
+	Object^						const _lock_trans;
+
 	static IBrokerFactory		^m_factory = nullptr;
-	static CPersistenceBroker	^m_instance = nullptr;
-	Object						^_lock_obj;
-	Object						^_lock_crit;
-	Object						^_lock_trans;
+	static PersistenceBroker	^m_instance = nullptr;
 
 	IDbConnection				^m_cnn;
 	IPersistenceStorage			^m_storage;
-	CBrokerCache				^m_cache;
+	BrokerCache					^m_cache;
 	List<ITransactionSupport^>	^m_trans_stack;
 
 	void check_state( void );
@@ -119,35 +121,35 @@ private:
 
 // IIPersistenceBroker
 private:
-	virtual void SaveObject( CPersistentObject ^obj ) sealed =
+	virtual void save_object( PersistentObject ^obj ) sealed =
 		IIPersistenceBroker::SaveObject;
-	virtual void RetrieveObject( CPersistentObject ^obj ) sealed =
+	virtual void retrieve_object( PersistentObject ^obj ) sealed =
 		IIPersistenceBroker::RetrieveObject;
-	virtual void DeleteObject( CPersistentObject ^obj ) sealed =
+	virtual void delete_object( PersistentObject ^obj ) sealed =
 		IIPersistenceBroker::DeleteObject;
 
-	virtual void Process( CPersistentCriteria ^crit ) sealed =
+	virtual void process( PersistentCriteria ^crit ) sealed =
 		IIPersistenceBroker::Process;
-	virtual void Process( CPersistentTransaction ^trans ) sealed =
+	virtual void process( PersistentTransaction ^trans ) sealed =
 		IIPersistenceBroker::Process;
-	virtual IDataReader^ Process( String ^SQL ) sealed =
+	virtual IDataReader^ process( String ^SQL ) sealed =
 		IIPersistenceBroker::Process;
 
 internal:
-	static property IIPersistenceBroker^ Broker {
-		IIPersistenceBroker^ get( void );
+	property IIPersistenceBroker^ Broker {
+		static IIPersistenceBroker^ get( void );
 	}
 
 protected:
-	CPersistenceBroker( void );
-	~CPersistenceBroker( void );
+	PersistenceBroker( void );
+	~PersistenceBroker( void );
 
 public:
-	static property IBrokerFactory^ Factory {
-		void set( IBrokerFactory^ factory );
+	property IBrokerFactory^ Factory {
+		static void set( IBrokerFactory ^factory );
 	}
-	static property CPersistenceBroker^ Instance {
-		CPersistenceBroker^ get( void );
+	property PersistenceBroker^ Instance {
+		static PersistenceBroker^ get( void );
 	};
 	property bool IsConnected {
 		bool get( void );

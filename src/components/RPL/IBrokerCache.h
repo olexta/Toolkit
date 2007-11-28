@@ -19,7 +19,7 @@ using namespace System;
 
 
 _RPL_BEGIN
-ref class CPersistentObject;
+ref class PersistentObject;
 
 namespace Storage {
 	/// <summary>
@@ -28,12 +28,12 @@ namespace Storage {
 	/// Search function return object from cache (in case of using second
 	/// signature it will be up-to-date) if it exists. In other case null
 	/// reference will be returned. This interface is used by persistent
-	/// storage class representation in processing of CPersistentCriteria.
+	/// storage class representation in processing of PersistentCriteria.
 	/// </remarks>
 	public interface class IBrokerCache
 	{
-		CPersistentObject^ Search( int id, String ^type );
-		CPersistentObject^ Search( int id, String ^type,
-								   DateTime stamp, String ^name );
+		PersistentObject^ Search( int id, String ^type );
+		PersistentObject^ Search( int id, String ^type,
+								  DateTime stamp, String ^name );
 	};
 }_RPL_END

@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		UpdateCriteria.h											*/
 /*																			*/
-/*	Content:	Definition of CUpdateCriteria class							*/
+/*	Content:	Definition of UpdateCriteria class							*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -20,28 +20,28 @@ using namespace System;
 
 
 _RPL_BEGIN
-ref class CPersistentProperties;
+ref class PersistentProperties;
 
 /// <summary>
 /// This class encapsulates the behavior needed to update scope of objects.
 /// </summary><remarks>
-/// It derived from CPersistentCriteria which ncapsulate all properties for
+/// It derived from PersistentCriteria which ncapsulate all properties for
 /// building SQL request.To perform this operations all	objects retrieve from
 /// storage with it properties and links. Then set new property values, check
 /// business logic and store in persistent mechanism. After successfull
 /// operation criteria will be filled  by updated objects.
 /// </remarks>
-public ref class CUpdateCriteria sealed : CPersistentCriteria
+public ref class UpdateCriteria sealed : PersistentCriteria
 {
 private:
-	ref struct BACKUP_STRUCT {
-		CPersistentProperties	^_props;
-	};
+	typedef ref struct BACKUP_STRUCT_ {
+		PersistentProperties	^_props;
+	} BACKUP_STRUCT;
 
 private:
-	CPersistentProperties	^m_props;
+	PersistentProperties	^m_props;
 
-	Collections::Stack		m_trans_stack;
+	Stack<BACKUP_STRUCT^>	m_trans_stack;
 
 protected:
 	virtual void OnTransactionBegin( void ) override;
@@ -50,13 +50,13 @@ protected:
 	virtual void OnPerformComplete( void ) override;
 
 public:
-	CUpdateCriteria( String ^type );
-	CUpdateCriteria( String ^type, String ^sWhere );
-	CUpdateCriteria( String ^type, String ^sWhere, String ^orderBy );
-	explicit CUpdateCriteria( const CPersistentCriteria %crit );
+	UpdateCriteria( String ^type );
+	UpdateCriteria( String ^type, String ^sWhere );
+	UpdateCriteria( String ^type, String ^sWhere, String ^orderBy );
+	explicit UpdateCriteria( const PersistentCriteria %crit );
 
-	property CPersistentProperties^ Properties {
-		CPersistentProperties^ get( void );
+	property PersistentProperties^ Properties {
+		PersistentProperties^ get( void );
 	}
 };
 _RPL_END

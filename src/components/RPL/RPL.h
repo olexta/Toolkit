@@ -22,9 +22,29 @@ using namespace System::Diagnostics;
 // Define namespace macros definition. All public classes
 // must be defined in this namespace.
 //
-#define	_RPL			ABBYY::Toolkit::RPL
-#define	_RPL_BEGIN		namespace ABBYY{namespace Toolkit{namespace RPL{
-#define	_RPL_END		}}}
+#define	_RPL			Toolkit::RPL
+#define	_RPL_BEGIN		namespace Toolkit{namespace RPL{
+#define	_RPL_END		}}
+#define _COLLECTIONS	Toolkit::Collections;
+
+
+//
+// Define timeout for operations.
+//
+#ifdef _DEBUG
+	#define TIMEOUT	30000
+#else
+	#define TIMEOUT -1
+#endif
+
+
+//
+// Define lock macroses.
+//
+#define ENTER_READ(lock)		lock->AcquireReaderLock(TIMEOUT); try {
+#define EXIT_READ(lock)			} finally { lock->ReleaseReaderLock(); }
+#define ENTER_WRITE(lock)		lock->AcquireWriterLock(TIMEOUT); try {
+#define EXIT_WRITE(lock)		} finally { lock->ReleaseWriterLock(); }
 
 
 //

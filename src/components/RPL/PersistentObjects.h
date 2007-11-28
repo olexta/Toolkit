@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		PersistentObjects.h											*/
 /*																			*/
-/*	Content:	Definition of CPersistentObjects class						*/
+/*	Content:	Definition of PersistentObjects class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -20,72 +20,56 @@ using namespace System::Collections::Generic;
 
 
 _RPL_BEGIN
-ref class CPersistentObject;
+ref class PersistentObject;
 
 /// <summary>
 /// This class is used for storing collection of objects.
 /// </summary><remarks>
-/// I implement this class to get full control of internal data accessing that
-/// is needed for thread-safe development. Also it provide some usefull
-/// routines such as unique object contrtol, null reference control and find
-/// functions. I implement OnXXX events to control collection access too.
+/// It provides some usefull routines such as unique object contrtol,
+/// null reference control and find functions. I implement OnXXX
+/// events to control collection access too. But this class haven't
+/// Clear() method due to potential errors (i cann't guaranty 
+/// errorless batch processing).
 /// </remarks>
-public ref class CPersistentObjects : MarshalByRefObject,
-									  ICollection<CPersistentObject^>,
-									  Collections::ICollection 
+public ref class PersistentObjects : MarshalByRefObject,
+									 ICollection<PersistentObject^>
 {
 private:
-	property bool IsReadOnly {
-		virtual bool get( void ) sealed =
-			ICollection<CPersistentObject^>::IsReadOnly::get;
-	}
-	property bool IsSynchronized {
-		virtual bool get( void ) sealed =
-			Collections::ICollection::IsSynchronized::get;
-	}
-	property Object^ SyncRoot {
-		virtual Object^ get( void  ) sealed =
-			Collections::ICollection::SyncRoot::get;
-	}
-
-	virtual void CopyTo( Array ^dest, int index ) sealed = 
-		Collections::ICollection::CopyTo;
-	virtual void CopyTo( array<CPersistentObject^> ^dest, int index ) sealed = 
-		ICollection<CPersistentObject^>::CopyTo;
-	virtual Collections::IEnumerator^ GetEnumerator( void ) sealed =
-		Collections::IEnumerable::GetEnumerator;
-	virtual IEnumerator<CPersistentObject^>^ GetGEnumerator( void ) sealed =
-		IEnumerable<CPersistentObject^>::GetEnumerator;
+	// IEnumerable
+	virtual System::Collections::IEnumerator^ get_enumerator( void ) sealed =
+		System::Collections::IEnumerable::GetEnumerator;
+	
+	// IEnumerable<PersistenObject^>
+	virtual bool items_is_readonly( void ) sealed =
+		ICollection<PersistentObject^>::IsReadOnly::get;
+	virtual IEnumerator<PersistentObject^>^ items_get_enumerator( void ) sealed =
+		IEnumerable<PersistentObject^>::GetEnumerator;
 
 protected:
-	List<CPersistentObject^>	m_list;
+	List<PersistentObject^>	m_list;
 
-	Object	^_lock_this;
-
-	virtual void OnClear( void );
-	virtual void OnRemove( CPersistentObject ^prop );
-	virtual void OnInsert( CPersistentObject ^prop );
-	virtual void OnClearComplete( void );
-	virtual void OnRemoveComplete( CPersistentObject ^prop );
-	virtual void OnInsertComplete( CPersistentObject ^prop );
+	virtual void OnInsert( PersistentObject ^prop );
+	virtual void OnRemove( PersistentObject ^prop );
+	virtual void OnInsertComplete( PersistentObject ^prop );
+	virtual void OnRemoveComplete( PersistentObject ^prop );
 
 public:
-	CPersistentObjects( void );
-	CPersistentObjects( IEnumerable<CPersistentObject^> ^e );
+	PersistentObjects( void );
+	PersistentObjects( IEnumerable<PersistentObject^> ^e );
 
-	bool operator==( const CPersistentObjects %objs );
-	bool operator!=( const CPersistentObjects %objs );
+	bool operator==( const PersistentObjects %objs );
+	bool operator!=( const PersistentObjects %objs );
 
-	virtual property int Count {
-		int get( void );
+	property int Count {
+		virtual int get( void );
 	}
-
-	CPersistentObject^ Find( Predicate<CPersistentObject^> ^match );
-	IEnumerable<CPersistentObject^>^ FindAll( Predicate<CPersistentObject^> ^match );
 	
-	virtual void Add( CPersistentObject ^obj );
+	virtual void Add( PersistentObject ^obj );
 	virtual void Clear( void );
-	virtual bool Contains( CPersistentObject ^obj );
-	virtual bool Remove( CPersistentObject ^obj );
+	virtual bool Contains( PersistentObject ^obj );
+	virtual void CopyTo( array<PersistentObject^> ^dest, int index );
+	virtual bool Remove( PersistentObject ^obj );
+
+	virtual bool Equals( Object ^obj ) override;
 };
 _RPL_END

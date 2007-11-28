@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		UpdateCriteria.cpp											*/
 /*																			*/
-/*	Content:	Implementation of CUpdateCriteria class						*/
+/*	Content:	Implementation of UpdateCriteria class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -17,12 +17,11 @@
 #include "PersistentObject.h"
 #include "UpdateCriteria.h"
 
-using namespace System::Threading;
 using namespace _RPL;
 
 
 //----------------------------------------------------------------------------
-//								CUpdateCriteria
+//							Toolkit::RPL::UpdateCriteria
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -34,13 +33,13 @@ using namespace _RPL;
 /// data by "OnTransactionRollback".
 /// </remarks>
 //-------------------------------------------------------------------
-void CUpdateCriteria::OnTransactionBegin( void )
+void UpdateCriteria::OnTransactionBegin( void )
 {
 	// create new struct to store backup data
 	BACKUP_STRUCT ^backup = gcnew BACKUP_STRUCT();
 	
 	// copy properties
-	backup->_props = gcnew CPersistentProperties(m_props);
+	backup->_props = gcnew PersistentProperties(m_props);
 	
 	// store backup in transaction stack
 	m_trans_stack.Push( backup );
@@ -55,7 +54,7 @@ void CUpdateCriteria::OnTransactionBegin( void )
 /// for transaction support (delete object's save point).
 /// </remarks>
 //-------------------------------------------------------------------
-void CUpdateCriteria::OnTransactionCommit( void )
+void UpdateCriteria::OnTransactionCommit( void )
 {
 	// remove stored backup data
 	m_trans_stack.Pop();
@@ -70,10 +69,10 @@ void CUpdateCriteria::OnTransactionCommit( void )
 /// state (object's save point).
 /// </remarks>
 //-------------------------------------------------------------------
-void CUpdateCriteria::OnTransactionRollback( void )
+void UpdateCriteria::OnTransactionRollback( void )
 {
 	// get sored backup data
-	BACKUP_STRUCT ^backup = static_cast<BACKUP_STRUCT^>( m_trans_stack.Pop() );
+	BACKUP_STRUCT ^backup = m_trans_stack.Pop();
 	
 	// restore properties by simple copy reference
 	m_props = backup->_props;
@@ -93,16 +92,16 @@ void CUpdateCriteria::OnTransactionRollback( void )
 /// criteria will contain the set of updated objects.
 /// </remarks>
 //-------------------------------------------------------------------
-void CUpdateCriteria::OnPerformComplete( void )
+void UpdateCriteria::OnPerformComplete( void )
 {
 	// now, i set all needed properties to founded objects
-	for each( CPersistentObject ^obj in m_list ) {
+	for each( PersistentObject ^obj in m_list ) {
 		// pass throught all properties to modify
-		for each( CPersistentProperty ^prop in m_props ) {
+		for each( PersistentProperty ^prop in m_props ) {
 			// retrieve object from storage (now it's proxy)
 			obj->Retrieve();
 			// set property value
-			((IIPersistentObject^) obj)->Properties[prop->Name] = prop->Value;
+			*((IIPersistentObject^) obj)->Properties[prop->Name] = prop->Value;
 		}
 		// and save object
 		obj->Save();
@@ -112,60 +111,60 @@ void CUpdateCriteria::OnPerformComplete( void )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create instance of the CUpdateCriteria class to update objects of
+/// Create instance of the UpdateCriteria class to update objects of
 /// given type.
 /// </summary>
 //-------------------------------------------------------------------
-CUpdateCriteria::CUpdateCriteria( String ^type ): \
-	CPersistentCriteria(type)
+UpdateCriteria::UpdateCriteria( String ^type ): \
+	PersistentCriteria(type)
 {
-	m_props = gcnew CPersistentProperties();
+	m_props = gcnew PersistentProperties();
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create instance of the CUpdateCriteria class to update objects of
+/// Create instance of the UpdateCriteria class to update objects of
 /// given type that satisfy spicified WHERE clause.
 /// </summary>
 //-------------------------------------------------------------------
-CUpdateCriteria::CUpdateCriteria( String ^type, String ^sWhere ): \
-	CPersistentCriteria(type)
+UpdateCriteria::UpdateCriteria( String ^type, String ^sWhere ): \
+	PersistentCriteria(type)
 {
 	Where = sWhere;
 
-	m_props = gcnew CPersistentProperties();
+	m_props = gcnew PersistentProperties();
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create instance of the CUpdateCriteria class to update objects of
+/// Create instance of the UpdateCriteria class to update objects of
 /// given type that satisfy spicified WHERE and ORDER BY clause.
 /// </summary>
 //-------------------------------------------------------------------
-CUpdateCriteria::CUpdateCriteria( String ^type, String ^sWhere, String ^orderBy ): \
-	CPersistentCriteria(type)
+UpdateCriteria::UpdateCriteria( String ^type, String ^sWhere, String ^orderBy ): \
+	PersistentCriteria(type)
 {
 	Where = sWhere;
 	OrderBy = orderBy;
 
-	m_props = gcnew CPersistentProperties();
+	m_props = gcnew PersistentProperties();
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create update criteria based on the another CPersistentCriteria
+/// Create update criteria based on the another PersistentCriteria
 /// instance.
 /// </summary><remarks>
 /// Copy all common clauses only.
 /// </remarks>
 //-------------------------------------------------------------------
-CUpdateCriteria::CUpdateCriteria( const CPersistentCriteria %crit ): \
-	CPersistentCriteria(crit)
+UpdateCriteria::UpdateCriteria( const PersistentCriteria %crit ): \
+	PersistentCriteria(crit)
 {
-	m_props = gcnew CPersistentProperties();
+	m_props = gcnew PersistentProperties();
 }
 
 
@@ -174,7 +173,7 @@ CUpdateCriteria::CUpdateCriteria( const CPersistentCriteria %crit ): \
 /// Gets collection of properties to modify.
 /// </summary>
 //-------------------------------------------------------------------
-CPersistentProperties^ CUpdateCriteria::Properties::get( void )
+PersistentProperties^ UpdateCriteria::Properties::get( void )
 {
 	return m_props;	
 }

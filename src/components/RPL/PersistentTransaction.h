@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		PersistentTransaction.h										*/
 /*																			*/
-/*	Content:	Definition of CPersistentTransaction class					*/
+/*	Content:	Definition of PersistentTransaction class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -16,22 +16,21 @@
 #include "RPL.h"
 
 using namespace System;
-using namespace System::Collections::Generic;
 
 
 _RPL_BEGIN
-ref class CPersistentObject;
-ref class CPersistentCriteria;
+ref class PersistentObject;
+ref class PersistentCriteria;
 
 /// <sumamry>
-/// Provide internal access to the CPersistentTransaction class.
+/// Provide internal access to the PersistentTransaction class.
 /// </sumamry><remarks>
 /// This is more flexible realisation of a "internal" access modifier. This
 /// interface can be used in .NET Remoting.
 /// </remarks>
 private interface class IIPersistentTransaction
 {
-	void on_process( void );
+	void OnProcess( void );
 };
 
 /// <summary>
@@ -41,11 +40,11 @@ private interface class IIPersistentTransaction
 /// routine and perform transaction by calling Process(). If transaction will
 /// not be succeded some error (from persistence storage) will be raised.
 /// </remarks>
-public ref class CPersistentTransaction sealed : MarshalByRefObject,
-												 IIPersistentTransaction
+public ref class PersistentTransaction sealed : MarshalByRefObject,
+												IIPersistentTransaction
 {
 public:
-	enum class Actions { actNone, actRetrieve, actSave, actDelete };
+	typedef enum class Actions { actNone, actRetrieve, actSave, actDelete };
 
 private:
 	value class Task
@@ -59,18 +58,17 @@ private:
 
 private:
 	List<Task>		m_tasks;
-	Object			^_lock_this;
 
 // IIPersistentTransaction
 private:
 	virtual void on_process( void ) sealed =
-		IIPersistentTransaction::on_process;
+		IIPersistentTransaction::OnProcess;
 
 public:
-	CPersistentTransaction( void );
+	PersistentTransaction( void );
 
-	void Add( CPersistentCriteria ^crit );
-	void Add( CPersistentObject ^obj, Actions act );
+	void Add( PersistentCriteria ^crit );
+	void Add( PersistentObject ^obj, Actions act );
 
 	void Process( void );
 };

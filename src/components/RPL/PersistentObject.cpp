@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		PersistentObject.cpp										*/
 /*																			*/
-/*	Content:	Implementation of CPersistentObject class					*/
+/*	Content:	Implementation of PersistentObject class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -18,20 +18,15 @@
 #include "PersistentObject.h"
 
 using namespace System::IO;
-using namespace System::Threading;
 using namespace _RPL;
 
-
-// Define lock macroses
-#define ENTER(lock)		try { Monitor::Enter( lock );
-#define EXIT(lock)		} finally { Monitor::Exit( lock ); }
 
 // Define macros to ignore exceptions
 #define TRY(expr)		try { expr; } catch( Exception^ ) {};
 
 
 //----------------------------------------------------------------------------
-//								CPersistentObject
+//						Toolkit::RPL::PersistentObject
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -40,7 +35,7 @@ using namespace _RPL;
 // if there is any correspondence.
 //
 //-------------------------------------------------------------------
-void CPersistentObject::check_state( bool notNew, bool notDelete, bool notProxy )
+void PersistentObject::check_state( bool notNew, bool notDelete, bool notProxy )
 {
 	String	^s = nullptr;
 	// get a string representation of object state
@@ -66,7 +61,7 @@ void CPersistentObject::check_state( bool notNew, bool notDelete, bool notProxy 
 // object as changed and call our event routine (ignore exceptions).
 //
 //-------------------------------------------------------------------
-void CPersistentObject::on_change( void )
+void PersistentObject::on_change( void )
 {
 	// mark as changed
 	m_changed = true;
@@ -81,7 +76,7 @@ void CPersistentObject::on_change( void )
 // state, call our event routine and mark object as changed.
 //
 //-----------------------------------------------------------------
-void CPersistentObject::on_change( CPersistentObject ^sender )
+void PersistentObject::on_change( PersistentObject ^sender )
 {
 	// check object state
 	check_state( false, true, true );
@@ -102,8 +97,8 @@ void CPersistentObject::on_change( CPersistentObject ^sender )
 // mark object as changed.
 //
 //-------------------------------------------------------------------
-void CPersistentObject::on_change( CPersistentProperty ^sender,
-								   Object ^oldValue, Object ^newValue )
+void PersistentObject::on_change( PersistentProperty ^sender, \
+								  Object ^oldValue, Object ^newValue )
 {
 	// determine stream content change events
 	bool	content = (dynamic_cast<Stream^>( newValue )) && 
@@ -137,7 +132,7 @@ void CPersistentObject::on_change( CPersistentProperty ^sender,
 //    values and return false.
 //
 //-------------------------------------------------------------------
-bool CPersistentObject::on_retrieve( int id, DateTime stamp, String ^name )
+bool PersistentObject::on_retrieve( int id, DateTime stamp, String ^name )
 {
 	// check for up to date in storage
 	if( (m_stamp == stamp) && !m_changed &&
@@ -147,8 +142,8 @@ bool CPersistentObject::on_retrieve( int id, DateTime stamp, String ^name )
 	// i use Dispose to free tempory resources.
 	delete m_links;
 	delete m_props;
-	m_links = gcnew CObjectLinks(this);
-	m_props = gcnew CObjectProperties(this);
+	m_links = gcnew ObjectLinks(this);
+	m_props = gcnew ObjectProperties(this);
 
 	// determine need of OnChange raising (this can be
 	// only for existing objects by retrieve request)
@@ -188,12 +183,12 @@ bool CPersistentObject::on_retrieve( int id, DateTime stamp, String ^name )
 // properties.
 //
 //-------------------------------------------------------------------
-void CPersistentObject::on_retrieve( IEnumerable<CPersistentObject^> ^links,
-									 IEnumerable<CPersistentProperty^> ^props )
+void PersistentObject::on_retrieve( IEnumerable<PersistentObject^> ^links, \
+									IEnumerable<PersistentProperty^> ^props )
 {
 	// recreate links and properties
-	m_links = gcnew CObjectLinks(this, links);
-	m_props = gcnew CObjectProperties(this, props);
+	m_links = gcnew ObjectLinks(this, links);
+	m_props = gcnew ObjectProperties(this, props);
 	// set state as full object
 	m_state = STATE::full;
 
@@ -212,7 +207,7 @@ void CPersistentObject::on_retrieve( IEnumerable<CPersistentObject^> ^links,
 // have ability to restore data by trans_rollback.
 //
 //-------------------------------------------------------------------
-void CPersistentObject::TransactionBegin( void )
+void PersistentObject::trans_begin( void )
 {
 	// addition processing before transaction begin
 	TRY( OnTransactionBegin() );
@@ -228,8 +223,8 @@ void CPersistentObject::TransactionBegin( void )
 	backup->_changed = m_changed;
 	// dublicate properties and links
 	// using copy constructor
-	backup->_links = gcnew CObjectLinks(*m_links);
-	backup->_props = gcnew CObjectProperties(*m_props);
+	backup->_links = gcnew ObjectLinks(*m_links);
+	backup->_props = gcnew ObjectProperties(*m_props);
 
 	// store backup in transaction stack
 	m_trans_stack.Push( backup );
@@ -242,7 +237,7 @@ void CPersistentObject::TransactionBegin( void )
 // for transaction support.
 //
 //-------------------------------------------------------------------
-void CPersistentObject::TransactionCommit( void )
+void PersistentObject::trans_commit( void )
 {
 	// addition processing before transaction commit
 	TRY( OnTransactionCommit() );
@@ -257,13 +252,13 @@ void CPersistentObject::TransactionCommit( void )
 // Transaction fails, so we need to rollback object to previous state.
 //
 //-------------------------------------------------------------------
-void CPersistentObject::TransactionRollback( void )
+void PersistentObject::trans_rollback( void )
 {
 	// addition processing before transaction rollback
 	TRY( OnTransactionRollback() );
 
 	// get sored backup data
-	BACKUP_STRUCT ^backup = static_cast<BACKUP_STRUCT^>( m_trans_stack.Pop() );
+	BACKUP_STRUCT ^backup = m_trans_stack.Pop();
 
 	// restore simple object attributes
 	m_id = backup->_id;
@@ -285,15 +280,14 @@ void CPersistentObject::TransactionRollback( void )
 /// For the new objects ID will be set to 0 and IsProxy to false.
 /// </remarks>
 //-------------------------------------------------------------------
-CPersistentObject::CPersistentObject( void ): \
-	m_id(0), m_state(STATE::full), m_stamp(), m_name(""), \
-	m_changed(false), _lock_this(gcnew Object())
+PersistentObject::PersistentObject( void ):	\
+	m_id(0), m_state(STATE::full), m_stamp(), m_name(""), m_changed(false)
 {
 	dbgprint( String::Format( "-> {0}", this->GetType() ) );
 	
 	// create empty collections
-	m_links = gcnew CObjectLinks(this);
-	m_props = gcnew CObjectProperties(this);
+	m_links = gcnew ObjectLinks(this);
+	m_props = gcnew ObjectProperties(this);
 
 	dbgprint( String::Format( "<- {0}", this->GetType() ) );
 }
@@ -301,15 +295,14 @@ CPersistentObject::CPersistentObject( void ): \
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create CPersistentObject instance of proxy persistent object.
+/// Create PersistentObject instance of proxy persistent object.
 /// </summary><remarks>
 /// For this type of object Propertis and Links collections will be
 /// empty and no operations is allowed for it.
 /// </remarks>
 //-------------------------------------------------------------------
-CPersistentObject::CPersistentObject( int id, DateTime stamp, String ^name ): \
-	m_id(id), m_state(STATE::proxy), m_stamp(stamp), \
-	m_changed(false), _lock_this(gcnew Object())
+PersistentObject::PersistentObject( int id, DateTime stamp, String ^name ): \
+	m_id(id), m_state(STATE::proxy), m_stamp(stamp), m_changed(false)
 {
 	dbgprint( String::Format( "-> {0}\n{1}, {2}, {3}",
 							  this->GetType(), id, stamp, name ) );
@@ -320,8 +313,8 @@ CPersistentObject::CPersistentObject( int id, DateTime stamp, String ^name ): \
 	m_name = name;
 
 	// create empty collections
-	m_links = gcnew CObjectLinks(this);
-	m_props = gcnew CObjectProperties(this);
+	m_links = gcnew ObjectLinks(this);
+	m_props = gcnew ObjectProperties(this);
 
 	dbgprint( String::Format( "<- {0}", this->GetType() ) );
 }
@@ -329,14 +322,13 @@ CPersistentObject::CPersistentObject( int id, DateTime stamp, String ^name ): \
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create CPersistentObject instance of full persistent object.
+/// Create PersistentObject instance of full persistent object.
 /// </summary>
 //-------------------------------------------------------------------
-CPersistentObject::CPersistentObject( int id, DateTime stamp, String ^name, \
-									  IEnumerable<CPersistentObject^> ^links, \
-									  IEnumerable<CPersistentProperty^> ^props ): \
-	m_id(id), m_state(STATE::full), m_stamp(stamp), \
-	m_changed(false), _lock_this(gcnew Object())
+PersistentObject::PersistentObject( int id, DateTime stamp, String ^name,	   \
+									IEnumerable<PersistentObject^> ^links,	   \
+									IEnumerable<PersistentProperty^> ^props ): \
+	m_id(id), m_state(STATE::full), m_stamp(stamp),	m_changed(false)
 {
 	dbgprint( String::Format( "-> {0}\n{1}, {2}, {3}, {4}, {5}", 
 							  this->GetType(), id, stamp, name, links, props ) );
@@ -349,8 +341,8 @@ CPersistentObject::CPersistentObject( int id, DateTime stamp, String ^name, \
 	m_name = name;
 
 	// create filled collections
-	m_links = gcnew CObjectLinks(this, links);
-	m_props = gcnew CObjectProperties(this, props);
+	m_links = gcnew ObjectLinks(this, links);
+	m_props = gcnew ObjectProperties(this, props);
 
 	dbgprint( String::Format( "<- {0}", this->GetType() ) );
 }
@@ -365,7 +357,7 @@ CPersistentObject::CPersistentObject( int id, DateTime stamp, String ^name, \
 /// logic control.
 /// </remarks>
 //-------------------------------------------------------------------
-CObjectLinks^ CPersistentObject::Links::get( void )
+ObjectLinks^ PersistentObject::Links::get( void )
 {
 	return m_links;
 }
@@ -381,24 +373,9 @@ CObjectLinks^ CPersistentObject::Links::get( void )
 /// created automatically and added to properties list.
 /// </remarks>
 //-------------------------------------------------------------------
-CObjectProperties^ CPersistentObject::Properties::get( void )
+ObjectProperties^ PersistentObject::Properties::get( void )
 {
 	return m_props;
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Gets an object that can be used to synchronize access to the
-/// CPersistentObject instance.
-/// </summary><remarks>
-/// Locking trought SyncRoot will suspend all threads that access to
-/// this property.
-/// </remarks>
-//-------------------------------------------------------------------
-Object^ CPersistentObject::SyncRoot::get( void )
-{
-	return _lock_this;
 }
 
 
@@ -410,7 +387,7 @@ Object^ CPersistentObject::SyncRoot::get( void )
 /// overridden by a derived class to create it's own save point.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentObject::OnTransactionBegin( void )
+void PersistentObject::OnTransactionBegin( void )
 {
 }
 
@@ -424,7 +401,7 @@ void CPersistentObject::OnTransactionBegin( void )
 /// was created by "OnTransactionBegin" early.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentObject::OnTransactionCommit( void )
+void PersistentObject::OnTransactionCommit( void )
 {
 }
 
@@ -438,7 +415,7 @@ void CPersistentObject::OnTransactionCommit( void )
 /// saved by "OnTransactionBegin".
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentObject::OnTransactionRollback( void )
+void PersistentObject::OnTransactionRollback( void )
 {
 }
 
@@ -446,7 +423,7 @@ void CPersistentObject::OnTransactionRollback( void )
 //-------------------------------------------------------------------
 /// <summary>
 /// Performs additional custom processes before retrieve properties
-/// of CPersistentObject instance.
+/// of PersistentObject instance.
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action before the
@@ -454,7 +431,7 @@ void CPersistentObject::OnTransactionRollback( void )
 /// </remarks>
 
 //-------------------------------------------------------------------
-void CPersistentObject::OnRetrieve( void )
+void PersistentObject::OnRetrieve( void )
 {
 }
 
@@ -462,14 +439,14 @@ void CPersistentObject::OnRetrieve( void )
 //-------------------------------------------------------------------
 /// <summary>
 /// Performs additional custom processes after retrieve properties of
-/// CPersistentObject instance.
+/// PersistentObject instance.
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action after the
 /// object is retrieved from persistance storage.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentObject::OnRetrieveComplete( void )
+void PersistentObject::OnRetrieveComplete( void )
 {
 }
 
@@ -477,14 +454,14 @@ void CPersistentObject::OnRetrieveComplete( void )
 //-------------------------------------------------------------------
 /// <summary>
 /// Performs additional custom processes before save properties and
-/// links of CPersistentObject instance to persistence mechanism.
+/// links of PersistentObject instance to persistence mechanism.
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action before the
 /// object's properties and links are saved to persistance storage.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentObject::OnSave( void )
+void PersistentObject::OnSave( void )
 {
 }
 
@@ -492,14 +469,14 @@ void CPersistentObject::OnSave( void )
 //-------------------------------------------------------------------
 /// <summary>
 /// Performs additional custom processes after save properties and
-/// links of CPersistentObject instance to persistence mechanism.
+/// links of PersistentObject instance to persistence mechanism.
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action after the
 /// object's properties and links is saved to persistance storage.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentObject::OnSaveComplete( void )
+void PersistentObject::OnSaveComplete( void )
 {
 }
 
@@ -507,14 +484,14 @@ void CPersistentObject::OnSaveComplete( void )
 //-------------------------------------------------------------------
 /// <summary>
 /// Performs additional custom processes before delete instance of
-/// the CPersistentObject class from persistence mechanism.
+/// the PersistentObject class from persistence mechanism.
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action before the
 /// object is deleted from persistance storage.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentObject::OnDelete( void )
+void PersistentObject::OnDelete( void )
 {
 }
 
@@ -522,14 +499,14 @@ void CPersistentObject::OnDelete( void )
 //-------------------------------------------------------------------
 /// <summary>
 /// Performs additional custom processes after delete instance of the
-/// CPersistentObject class from persistence mechanism.
+/// PersistentObject class from persistence mechanism.
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action after the
 /// object is deleted from persistance storage.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentObject::OnDeleteComplete( void )
+void PersistentObject::OnDeleteComplete( void )
 {
 }
 
@@ -544,7 +521,7 @@ void CPersistentObject::OnDeleteComplete( void )
 /// proxy object properties are changeded.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentObject::OnChange( void )
+void PersistentObject::OnChange( void )
 {
 }
 
@@ -552,7 +529,7 @@ void CPersistentObject::OnChange( void )
 //-------------------------------------------------------------------
 /// <summary>
 /// Performs additional custom processes before add/delete new object
-/// link to the CPersistentObject instance. 
+/// link to the PersistentObject instance. 
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action before the
@@ -561,7 +538,7 @@ void CPersistentObject::OnChange( void )
 /// of action.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentObject::OnChange( CPersistentObject^ obj )
+void PersistentObject::OnChange( PersistentObject ^obj )
 {
 }
 
@@ -569,7 +546,7 @@ void CPersistentObject::OnChange( CPersistentObject^ obj )
 //-------------------------------------------------------------------
 /// <summary>
 /// Performs additional custom processes before add/delete/change
-/// persistent property of the CPersistantObject instance.
+/// persistent property of the PersistantObject instance.
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action before the
@@ -578,8 +555,8 @@ void CPersistentObject::OnChange( CPersistentObject^ obj )
 /// delete event, then newValue will be set to nullptr.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentObject::OnChange( CPersistentProperty^ prop, 
-								  Object ^oldValue, Object ^newValue )
+void PersistentObject::OnChange( PersistentProperty ^prop, \
+								 Object ^oldValue, Object ^newValue )
 {
 }
 
@@ -592,7 +569,7 @@ void CPersistentObject::OnChange( CPersistentProperty^ prop,
 /// operator. This is only ToString call.
 /// </remarks>
 //-------------------------------------------------------------------
-CPersistentObject::operator String^( void )
+PersistentObject::operator String^( void )
 {
 	return ToString();
 }
@@ -606,7 +583,7 @@ CPersistentObject::operator String^( void )
 /// combination of object type and ID must be unique.
 /// </remarks>
 //-------------------------------------------------------------------
-int CPersistentObject::ID::get( void )
+int PersistentObject::ID::get( void )
 {
 	return m_id;
 }
@@ -617,7 +594,7 @@ int CPersistentObject::ID::get( void )
 /// Gets a value indicating that the current object is proxy.
 /// </summary>
 //-------------------------------------------------------------------
-bool CPersistentObject::IsProxy::get( void )
+bool PersistentObject::IsProxy::get( void )
 {
 	return (m_state == STATE::proxy);
 }
@@ -628,7 +605,7 @@ bool CPersistentObject::IsProxy::get( void )
 /// Gets a time of the last object's modification.
 /// </summary>
 //-------------------------------------------------------------------
-DateTime CPersistentObject::Stamp::get( void )
+DateTime PersistentObject::Stamp::get( void )
 {
 	return m_stamp;
 }
@@ -639,7 +616,7 @@ DateTime CPersistentObject::Stamp::get( void )
 /// Gets a value indicating that the current object is changed.
 /// </summary>
 //-------------------------------------------------------------------
-bool CPersistentObject::IsChanged::get( void )
+bool PersistentObject::IsChanged::get( void )
 {
 	return m_changed;
 }
@@ -653,23 +630,20 @@ bool CPersistentObject::IsChanged::get( void )
 /// from one or more object properties.
 /// </remarks>
 //-------------------------------------------------------------------
-String^ CPersistentObject::Name::get( void )
+String^ PersistentObject::Name::get( void )
 {
 	return m_name;
 }
 
-
-void CPersistentObject::Name::set( String^ value )
-{ENTER(_lock_this)
-
+void PersistentObject::Name::set( String ^value )
+{
 	// check object state
 	check_state( false, true, false );
 	// set new value
 	m_name = value;
 	// fire OnChange event
 	on_change();
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -683,9 +657,8 @@ EXIT(_lock_this)}
 /// check for the next object states: "new" and "deleted".
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentObject::Retrieve( void )
-{ENTER(_lock_this);
-
+void PersistentObject::Retrieve( void )
+{
 	// check object state
 	check_state( true, true, false );
 
@@ -694,9 +667,8 @@ void CPersistentObject::Retrieve( void )
 	if( m_state == STATE::proxy ) m_state = STATE::filling;
 
 	// call to Broker
-	CPersistenceBroker::Broker->RetrieveObject( this );
-
-EXIT(_lock_this)}
+	PersistenceBroker::Broker->RetrieveObject( this );
+}
 
 
 //-------------------------------------------------------------------
@@ -710,9 +682,8 @@ EXIT(_lock_this)}
 /// check for the next object states: "deleted".
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentObject::Save( void )
-{ENTER(_lock_this)
-
+void PersistentObject::Save( void )
+{
 	// check for object state
 	check_state( false, true, false );
 
@@ -720,12 +691,11 @@ void CPersistentObject::Save( void )
 	OnSave();
 
 	//call to PersistenceBroker
-	CPersistenceBroker::Broker->SaveObject( this );
+	PersistenceBroker::Broker->SaveObject( this );
 
 	// notify about complete
 	OnSaveComplete();
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -740,9 +710,8 @@ EXIT(_lock_this)}
 /// "deleted".
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentObject::Delete( void )
-{ENTER(_lock_this)
-
+void PersistentObject::Delete( void )
+{
 	// check for object state
 	check_state( true, true, false );
 
@@ -754,12 +723,11 @@ void CPersistentObject::Delete( void )
 	OnDelete();
 
 	//call to PersistenceBroker
-	CPersistenceBroker::Broker->DeleteObject( this );
+	PersistenceBroker::Broker->DeleteObject( this );
 
 	// notify about complete
 	OnDeleteComplete();
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -770,7 +738,7 @@ EXIT(_lock_this)}
 /// string representation.
 /// </remarks>
 //-------------------------------------------------------------------
-String^ CPersistentObject::ToString( void )
+String^ PersistentObject::ToString( void )
 {
 	return Name;
 }

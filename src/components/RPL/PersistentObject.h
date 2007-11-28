@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		PersistentObject.h											*/
 /*																			*/
-/*	Content:	Definition of CPersistentObject class						*/
+/*	Content:	Definition of PersistentObject class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -22,36 +22,33 @@ using namespace System::Collections::Generic;
 
 
 _RPL_BEGIN
-ref class CPersistentObject;
-ref class CPersistentProperty;
-ref class CObjectProperties;
-ref class CObjectLinks;
+ref class PersistentObject;
+ref class PersistentProperty;
+ref class ObjectProperties;
+ref class ObjectLinks;
 
 /// <sumamry>
-/// Provide internal access to the CPersistentObject class.
+/// Provide internal access to the PersistentObject class.
 /// </sumamry><remarks>
 /// This is more flexible realisation of a "internal" access modifier. This
 /// interface can be used in .NET Remoting.
 /// </remarks>
 private interface class IIPersistentObject
 {
-	property CObjectLinks^ Links {
-		CObjectLinks^ get( void );
+	property ObjectLinks^ Links {
+		ObjectLinks^ get( void );
 	}
-	property CObjectProperties^ Properties {
-		CObjectProperties^ get( void );
-	}
-	property Object^ SyncRoot {
-		Object^ get( void );
+	property ObjectProperties^ Properties {
+		ObjectProperties^ get( void );
 	}
 
-	void on_change( void );
-	void on_change( CPersistentObject ^sender );
-	void on_change( CPersistentProperty ^sender,
-					Object ^oldValue, Object ^newValue );
-	bool on_retrieve( int id, DateTime stamp, String ^name );
-	void on_retrieve( IEnumerable<CPersistentObject^> ^links,
-					  IEnumerable<CPersistentProperty^> ^props );
+	void OnChange( void );
+	void OnChange( PersistentObject ^sender );
+	void OnChange( PersistentProperty ^sender,
+				   Object ^oldValue, Object ^newValue );
+	bool OnRetrieve( int id, DateTime stamp, String ^name );
+	void OnRetrieve( IEnumerable<PersistentObject^> ^links,
+					 IEnumerable<PersistentProperty^> ^props );
 };
 
 /// <summary>
@@ -68,78 +65,74 @@ private interface class IIPersistentObject
 /// Call Save for proxy object update name and timestamp in persistence
 /// mechanism.
 /// </remarks>
-public ref class CPersistentObject abstract : MarshalByRefObject, IID,
-											  ITransactionSupport,
-											  IIPersistentObject
+public ref class PersistentObject abstract : MarshalByRefObject, IID,
+											 ITransactionSupport,
+											 IIPersistentObject
 {
 private:
-	enum class STATE{ proxy, filling, full };
+	typedef enum class STATE{ proxy, filling, full };
 
-	ref struct BACKUP_STRUCT {
+	typedef ref struct BACKUP_STRUCT_ {
 		int					_id;
 		STATE				_state;
 		DateTime			_stamp;
 		String				^_name;
 		bool				_changed;
 
-		CObjectLinks		^_links;
-		CObjectProperties	^_props;
-	};
+		ObjectLinks			^_links;
+		ObjectProperties	^_props;
+	} BACKUP_STRUCT;
 
 private:
-	int					m_id;
-	STATE				m_state;
-	DateTime			m_stamp;
-	String				^m_name;
-	bool				m_changed;
+	int						m_id;
+	STATE					m_state;
+	DateTime				m_stamp;
+	String					^m_name;
+	bool					m_changed;
 
-	CObjectLinks		^m_links;
-	CObjectProperties	^m_props;
+	ObjectLinks				^m_links;
+	ObjectProperties		^m_props;
 	
-	Object				^_lock_this;
-	Collections::Stack	m_trans_stack;
+	Stack<BACKUP_STRUCT^>	m_trans_stack;
 
 	void check_state( bool notNew, bool notDelete, bool notProxy );
 
 // IIPersistentObject
 private:
 	virtual void on_change( void ) sealed =
-		IIPersistentObject::on_change;
-	virtual void on_change( CPersistentObject ^sender ) sealed = 
-		IIPersistentObject::on_change;
-	virtual void on_change( CPersistentProperty ^sender,
+		IIPersistentObject::OnChange;
+	virtual void on_change( PersistentObject ^sender ) sealed = 
+		IIPersistentObject::OnChange;
+	virtual void on_change( PersistentProperty ^sender,
 					Object ^oldValue, Object ^newValue ) sealed =
-		IIPersistentObject::on_change;
+		IIPersistentObject::OnChange;
 	virtual bool on_retrieve( int id, DateTime stamp, String ^name ) sealed =
-		IIPersistentObject::on_retrieve;
-	virtual void on_retrieve( IEnumerable<CPersistentObject^> ^links,
-							  IEnumerable<CPersistentProperty^> ^props ) sealed =
-		IIPersistentObject::on_retrieve;
+		IIPersistentObject::OnRetrieve;
+	virtual void on_retrieve( IEnumerable<PersistentObject^> ^links,
+							  IEnumerable<PersistentProperty^> ^props ) sealed =
+		IIPersistentObject::OnRetrieve;
 
 // ITransactionSupport
 private:
-	virtual void TransactionBegin( void ) sealed =
+	virtual void trans_begin( void ) sealed =
 		ITransactionSupport::TransactionBegin;
-	virtual void TransactionCommit( void ) sealed =
+	virtual void trans_commit( void ) sealed =
 		ITransactionSupport::TransactionCommit;
-	virtual void TransactionRollback( void ) sealed =
+	virtual void trans_rollback( void ) sealed =
 		ITransactionSupport::TransactionRollback;
 
 protected:
-	CPersistentObject( void );
-	CPersistentObject( int id, DateTime stamp, String ^name );
-	CPersistentObject( int id, DateTime stamp, String ^name,
-					   IEnumerable<CPersistentObject^> ^links,
-					   IEnumerable<CPersistentProperty^> ^props);
+	PersistentObject( void );
+	PersistentObject( int id, DateTime stamp, String ^name );
+	PersistentObject( int id, DateTime stamp, String ^name,
+					  IEnumerable<PersistentObject^> ^links,
+					  IEnumerable<PersistentProperty^> ^props );
 
-	property CObjectLinks^ Links {
-		virtual CObjectLinks^ get( void ) = IIPersistentObject::Links::get;
+	property ObjectLinks^ Links {
+		virtual ObjectLinks^ get( void ) = IIPersistentObject::Links::get;
 	}
-	property CObjectProperties^ Properties {
-		virtual CObjectProperties^ get( void ) = IIPersistentObject::Properties::get;
-	}
-	property Object^ SyncRoot {
-		virtual Object^ get( void ) = IIPersistentObject::SyncRoot::get;
+	property ObjectProperties^ Properties {
+		virtual ObjectProperties^ get( void ) = IIPersistentObject::Properties::get;
 	}
 
 	virtual void OnTransactionBegin( void );
@@ -152,8 +145,8 @@ protected:
 	virtual void OnDelete( void );
 	virtual void OnDeleteComplete( void );
 	virtual void OnChange( void );
-	virtual void OnChange( CPersistentObject^ obj );
-	virtual void OnChange( CPersistentProperty^ prop,
+	virtual void OnChange( PersistentObject ^obj );
+	virtual void OnChange( PersistentProperty ^prop,
 						   Object ^oldValue, Object ^newValue );
 
 public:
@@ -176,7 +169,7 @@ public:
 	}
 	property String^ Name {
 		virtual String^ get( void );
-		virtual void set( String^ value );
+		virtual void set( String ^value );
 	}
 	
 	virtual void Retrieve( void );

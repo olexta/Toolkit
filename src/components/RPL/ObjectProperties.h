@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		ObjectProperties.h											*/
 /*																			*/
-/*	Content:	Definition of CObjectProperties class						*/
+/*	Content:	Definition of ObjectProperties class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -21,33 +21,32 @@ using namespace System::Collections::Generic;
 
 
 _RPL_BEGIN
-ref class CPersistentProperty;
-ref class CPersistentObject;
+ref class PersistentProperty;
+ref class PersistentObject;
 
 /// <summary>
 /// Store object properties.
 /// </summary><remarks>
-/// This class derived from CPersistentProperties and was developed to link
+/// This class derived from PersistentProperties and was developed to link
 /// properties with it's owner object.
 /// </remarks>
-public ref class CObjectProperties sealed : CPersistentProperties
+public ref class ObjectProperties sealed : PersistentProperties
 {
 private:
 	bool				m_changed;
-	CPersistentObject^	m_owner;
+	PersistentObject^	m_owner;
 
 internal:
-	CObjectProperties( CPersistentObject^ owner );
-	CObjectProperties( CPersistentObject^ owner,
-					   IEnumerable<CPersistentProperty^> ^e );
-	explicit CObjectProperties( const CObjectProperties %props );
+	ObjectProperties( PersistentObject ^owner );
+	ObjectProperties( PersistentObject ^owner,
+					  IEnumerable<PersistentProperty^> ^e );
+	explicit ObjectProperties( const ObjectProperties %props );
 
 protected:
-	virtual void OnClear( void ) override;
-	virtual void OnRemove( CPersistentProperty ^prop ) override;
-	virtual void OnInsert( CPersistentProperty ^prop ) override;
-	virtual void OnRemoveComplete( CPersistentProperty ^prop ) override;
-	virtual void OnInsertComplete( CPersistentProperty ^prop ) override;
+	virtual void OnRemove( PersistentProperty ^prop ) override;
+	virtual void OnInsert( PersistentProperty ^prop ) override;
+	virtual void OnRemoveComplete( PersistentProperty ^prop ) override;
+	virtual void OnInsertComplete( PersistentProperty ^prop ) override;
 
 public:
 	property bool IsChanged {

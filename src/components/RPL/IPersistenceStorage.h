@@ -17,17 +17,17 @@
 #include "RPL.h"
 
 using namespace System;
-using namespace System::Collections::Generic;
 using namespace System::Data;
+using namespace System::Collections::Generic;
 
 
 _RPL_BEGIN
 interface class IID;
-ref class CPersistentProperty;
-ref class CPersistentObject;
-ref class CObjectLinks;
-ref class CObjectProperties;
-ref class CPersistentCriteria;
+ref class PersistentProperty;
+ref class PersistentObject;
+ref class ObjectLinks;
+ref class ObjectProperties;
+ref class PersistentCriteria;
 
 namespace Storage {
 	interface class IBrokerCache;
@@ -48,17 +48,17 @@ namespace Storage {
 		void TransactionCommit( void );
 		void TransactionRollback( void );
 
-		int Search( CPersistentCriteria ^crit,
-					IEnumerable<CPersistentObject^>^ %objs );
+		int Search( PersistentCriteria ^crit,
+					IEnumerable<PersistentObject^>^ %objs );
 		void Retrieve( IID ^iid, DateTime %stamp, String^ %name );
 		void Retrieve( IID ^iid,
-					   IEnumerable<CPersistentObject^>^ %links,
-					   IEnumerable<CPersistentProperty^>^ %props );
-		void Save( CPersistentObject ^obj, 
+					   IEnumerable<PersistentObject^>^ %links,
+					   IEnumerable<PersistentProperty^>^ %props );
+		void Save( PersistentObject ^obj, 
 				   int %id, DateTime %stamp, String^ %name,
-				   CObjectLinks ^links, CObjectProperties ^props,
-				   IEnumerable<CPersistentObject^>^ %newlinks,
-				   IEnumerable<CPersistentProperty^>^ %newprops );
+				   ObjectLinks ^links, ObjectProperties ^props,
+				   IEnumerable<PersistentObject^>^ %newlinks,
+				   IEnumerable<PersistentProperty^>^ %newprops );
 		void Delete( IID ^iid );
 	};
 }_RPL_END

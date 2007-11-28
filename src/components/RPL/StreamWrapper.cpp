@@ -14,20 +14,15 @@
 
 #include "StreamWrapper.h"
 
-using namespace System::Threading;
 using namespace _RPL;
 
-
-// Define lock macroses
-#define ENTER(lock)		try { Monitor::Enter( lock );
-#define EXIT(lock)		} finally { Monitor::Exit( lock ); }
 
 // Define macros to ignore exceptions
 #define TRY(expr)		try { expr; } catch( Exception^ ) {};
 
 
 //----------------------------------------------------------------------------
-//								StreamWrapper
+//						Toolkit::RPL::StreamWrapper
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -36,19 +31,17 @@ using namespace _RPL;
 // events methods to present event as delegate.
 //
 //-------------------------------------------------------------------
-void StreamWrapper::OnChange::add( SW_CHANGE ^d )
+void StreamWrapper::on_change::add( SW_CHANGE ^d )
 {
 	m_on_change += d;
 }
 
-
-void StreamWrapper::OnChange::remove( SW_CHANGE ^d )
+void StreamWrapper::on_change::remove( SW_CHANGE ^d )
 {
 	m_on_change -= d;
 }
 
-
-void StreamWrapper::OnChange::raise( StreamWrapper ^sender )
+void StreamWrapper::on_change::raise( StreamWrapper ^sender )
 {
 	if( m_on_change != nullptr ) {
 		// perform all delegates in event
@@ -62,7 +55,7 @@ void StreamWrapper::OnChange::raise( StreamWrapper ^sender )
 // Return stream, that this object is wrapped around.
 //
 //-------------------------------------------------------------------
-Stream^ StreamWrapper::RealValue::get( void )
+Stream^ StreamWrapper::real_value( void )
 {
 	return m_stream;
 }
@@ -73,8 +66,7 @@ Stream^ StreamWrapper::RealValue::get( void )
 /// Create new StreamWrapper instance around given stream.
 /// </summary>
 //-------------------------------------------------------------------
-StreamWrapper::StreamWrapper( Stream ^stream ): \
-	_lock_this(gcnew Object())
+StreamWrapper::StreamWrapper( Stream ^stream )
 {
 	dbgprint( String::Format( "-> {0}", stream ) );
 
@@ -101,20 +93,18 @@ StreamWrapper::StreamWrapper( Stream ^stream ): \
 /// </remarks>
 //-------------------------------------------------------------------
 StreamWrapper::~StreamWrapper( void )
-{ENTER(_lock_this)
-
+{
 	// dispose m_stream
 	delete m_stream;
 
 	// notify about change (after disposing all
 	// Streams become unaccessable)
-	TRY( OnChange( this ) );
-
-EXIT(_lock_this)}
+	TRY( on_change( this ) );
+}
 
 
 //----------------------------------------------------------------------------
-//									Stream
+//					Toolkit::RPL::StreamWrapper::Stream
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -124,11 +114,9 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 bool StreamWrapper::CanRead::get( void )
-{ENTER(_lock_this)
-
+{
 	return m_stream->CanRead;
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -138,11 +126,9 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 bool StreamWrapper::CanSeek::get( void )
-{ENTER(_lock_this)
-
+{
 	return m_stream->CanSeek;
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -152,11 +138,9 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 bool StreamWrapper::CanTimeout::get( void )
-{ENTER(_lock_this)
-
+{
 	return m_stream->CanTimeout;
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -166,11 +150,9 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 bool StreamWrapper::CanWrite::get( void )
-{ENTER(_lock_this)
-
+{
 	return m_stream->CanWrite;
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -179,11 +161,9 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 __int64 StreamWrapper::Length::get( void )
-{ENTER(_lock_this)
-
+{
 	return m_stream->Length;
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -192,19 +172,14 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 __int64 StreamWrapper::Position::get( void )
-{ENTER(_lock_this)
-
+{
 	return m_stream->Position;
-
-EXIT(_lock_this)}
-
+}
 
 void StreamWrapper::Position::set( __int64 value )
-{ENTER(_lock_this)
-
+{
 	m_stream->Position = value;
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -214,19 +189,14 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 int StreamWrapper::ReadTimeout::get( void )
-{ENTER(_lock_this)
-
+{
 	return m_stream->ReadTimeout;
-
-EXIT(_lock_this)}
-
+}
 
 void StreamWrapper::ReadTimeout::set( int value )
-{ENTER(_lock_this)
-
+{
 	m_stream->ReadTimeout = value;
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -236,19 +206,14 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 int StreamWrapper::WriteTimeout::get( void )
-{ENTER(_lock_this)
-
+{
 	return m_stream->WriteTimeout;
-
-EXIT(_lock_this)}
-
+}
 
 void StreamWrapper::WriteTimeout::set( int value )
-{ENTER(_lock_this)
-
+{
 	m_stream->WriteTimeout = value;
-
-EXIT(_lock_this)}
+}
  
 
 //-------------------------------------------------------------------
@@ -258,15 +223,13 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 void StreamWrapper::Close( void )
-{ENTER(_lock_this)
-
+{
 	m_stream->Close();
 
 	// notify about change (after Close many
 	// Streams become unaccessable)
-	TRY( OnChange( this ) );
-
-EXIT(_lock_this)}
+	TRY( on_change( this ) );
+}
 
 
 //-------------------------------------------------------------------
@@ -276,11 +239,9 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 void StreamWrapper::Flush( void )
-{ENTER(_lock_this)
-
+{
 	m_stream->Flush();
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -290,11 +251,9 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 int StreamWrapper::Read( array<unsigned char> ^buffer, int offset, int count )
-{ENTER(_lock_this)
-
+{
 	return m_stream->Read( buffer, offset, count );
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -304,11 +263,9 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 int StreamWrapper::ReadByte( void )
-{ENTER(_lock_this)
-
+{
 	return m_stream->ReadByte();
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -317,11 +274,9 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 __int64 StreamWrapper::Seek( __int64 offset, SeekOrigin origin )
-{ENTER(_lock_this)
-
+{
 	return m_stream->Seek( offset, origin );
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -330,15 +285,13 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 void StreamWrapper::SetLength( __int64 value )
-{ENTER(_lock_this)
-
+{
 	m_stream->SetLength( value );
 
 	// notify about change (only succeded changes
 	// will be notified)
-	TRY( OnChange( this ) );
-
-EXIT(_lock_this)}
+	TRY( on_change( this ) );
+}
 
 
 //-------------------------------------------------------------------
@@ -348,15 +301,13 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 void StreamWrapper::Write( array<unsigned char> ^buffer, int offset, int count )
-{ENTER(_lock_this)
-
+{
 	m_stream->Write( buffer, offset, count );
 	
 	// notify about change (only succeded changes
 	// will be notified)
-	TRY( OnChange( this ) );
-
-EXIT(_lock_this)}
+	TRY( on_change( this ) );
+}
 
 
 //-------------------------------------------------------------------
@@ -366,12 +317,24 @@ EXIT(_lock_this)}
 /// </summary>
 //-------------------------------------------------------------------
 void StreamWrapper::WriteByte( unsigned char value )
-{ENTER(_lock_this)
-
+{
 	m_stream->WriteByte( value );
 
 	// notify about change (only succeded changes
 	// will be notified)
-	TRY( OnChange( this ) );
+	TRY( on_change( this ) );
+}
 
-EXIT(_lock_this)}
+
+//-------------------------------------------------------------------
+/// <summary>
+/// Returns a String that represents the current Object.
+/// </summary><remarks>
+/// Override standart object method ToString(): must provide special
+/// processing for stream representation.
+/// </remarks>
+//-------------------------------------------------------------------
+String^ StreamWrapper::ToString( void )
+{
+	return "<binary data>";
+}

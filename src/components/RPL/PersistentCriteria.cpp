@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		PersistentCriteria.cpp										*/
 /*																			*/
-/*	Content:	Implementation of CPersistentCriteria class					*/
+/*	Content:	Implementation of PersistentCriteria class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -15,20 +15,15 @@
 #include "PersistenceBroker.h"
 #include "PersistentCriteria.h"
 
-using namespace System::Threading;
 using namespace _RPL;
 
-
-// Define lock macroses
-#define ENTER(lock)		try { Monitor::Enter( lock );
-#define EXIT(lock)		} finally { Monitor::Exit( lock ); }
 
 // Define macros to ignore exceptions
 #define TRY(expr)		try { expr; } catch( Exception^ ) {};
 
 
 //----------------------------------------------------------------------------
-//								CPersistentCriteria
+//						Toolkit::RPL::PersistentCriteria
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -40,14 +35,14 @@ using namespace _RPL;
 // override it.
 //
 //-------------------------------------------------------------------
-void CPersistentCriteria::on_perform( int found, IEnumerable<CPersistentObject^> ^objs )
+void PersistentCriteria::on_perform( int found, IEnumerable<PersistentObject^> ^objs )
 {
 	// store CountFound property
 	m_countFound = found;
 	// first of all clear current list
 	m_list.Clear();
 	// and add elements to the end of it
-	for each( CPersistentObject ^obj in objs ) {
+	for each( PersistentObject ^obj in objs ) {
 		// disable add null references
 		if( obj == nullptr ) continue;
 		// and add object if it is not
@@ -75,7 +70,7 @@ void CPersistentCriteria::on_perform( int found, IEnumerable<CPersistentObject^>
 // have ability to restore data by trans_rollback.
 //
 //-------------------------------------------------------------------
-void CPersistentCriteria::TransactionBegin( void )
+void PersistentCriteria::trans_begin( void )
 {
 	// addition processing before transaction begin
 	TRY( OnTransactionBegin() )
@@ -91,7 +86,7 @@ void CPersistentCriteria::TransactionBegin( void )
 	backup->_count = m_count;
 	backup->_count_found = m_countFound;
 	// copy content
-	backup->_objs = gcnew CPersistentObjects(%m_list);
+	backup->_objs = gcnew PersistentObjects(%m_list);
 
 	// store backup in transaction stack
 	m_trans_stack.Push( backup );
@@ -104,7 +99,7 @@ void CPersistentCriteria::TransactionBegin( void )
 // for transaction support.
 //
 //-------------------------------------------------------------------
-void CPersistentCriteria::TransactionCommit( void )
+void PersistentCriteria::trans_commit( void )
 {
 	// addition processing before transaction commit
 	TRY( OnTransactionCommit() )
@@ -120,13 +115,13 @@ void CPersistentCriteria::TransactionCommit( void )
 // state.
 //
 //-------------------------------------------------------------------
-void CPersistentCriteria::TransactionRollback( void )
+void PersistentCriteria::trans_rollback( void )
 {
 	// addition processing before transaction rollback
 	TRY( OnTransactionRollback() )
 	
 	// get sored backup data
-	BACKUP_STRUCT ^backup = static_cast<BACKUP_STRUCT^>( m_trans_stack.Pop() );
+	BACKUP_STRUCT ^backup = m_trans_stack.Pop();
 
 	// restore simple object attributes
 	m_type = backup->_type;
@@ -144,12 +139,12 @@ void CPersistentCriteria::TransactionRollback( void )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create new instance of the CPersistentCriteria class for given
+/// Create new instance of the PersistentCriteria class for given
 /// object type.
 /// </summary>
 //-------------------------------------------------------------------
-CPersistentCriteria::CPersistentCriteria( String ^type ): \
-	m_innerQuery(""), m_where(""), m_orderBy(""), \
+PersistentCriteria::PersistentCriteria( String ^type ): \
+	m_innerQuery(""), m_where(""), m_orderBy(""),		\
 	m_bottom(0), m_count(Int32::MaxValue), m_countFound(0)
 {
 	dbgprint( String::Format( "-> {0}\n{1}", 
@@ -166,14 +161,14 @@ CPersistentCriteria::CPersistentCriteria( String ^type ): \
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create persistent criteria based on another CPersistentCriteria
+/// Create persistent criteria based on another PersistentCriteria
 /// instance.
 /// </summary><remarks>
 /// Copy only common clauses (content of the criteria will not be
 /// copied).
 /// </remarks>
 //-------------------------------------------------------------------
-CPersistentCriteria::CPersistentCriteria( const CPersistentCriteria %crit )
+PersistentCriteria::PersistentCriteria( const PersistentCriteria %crit )
 {
 	// first of all clear current content
 	m_list.Clear();
@@ -199,7 +194,7 @@ CPersistentCriteria::CPersistentCriteria( const CPersistentCriteria %crit )
 /// that is used to create SQL requet (that can change search result).
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentCriteria::ResetResults( void )
+void PersistentCriteria::ResetResults( void )
 {
 	m_list.Clear();
 	m_countFound = 0;
@@ -214,7 +209,7 @@ void CPersistentCriteria::ResetResults( void )
 /// overridden by a derived class to create it's own save point.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentCriteria::OnTransactionBegin( void )
+void PersistentCriteria::OnTransactionBegin( void )
 {
 }
 
@@ -228,7 +223,7 @@ void CPersistentCriteria::OnTransactionBegin( void )
 /// was created by "OnTransactionBegin" early.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentCriteria::OnTransactionCommit( void )
+void PersistentCriteria::OnTransactionCommit( void )
 {
 }
 
@@ -242,7 +237,7 @@ void CPersistentCriteria::OnTransactionCommit( void )
 /// saved by "OnTransactionBegin".
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentCriteria::OnTransactionRollback( void )
+void PersistentCriteria::OnTransactionRollback( void )
 {
 }
 
@@ -257,34 +252,20 @@ void CPersistentCriteria::OnTransactionRollback( void )
 /// criteria type.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentCriteria::OnPerformComplete( void )
+void PersistentCriteria::OnPerformComplete( void )
 {
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Performs additional custom processes when clearing the contents
-/// of the CPersistentCriteria instance.
-/// </summary><remarks>
-/// This sealed method raises error to notify about read-only object.
-/// </remarks>
-//-------------------------------------------------------------------
-void CPersistentCriteria::OnClear( void )
-{
-	throw gcnew InvalidOperationException("The collection is read-only!");
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
 /// Performs additional custom processes before removing an element
-/// from the CPersistentCriteria instance.
+/// from the PersistentCriteria instance.
 /// </summary><remarks>
 /// This sealed method raises error to notify about read-only object.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentCriteria::OnRemove( CPersistentObject ^obj )
+void PersistentCriteria::OnRemove( PersistentObject ^obj )
 {
 	throw gcnew InvalidOperationException("The collection is read-only!");
 }
@@ -293,12 +274,12 @@ void CPersistentCriteria::OnRemove( CPersistentObject ^obj )
 //-------------------------------------------------------------------
 /// <summary>
 /// Performs additional custom processes before inserting a new object
-/// into the CPersistentCriteria instance.
+/// into the PersistentCriteria instance.
 /// </summary><remarks>
 /// This sealed method raises error to notify about read-only object.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentCriteria::OnInsert( CPersistentObject ^obj )
+void PersistentCriteria::OnInsert( PersistentObject ^obj )
 {
 	throw gcnew InvalidOperationException("The collection is read-only!");
 }
@@ -309,7 +290,7 @@ void CPersistentCriteria::OnInsert( CPersistentObject ^obj )
 /// Gets object type this criteria was created for.
 /// </summary>
 //-------------------------------------------------------------------
-String^ CPersistentCriteria::Type::get( void )
+String^ PersistentCriteria::Type::get( void )
 {
 	return m_type;
 }
@@ -326,23 +307,20 @@ String^ CPersistentCriteria::Type::get( void )
 /// must be overriden by derived class to throw exception.
 /// </remarks>
 //-------------------------------------------------------------------
-String^ CPersistentCriteria::InnerQuery::get( void )
+String^ PersistentCriteria::InnerQuery::get( void )
 {
 	return m_innerQuery;
 }
 
-
-void CPersistentCriteria::InnerQuery::set( String ^value )
-{ENTER(_lock_this)
-
+void PersistentCriteria::InnerQuery::set( String ^value )
+{
 	// check for initialized reference
 	if( value == nullptr ) throw gcnew ArgumentNullException("value");
 	// clear content to prevent request-result collisions
 	ResetResults();
 
 	m_innerQuery = value;
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -354,23 +332,20 @@ EXIT(_lock_this)}
 /// needed.
 /// </remarks>
 //-------------------------------------------------------------------
-String^ CPersistentCriteria::Where::get( void )
+String^ PersistentCriteria::Where::get( void )
 {
 	return m_where;
 }
 
-
-void CPersistentCriteria::Where::set( String ^value )
-{ENTER(_lock_this)
-	
+void PersistentCriteria::Where::set( String ^value )
+{	
 	// check for initialized reference
 	if( value == nullptr ) throw gcnew ArgumentNullException("value");
 	// clear content to prevent request-result collisions
 	ResetResults();
 
 	m_where = value;
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -381,23 +356,20 @@ EXIT(_lock_this)}
 /// overriden by derived class to throw exception.
 /// </remarks>
 //-------------------------------------------------------------------
-String^ CPersistentCriteria::OrderBy::get( void )
+String^ PersistentCriteria::OrderBy::get( void )
 {	
 	return m_orderBy;
 }
 
-
-void CPersistentCriteria::OrderBy::set( String ^value )
-{ENTER(_lock_this)
-
+void PersistentCriteria::OrderBy::set( String ^value )
+{
 	// check for initialized reference
 	if( value == nullptr ) throw gcnew ArgumentNullException("value");
 	// clear content to prevent request-result collisions
 	ResetResults();
 	
 	m_orderBy = value;
-
-EXIT(_lock_this)}
+}
 
 
 
@@ -409,25 +381,20 @@ EXIT(_lock_this)}
 /// By default is set to 0.
 /// </remarks>
 //-------------------------------------------------------------------
-int CPersistentCriteria::BottomLimit::get( void )
+int PersistentCriteria::BottomLimit::get( void )
 {
 	return m_bottom;
 }
 
-
-void CPersistentCriteria::BottomLimit::set( int value )
-{ENTER(_lock_this)
-
-	if( value < 0 ) {
-
-		throw gcnew ArgumentException("Incorrect Bottom value!");
-	}
+void PersistentCriteria::BottomLimit::set( int value )
+{
+	if( value < 0 ) throw gcnew ArgumentException("Incorrect Bottom value!");
+	
 	// clear content to prevent request-result collisions
 	ResetResults();
 	
 	m_bottom = value;
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -438,15 +405,13 @@ EXIT(_lock_this)}
 /// is set to int::MaxValue.
 /// </remarks>
 //-------------------------------------------------------------------
-int CPersistentCriteria::CountLimit::get( void )
+int PersistentCriteria::CountLimit::get( void )
 {
 	return m_count;
 }
 
-
-void CPersistentCriteria::CountLimit::set( int value )
-{ENTER(_lock_this)
-
+void PersistentCriteria::CountLimit::set( int value )
+{
 	if( value < 0 ) {
 
 		throw gcnew ArgumentException("Incorrect CountLimit value!");
@@ -455,8 +420,7 @@ void CPersistentCriteria::CountLimit::set( int value )
 	ResetResults();
 
 	m_count = value;
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -469,7 +433,7 @@ EXIT(_lock_this)}
 /// use "Count" property.
 /// </remarks>
 //-------------------------------------------------------------------
-int CPersistentCriteria::CountFound::get( void )
+int PersistentCriteria::CountFound::get( void )
 {
 	return m_countFound;
 }
@@ -482,7 +446,7 @@ int CPersistentCriteria::CountFound::get( void )
 /// This is default indexed property.
 /// </remarks>
 //-------------------------------------------------------------------
-CPersistentObject^ CPersistentCriteria::default::get( int index )
+PersistentObject^ PersistentCriteria::default::get( int index )
 {
 	return m_list[index];
 }
@@ -493,7 +457,7 @@ CPersistentObject^ CPersistentCriteria::default::get( int index )
 /// Determines the index of a specific object in the collection. 
 /// </summary>
 //-------------------------------------------------------------------
-int CPersistentCriteria::IndexOf( CPersistentObject ^obj )
+int PersistentCriteria::IndexOf( PersistentObject ^obj )
 {
 	return m_list.IndexOf( obj );
 }
@@ -509,9 +473,7 @@ int CPersistentCriteria::IndexOf( CPersistentObject ^obj )
 /// operation as atomic, it must be called in transaction context.
 /// </remarks>
 //-------------------------------------------------------------------
-void CPersistentCriteria::Perform( void )
-{ENTER(_lock_this)
-
-	CPersistenceBroker::Broker->Process( this );
-
-EXIT(_lock_this)}
+void PersistentCriteria::Perform( void )
+{
+	PersistenceBroker::Broker->Process( this );
+}

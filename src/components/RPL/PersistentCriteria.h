@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		PersistentCriteria.h										*/
 /*																			*/
-/*	Content:	Definition of CPersistentCriteria class						*/
+/*	Content:	Definition of PersistentCriteria class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -23,14 +23,14 @@ using namespace System::Collections::Generic;
 
 _RPL_BEGIN
 /// <sumamry>
-/// Provide internal access to the CPersistentCriteria class.
+/// Provide internal access to the PersistentCriteria class.
 /// </sumamry><remarks>
 /// This is more flexible realisation of a "internal" access modifier. This
 /// interface can be used in .NET Remoting.
 /// </remarks>
 private interface class IIPersistentCriteria
 {
-	void on_perform( int found, IEnumerable<CPersistentObject^> ^objs );
+	void OnPerform( int found, IEnumerable<PersistentObject^> ^objs );
 };
 
 /// <summary>
@@ -38,18 +38,18 @@ private interface class IIPersistentCriteria
 /// delete and update scope of persistent objects.
 /// </summary><remarks>
 /// This is class from which all search classes inherit from. Class derived
-/// from CPersistentObjects. You can set WHERE and ORDER BY clauses to limit
+/// from PersistentObjects. You can set WHERE and ORDER BY clauses to limit
 /// count of objects to	retrieve. Also, you can use InnerQuery property to set
 /// additional SQL request for which WHERE and ORDER BY clause will be applied
 /// (note, that not all classes maps implement this feature). BottomLimit and
 /// CountLimit provide limits for scope of objects represented by recordset.
 /// </remarks>
-public ref class CPersistentCriteria abstract : CPersistentObjects,
-												ITransactionSupport,
-												IIPersistentCriteria
+public ref class PersistentCriteria abstract : PersistentObjects,
+											   ITransactionSupport,
+											   IIPersistentCriteria
 {
 private:
-	ref struct BACKUP_STRUCT {
+	typedef ref struct BACKUP_STRUCT_ {
 		String		^_type;
 		String		^_inner_query;
 		String		^_where;
@@ -57,39 +57,39 @@ private:
 		int			_bottom;
 		int			_count;
 		int			_count_found;
-		CPersistentObjects	^_objs;
-	};
+		PersistentObjects	^_objs;
+	} BACKUP_STRUCT;
 
 private:
-	String	^m_type;
-	String	^m_innerQuery;
-	String	^m_where;
-	String	^m_orderBy;
-	int		m_countFound;
+	String					^m_type;
+	String					^m_innerQuery;
+	String					^m_where;
+	String					^m_orderBy;
+	int						m_countFound;
 
-	Collections::Stack	m_trans_stack;
+	Stack<BACKUP_STRUCT^>	m_trans_stack;
 
 // IIPersistentCriteria
 private:
 	virtual void on_perform( int found,
-							 IEnumerable<CPersistentObject^> ^objs ) sealed =
-		IIPersistentCriteria::on_perform;
+							 IEnumerable<PersistentObject^> ^objs ) sealed =
+		IIPersistentCriteria::OnPerform;
 
 // ITransactionSupport
 private:
-	virtual void TransactionBegin( void ) sealed =
+	virtual void trans_begin( void ) sealed =
 		ITransactionSupport::TransactionBegin;
-	virtual void TransactionCommit( void ) sealed =
+	virtual void trans_commit( void ) sealed =
 		ITransactionSupport::TransactionCommit;
-	virtual void TransactionRollback( void ) sealed =
+	virtual void trans_rollback( void ) sealed =
 		ITransactionSupport::TransactionRollback;
 
 protected:
 	int		m_bottom;
 	int		m_count;
 
-	CPersistentCriteria( String ^type );
-	explicit CPersistentCriteria( const CPersistentCriteria %crit );
+	PersistentCriteria( String ^type );
+	explicit PersistentCriteria( const PersistentCriteria %crit );
 	
 	virtual void ResetResults( void );
 	virtual void OnTransactionBegin( void );
@@ -97,9 +97,8 @@ protected:
 	virtual void OnTransactionRollback( void );
 	virtual void OnPerformComplete( void );
 
-	virtual void OnClear( void ) override sealed;
-	virtual void OnRemove( CPersistentObject ^obj ) override sealed;
-	virtual void OnInsert( CPersistentObject ^obj ) override sealed;
+	virtual void OnRemove( PersistentObject ^obj ) override sealed;
+	virtual void OnInsert( PersistentObject ^obj ) override sealed;
 
 public:
 	property String^ Type {
@@ -128,11 +127,11 @@ public:
 	property int CountFound {
 		int get( void );
 	}
-	property CPersistentObject^ default[int] {
-		CPersistentObject^ get( int index );
+	property PersistentObject^ default[int] {
+		PersistentObject^ get( int index );
 	}
 
-	int IndexOf( CPersistentObject ^obj );
+	int IndexOf( PersistentObject ^obj );
 	void Perform( void );
 };
 _RPL_END

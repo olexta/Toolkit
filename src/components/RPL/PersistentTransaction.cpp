@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		PersistentTransaction.cpp									*/
 /*																			*/
-/*	Content:	Implementation of CPersistentTransaction class				*/
+/*	Content:	Implementation of PersistentTransaction class				*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -17,17 +17,11 @@
 #include "PersistentCriteria.h"
 #include "PersistentTransaction.h"
 
-using namespace System::Threading;
 using namespace _RPL;
 
 
-// Define lock macroses
-#define ENTER(lock)		try { Monitor::Enter( lock );
-#define EXIT(lock)		} finally { Monitor::Exit( lock ); }
-
-
 //----------------------------------------------------------------------------
-//							CPersistentTransaction
+//					Toolkit::RPL::PersistentTransaction
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -38,17 +32,15 @@ using namespace _RPL;
 // Process operation.
 //
 //-------------------------------------------------------------------
-void CPersistentTransaction::on_process( void )
+void PersistentTransaction::on_process( void )
 {
 	// pass through all tasks in transaction (i use here
 	// track reference to prevent of value class copying)
 	for each( Task %task in m_tasks ) {
 		// determine type of object in task
-		CPersistentObject ^obj =
-			dynamic_cast<CPersistentObject^>( task.Obj );
-		CPersistentCriteria ^crit =
-			dynamic_cast<CPersistentCriteria^>( task.Obj );
-		
+		PersistentObject	^obj = dynamic_cast<PersistentObject^>( task.Obj );
+		PersistentCriteria	^crit = dynamic_cast<PersistentCriteria^>( task.Obj );
+
 		if( obj != nullptr ) {
 			// check for action and call appropriate
 			// object method (i cann't call Broker method
@@ -75,14 +67,13 @@ void CPersistentTransaction::on_process( void )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Default constructor. Create instance of CPersistentTransaction
+/// Default constructor. Create instance of PersistentTransaction
 /// class.
 /// </summary><remarks>
 /// Create synhronization object only.
 /// </remarks>
 //-------------------------------------------------------------------
-CPersistentTransaction::CPersistentTransaction( void ): \
-	_lock_this(gcnew Object())
+PersistentTransaction::PersistentTransaction( void )
 {
 }
 
@@ -92,15 +83,13 @@ CPersistentTransaction::CPersistentTransaction( void ): \
 /// Add some criteria request to transaction.
 /// </summary>
 //-------------------------------------------------------------------
-void CPersistentTransaction::Add( CPersistentCriteria ^crit )
-{ENTER(_lock_this)
-
+void PersistentTransaction::Add( PersistentCriteria ^crit )
+{
 	if( crit == nullptr ) throw gcnew ArgumentNullException("crit");
-	
+
 	// add to list of tasks
 	m_tasks.Add( Task(crit, Actions::actNone) );
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -108,15 +97,13 @@ EXIT(_lock_this)}
 /// Add some object manipulation request to transaction.
 /// </summary>
 //-------------------------------------------------------------------
-void CPersistentTransaction::Add( CPersistentObject ^obj, Actions act )
-{ENTER(_lock_this)
-
+void PersistentTransaction::Add( PersistentObject ^obj, Actions act )
+{
 	if( obj == nullptr ) throw gcnew ArgumentNullException("obj");
-	
+
 	// add to list of tasks
 	m_tasks.Add( Task(obj, act) );
-
-EXIT(_lock_this)}
+}
 
 
 //-------------------------------------------------------------------
@@ -124,10 +111,8 @@ EXIT(_lock_this)}
 /// Process transaction. 
 /// </summary>
 //-------------------------------------------------------------------
-void CPersistentTransaction::Process( void )
-{ENTER(_lock_this)
-
+void PersistentTransaction::Process( void )
+{
 	//call to PersistanceBroker
-	CPersistenceBroker::Broker->Process( this );
-
-EXIT(_lock_this)}
+	PersistenceBroker::Broker->Process( this );
+}

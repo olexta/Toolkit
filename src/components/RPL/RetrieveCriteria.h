@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		RetrieveCriteria.h											*/
 /*																			*/
-/*	Content:	Definition of CRetrieveCriteria class						*/
+/*	Content:	Definition of RetrieveCriteria class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -23,23 +23,23 @@ _RPL_BEGIN
 /// <summary>
 /// This class encapsulates the behavior needed to search scope of objects.
 /// </summary><remarks>
-/// It derived from CPersistentCriteria which ncapsulate all properties for
+/// It derived from PersistentCriteria which ncapsulate all properties for
 /// building SQL request. This class add Move() routine that you can use to
 ///	move throught all records.
 /// </remarks>
-public ref class CRetrieveCriteria sealed : CPersistentCriteria
+public ref class RetrieveCriteria sealed : PersistentCriteria
 {
 private:
-	ref struct BACKUP_STRUCT {
+	typedef ref struct BACKUP_STRUCT_ {
 		bool	_as_proxies;
 		int		_pos;
-	};
+	} BACKUP_STRUCT;
 
 private:
-	bool	m_asProxies;
-	int		m_pos;
+	bool					m_asProxies;
+	int						m_pos;
 
-	Collections::Stack	m_trans_stack;
+	Stack<BACKUP_STRUCT^>	m_trans_stack;
 
 protected:
 	virtual void ResetResults( void ) override;
@@ -49,10 +49,10 @@ protected:
 	virtual void OnPerformComplete( void ) override;
 
 public:
-	CRetrieveCriteria( String ^type );
-	CRetrieveCriteria( String ^type, String ^sWhere );
-	CRetrieveCriteria( String ^type, String ^sWhere, String ^orderBy );
-	explicit CRetrieveCriteria( const CPersistentCriteria %crit );
+	RetrieveCriteria( String ^type );
+	RetrieveCriteria( String ^type, String ^sWhere );
+	RetrieveCriteria( String ^type, String ^sWhere, String ^orderBy );
+	explicit RetrieveCriteria( const PersistentCriteria %crit );
 
 	property bool AsProxies {
 		bool get( void );

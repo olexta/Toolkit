@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		ObjectLinks.cpp												*/
 /*																			*/
-/*	Content:	Implementation of CObjectLinks class						*/
+/*	Content:	Implementation of ObjectLinks class							*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -15,12 +15,11 @@
 #include "PersistentObject.h"
 #include "ObjectLinks.h"
 
-using namespace System::Threading;
 using namespace _RPL;
 
 
 //----------------------------------------------------------------------------
-//								CObjectLinks
+//							Toolkit::RPL::ObjectLinks
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -29,7 +28,7 @@ using namespace _RPL;
 // deny public access.
 //
 //-------------------------------------------------------------------
-CObjectLinks::CObjectLinks( CPersistentObject ^owner ): \
+ObjectLinks::ObjectLinks( PersistentObject ^owner ): \
 	m_changed(false)
 {
 	// check for initialized reference
@@ -41,16 +40,16 @@ CObjectLinks::CObjectLinks( CPersistentObject ^owner ): \
 
 //-------------------------------------------------------------------
 //
-// Create CObjectLinks instance initialized with all the items in the
+// Create ObjectLinks instance initialized with all the items in the
 // given collection and store owner object. If some object is not
 // unique in collection only the first reference will be added. Null
 // references will not be added to instance. It is provided like
 // internal constructor to deny public access.
 //
 //-------------------------------------------------------------------
-CObjectLinks::CObjectLinks( CPersistentObject ^owner, \
-							IEnumerable<CPersistentObject^> ^e ): \
-	CPersistentObjects(e), m_changed(false)
+ObjectLinks::ObjectLinks( PersistentObject ^owner,			   \
+						  IEnumerable<PersistentObject^> ^e ): \
+	PersistentObjects(e), m_changed(false)
 {
 	// check for initialized references
 	if( owner == nullptr ) throw gcnew ArgumentNullException("owner");
@@ -62,80 +61,58 @@ CObjectLinks::CObjectLinks( CPersistentObject ^owner, \
 //-------------------------------------------------------------------
 //
 // Class copy constructor. Create persistent links collection based
-// on another CObjectLinks instance. Copy all internal data.
+// on another ObjectLinks instance. Copy all internal data.
 //
 //-------------------------------------------------------------------
-CObjectLinks::CObjectLinks( const CObjectLinks %links )
+ObjectLinks::ObjectLinks( const ObjectLinks %links )
 {
 	// copy internal data
 	m_owner = links.m_owner;
 	m_changed = links.m_changed;
 	// copy content
-	m_list.AddRange( %(const_cast<CObjectLinks%>( links )) );
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Performs additional custom processes when clearing the contents
-/// of the CObjectLinks instance.
-/// </summary><remarks>
-/// If collection is not empty mark it as changed. Also, for each
-/// link in collection call parent method to notify about change.
-/// </remarks>
-//-------------------------------------------------------------------
-void CObjectLinks::OnClear( void )
-{
-	if( m_list.Count > 0 )  {
-		
-		for each( CPersistentObject ^obj in m_list ) {
-			// call parent method to perform addition processing
-			((IIPersistentObject^) m_owner)->on_change( obj );
-		}
-		m_changed = true;
-	}
+	m_list.AddRange( %(const_cast<ObjectLinks%>( links )) );
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
 /// Performs additional custom processes before inserting a new link
-/// into the CObjectLinks instance.
+/// into the ObjectLinks instance.
 /// </summary><remarks>
 /// Notify parent about action.
 /// </remarks>
 //-------------------------------------------------------------------
-void CObjectLinks::OnInsert( CPersistentObject ^obj )
+void ObjectLinks::OnInsert( PersistentObject ^obj )
 {
 	// call parent method to perform addition processing
-	((IIPersistentObject^) m_owner)->on_change( obj );
+	((IIPersistentObject^) m_owner)->OnChange( obj );
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
 /// Performs additional custom processes when removing an element
-/// from the CObjectLinks instance.
+/// from the ObjectLinks instance.
 /// </summary><remarks>
 /// Call owner method to notify it about action.
 /// </remarks>
 //-------------------------------------------------------------------
-void CObjectLinks::OnRemove( CPersistentObject ^obj )
+void ObjectLinks::OnRemove( PersistentObject ^obj )
 {
 	// call parent method to perform addition processing
-	((IIPersistentObject^) m_owner)->on_change( obj );
+	((IIPersistentObject^) m_owner)->OnChange( obj );
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
 /// Performs additional custom processes after inserting a new
-/// element into the CObjectLinks instance.
+/// element into the ObjectLinks instance.
 /// </summary><remarks>
 /// Mark collection as changed.
 /// </remarks>
 //-------------------------------------------------------------------
-void CObjectLinks::OnInsertComplete( CPersistentObject ^obj )
+void ObjectLinks::OnInsertComplete( PersistentObject ^obj )
 {
 	// mark collection as changed	
 	m_changed = true;
@@ -145,12 +122,12 @@ void CObjectLinks::OnInsertComplete( CPersistentObject ^obj )
 //-------------------------------------------------------------------
 /// <summary>
 /// Performs additional custom processes after removing an element
-/// from the CObjectLinks instance.
+/// from the ObjectLinks instance.
 /// </summary><remarks>
 /// Mark collection as changed.
 /// </remarks>
 //-------------------------------------------------------------------
-void CObjectLinks::OnRemoveComplete( CPersistentObject ^obj )
+void ObjectLinks::OnRemoveComplete( PersistentObject ^obj )
 {
 	// mark collection as changed
 	m_changed = true;
@@ -163,7 +140,7 @@ void CObjectLinks::OnRemoveComplete( CPersistentObject ^obj )
 /// operations was completed).
 /// </summary>
 //-------------------------------------------------------------------
-bool CObjectLinks::IsListChanged::get( void )
+bool ObjectLinks::IsListChanged::get( void )
 {
 	return m_changed;
 }

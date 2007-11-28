@@ -1,10 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="ABBYY.Toolkit.RPL"
+	Name="Toolkit.RPL"
 	ProjectGUID="{6A8B0CAD-71E5-4872-8807-A046E0660E6A}"
-	RootNamespace="ABBYY.Toolkit.RPL"
+	RootNamespace="Toolkit.RPL"
 	Keyword="ManagedCProj"
 	>
 	<Platforms>
@@ -123,6 +123,7 @@
 				Name="VCCLCompilerTool"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
+				GenerateXMLDocumentationFiles="true"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -166,15 +167,13 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="&quot;$(ProjectDir)XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
+				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
 			/>
 		</Configuration>
 	</Configurations>
 	<References>
-		<AssemblyReference
-			RelativePath="System.dll"
-			AssemblyName="System, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
-		/>
+		<AssemblyReference RelativePath="System.dll" />
+		<AssemblyReference RelativePath="..\..\..\..\bin\Toolkit.Collections.dll" />
 	</References>
 	<Files>
 		<Filter
@@ -340,12 +339,6 @@
 					>
 				</File>
 			</Filter>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
 		</Filter>
 	</Files>
 	<Globals>
