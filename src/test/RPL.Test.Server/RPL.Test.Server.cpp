@@ -15,17 +15,17 @@
 #include "CrossDomainService.h"
 #include "CrossDomainMarshaller.h"
 
-#using "..\..\..\..\bin\ABBYY.Toolkit.RPL.dll"
-#using "..\..\..\..\bin\ABBYY.Toolkit.RPL.Storage.dll"
-#using "..\..\..\..\bin\ABBYY.Toolkit.RPL.Test.Objects.dll"
+#using "..\..\..\..\bin\Toolkit.RPL.dll"
+#using "..\..\..\..\bin\Toolkit.RPL.Storage.dll"
+#using "..\..\..\..\bin\Toolkit.RPL.Test.Objects.dll"
 
 using namespace System;
 using namespace System::Reflection;
 using namespace System::Runtime::Remoting;
 using namespace System::Runtime::Remoting::Channels;
 using namespace System::Data::SqlClient;
-using namespace ABBYY::Toolkit::RPL;
-using namespace ABBYY::Toolkit::RPL::Test;
+using namespace Toolkit::RPL;
+using namespace Toolkit::RPL::Test;
 
 
 //----------------------------------------------------------------------------
@@ -48,21 +48,21 @@ using namespace ABBYY::Toolkit::RPL::Test;
 
 
 //----------------------------------------------------------------------------
-//								CBroker
+//									Broker
 //----------------------------------------------------------------------------
 
 //
 // Define spetsial class that will implement service
 // functionality (define trough CCrossDomainService template)
 //
-private ref class CBroker : CCrossDomainService<CPersistenceBroker, CLIENT_TIMEOUT>
+private ref class Broker : CrossDomainService<PersistenceBroker, CLIENT_TIMEOUT>
 {
 private:
 	static void Init( void );
 
 public:
-	static void Create( String ^clientID,
-						AppDomain^ %domain, ICrossDomainService^ %service );
+	static void Create( String ^clientID, \
+						 AppDomain^ %domain, ICrossDomainService^ %service );
 };
 
 
@@ -74,7 +74,7 @@ public:
 // singletone objects.
 //
 //-------------------------------------------------------------------
-void CBroker::Init( void )
+void Broker::Init( void )
 {
 //=============== Test seting chanel ==============
 	// create server sink provider
@@ -97,14 +97,14 @@ void CBroker::Init( void )
 							AppDomain::CurrentDomain->FriendlyName,
 							"^tcp://(\\d|\\w|-|_)+:\\d+" )->Value;
 	
-	RemotingConfiguration::RegisterActivatedClientType( CTestObject::typeid, url );
+	RemotingConfiguration::RegisterActivatedClientType( TestObject::typeid, url );
 	RemotingConfiguration::RegisterActivatedClientType( Storage::SqlStream::typeid, url );
 
 //=================================================
 
 	// put initialization code here (this function
 	// will be called in per-client context)
-	CPersistenceBroker::Instance->Connect( 
+	PersistenceBroker::Instance->Connect( 
 		gcnew SqlConnection( cCnnStr ),
 		gcnew Storage::ODB() );
 }
@@ -116,20 +116,20 @@ void CBroker::Init( void )
 // can create instance in new domain or in curent main domain.
 //
 //-------------------------------------------------------------------
-void CBroker::Create( String ^clientID,
-					  AppDomain^ %domain, ICrossDomainService^ %service )
+void Broker::Create( String ^clientID, \
+					 AppDomain^ %domain, ICrossDomainService^ %service )
 {
 	// create domain using unique clientID
 	domain = AppDomain::CreateDomain( clientID );
 
 	try {
 		// create service instance in new created domain
-		service = dynamic_cast<CBroker^>( domain->CreateInstanceAndUnwrap(
+		service = dynamic_cast<Broker^>( domain->CreateInstanceAndUnwrap(
 								Assembly::GetExecutingAssembly()->GetName()->Name,
-								CBroker::typeid->ToString() ) );
+								Broker::typeid->ToString() ) );
 
 		// initialize broker in created context
-		domain->DoCallBack( gcnew CrossAppDomainDelegate( &CBroker::Init ) );
+		domain->DoCallBack( gcnew CrossAppDomainDelegate( &Broker::Init ) );
 	} catch ( Exception^ ) {
 
 		// free Service, if needed
@@ -183,7 +183,7 @@ int main(array<System::String ^> ^args)
 		remoting_config();
 
 		// configure cross domain marshaler
-		CrossDomainMarshaller::Instance->Factory = gcnew FACTORY(&CBroker::Create);
+		CrossDomainMarshaller::Instance->Factory = gcnew FACTORY(&Broker::Create);
 		CrossDomainMarshaller::Instance->Marshal( "RPL.Server.rem" );
 
 		// and wait for user reques to unload

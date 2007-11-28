@@ -7,8 +7,8 @@
     <ProjectGuid>{BE56E95A-B4E6-4CAE-B58A-C0D2EF0E63A1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ABBYY.Toolkit.RPL.Storage</RootNamespace>
-    <AssemblyName>ABBYY.Toolkit.RPL.Storage</AssemblyName>
+    <RootNamespace>Toolkit.RPL.Storage</RootNamespace>
+    <AssemblyName>Toolkit.RPL.Storage</AssemblyName>
     <StartupObject>
     </StartupObject>
     <SccProjectName>
@@ -29,7 +29,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <DocumentationFile>..\..\..\bin\ABBYY.Toolkit.RPL.Storage.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\bin\Toolkit.RPL.Storage.xml</DocumentationFile>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <PlatformTarget>x86</PlatformTarget>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
@@ -44,14 +44,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABBYY.Toolkit.RPL, Version=1.0.2790.24516, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="adodb, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="ADODB" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Toolkit.Collections">
+      <HintPath>..\..\..\bin\Toolkit.Collections.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Toolkit.RPL">
+      <HintPath>..\..\..\bin\Toolkit.RPL.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include=".\Properties\AssemblyInfo.cs" />

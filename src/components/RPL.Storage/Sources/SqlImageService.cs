@@ -1,4 +1,5 @@
 ﻿//****************************************************************************
+//*
 //*	Project		:	Robust Persistence Layer
 //*
 //*	Module		:	ISqlStream.cs
@@ -13,7 +14,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace ABBYY.Toolkit.RPL.Storage
+namespace Toolkit.RPL.Storage
 {
 	public abstract class SqlImageService : MarshalByRefObject
 	{

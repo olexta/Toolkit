@@ -1,4 +1,5 @@
 ﻿//****************************************************************************
+//*
 //*	Project		:	Robust Persistence Layer
 //*
 //*	Module		:	ODB.cs
@@ -7,25 +8,25 @@
 //*	Author		:	Alexander Kurbatov
 //*	Copyright	:	Copyright © 2006-2007 Alexander Kurbatov
 //*
-//*	Implement Search, Retrive, Save, Delete of CPersistentObject in MS SQL DB
+//*	Implement Search, Retrive, Save, Delete of PersistentObject in MS SQL DB
 //*
 //****************************************************************************
 using System;
-using System.Data.SqlClient;
-using System.Data.Common;
 using System.IO;
-using System.Text.RegularExpressions;
+using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Reflection;
 using System.Collections.Generic;
-using ABBYY.Toolkit.RPL;
-using System.Data;
+using System.Text.RegularExpressions;
+using Toolkit.RPL;
 
 #if (DEBUG)
 using System.Diagnostics;
 #endif
 
 
-namespace ABBYY.Toolkit.RPL.Storage
+namespace Toolkit.RPL.Storage
 {
 	/// <summary>
 	/// Object Oriented DB implementation
@@ -175,7 +176,7 @@ namespace ABBYY.Toolkit.RPL.Storage
 		}
 
 		/// <summary>
-		/// Opens CPersistentDataStorage
+		/// Opens PersistentDataStorage
 		/// </summary>
 		/// <remarks>Instance cann't be used before open invoke</remarks>
 		/// <param name="db">Opened connection all command will be executed on</param>
@@ -217,8 +218,8 @@ namespace ABBYY.Toolkit.RPL.Storage
 		/// <param name="links">Return collection of referenced objects</param>
 		/// <param name="props">Returns collection of object's saved properties</param>
 		public void Retrieve( IID iid,
-							  ref System.Collections.Generic.IEnumerable<CPersistentObject> links,
-							  ref System.Collections.Generic.IEnumerable<CPersistentProperty> props )
+							  ref System.Collections.Generic.IEnumerable<PersistentObject> links,
+							  ref System.Collections.Generic.IEnumerable<PersistentProperty> props )
 		{
 			#region debug info
 #if (DEBUG)
@@ -230,8 +231,8 @@ namespace ABBYY.Toolkit.RPL.Storage
 			if( isClosed )
 				throw new InvalidOperationException( MSG_CLOSED );
 
-			List<CPersistentObject> _links = new List<CPersistentObject>();
-			List<CPersistentProperty> _props = new List<CPersistentProperty>();
+			List<PersistentObject> _links = new List<PersistentObject>();
+			List<PersistentProperty> _props = new List<PersistentProperty>();
 			SqlDataReader sqlReader = null;
 			SqlCommand cmdSql = null;
 
@@ -261,9 +262,9 @@ namespace ABBYY.Toolkit.RPL.Storage
 					sqlReader = cmdSql.ExecuteReader( CommandBehavior.SequentialAccess );
 					// read all simple properties of object
 					while( sqlReader.Read() ) {
-						// build CPersistentProperty upon recieved name and value
-						CPersistentProperty prop =
-							new CPersistentProperty( (string) sqlReader["Name"],
+						// build PersistentProperty upon recieved name and value
+						PersistentProperty prop =
+							new PersistentProperty( (string) sqlReader["Name"],
 														 sqlReader["Value"] );
 						// save property in collection
 						_props.Add( prop );
@@ -285,10 +286,10 @@ namespace ABBYY.Toolkit.RPL.Storage
 						// save data from SqlDataReader because we need non SequentialAccess in datarow
 						int ID = (int) sqlReader["ID"];
 						string Name = (string) sqlReader["Name"];
-						// build CPersistentProperty upon recieved name and value
-						CPersistentProperty Prop =
-							//new CPersistentProperty( Name, new SqlStream( ID , ) );
-							new CPersistentProperty( Name, new SqlStream( ID, m_SqlImageService ) );
+						// build PersistentProperty upon recieved name and value
+						PersistentProperty Prop =
+							//new PersistentProperty( Name, new SqlStream( ID , ) );
+							new PersistentProperty( Name, new SqlStream( ID, m_SqlImageService ) );
 
 						// save property in collection
 						_props.Add( Prop );
@@ -316,7 +317,7 @@ namespace ABBYY.Toolkit.RPL.Storage
 					string ObjType = iid.Type;
 					DateTime Stamp = new DateTime();
 					// create PersistentObject
-					CPersistentObject persObj =
+					PersistentObject persObj =
 						m_cache.Search( ID, ObjType );
 					if( persObj == null ) {
 						getProxyProps( ID, ref Name, ref ObjType, ref Stamp );
@@ -326,8 +327,8 @@ namespace ABBYY.Toolkit.RPL.Storage
 				}
 				#endregion
 				// assign to output parameters
-				links = (IEnumerable<CPersistentObject>) _links;
-				props = (IEnumerable<CPersistentProperty>) _props;
+				links = (IEnumerable<PersistentObject>) _links;
+				props = (IEnumerable<PersistentProperty>) _props;
 			} finally {
 				if( was_closed )
 					m_con.Close();
@@ -404,7 +405,7 @@ namespace ABBYY.Toolkit.RPL.Storage
 		/// <summary>
 		/// Saves object instance to DB
 		/// </summary>
-		/// <param name="obj">CPersistentObject used to save object proxy properties</param>
+		/// <param name="obj">PersistentObject used to save object proxy properties</param>
 		/// <param name="id">Return id of saved object</param>
 		/// <param name="stamp">Return object save DataTime</param>
 		/// <param name="name">Return Name of saved object</param>
@@ -412,11 +413,11 @@ namespace ABBYY.Toolkit.RPL.Storage
 		/// <param name="props">Reference to properties collection to save object properties</param>
 		/// <param name="newlinks">Return collection of referenced objects</param>
 		/// <param name="newprops">Returns collection of object's saved properties</param>
-		public void Save( CPersistentObject obj,
+		public void Save( PersistentObject obj,
 						  ref int id, ref DateTime stamp, ref string name,
-						  CObjectLinks links, CObjectProperties props,
-						  ref IEnumerable<CPersistentObject> newlinks,
-						  ref IEnumerable<CPersistentProperty> newprops )
+						  ObjectLinks links, ObjectProperties props,
+						  ref IEnumerable<PersistentObject> newlinks,
+						  ref IEnumerable<PersistentProperty> newprops )
 		{
 			// check object state
 			if( isClosed )
@@ -442,10 +443,10 @@ namespace ABBYY.Toolkit.RPL.Storage
 			SqlCommand cmdInsert = null;// command used for insert purpose
 			SqlCommand cmdUpdate = null;// command used for update purpose
 			SqlCommand cmdSql = null;	// other puroses
-			CPersistentProperties outprops =
-				new CPersistentProperties( props ); // list for collecting current object properties
-			CPersistentObjects outlinks =
-				new CPersistentObjects( links ); // list for collecting current object properties
+			PersistentProperties outprops =
+				new PersistentProperties( props ); // list for collecting current object properties
+			PersistentObjects outlinks =
+				new PersistentObjects( links ); // list for collecting current object properties
 			List<string> oldProps = new List<string>(); // to store old props (need to delete props with the name in this list @ the end)
 			int objID; // object ID
 
@@ -493,7 +494,7 @@ namespace ABBYY.Toolkit.RPL.Storage
 				// modify props only in case of their change in object
 				if( props.IsChanged ) {
 					#region update/save properties
-					foreach( CPersistentProperty prop in props ) {
+					foreach( PersistentProperty prop in props ) {
 						int imgID = -1; // ID of image row inserted or updated
 						int oldPropIndex = oldProps.BinarySearch( prop.Name );
 
@@ -594,7 +595,7 @@ namespace ABBYY.Toolkit.RPL.Storage
 					#region save object links
 					// create list of referenced object ID's
 					List<int> temp_LinksID = new List<int>();
-					foreach( CPersistentObject link_obj in outlinks ) {
+					foreach( PersistentObject link_obj in outlinks ) {
 						// check that object isn't new or delete
 						int linkId = link_obj.ID;
 						if( linkId > 0 ) {
@@ -653,8 +654,8 @@ namespace ABBYY.Toolkit.RPL.Storage
 				// assign out parameters
 				id = objID;
 				//create full copy of collections
-				newlinks = (IEnumerable<CPersistentObject>) outlinks;// 
-				newprops = (IEnumerable<CPersistentProperty>) outprops;//
+				newlinks = (IEnumerable<PersistentObject>) outlinks;// 
+				newprops = (IEnumerable<PersistentProperty>) outprops;//
 
 				// check that local transaction was used
 				if( was_closed ) {
@@ -691,12 +692,12 @@ namespace ABBYY.Toolkit.RPL.Storage
 		}
 
 		/// <summary>
-		/// Search objects that sutisfies CPersistentCriteria parameter.
+		/// Search objects that sutisfies PersistentCriteria parameter.
 		/// </summary>
-		/// <param name="crit">The CPersistentCriteria that defines the conditions of the element to search for.</param>
+		/// <param name="crit">The PersistentCriteria that defines the conditions of the element to search for.</param>
 		/// <param name="objs">Collection filled with found objects</param>
 		/// <returns>The number of elements contained in the objs param</returns>
-		/// <remarks>Search criteria in CPersistent criteria must meet following requirements:
+		/// <remarks>Search criteria in Persistent criteria must meet following requirements:
 		/// { [ NOT ] &#60;predicate&#62; | ( &#60;search_condition&#62; ) } 
 		/// [ { AND | OR } [ NOT ] { &#60;predicate&#62; | ( &#60;search_condition&#62; ) }
 		/// Where:
@@ -716,8 +717,8 @@ namespace ABBYY.Toolkit.RPL.Storage
 		/// </list>
 		///
 		/// </remarks>
-		public int Search( CPersistentCriteria crit,
-						   ref System.Collections.Generic.IEnumerable<CPersistentObject> objs )
+		public int Search( PersistentCriteria crit,
+						   ref System.Collections.Generic.IEnumerable<PersistentObject> objs )
 		{
 			// check input parameter
 			if( crit == null )
@@ -734,7 +735,7 @@ namespace ABBYY.Toolkit.RPL.Storage
 					throw new ArgumentException( "Invalid search condition format!" );
 			}
 
-			List<CPersistentObject> return_objects = new List<CPersistentObject>();
+			List<PersistentObject> return_objects = new List<PersistentObject>();
 			MatchCollection mc;
 			int count = 0;
 			string sqlWhereText = crit.Where;
@@ -798,7 +799,7 @@ namespace ABBYY.Toolkit.RPL.Storage
 						string type = (string) dtr["ObjectType"];
 						DateTime stamp = Convert.ToDateTime( dtr["TimeStamp"] );
 
-						CPersistentObject obj =
+						PersistentObject obj =
 								m_cache.Search( id, type, stamp, name );
 						// object wasn't found in cache. manualy create proxy object.
 						if( obj == null ) {
@@ -816,7 +817,7 @@ namespace ABBYY.Toolkit.RPL.Storage
 				#endregion
 
 				// set output parameter
-				objs = (IEnumerable<CPersistentObject>) return_objects;
+				objs = (IEnumerable<PersistentObject>) return_objects;
 			} finally {
 				if( was_closed )
 					m_con.Close();
@@ -1001,15 +1002,15 @@ namespace ABBYY.Toolkit.RPL.Storage
 		}
 
 		/// <summary>
-		/// Create new CPersistentObject from Assembly. To do this proper objectType
+		/// Create new PersistentObject from Assembly. To do this proper objectType
 		/// required (Ex: "NameSpace.ClassName,AssemblyName" )
 		/// </summary>
 		/// <param name="id">ID of saved object</param>
 		/// <param name="objectType">Type of object</param>
 		/// <param name="objectName">Name of object</param>
 		/// <param name="timeStamp">Time of object save</param>
-		/// <returns>CPersistent proxy object build on input parameters</returns>
-		private CPersistentObject createObject( int id,
+		/// <returns>Persistent proxy object build on input parameters</returns>
+		private PersistentObject createObject( int id,
 											   string objectType,
 											   string objectName,
 											   DateTime timeStamp )
@@ -1028,7 +1029,7 @@ namespace ABBYY.Toolkit.RPL.Storage
 
 				// Creates an instance of the specified type using the
 				// constructor that best matches the specified parameters. 
-				return (CPersistentObject) Activator.CreateInstance( t, args );
+				return (PersistentObject) Activator.CreateInstance( t, args );
 			} catch( Exception ex ) { throw new NotSupportedException( "Type of requested object is not supported", ex ); }
 		}
 
@@ -1036,9 +1037,9 @@ namespace ABBYY.Toolkit.RPL.Storage
 		/// <summary>
 		/// Create script for (addition of object) or (update and check it's stamp)
 		/// </summary>
-		/// <param name="obj">CPersistentObject actions are generated for</param>
+		/// <param name="obj">PersistentObject actions are generated for</param>
 		/// <returns>new SqlCommand that have @ID parameter to get object's ID</returns>
-		private SqlCommand createValidateScript( CPersistentObject obj )
+		private SqlCommand createValidateScript( PersistentObject obj )
 		{
 			SqlCommand cmd;
 

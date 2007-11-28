@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		MessageSink.cpp												*/
 /*																			*/
-/*	Content:	Implementation of CMessageSink class						*/
+/*	Content:	Implementation of MessageSink class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -12,7 +12,7 @@
 /*																			*/
 /*																			*/
 /*	Implementing a CCrossDomainMarshaller as a ContextBoundObject requires	*/
-/*	me also to implement a CMessageSink object. That offers me the			*/
+/*	me also to implement a MessageSink object. That offers me the			*/
 /*	opportunity to intercept the Message before it enters the point of		*/
 /*	reconstruction to the ultimate method call.	This class implements		*/
 /*	IMessageSink interface.													*/
@@ -25,16 +25,16 @@
 
 
 //----------------------------------------------------------------------------
-//								CMessageSink
+//								MessageSink
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 //
-// Create instance of the CMessageSink class. I store next message
+// Create instance of the MessageSink class. I store next message
 // sink in the sink chain here.
 //
 //-------------------------------------------------------------------
-CMessageSink::CMessageSink( IMessageSink ^nextSink )
+MessageSink::MessageSink( IMessageSink ^nextSink )
 {
 	m_nextSink = nextSink;
 }
@@ -46,7 +46,7 @@ CMessageSink::CMessageSink( IMessageSink ^nextSink )
 // intercept redirect the client's method call.
 // 
 //-------------------------------------------------------------------
-IMessage^ CMessageSink::SyncProcessMessage( IMessage ^msg )
+IMessage^ MessageSink::SyncProcessMessage( IMessage ^msg )
 {
 	if ( msg->Properties["__Uri"] == nullptr ) {
 
@@ -74,7 +74,7 @@ IMessage^ CMessageSink::SyncProcessMessage( IMessage ^msg )
 // Asynchronously processes the given message.
 //
 //-------------------------------------------------------------------
-IMessageCtrl^ CMessageSink::AsyncProcessMessage( IMessage ^msg, 
+IMessageCtrl^ MessageSink::AsyncProcessMessage( IMessage ^msg, 
 												 IMessageSink ^replySink )
 {
 	return m_nextSink->AsyncProcessMessage( msg, replySink );
@@ -86,7 +86,7 @@ IMessageCtrl^ CMessageSink::AsyncProcessMessage( IMessage ^msg,
 // Gets the next message sink in the sink chain. 
 //
 //-------------------------------------------------------------------
-IMessageSink^ CMessageSink::NextSink::get( void )
+IMessageSink^ MessageSink::NextSink::get( void )
 {
 	return m_nextSink;
 }

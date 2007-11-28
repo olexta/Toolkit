@@ -14,10 +14,10 @@ using System.Net;
 using System.Collections;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Diagnostics;
-using ABBYY.Toolkit.RPL;
-using ABBYY.Toolkit.RPL.Storage;
+using Toolkit.RPL;
+using Toolkit.RPL.Storage;
 
-namespace ABBYY.Toolkit.RPL.Test
+namespace Toolkit.RPL.Test
 {
 	class Program
 	{
@@ -38,7 +38,7 @@ namespace ABBYY.Toolkit.RPL.Test
 													"error - adds error command to transaction (used for transaction rollback test)", 
 													"exit - quits application" };
 		private bool m_transEnabled = false;
-		private RPL.CPersistentTransaction m_trans = null;
+		private RPL.PersistentTransaction m_trans = null;
 		private string m_hostname;
 		private static string cCnnStr = "Data Source=geser;Initial Catalog=LineNBU;Integrated Security=SSPI;Persist Security Info=False";
 
@@ -91,7 +91,7 @@ namespace ABBYY.Toolkit.RPL.Test
 				}
 			}
 			try {
-				CPersistenceBroker.Instance.Dispose();
+				PersistenceBroker.Instance.Dispose();
 			} catch ( Exception ex ) {
 				Debug.Print( "Error occured: {0}", ex.ToString() );
 				throw ex;
@@ -100,11 +100,11 @@ namespace ABBYY.Toolkit.RPL.Test
 
 		private void cmdTest()
 		{
-			CTestObject obj = new CTestObject();
+			TestObject obj = new TestObject();
 			obj.Name= "link_obj";
 			obj.Save();
 
-			CTestObject obj_1 = new CTestObject();
+			TestObject obj_1 = new TestObject();
 			obj_1.Name= "Obj_1";
 			obj_1.AddParent( obj );
 			obj_1.Save();
@@ -114,7 +114,7 @@ namespace ABBYY.Toolkit.RPL.Test
 		{
 			if ( m_transEnabled ) {
 				m_trans = getTrans();
-				m_trans.Add( new CRetrieveCriteria( CTestObject.type(), "FAIL :)" ) );
+				m_trans.Add( new RetrieveCriteria( TestObject.type(), "FAIL :)" ) );
 				Console.WriteLine( DateTime.Now.ToLongTimeString() + ": Corrupted criteria added to transaction" );
 			} else {
 				Console.WriteLine( "No transaction is active!" );
@@ -128,7 +128,7 @@ namespace ABBYY.Toolkit.RPL.Test
 			int sCount = 100;
 			int sBottom = 0;
 			bool sProxy = true;
-			CRetrieveCriteria crit;
+			RetrieveCriteria crit;
 
 			Console.WriteLine( "Enter SQL Where condition ex.:(Name = 'test')" );
 			sWhere = Console.ReadLine();
@@ -162,7 +162,7 @@ namespace ABBYY.Toolkit.RPL.Test
 				Console.WriteLine( "\tProxy switch is: {0}", sProxy );
 			}
 
-			crit = new CRetrieveCriteria( CTestObject.type(), sWhere, sOrderBy );
+			crit = new RetrieveCriteria( TestObject.type(), sWhere, sOrderBy );
 			crit.CountLimit = sCount;
 			crit.BottomLimit = sBottom;
 			crit.AsProxies = sProxy;
@@ -216,10 +216,10 @@ namespace ABBYY.Toolkit.RPL.Test
 			}
 
 			if ( invoke ) {
-				CUpdateCriteria crit = new CUpdateCriteria( CTestObject.type(), sWhere );
+				UpdateCriteria crit = new UpdateCriteria( TestObject.type(), sWhere );
 				foreach ( Match m in mc ) {
-					CPersistentProperty prop = 
-					new CPersistentProperty( m.Groups["prop"].Value );
+					PersistentProperty prop = 
+					new PersistentProperty( m.Groups["prop"].Value );
 					prop.Value = m.Groups["value"].Value;
 					crit.Properties.Add( prop );
 				}
@@ -253,10 +253,10 @@ namespace ABBYY.Toolkit.RPL.Test
 			Console.WriteLine( DateTime.Now.ToLongTimeString() + ": Transaction Mode " + (m_transEnabled ? "On":"Off") );
 		}
 
-		private CPersistentTransaction getTrans()
+		private PersistentTransaction getTrans()
 		{
 			if ( m_trans == null )
-				return new CPersistentTransaction();
+				return new PersistentTransaction();
 			else
 				return m_trans;
 		}
@@ -270,7 +270,7 @@ namespace ABBYY.Toolkit.RPL.Test
 			if ( string.IsNullOrEmpty( sWhere ) ) {
 				sWhere = "(1=1)";
 			}
-			CDeleteCriteria crit = new CDeleteCriteria( CTestObject.type(), sWhere );
+			DeleteCriteria crit = new DeleteCriteria( TestObject.type(), sWhere );
 
 			if ( m_transEnabled ) {
 				m_trans = getTrans();
@@ -281,7 +281,7 @@ namespace ABBYY.Toolkit.RPL.Test
 
 		private void cmdAdd()
 		{
-			CPersistentObjects objs = new CPersistentObjects();
+			PersistentObjects objs = new PersistentObjects();
 			bool repeat = true;
 			int count = 0;
 			string path = string.Empty;
@@ -308,11 +308,11 @@ namespace ABBYY.Toolkit.RPL.Test
 			}
 
 			Console.WriteLine( DateTime.Now.ToLongTimeString() + ": Starting to create objects " );
-			CTestObject prevObj = null;
-			CTestObject obj;
+			TestObject prevObj = null;
+			TestObject obj;
 			Random rnd = new Random();
 			for ( int i = 0; i < count; i++ ) {
-				obj = new CTestObject();
+				obj = new TestObject();
 				obj.Name = (string.IsNullOrEmpty( objName ) ? i.ToString() : objName);
 				obj._int = rnd.Next( 0, 100 );
 				obj._boolean = ( rnd.Next(0,1) == 1 ? true : false );
@@ -330,12 +330,12 @@ namespace ABBYY.Toolkit.RPL.Test
 
 			if ( m_transEnabled ) {
 				m_trans = getTrans();
-				foreach ( CPersistentObject cpobj in objs ) {
-					m_trans.Add( cpobj, CPersistentTransaction.Actions.actSave );
+				foreach ( PersistentObject cpobj in objs ) {
+					m_trans.Add( cpobj, PersistentTransaction.Actions.actSave );
 				}
 				Console.WriteLine( DateTime.Now.ToLongTimeString() + ": Add request added to transaction" );
 			} else {
-				foreach ( CPersistentObject cpobj in objs ) {
+				foreach ( PersistentObject cpobj in objs ) {
 					cpobj.Save();
 				}
 				Console.WriteLine( DateTime.Now.ToLongTimeString() + ": End" );
@@ -355,7 +355,7 @@ namespace ABBYY.Toolkit.RPL.Test
 		{
 			int m_port = freePort;
 			remoting_config( m_port );
-			CPersistenceBroker.Factory = new CFactory( "tcp://" + m_hostname + ":43667/RPL.Server.rem", m_port );
+			PersistenceBroker.Factory = new CFactory( "tcp://" + m_hostname + ":43667/RPL.Server.rem", m_port );
 		}
 
 		private void LocalConnect()
@@ -365,7 +365,7 @@ namespace ABBYY.Toolkit.RPL.Test
 			con.ConnectionString = cCnnStr;
 			ODB adodb = new ODB();
 
-			CPersistenceBroker.Instance.Connect( con, adodb );
+			PersistenceBroker.Instance.Connect( con, adodb );
 			Console.WriteLine( "Connected to :" );
 			Console.WriteLine( "  " + con.ConnectionString );
 		}
@@ -378,10 +378,10 @@ namespace ABBYY.Toolkit.RPL.Test
 
 			public CFactory( String uri, int port ) { m_uri = uri; m_port = port; }
 
-			CPersistenceBroker IBrokerFactory.CreateInstance()
+			PersistenceBroker IBrokerFactory.CreateInstance()
 			{
-				return (CPersistenceBroker)(new CustomProxy(
-						m_uri, typeof( CPersistenceBroker ), m_port )).GetTransparentProxy();
+				return (PersistenceBroker)(new CustomProxy(
+						m_uri, typeof( PersistenceBroker ), m_port )).GetTransparentProxy();
 			}
 
 			private class CustomProxy : RealProxy
@@ -439,7 +439,7 @@ namespace ABBYY.Toolkit.RPL.Test
 
 		private static void remoting_config( int port )
 		{
-			RemotingConfiguration.RegisterActivatedServiceType( typeof( CTestObject ) );
+			RemotingConfiguration.RegisterActivatedServiceType( typeof( TestObject ) );
 			RemotingConfiguration.RegisterActivatedServiceType( typeof( SqlStream ) );
 			RemotingConfiguration.CustomErrorsMode = CustomErrorsModes.Off;
 

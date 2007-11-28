@@ -21,7 +21,7 @@ using namespace System::Runtime::Remoting::Lifetime;
 
 
 interface class ICrossDomainService;
-delegate void FACTORY( String ^clientID,
+delegate void FACTORY( String ^clientID, \
 					   AppDomain^ %domain, ICrossDomainService^ %service );
 
 [CrossDomainContext]

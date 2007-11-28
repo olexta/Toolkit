@@ -30,7 +30,7 @@
 // compatible with the new context.
 //
 //-------------------------------------------------------------------
-bool CrossDomainContextAttribute::CCrossDomainContextProperty::IsNewContextOK(
+bool CrossDomainContextAttribute::CCrossDomainContextProperty::IsNewContextOK( \
 		Context ^newContext )
 {
 	return true;
@@ -67,10 +67,10 @@ String^ CrossDomainContextAttribute::CCrossDomainContextProperty::Name::get( voi
 // the given sink chain.
 //
 //-------------------------------------------------------------------
-IMessageSink^ CrossDomainContextAttribute::CCrossDomainContextProperty::GetObjectSink(
+IMessageSink^ CrossDomainContextAttribute::CCrossDomainContextProperty::GetObjectSink( \
 		MarshalByRefObject ^obj, IMessageSink ^nextSink )
 {
-	return gcnew CMessageSink( nextSink );
+	return gcnew MessageSink( nextSink );
 }
 
 
@@ -97,7 +97,7 @@ CrossDomainContextAttribute::CrossDomainContextAttribute(): \
 // meets the context attribute's requirements.
 //
 //-------------------------------------------------------------------
-bool CrossDomainContextAttribute::IsContextOK( Context ^context,
+bool CrossDomainContextAttribute::IsContextOK( Context ^context, \
 											   IConstructionCallMessage ^ctor )
 {
 	// if this is already an intercepting context, it's ok for us
@@ -110,7 +110,7 @@ bool CrossDomainContextAttribute::IsContextOK( Context ^context,
 // Adds the current context property to the given message.
 //
 //-------------------------------------------------------------------
-void CrossDomainContextAttribute::GetPropertiesForNewContext( 
+void CrossDomainContextAttribute::GetPropertiesForNewContext( \
 		IConstructionCallMessage ^ctor )
 {
 	// add the context property which will later create a sink

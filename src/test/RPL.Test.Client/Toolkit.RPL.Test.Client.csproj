@@ -7,8 +7,8 @@
     <ProjectGuid>{408D5906-CBD3-4E96-A8DA-ABDE5E2256BB}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ABBYY.Toolkit.RPL.Test</RootNamespace>
-    <AssemblyName>ABBYY.Toolkit.RPL.Test.Client</AssemblyName>
+    <RootNamespace>Toolkit.RPL.Test</RootNamespace>
+    <AssemblyName>Toolkit.RPL.Test.Client</AssemblyName>
     <TargetZone>LocalIntranet</TargetZone>
     <GenerateManifests>false</GenerateManifests>
     <SccProjectName>
@@ -39,19 +39,25 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABBYY.Toolkit.RPL, Version=1.0.2790.24635, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="ABBYY.Toolkit.RPL.Storage, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="ABBYY.Toolkit.RPL.Test.Objects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="System.Xml" />
+    <Reference Include="Toolkit.Collections">
+      <HintPath>..\..\..\bin\Toolkit.Collections.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Toolkit.RPL">
+      <HintPath>..\..\..\bin\Toolkit.RPL.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Toolkit.RPL.Storage">
+      <HintPath>..\..\..\bin\Toolkit.RPL.Storage.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Toolkit.RPL.Test.Objects">
+      <HintPath>..\..\..\bin\Toolkit.RPL.Test.Objects.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include=".\Sources\Program.cs" />

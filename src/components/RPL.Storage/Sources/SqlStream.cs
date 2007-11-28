@@ -1,4 +1,5 @@
 ﻿//****************************************************************************
+//*
 //*	Project		:	Robust Persistence Layer
 //*
 //*	Module		:	SqlStream.cs
@@ -21,7 +22,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Diagnostics;
 
-namespace ABBYY.Toolkit.RPL.Storage
+namespace Toolkit.RPL.Storage
 {
 
 	/// <summary>

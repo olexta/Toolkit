@@ -4,16 +4,16 @@ using System.Text;
 using System.IO;
 using System.Diagnostics;
 
-namespace ABBYY.Toolkit.RPL.Test
+namespace Toolkit.RPL.Test
 {
 	/// Object for use in RPL.Testing project
-	public class CTestObject : CPersistentObject
+	public class TestObject : PersistentObject
 	{
-		public CTestObject()
+		public TestObject()
 		{
 		}
 
-		public CTestObject( int id, DateTime stamp, String name )
+		public TestObject( int id, DateTime stamp, String name )
 			: base( id, stamp, name ) { }
 
 		/// <summary>
@@ -25,12 +25,12 @@ namespace ABBYY.Toolkit.RPL.Test
 			set { base.Name = value; }
 		}
 
-		public void AddParent( RPL.CPersistentObject obj )
+		public void AddParent( RPL.PersistentObject obj )
 		{
 			base.Links.Add( obj );
 		}
 
-		public RPL.CPersistentObjects GetParents
+		public RPL.PersistentObjects GetParents
 		{
 			get { return base.Links; }
 		}
@@ -54,7 +54,7 @@ namespace ABBYY.Toolkit.RPL.Test
 		{
 			// gets name of class.
 			// Assumed that all bussines objects are named same way.
-			return typeof( CTestObject ).FullName.ToString() + "," +
+			return typeof( TestObject ).FullName.ToString() + "," +
 			   System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 		}
 
@@ -62,11 +62,11 @@ namespace ABBYY.Toolkit.RPL.Test
 		/// Static method that is used to get RetriveCriteria for searching
 		/// objects of that class
 		/// </summary>
-		/// <returns>CRetrieveCriteria build for this class</returns>
-		public static CRetrieveCriteria GetRetriveCriteria
+		/// <returns>RetrieveCriteria build for this class</returns>
+		public static RetrieveCriteria GetRetriveCriteria
 		{
 			get { //create Criteria based on internal name of class
-				return new CRetrieveCriteria( CTestObject.type() );
+				return new RetrieveCriteria( TestObject.type() );
 			}
 		}
 
@@ -80,19 +80,19 @@ namespace ABBYY.Toolkit.RPL.Test
 		{
 			#region debug info
 #if (DEBUG)
-			Debug.Print( ">> CTestObject.checkState()" );
+			Debug.Print( ">> TestObject.checkState()" );
 #endif
 			#endregion
 
 			int i = 0;
-			foreach ( CPersistentObject obj in Links ) {
+			foreach ( PersistentObject obj in Links ) {
 				Debug.Print( "Object link #{0} is {1}", i, obj.Name );
 				i++;
 			}
 
 			#region debug info
 #if (DEBUG)
-			Debug.Print( "<< CTestObject.checkState()" );
+			Debug.Print( "<< TestObject.checkState()" );
 #endif
 			#endregion
 		}

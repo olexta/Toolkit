@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		MessageSink.h												*/
 /*																			*/
-/*	Content:	Definition of CMessageSink class							*/
+/*	Content:	Definition of MessageSink class							*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -18,13 +18,13 @@ using namespace System;
 using namespace System::Runtime::Remoting::Messaging;
 
 
-private ref class CMessageSink : IMessageSink
+private ref class MessageSink : IMessageSink
 {
 private:
 	IMessageSink	^m_nextSink;
 
 public:
-	CMessageSink( IMessageSink ^nextSink );
+	MessageSink( IMessageSink ^nextSink );
 
 	virtual IMessage^ SyncProcessMessage( IMessage ^msg );
 	virtual IMessageCtrl^ AsyncProcessMessage( IMessage ^msg, 

@@ -29,7 +29,7 @@ using namespace System::Runtime::Remoting::Proxies;
 
 
 template<class T, int t>
-private ref class CCrossDomainService: T, ICrossDomainService
+private ref class CrossDomainService: T, ICrossDomainService
 {
 private:
 	ref class Proxy : RealProxy
@@ -48,7 +48,7 @@ private:
 	Proxy		^m_proxy;
 
 public:
-	CCrossDomainService( void );
+	CrossDomainService( void );
 
 	virtual IMessage^	Marshal( IMessage ^msg ) = ICrossDomainService::Marshal;
 	virtual Object^		InitializeLifetimeService( void ) override;
@@ -57,7 +57,7 @@ public:
 
 
 //----------------------------------------------------------------------------
-//						CCrossDomainService::Proxy
+//						CrossDomainService::Proxy
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -67,7 +67,7 @@ public:
 //-------------------------------------------------------------------
 template<class T, int t>
 [PermissionSet(SecurityAction::LinkDemand)]
-CCrossDomainService<T, t>::Proxy::Proxy( MarshalByRefObject ^obj )
+CrossDomainService<T, t>::Proxy::Proxy( MarshalByRefObject ^obj )
 {
 	m_uri = RemotingServices::Marshal( obj )->URI;
 }
@@ -80,8 +80,9 @@ CCrossDomainService<T, t>::Proxy::Proxy( MarshalByRefObject ^obj )
 //
 //-------------------------------------------------------------------
 template<class T, int t>
-[SecurityPermissionAttribute(SecurityAction::LinkDemand, Flags = SecurityPermissionFlag::Infrastructure)]
-IMessage^ CCrossDomainService<T, t>::Proxy::Invoke( IMessage ^msg )
+[SecurityPermissionAttribute(SecurityAction::LinkDemand, \
+							 Flags = SecurityPermissionFlag::Infrastructure)]
+IMessage^ CrossDomainService<T, t>::Proxy::Invoke( IMessage ^msg )
 {
 	msg->Properties["__Uri"] = m_uri;
 			
@@ -90,16 +91,16 @@ IMessage^ CCrossDomainService<T, t>::Proxy::Invoke( IMessage ^msg )
 
 
 //----------------------------------------------------------------------------
-//							CCrossDomainService
+//							CrossDomainService
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 //
-// Create instance of the CCrossDomainService class.
+// Create instance of the CrossDomainService class.
 //
 //-------------------------------------------------------------------
 template<class T, int t>
-CCrossDomainService<T, t>::CCrossDomainService( void )
+CrossDomainService<T, t>::CrossDomainService( void )
 {
 	m_timeout = t;
 	m_proxy = gcnew Proxy( this );
@@ -113,7 +114,7 @@ CCrossDomainService<T, t>::CCrossDomainService( void )
 //
 //-------------------------------------------------------------------
 template<class T, int t>
-Object^ CCrossDomainService<T, t>::InitializeLifetimeService( void )
+Object^ CrossDomainService<T, t>::InitializeLifetimeService( void )
 {
 	ILease^ lease = dynamic_cast<ILease^>( 
 					MarshalByRefObject::InitializeLifetimeService() ) ;
@@ -135,7 +136,7 @@ Object^ CCrossDomainService<T, t>::InitializeLifetimeService( void )
 //
 //-------------------------------------------------------------------
 template<class T, int t>
-IMessage^ CCrossDomainService<T, t>::Marshal( IMessage ^msg )
+IMessage^ CrossDomainService<T, t>::Marshal( IMessage ^msg )
 {
 	return m_proxy->Invoke( msg );
 }

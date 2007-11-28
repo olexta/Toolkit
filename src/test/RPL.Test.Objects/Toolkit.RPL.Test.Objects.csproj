@@ -7,8 +7,8 @@
     <ProjectGuid>{FA1819A3-46BD-4057-A531-043F76B370AD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ABBYY.Toolkit.RPL.Test</RootNamespace>
-    <AssemblyName>ABBYY.Toolkit.RPL.Test.Objects</AssemblyName>
+    <RootNamespace>Toolkit.RPL.Test</RootNamespace>
+    <AssemblyName>Toolkit.RPL.Test.Objects</AssemblyName>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>
@@ -38,12 +38,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABBYY.Toolkit.RPL, Version=1.0.2790.24635, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <Reference Include="Toolkit.Collections">
+      <HintPath>..\..\..\bin\Toolkit.Collections.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Toolkit.RPL">
+      <HintPath>..\..\..\bin\Toolkit.RPL.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include=".\Sources\TestObject.cs" />

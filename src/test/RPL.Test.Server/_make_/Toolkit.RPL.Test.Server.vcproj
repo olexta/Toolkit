@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="ABBYY.Toolkit.RPL.Test.Server"
+	Name="Toolkit.RPL.Test.Server"
 	ProjectGUID="{177CBAF0-87CB-4282-9612-28AD60566D97}"
 	RootNamespace="server"
 	Keyword="ManagedCProj"
@@ -91,8 +91,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\..\bin\"
-			IntermediateDirectory="..\..\..\tmp\$(ProjectName)\"
+			OutputDirectory="..\..\..\..\bin\"
+			IntermediateDirectory="..\..\..\..\tmp\$(ProjectName)\"
 			ConfigurationType="1"
 			CharacterSet="1"
 			ManagedExtensions="1"
@@ -117,7 +117,7 @@
 				Name="VCCLCompilerTool"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -169,12 +169,12 @@
 			AssemblyName="System, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
 		<AssemblyReference
-			RelativePath="System.Runtime.Remoting.dll"
-			AssemblyName="System.Runtime.Remoting, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
-		/>
-		<AssemblyReference
 			RelativePath="System.Data.dll"
 			AssemblyName="System.Data, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=x86"
+		/>
+		<AssemblyReference
+			RelativePath="System.Runtime.Remoting.dll"
+			AssemblyName="System.Runtime.Remoting, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
 	</References>
 	<Files>
