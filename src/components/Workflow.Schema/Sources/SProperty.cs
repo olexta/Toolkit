@@ -16,7 +16,7 @@
 //****************************************************************************
 using System;
 
-namespace Workflow.Schema
+namespace Toolkit.Workflow.Schema
 {
 	/// <summary>
 	/// This class is used to store class's property information

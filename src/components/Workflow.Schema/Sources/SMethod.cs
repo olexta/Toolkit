@@ -13,7 +13,7 @@
 //****************************************************************************
 using System;
 
-namespace Workflow.Schema
+namespace Toolkit.Workflow.Schema
 {
 	/// <remarks/>
 	public class SMethod : SClassMember

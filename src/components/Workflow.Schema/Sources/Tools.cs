@@ -12,7 +12,7 @@
 using System;
 using System.Xml;
 
-namespace Workflow.Schema
+namespace Toolkit.Workflow.Schema
 {
 	/// <summary>
 	/// This class is created only for internal purposes.

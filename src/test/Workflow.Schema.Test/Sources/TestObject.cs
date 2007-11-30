@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using Workflow.Schema;
+using Toolkit.Workflow.Schema;
 
-namespace Workflow.Schema.Test
+namespace Toolkit.Workflow.Schema.Test
 {
 	public class TestObject : IClassInfo
 	{

@@ -11,7 +11,7 @@
 
 using System;
 
-namespace Workflow.Schema
+namespace Toolkit.Workflow.Schema
 {
 	public class SchemaIsAlreadyInitializedException : ApplicationException
 	{

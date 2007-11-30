@@ -1,43 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
   <Font Name="Tahoma" Size="8.25" />
-  <Class Name="Workflow.Schema.ClassNode" BaseTypeListCollapsed="true">
-    <Position X="0.5" Y="5.75" Width="3.25" />
-    <TypeIdentifier>
-      <FileName>Sources\ClassNode.cs</FileName>
-      <HashCode>ABAAIAEAAAAAAAQAAAAAAQAAAAAAAAEACQAAAAACAEI=</HashCode>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
-  <Class Name="Workflow.Schema.MetaData">
-    <Position X="0.5" Y="0.5" Width="3.25" />
-    <TypeIdentifier>
-      <FileName>Sources\MetaData.cs</FileName>
-      <HashCode>EAACAAAAAAAAAAAUDIEAAAQAAIBABAAISAAEFAAgACA=</HashCode>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Workflow.Schema.NoClassInformationException">
-    <Position X="12.25" Y="5.25" Width="2.75" />
+  <Class Name="Toolkit.Workflow.Schema.NoClassInformationException" Collapsed="true">
+    <Position X="12.25" Y="4" Width="2.5" />
     <TypeIdentifier>
       <FileName>Sources\Exceptions.cs</FileName>
       <HashCode>AAAAAAAAAAQAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Workflow.Schema.NoMemberInformationException">
-    <Position X="12.25" Y="3.25" Width="2.75" />
+  <Class Name="Toolkit.Workflow.Schema.NoMemberInformationException" Collapsed="true">
+    <Position X="12.25" Y="2" Width="2.5" />
     <TypeIdentifier>
       <FileName>Sources\Exceptions.cs</FileName>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAgA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Workflow.Schema.SClass">
+  <Class Name="Toolkit.Workflow.Schema.SClass">
     <Position X="4.25" Y="0.5" Width="2.75" />
     <TypeIdentifier>
       <FileName>Sources\SClass.cs</FileName>
       <HashCode>EABAAAAAAFiAAAQAAAAAAAAAAAACAAAhCAAAAAEAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Workflow.Schema.SClassMember">
+  <Class Name="Toolkit.Workflow.Schema.SClassMember">
     <Position X="7.5" Y="0.5" Width="3.75" />
     <TypeIdentifier>
       <FileName>Sources\SClassMember.cs</FileName>
@@ -45,51 +30,68 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Workflow.Schema.SMethod">
+  <Class Name="Toolkit.Workflow.Schema.SMethod">
     <Position X="7.5" Y="4.25" Width="3.75" />
     <TypeIdentifier>
       <FileName>Sources\SMethod.cs</FileName>
       <HashCode>AAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAA=</HashCode>
     </TypeIdentifier>
-    <InheritanceLine Type="Workflow.Schema.SClassMember" FixedFromPoint="true" FixedToPoint="true">
+    <InheritanceLine Type="Toolkit.Workflow.Schema.SClassMember" FixedFromPoint="true">
       <Path>
         <Point X="11.25" Y="1.875" />
-        <Point X="11.625" Y="1.875" />
-        <Point X="11.625" Y="5.5" />
-        <Point X="11.25" Y="5.5" />
+        <Point X="11.49" Y="1.875" />
+        <Point X="11.49" Y="5.265" />
+        <Point X="11.25" Y="5.265" />
       </Path>
     </InheritanceLine>
   </Class>
-  <Class Name="Workflow.Schema.SProperty">
+  <Class Name="Toolkit.Workflow.Schema.SProperty">
     <Position X="7.5" Y="6.75" Width="3.75" />
     <TypeIdentifier>
       <FileName>Sources\SProperty.cs</FileName>
       <HashCode>AAABIAAAAAAAAAAUAABAAAAgAABAAACAARAAAAAAAAA=</HashCode>
     </TypeIdentifier>
-    <InheritanceLine Type="Workflow.Schema.SClassMember" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <InheritanceLine Type="Toolkit.Workflow.Schema.SClassMember" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="11.25" Y="1.875" />
-        <Point X="11.625" Y="1.875" />
-        <Point X="11.625" Y="8.813" />
-        <Point X="11.25" Y="8.813" />
+        <Point X="11.25" Y="1.688" />
+        <Point X="11.4" Y="1.688" />
+        <Point X="11.4" Y="1.688" />
+        <Point X="11.704" Y="1.688" />
+        <Point X="11.704" Y="8.5" />
+        <Point X="11.25" Y="8.5" />
       </Path>
     </InheritanceLine>
   </Class>
-  <Class Name="Workflow.Schema.Tools">
+  <Class Name="Toolkit.Workflow.Schema.Tools">
     <Position X="0.5" Y="9.25" Width="3.5" />
     <TypeIdentifier>
       <FileName>Sources\Tools.cs</FileName>
       <HashCode>AAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Workflow.Schema.SchemaIsAlreadyInitializedException">
-    <Position X="12.25" Y="2" Width="2.75" />
+  <Class Name="Toolkit.Workflow.Schema.SchemaIsAlreadyInitializedException" Collapsed="true">
+    <Position X="12.25" Y="3" Width="2.5" />
     <TypeIdentifier>
       <FileName>Sources\Exceptions.cs</FileName>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Interface Name="Workflow.Schema.IClassInfo">
+  <Class Name="Toolkit.Workflow.Schema.ClassNode" BaseTypeListCollapsed="true">
+    <Position X="0.5" Y="5.75" Width="3.25" />
+    <TypeIdentifier>
+      <FileName>Sources\ClassNode.cs</FileName>
+      <HashCode>ABAAIAEAAAAAAAQAAAAAAQAAAAAAAAEACQAAAAACAEI=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Toolkit.Workflow.Schema.MetaData">
+    <Position X="0.5" Y="0.5" Width="3.25" />
+    <TypeIdentifier>
+      <FileName>Sources\MetaData.cs</FileName>
+      <HashCode>EAACAAAAAAAAAAAUDIEAAAQAAIBABAAISAAEFAAgACA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Toolkit.Workflow.Schema.IClassInfo">
     <Position X="12.25" Y="0.5" Width="2.5" />
     <TypeIdentifier>
       <FileName>Sources\IClassInfo.cs</FileName>

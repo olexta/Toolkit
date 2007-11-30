@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Xml;
 
-namespace Workflow.Schema
+namespace Toolkit.Workflow.Schema
 {
 	/// <summary>
 	/// This class gives full information about current state of IStateInfo object.

@@ -5,22 +5,15 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle( "Workflow.Schema" )]
+[assembly: AssemblyTitle( "Workflow Schema" )]
 [assembly: AssemblyDescription( "" )]
-[assembly: AssemblyConfiguration( "" )]
-[assembly: AssemblyCompany( "ABBYY Ukraine" )]
-[assembly: AssemblyProduct( "Workflow.Schema" )]
-[assembly: AssemblyCopyright( "Copyright © ABBYY Ukraine 2007" )]
-[assembly: AssemblyTrademark( "" )]
-[assembly: AssemblyCulture( "" )]
+[assembly: AssemblyProduct( "Toolkit.Workflow.Schema" )]
+[assembly: AssemblyCopyright( "Copyright © 2006, 2007 Alexander Kurbatov, Nikita Marunyak" )]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible( false )]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid( "fed2e3c7-2341-4f80-8a65-9b542fc823af" )]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -31,3 +24,4 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
+[assembly:AssemblyVersion("1.0.*")]

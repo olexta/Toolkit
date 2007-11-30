@@ -10,7 +10,7 @@
 //****************************************************************************
 using System;
 
-namespace Workflow.Schema
+namespace Toolkit.Workflow.Schema
 {
 	/// <summary>
 	/// Interface for bussines classes which allows schema object to be build for

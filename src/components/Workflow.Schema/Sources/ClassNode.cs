@@ -15,7 +15,7 @@ using System.Xml;
 
 using Toolkit.Collections;
 
-namespace Workflow.Schema
+namespace Toolkit.Workflow.Schema
 {
 	/// <summary>
 	/// Class that stores information about class node in XML file.

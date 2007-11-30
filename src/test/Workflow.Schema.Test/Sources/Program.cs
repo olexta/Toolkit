@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace Workflow.Schema.Test
+namespace Toolkit.Workflow.Schema.Test
 {
 	class Program
 	{
 		static void Main( string[] args )
 		{
-			MetaData.InitSchema("uk-UA", @"..\var\schema.xml", @"..\etc\Workflow.Schema.xsd");
+			MetaData.InitSchema("uk-UA",
+				@"Toolkit.Workflow.Schema.Test.TestSchema.xml",
+				@"..\etc\Toolkit.Workflow.Schema.xsd");
 			Console.WriteLine( MetaData.Instance.Name );
 			TestObject to = new TestObject();
 			Console.WriteLine( "Class caption: {0}", MetaData.Instance[ to ].Caption );

@@ -17,8 +17,11 @@ using System.Globalization;
 
 using Toolkit.Collections;
 
-namespace Workflow.Schema
+namespace Toolkit.Workflow.Schema
 {
+	/// <summary>
+	/// Main library class.
+	/// </summary>
 	public class MetaData
 	{
 		/// <summary>
@@ -72,30 +75,6 @@ namespace Workflow.Schema
 		public static MetaData Instance
 		{
 			get { return m_Instance; }
-		}
-
-		/// <summary>
-		/// Current culture for UI l10n.
-		/// </summary>
-		public string CurrentUICulture
-		{
-			get { return m_CurrentUICulture; }
-		}
-
-		/// <summary>
-		/// Path to schema instance (.xml file).
-		/// </summary>
-		public string SchemaPath
-		{
-			get { return m_SchemaPath; }
-		}
-
-		/// <summary>
-		/// Gets, sets path to schema description (.xsd file).
-		/// </summary>
-		public string SchemaDescriptionPath
-		{
-			get { return m_SchemaDescrPath; }
 		}
 
 		/// <summary>
@@ -161,7 +140,7 @@ namespace Workflow.Schema
 		{
 			get { return m_Name; }
 		}
-
+		
 		/// <summary>
 		/// Overridden Object.ToString() method.
 		/// </summary>
@@ -170,6 +149,30 @@ namespace Workflow.Schema
 			return Name;
 		}		
 
+		/// <summary>
+		/// Current culture for UI l10n.
+		/// </summary>
+		public string CurrentUICulture
+		{
+			get { return m_CurrentUICulture; }
+		}
+
+		/// <summary>
+		/// Path to schema instance (.xml file).
+		/// </summary>
+		public string SchemaPath
+		{
+			get { return m_SchemaPath; }
+		}
+
+		/// <summary>
+		/// Gets, sets path to schema description (.xsd file).
+		/// </summary>
+		public string SchemaDescriptionPath
+		{
+			get { return m_SchemaDescrPath; }
+		}		
+		
 		/// <summary>
 		/// Gets instance of Namespace manager for internal XPath purposes.
 		/// </summary>

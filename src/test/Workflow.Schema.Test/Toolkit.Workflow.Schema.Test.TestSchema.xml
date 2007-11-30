@@ -5,7 +5,7 @@
 	xmlns:ws="http://abbyy.ua/Toolkit/Workflow.Schema"
 	ws:name="Test schema instance">
 
-	<ws:class ws:type="Workflow.Schema.Test.TestObject,Workflow.Schema.Test">
+	<ws:class ws:type="Toolkit.Workflow.Schema.Test.TestObject,Toolkit.Workflow.Schema.Test">
 		<ws:caption>Document</ws:caption>
 		<ws:localizedCaption ws:uiculture="uk-UA">Документ</ws:localizedCaption>	
 		<ws:properties>

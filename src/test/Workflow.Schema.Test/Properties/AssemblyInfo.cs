@@ -7,20 +7,13 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle( "Workflow.Schema.Test" )]
 [assembly: AssemblyDescription( "" )]
-[assembly: AssemblyConfiguration( "" )]
-[assembly: AssemblyCompany( "ABBYY Ukraine" )]
-[assembly: AssemblyProduct( "Workflow.Schema.Test" )]
-[assembly: AssemblyCopyright( "Copyright © ABBYY Ukraine 2007" )]
-[assembly: AssemblyTrademark( "" )]
-[assembly: AssemblyCulture( "" )]
+[assembly: AssemblyProduct( "Toolkit.Workflow.Schema.Test" )]
+[assembly: AssemblyCopyright( "Copyright © 2007 Nikita Marunyak" )]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible( false )]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid( "fb336dd2-987b-4aeb-abba-012bf4aa3b33" )]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -29,3 +22,4 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
+[assembly: AssemblyVersion("1.0.*")]
