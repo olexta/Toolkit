@@ -74,7 +74,12 @@ namespace Toolkit.Workflow.Schema
 		/// </summary>
 		public static MetaData Instance
 		{
-			get { return m_Instance; }
+			get {
+				if( m_Instance != null )
+					return m_Instance;
+				else
+					throw new SchemaIsntInitializedException();
+			}
 		}
 
 		/// <summary>

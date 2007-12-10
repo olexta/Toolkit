@@ -52,4 +52,12 @@ namespace Toolkit.Workflow.Schema
 			get { return m_MemberName; }
 		}
 	}
+
+	public class SchemaIsntInitializedException : ApplicationException
+	{
+		public SchemaIsntInitializedException()
+			: base( "Schema isn't initialized." )
+		{
+		}
+	}
 }
