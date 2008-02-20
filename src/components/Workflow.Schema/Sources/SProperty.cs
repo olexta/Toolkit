@@ -111,7 +111,6 @@ namespace Toolkit.Workflow.Schema
 		/// Translates string representation of default value
 		/// to properly type and stores it.
 		/// </summary>
-		/// <param name="strValue"></param>
 		internal void SetDefaultValue( string strValue )
 		{
 			switch( m_Type.ToString() ) {
@@ -148,7 +147,7 @@ namespace Toolkit.Workflow.Schema
 				case "System.Double":
 					DefaultValue = Double.Parse( strValue );
 					break;
-				case "System.Bollean":
+				case "System.Boolean":
 					DefaultValue = Boolean.Parse( strValue );
 					break;
 				case "System.String":
@@ -159,6 +158,9 @@ namespace Toolkit.Workflow.Schema
 					break;
 				case "System.DateTime":
 					DefaultValue = DateTime.Parse( strValue );
+					break;
+				case "System.IO.Stream":
+					DefaultValue = null;
 					break;
 			}
 		}

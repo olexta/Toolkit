@@ -137,6 +137,7 @@
 			<xsd:enumeration value="Single" />
 			<xsd:enumeration value="Double" />
 			<xsd:enumeration value="DateTime" />
+			<xsd:enumeration value="Stream" />
 		</xsd:restriction>
 	</xsd:simpleType>
 

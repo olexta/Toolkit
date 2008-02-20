@@ -78,8 +78,13 @@ namespace Toolkit.Workflow.Schema
 
 				property.Description = Tools.GetLocalizedString( propertyNode, "description" );				
 
-				property.Type = System.Type.GetType( "System." + propertyNode.SelectSingleNode(
-					"ws:type", MetaData.Instance.XMLNsMgr ).InnerText );
+				string typeName = propertyNode.SelectSingleNode(
+					"ws:type", MetaData.Instance.XMLNsMgr ).InnerText;
+				property.Type = System.Type.GetType(
+					"System" + ( ( typeName == "Stream" ) ? "IO" : "" ) + typeName );
+
+				//property.Type = System.Type.GetType( "System." + propertyNode.SelectSingleNode(
+				//	"ws:type", MetaData.Instance.XMLNsMgr ).InnerText );
 
 				property.SetDefaultValue( propertyNode.SelectSingleNode(
 					"ws:defaultValue", MetaData.Instance.XMLNsMgr ).InnerText );
