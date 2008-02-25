@@ -81,7 +81,7 @@ namespace Toolkit.Workflow.Schema
 				string typeName = propertyNode.SelectSingleNode(
 					"ws:type", MetaData.Instance.XMLNsMgr ).InnerText;
 				property.Type = System.Type.GetType(
-					"System" + ( ( typeName == "Stream" ) ? "IO" : "" ) + typeName );
+					"System." + ( ( typeName == "Stream" ) ? "IO." : "" ) + typeName );
 
 				//property.Type = System.Type.GetType( "System." + propertyNode.SelectSingleNode(
 				//	"ws:type", MetaData.Instance.XMLNsMgr ).InnerText );

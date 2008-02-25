@@ -206,6 +206,9 @@ namespace Toolkit.Workflow.Schema
 		/// </summary>
 		private void defineStateMask()
 		{
+			// check for 
+			if( m_object.StateComponents.Length == 0 )
+				return;
 			// Input string for regular expression
 			string list = "";
 			// Pattern string for regular expression.
