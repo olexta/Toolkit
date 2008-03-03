@@ -113,6 +113,10 @@ namespace Toolkit.Workflow.Schema
 		/// </summary>
 		internal void SetDefaultValue( string strValue )
 		{
+			if( strValue == null ) {
+				DefaultValue = null;
+				return;
+			}
 			switch( m_Type.ToString() ) {
 				case "System.Byte":
 					DefaultValue = Byte.Parse( strValue );
@@ -160,8 +164,8 @@ namespace Toolkit.Workflow.Schema
 					DefaultValue = DateTime.Parse( strValue );
 					break;
 				case "System.IO.Stream":
-					DefaultValue = null;
-					break;
+					throw new InvalidOperationException(
+						"Object of System.IO.Stream type can't have default value!" );
 			}
 		}
 

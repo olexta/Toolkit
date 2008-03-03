@@ -39,7 +39,7 @@
 			<xsd:element name="description" type="xsd:string" />
 			<xsd:element name="localizedDescription" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="type" type="target:PropertyType" />
-			<xsd:element name="defaultValue" type="xsd:string" />
+			<xsd:element name="defaultValue" type="xsd:string" minOccurs="0" maxOccurs="1"/>
 			<xsd:element name="displayOrder" type="xsd:int" />
 			<xsd:element name="isReadOnly" type="xsd:boolean" />
 			<xsd:element name="isRequired" type="xsd:boolean" />

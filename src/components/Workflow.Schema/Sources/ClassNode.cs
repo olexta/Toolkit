@@ -86,8 +86,13 @@ namespace Toolkit.Workflow.Schema
 				//property.Type = System.Type.GetType( "System." + propertyNode.SelectSingleNode(
 				//	"ws:type", MetaData.Instance.XMLNsMgr ).InnerText );
 
-				property.SetDefaultValue( propertyNode.SelectSingleNode(
-					"ws:defaultValue", MetaData.Instance.XMLNsMgr ).InnerText );
+				XmlNode node = propertyNode.SelectSingleNode(
+					"ws:defaultValue", MetaData.Instance.XMLNsMgr );
+
+				if( node != null )
+					property.SetDefaultValue( node.InnerText );
+				else
+					property.SetDefaultValue( null );
 
 				property.DisplayOrder = int.Parse( propertyNode.SelectSingleNode(
 					"ws:displayOrder", MetaData.Instance.XMLNsMgr ).InnerText );
