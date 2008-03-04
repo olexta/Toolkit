@@ -53,7 +53,7 @@ namespace Toolkit.RPL.Storage
 		private const string REGEXP_PRED_COMPARE = REGEXP_BEGIN +
 			@"(?<prop>\w+)(?:\s*)" +
 			@"(?<cond>(?<op>(?:=|<>|!=|>|>=|!>|<|<=|!<))(?:\s*)" +
-			@"(?<exp>(?<char_exp>\'.+\')" +
+			@"(?<exp>(?<char_exp>\'.*\')" +
 					  "|" +
 					  @"(?<digit_exp>\-?\d+((\.|\,)\d+)?)" +
 					  "|" +
@@ -67,7 +67,7 @@ namespace Toolkit.RPL.Storage
 		private const string REGEXP_PRED_LIKE = REGEXP_BEGIN +
 			@"(?<prop>\w+)(?:\s+)" +
 			@"(?<cond>(?<op>(?:NOT)?(?:\s+)?(?:LIKE))(?:\s+)" +
-			@"(?<exp>(?<char_exp>\'.+\')" +
+			@"(?<exp>(?<char_exp>\'.*\')" +
 					  "|" +
 					  @"(?<digit_exp>\-?\d+((\.|\,)\d+)?)" +
 					  "|" +
@@ -79,7 +79,7 @@ namespace Toolkit.RPL.Storage
 		// pattern specifies following SQL predicate: 
 		// expression IS [ NOT ] NULL 
 		private const string REGEXP_PRED_ISNULL = REGEXP_BEGIN +
-			@"(?<prop>\w+)(?:\s+)(?<cond>(?<op>(?:(?:IS)(?:\s+)(?:NOT)?))(?:\s+)(?<exp>(?:NULL)))" +
+			@"(?<prop>\w+)(?:\s+)(?<cond>(?<op>(?:(?:IS)(?:\s+)(?:NOT(?:\s+))?))(?<exp>(?:NULL)))" +
 			REGEXP_END;
 
 		// pattern specifies combination of all previous pattern
@@ -90,6 +90,7 @@ namespace Toolkit.RPL.Storage
 		private const string REGEXP_CHECK = @"^(((?:\s*)(?<neg>NOT)?(?:\s*)(" +
 											REGEXP_PREDS + @")(?:\s*)(?<modif>AND|OR)))*(?:\s*)(?<neg>NOT)?(?:\s*)(?:\s*)(" +
 											REGEXP_PREDS + @")(?:\s)*$";
+
 
 		/// <summary>
 		/// Default public constructor
@@ -103,14 +104,15 @@ namespace Toolkit.RPL.Storage
 			#endregion
 
 			m_SqlImageService =
-				(SqlImageService) (new SqlImage( new GET_COMMAND( getCommand ),
-														new GET_CONNECTION( get_connection ) ));
-			#region debug info
+				(SqlImageService) (new SqlImage( new GET_COMMAND( get_command ),
+												 new GET_CONNECTION( get_connection ) ));
+#region debug info
 #if (DEBUG)
 			Debug.Print( "<- ODB..ctor()" );
 #endif
-			#endregion
+#endregion
 		}
+
 
 		#region IPersistenceStorage Members
 		/// <summary>
@@ -128,6 +130,7 @@ namespace Toolkit.RPL.Storage
 			m_con = null;
 			isClosed = true;
 		}
+
 
 		/// <summary>
 		/// Deletes object, it's properties and relations with other objects
@@ -153,13 +156,20 @@ namespace Toolkit.RPL.Storage
 #endif
 
 			try {
-				SqlCommand cmdDelete = getCommand( "sp_DeleteObject" );
+				SqlCommand cmdDelete = get_command( "[dbo].[sp_DeleteObject]" );
 				cmdDelete.Parameters.Add( "@objectID", SqlDbType.Int ).Value = iid.ID;
-				// specify use of sp_
+				// Stored Procedure will be used
 				cmdDelete.CommandType = CommandType.StoredProcedure;
 
 				// proccess delete opearaton
 				cmdDelete.ExecuteNonQuery();
+			} catch (Exception ex) {
+#region dubug info
+#if (DEBUG)
+				Debug.Print ( "[ERROR] @ ODB.Delete: " + ex.Message);
+#endif
+#endregion
+				throw;
 			} finally {
 				if( was_closed )
 					m_con.Close();
@@ -174,6 +184,7 @@ namespace Toolkit.RPL.Storage
 #endif
 			#endregion
 		}
+
 
 		/// <summary>
 		/// Opens PersistentDataStorage
@@ -195,7 +206,7 @@ namespace Toolkit.RPL.Storage
 			if( cache == null )
 				throw new ArgumentNullException( "cache" );
 
-			db.Open();// check connection availability
+			db.Open(); // check connection availability
 			db.Close(); // return connection state
 
 			// save to class variables
@@ -209,6 +220,7 @@ namespace Toolkit.RPL.Storage
 #endif
 			#endregion
 		}
+
 
 		/// <summary>
 		/// Retrive properties and links for passed proxy object
@@ -255,11 +267,12 @@ namespace Toolkit.RPL.Storage
 
 			try {
 				#region retrive props from _properties
-				cmdSql = getCommand( "SELECT [Name], [Value] " +
+				cmdSql = get_command( "SELECT [Name], [Value] " +
 									"FROM _properties " +
 									"WHERE [ObjectID] = " + iid.ID );
 				try {
 					sqlReader = cmdSql.ExecuteReader( CommandBehavior.SequentialAccess );
+					
 					// read all simple properties of object
 					while( sqlReader.Read() ) {
 						// build PersistentProperty upon recieved name and value
@@ -277,11 +290,12 @@ namespace Toolkit.RPL.Storage
 				#endregion
 
 				#region retrive props from _images
-				cmdSql = getCommand( "SELECT [ID], [Name] " +
+				cmdSql = get_command( "SELECT [ID], [Name] " +
 									 "FROM _images " +
 									 "WHERE [ObjectID] = " + iid.ID );
 				try {
 					sqlReader = cmdSql.ExecuteReader( CommandBehavior.SequentialAccess );
+					
 					while( sqlReader.Read() ) {
 						// save data from SqlDataReader because we need non SequentialAccess in datarow
 						int ID = (int) sqlReader["ID"];
@@ -303,13 +317,14 @@ namespace Toolkit.RPL.Storage
 
 				#region retrive links
 				// execute function in DB. Result must consist of ID separated with '|'
-				cmdSql = getCommand( "SELECT @Links = [dbo].[fn_GetLinks](" + iid.ID + ")" );
+				cmdSql = get_command( "SELECT @Links = [dbo].[fn_GetLinks](" + iid.ID + ")" );
 				// add output parameter
 				cmdSql.Parameters.Add( "@Links", SqlDbType.NVarChar, 4000 ).Direction = ParameterDirection.Output;
 				// execute function
 				cmdSql.ExecuteNonQuery();
 				// save result to lose touch with SqlCommand
 				string LinksID = (string) cmdSql.Parameters["@Links"].Value;
+				
 				// add object proxy to Link collection 
 				foreach( string link in LinksID.Split( new char[1] { '|' }, StringSplitOptions.RemoveEmptyEntries ) ) {
 					int ID = Convert.ToInt32( link );
@@ -319,6 +334,7 @@ namespace Toolkit.RPL.Storage
 					// create PersistentObject
 					PersistentObject persObj =
 						m_cache.Search( ID, ObjType );
+					
 					if( persObj == null ) {
 						getProxyProps( ID, ref Name, ref ObjType, ref Stamp );
 						persObj = createObject( ID, ObjType, Name, Stamp );
@@ -329,6 +345,13 @@ namespace Toolkit.RPL.Storage
 				// assign to output parameters
 				links = (IEnumerable<PersistentObject>) _links;
 				props = (IEnumerable<PersistentProperty>) _props;
+			} catch( Exception ex ) {
+#region debug info
+#if (DEBUG)
+				Debug.Print( "[ERROR] @ ODB.Retrieve: " + ex.Message );
+#endif
+#endregion
+				throw;
 			} finally {
 				if( was_closed )
 					m_con.Close();
@@ -343,6 +366,7 @@ namespace Toolkit.RPL.Storage
 #endif
 			#endregion
 		}
+
 
 		/// <summary>
 		/// Retrive information about object
@@ -359,32 +383,39 @@ namespace Toolkit.RPL.Storage
 			if( iid == null )
 				throw new ArgumentNullException( "iid" );
 
-			#region debug info
+#region debug info
 #if (DEBUG)
 			Debug.Print( "-> ODB.Retrieve( {0}, , )", iid.ID );
 #endif
-			#endregion
+#endregion
 
 			string ObjType = string.Empty;
 			bool was_closed = (m_con.State == ConnectionState.Closed);
 
-			#region debug info
+#region debug info
 #if (DEBUG)
 			Debug.Print( m_con.ToString() + " is " + m_con.State.ToString() );
 #endif
-			#endregion
+#endregion
 
 			if( was_closed )
 				m_con.Open();
 
-			#region debug info
+#region debug info
 #if (DEBUG)
 			Debug.Print( m_con.State.ToString() );
 #endif
-			#endregion
+#endregion
 
 			try {
 				getProxyProps( iid.ID, ref name, ref ObjType, ref stamp );
+			} catch( Exception ex ) {
+#region debug info
+#if (DEBUG)
+				Debug.Print( "[ERROR] @ ODB.Retrieve: " + ex.Message );
+#endif
+#endregion
+				throw;
 			} finally {
 				if( was_closed )
 					m_con.Close();
@@ -395,12 +426,13 @@ namespace Toolkit.RPL.Storage
 				#endregion
 			}
 
-			#region debug info
+#region debug info
 #if (DEBUG)
 			Debug.Print( "<- ODB.Retrieve()" );
 #endif
-			#endregion
+#endregion
 		}
+
 
 		/// <summary>
 		/// Saves object instance to DB
@@ -436,7 +468,7 @@ namespace Toolkit.RPL.Storage
 					obj.GetType(), "", "", "",
 					links.ToString(), props.ToString(),
 					"", "" );
-			Debug.Print( "\t\t{0} ( ID:{1}, Name:'{2}', Stamp:{3} )", obj.GetType(), obj.ID, obj.Name, obj.Stamp );
+			Debug.Print( "\t\t{0} ( ID:{1}, Name:'{2}', Stamp:{3} )", obj.GetType(), obj.ID, obj.Name, obj.Stamp.Ticks );
 #endif
 			#endregion
 
@@ -481,7 +513,7 @@ namespace Toolkit.RPL.Storage
 				#endregion
 
 				#region get available properties for this object
-				cmdSql = getCommand( "[sp_GetObjectProperies]" );
+				cmdSql = get_command( "[dbo].[sp_GetObjectProperies]" );
 				cmdSql.Parameters.Add( "@objectID", SqlDbType.Int ).Value = objID;
 				cmdSql.CommandType = CommandType.StoredProcedure;
 				SqlDataReader sdr = cmdSql.ExecuteReader( CommandBehavior.SequentialAccess );
@@ -524,7 +556,7 @@ namespace Toolkit.RPL.Storage
 								if( oldProps.Contains( prop.Name ) ) {
 									// this is old property
 									if( cmdUpdate == null ) {
-										cmdUpdate = getCommand( string.Empty );
+										cmdUpdate = get_command( string.Empty );
 									}
 									cmdUpdate.CommandText += " UPDATE _properties " +
 															 " SET [Value] = @PropValue_" + PropName +
@@ -536,7 +568,7 @@ namespace Toolkit.RPL.Storage
 								} else {
 									// this is new property
 									if( cmdInsert == null ) {
-										cmdInsert = getCommand( string.Empty );
+										cmdInsert = get_command( string.Empty );
 									}
 									cmdInsert.CommandText += "INSERT INTO _properties ([ObjectID], [Name], [Value]) " +
 															 "VALUES (" + objID + ", " +
@@ -577,7 +609,7 @@ namespace Toolkit.RPL.Storage
 							inQuery += "'" + prop + "',";
 
 						inQuery = inQuery.TrimEnd( new char[1] { ',' } );
-						cmdSql = getCommand( "DELETE FROM _images " +
+						cmdSql = get_command( "DELETE FROM _images " +
 											 "WHERE [ObjectID] = " + objID +
 													" AND " +
 													"[Name] in (" + inQuery + ");" +
@@ -595,6 +627,7 @@ namespace Toolkit.RPL.Storage
 					#region save object links
 					// create list of referenced object ID's
 					List<int> temp_LinksID = new List<int>();
+					
 					foreach( PersistentObject link_obj in outlinks ) {
 						// check that object isn't new or delete
 						int linkId = link_obj.ID;
@@ -604,7 +637,7 @@ namespace Toolkit.RPL.Storage
 					}
 					temp_LinksID.Sort();
 					SqlDataAdapter da =
-						new SqlDataAdapter( getCommand( "SELECT [ObjectID_1], [ObjectID_2] " +
+						new SqlDataAdapter( get_command( "SELECT [ObjectID_1], [ObjectID_2] " +
 														"FROM _links " +
 														"WHERE (([ObjectID_1] = " + objID + ") " +
 														"OR " +
@@ -617,6 +650,7 @@ namespace Toolkit.RPL.Storage
 					if( ds.Tables.Count > 0 ) {
 						DataTable dt = ds.Tables[0];
 						if( dt.Rows.Count > 0 ) {
+							
 							foreach( DataRow dr in dt.Rows ) {
 								// save id of object this related with
 								int relID = (((int) dr["ObjectID_1"] == objID) ? (int) dr["ObjectID_2"] : (int) dr["ObjectID_1"]);
@@ -628,6 +662,7 @@ namespace Toolkit.RPL.Storage
 									temp_LinksID.Remove( relID );
 							}
 						}
+						
 						// now try to add new rows if required
 						foreach( int i in temp_LinksID ) {
 							// add relation
@@ -662,34 +697,39 @@ namespace Toolkit.RPL.Storage
 					// try to commit local transaction
 					TransactionCommit();
 
-					#region debug info
+#region debug info
 #if ( DEBUG )
 					Debug.Print( "Local transaction was commited" );
 #endif
-					#endregion
+#endregion
 				}
 			} catch( Exception ex ) {
+#region debug info
+#if (DEBUG)
+				Debug.Print( "[ERROR] @ ODB.Save: " + ex.Message );
+#endif
+#endregion
 				// role back local transaction
 				if( was_closed ) {
 					// try to commit local transaction
 					TransactionRollback();
-
-					#region debug info
+#region debug info
 #if (DEBUG)
 					Debug.Print( "Local transaction was rollbacked" );
 #endif
-					#endregion
+#endregion
 				}
-				throw ex;
+				throw;
 			}
 
 			#region debug info
 #if (DEBUG)
 			Debug.Print( m_con.ToString() + " is " + m_con.State.ToString() );
-			Debug.Print( "<- ODB.Save() : \t\t{0} ( ID:{1}, Name:'{2}', Stamp:{3} )", obj.GetType(), id, name, stamp );
+			Debug.Print( "<- ODB.Save() : \t\t{0} ( ID:{1}, Name:'{2}', Stamp:{3} )", obj.GetType(), id, name, stamp.Ticks );
 #endif
 			#endregion
 		}
+
 
 		/// <summary>
 		/// Search objects that sutisfies PersistentCriteria parameter.
@@ -724,15 +764,20 @@ namespace Toolkit.RPL.Storage
 			if( crit == null )
 				throw new ArgumentNullException( "crit" );
 
-			#region debug info
+#region debug info
 #if (DEBUG)
 			Debug.Print( "-> ODB.Search( {0}, {1})", crit.GetType(), "" );
 #endif
-			#endregion
+#endregion
 
 			if( !string.IsNullOrEmpty( crit.Where ) ) {
-				if( !Regex.IsMatch( crit.Where, REGEXP_CHECK ) )
+				if( !Regex.IsMatch( crit.Where, REGEXP_CHECK ) ) {
+#if (DEBUG)
+					Debug.Print( "[ERROR] @ ODB.Search: 'Invalid search condition format!' \n\t" + crit.Where +
+								"\n\t Regexp = '" + REGEXP_CHECK );
+#endif
 					throw new ArgumentException( "Invalid search condition format!" );
+				}
 			}
 
 			List<PersistentObject> return_objects = new List<PersistentObject>();
@@ -743,6 +788,7 @@ namespace Toolkit.RPL.Storage
 			#region adopt search condition according to DB structure
 			// get collection of predicates which will be replaced
 			mc = Regex.Matches( sqlWhereText, REGEXP_PREDS );
+
 			// replace each predicate in search condition with one that fits DB
 			for( int i = mc.Count - 1; i >= 0; i-- ) {
 				sqlWhereText =
@@ -758,24 +804,25 @@ namespace Toolkit.RPL.Storage
 				sqlWhereText = "(ObjectType = '" + crit.Type + "') AND " + sqlWhereText;
 			}
 			bool was_closed = (m_con.State == ConnectionState.Closed);
-			#region debug info
+#region debug info
 #if (DEBUG)
 			Debug.Print( m_con.ToString() + " is " + m_con.State.ToString() );
 #endif
-			#endregion
+#endregion
 
 			if( was_closed )
 				m_con.Open();
-			#region debug info
+			
+#region debug info
 #if (DEBUG)
 			Debug.Print( m_con.State.ToString() );
 #endif
-			#endregion
+#endregion
 
 			try {
 				// sp_GetObjectsByCriteria will return table with the following columns:
 				// ID, ObjectName, ObjectType, TimeStamp
-				SqlCommand cmdSelect = getCommand( "sp_GetObjectsByCriteria" );
+				SqlCommand cmdSelect = get_command( "[dbo].[sp_GetObjectsByCriteria]" );
 				cmdSelect.CommandType = CommandType.StoredProcedure;
 				cmdSelect.Parameters.Add( "@Request", SqlDbType.NVarChar, sqlWhereText.Length ).Value = sqlWhereText;
 				cmdSelect.Parameters.Add( "@View", SqlDbType.NVarChar, "_objects".Length ).Value = "_objects";
@@ -818,7 +865,14 @@ namespace Toolkit.RPL.Storage
 
 				// set output parameter
 				objs = (IEnumerable<PersistentObject>) return_objects;
-			} finally {
+			} catch( Exception ex ) {
+#region debug info
+#if (DEBUG)
+				Debug.Print( "[ERROR] @ ODB.Search: " + ex.Message );
+#endif
+#endregion
+				throw;
+            } finally {
 				if( was_closed )
 					m_con.Close();
 
@@ -826,14 +880,16 @@ namespace Toolkit.RPL.Storage
 				Debug.Print( m_con.State.ToString() );
 #endif
 			}
-			#region debug info
+#region debug info
 #if (DEBUG)
 			Debug.Print( "<- ODB.Search( {0}, {1}) = {2}", crit.GetType(), objs.ToString(), count );
 #endif
-			#endregion
+#endregion
 
 			return count;
 		}
+		
+		
 		/// <summary>
 		/// Starts transaction
 		/// </summary>
@@ -843,35 +899,45 @@ namespace Toolkit.RPL.Storage
 			if( isClosed )
 				throw new InvalidOperationException( MSG_CLOSED );
 
-			#region debug info
+#region debug info
 #if (DEBUG)
 			Debug.Print( "-> ODB.TransactionBegin()" );
 #endif
-			#endregion
+#endregion
 
 			if( m_trans == null ) {
 				m_con.Open();
-				m_trans = m_con.BeginTransaction();
+				try {
+					m_trans = m_con.BeginTransaction();
+				} catch (Exception ex) {
+#region debug info
+#if (DEBUG)
+					Debug.Print( "[ERROR] @ ODB.TransactionBegin: " + ex.Message );
+#endif
+#endregion
+					throw;
+				}
 			} else
 				throw new InvalidOperationException( "Parallel transactions are not supported." );
 
-			#region debug info
+#region debug info
 #if (DEBUG)
 			Debug.Print( "<- ODB.TransactionBegin()" );
 #endif
-			#endregion
+#endregion
 		}
+
 
 		/// <summary>
 		/// Commits transaction
 		/// </summary>
 		public void TransactionCommit()
 		{
-			#region debug info
+#region debug info
 #if (DEBUG)
 			Debug.Print( "-> ODB.TransactionCommit()" );
 #endif
-			#endregion
+#endregion
 
 			// check object state
 			if( isClosed )
@@ -882,26 +948,34 @@ namespace Toolkit.RPL.Storage
 			else {
 				try {
 					m_trans.Commit();
+				} catch (Exception ex) {
+#region debug info
+#if (DEBUG)
+					Debug.Print( "[ERROR] @ ODB.TransactionCommit: " + ex.Message );
+#endif
+#endregion
+					throw;
 				} finally { m_trans.Dispose(); m_trans = null; m_con.Close(); }
 			}
 
-			#region debug info
+#region debug info
 #if (DEBUG)
 			Debug.Print( "<- ODB.TransactionCommit()" );
 #endif
-			#endregion
+#endregion
 		}
+
 
 		/// <summary>
 		/// Rollbacks transaction
 		/// </summary>
 		public void TransactionRollback()
 		{
-			#region debug info
+#region debug info
 #if (DEBUG)
 			Debug.Print( "-> ODB.TransactionRollback()" );
 #endif
-			#endregion
+#endregion
 
 			// check object state
 			if( isClosed )
@@ -912,17 +986,25 @@ namespace Toolkit.RPL.Storage
 			else {
 				try {
 					m_trans.Rollback();
+				} catch( Exception ex ) {
+#region debug info
+#if (DEBUG)
+					Debug.Print( "[ERROR] @ ODB.TransactionRollback: " + ex.Message );
+#endif
+#endregion
+					throw;
 				} finally { m_trans.Dispose(); m_trans = null; m_con.Close(); }
 			}
-			#region debug info
+#region debug info
 #if (DEBUG)
 			Debug.Print( "<- ODB.TransactionRollback()" );
 #endif
-			#endregion
+#endregion
 		}
 		#endregion
 
-		private SqlCommand getCommand( string cmdText )
+
+		private SqlCommand get_command( string cmdText )
 		{
 			// if connection is opened than transaction may exist
 			if( m_trans != null )
@@ -932,6 +1014,7 @@ namespace Toolkit.RPL.Storage
 				return new SqlCommand( cmdText, m_con );
 		}
 
+
 		// gets saved object properties
 		private void getProxyProps( int id,
 									ref string name,
@@ -939,22 +1022,26 @@ namespace Toolkit.RPL.Storage
 									ref DateTime stamp )
 		{
 			SqlCommand cmdSql =
-				getCommand( "SELECT @Name = [ObjectName], @Type = [ObjectType], @Stamp = [TimeStamp] " +
+				get_command( "SELECT @Name = [ObjectName], @Type = [ObjectType], @Stamp = [TimeStamp] " +
 							 "FROM _objects " +
 							 "WHERE [ID] = " + id );
-			cmdSql.Parameters.Add( "@Name", SqlDbType.NVarChar, 4000 ).Direction = ParameterDirection.Output;
-			cmdSql.Parameters.Add( "@Type", SqlDbType.NVarChar, 4000 ).Direction = ParameterDirection.Output;
-			cmdSql.Parameters.Add( "@Stamp", SqlDbType.DateTime ).Direction = ParameterDirection.Output;
+			cmdSql.Parameters.Add( "@Name", SqlDbType.NVarChar, 4000 ).Direction = 
+				ParameterDirection.Output;
+			cmdSql.Parameters.Add( "@Type", SqlDbType.NVarChar, 4000 ).Direction = 
+				ParameterDirection.Output;
+			cmdSql.Parameters.Add( "@Stamp", SqlDbType.DateTime ).Direction = 
+				ParameterDirection.Output;
 			cmdSql.ExecuteNonQuery();
 			try {
 				// assign return parameters
 				name = (string) cmdSql.Parameters["@Name"].Value;
 				type = (string) cmdSql.Parameters["@Type"].Value;
 				stamp = (DateTime) cmdSql.Parameters["@Stamp"].Value;
-			} catch( Exception ex ) {
-				throw new ArgumentException( "Object doesn't exist in DB!", ex );
+			} catch {
+				throw new ArgumentException( "Object with id = " + id + " doesn't exist in DB!" );
 			}
 		}
+
 
 		/// <param name="Predicate">EX. (Prop1 != value ) OR (Prop1 [NOT] IS NULL) ...</param>
 		/// <returns>SQL predicate that tuned to DB structure</returns>
@@ -1001,6 +1088,7 @@ namespace Toolkit.RPL.Storage
 			return query;
 		}
 
+
 		/// <summary>
 		/// Create new PersistentObject from Assembly. To do this proper objectType
 		/// required (Ex: "NameSpace.ClassName,AssemblyName" )
@@ -1030,7 +1118,7 @@ namespace Toolkit.RPL.Storage
 				// Creates an instance of the specified type using the
 				// constructor that best matches the specified parameters. 
 				return (PersistentObject) Activator.CreateInstance( t, args );
-			} catch( Exception ex ) { throw new NotSupportedException( "Type of requested object is not supported", ex ); }
+			} catch( Exception ex ) { throw new NotSupportedException( "Requested object type isn't supported", ex ); }
 		}
 
 
@@ -1044,14 +1132,14 @@ namespace Toolkit.RPL.Storage
 			SqlCommand cmd;
 
 			if( obj.ID == 0 ) {// this is new ob+ject. Creating script for unsertion of object
-				cmd = getCommand( "INSERT INTO _objects ( [ObjectName], [ObjectType] ) " +
+				cmd = get_command( "INSERT INTO _objects ( [ObjectName], [ObjectType] ) " +
 						 "VALUES ( '" + obj.Name.Replace( "'", "''" ) + "', " +
 								  "'" + obj.Type.Replace( "'", "''" ) + "');" +
 						 "SET @ID = SCOPE_IDENTITY();" ); // save inserted object ID
 
 			} else {
 				// check object stamp. If it is new then current -> raise error
-				cmd = getCommand( "IF ((SELECT [TimeStamp] from _objects WHERE [ID] = @ID) > @Stamp) " +
+				cmd = get_command( "IF ((SELECT [TimeStamp] from _objects WHERE [ID] = @ID) > @Stamp) " +
 									  "RAISERROR( 'Newer object exist. Please retrive object first!', 11, 1 );" );
 				cmd.Parameters.Add( "@Stamp", SqlDbType.DateTime ).Value =
 					obj.Stamp;
@@ -1097,11 +1185,13 @@ namespace Toolkit.RPL.Storage
 								dt.Hour, dt.Minute, dt.Second, dt.Millisecond + add );
 		}
 
+
 		// used for delegate that returns connection
 		private SqlConnection get_connection()
 		{
 			return m_con;
 		}
+
 
 		internal class SqlImage : SqlImageService
 		{
@@ -1116,15 +1206,16 @@ namespace Toolkit.RPL.Storage
 
 			internal SqlImage( GET_COMMAND del_com, GET_CONNECTION del_con )
 			{
-				#region debug info
+#region debug info
 #if (DEBUG)
 				Debug.Print( "-> SqlImageService.con( {0}, {1} ) @ \n\t{2}", "", "", AppDomain.CurrentDomain.FriendlyName );
 #endif
-				#endregion
+#endregion
 
 				m_getcommand = del_com;
 				m_con = del_con;
 			}
+
 
 			#region CSqlImageService Members
 			public override void Save( ref int id, int objID, string propName, Stream stream )
@@ -1149,8 +1240,10 @@ namespace Toolkit.RPL.Storage
 				pointerOutParam.Direction = ParameterDirection.Output;
 				cmdGetPointer.Parameters.Add( "@ID", SqlDbType.Int ).Direction =
 					ParameterDirection.Output;
+				
 				// save connection state
 				bool was_closed = (m_con().State == ConnectionState.Closed);
+				
 				// if connection was closed then open it
 				if( was_closed )
 					m_con().Open();
@@ -1162,8 +1255,16 @@ namespace Toolkit.RPL.Storage
 					save( stream, pointerOutParam );
 					// assign return parameter
 					id = Convert.ToInt32( cmdGetPointer.Parameters["@ID"].Value );
+				} catch( Exception ex ) {
+#region dubug info
+#if (DEBUG)
+					Debug.Print( "[ERROR] @ ODB.Save: " + ex.Message );
+#endif
+#endregion
+					throw;
 				} finally { if( was_closed ) m_con().Close(); /*close connection if was closed*/}
 			}
+
 
 			public override void Save( int id, Stream stream )
 			{
@@ -1181,16 +1282,26 @@ namespace Toolkit.RPL.Storage
 
 				// save connection state
 				bool was_closed = (m_con().State == ConnectionState.Closed);
+				
 				// if connection was closed then open it
 				if( was_closed )
 					m_con().Open();
+				
 				try {
 					cmdGetPointer.ExecuteNonQuery();
 					if( pointerOutParam.Value == null )
 						throw new KeyNotFoundException( "Specified value is absent!" );
 					save( stream, pointerOutParam );
+				} catch( Exception ex ) {
+#region dubug info
+#if (DEBUG)
+					Debug.Print( "[ERROR] @ ODB.SqlImage.Save: " + ex.Message );
+#endif
+#endregion
+					throw;
 				} finally { if( was_closed ) m_con().Close(); /*close connection if was closed*/}
 			}
+
 
 			private void save( Stream stream, SqlParameter pointerParam )
 			{
@@ -1227,15 +1338,18 @@ namespace Toolkit.RPL.Storage
 				}
 			}
 
+
 			public override int Read( int id, byte[] buffer, int offset, int count, long position )
 			{
 				// TODO: Check input params
 
 				// save connection state
 				bool was_closed = (m_con().State == ConnectionState.Closed);
+				
 				//if connection was closed then open it
 				if( was_closed )
 					m_con().Open();
+				
 				try {
 					// obtain a pointer to the BLOB using TEXTPTR.
 					SqlCommand cmdGet = m_getcommand(
@@ -1265,22 +1379,23 @@ namespace Toolkit.RPL.Storage
 						cmdGet.Parameters["@Pointer"].Value;
 					cmdRead.Parameters.Add( "@Offset", SqlDbType.Int ).Value = position;
 					cmdRead.Parameters.Add( "@Size", SqlDbType.Int );
+					
 					// calculate buffer size - may be less than BUFFER_LENGTH for last block.				
 					if( (position + count) >= Convert.ToInt32( cmdGet.Parameters["@Length"].Value ) )
 						cmdRead.Parameters["@Size"].Value =
 							Convert.ToInt32( cmdGet.Parameters["@Length"].Value ) - position;
 					else
 						cmdRead.Parameters["@Size"].Value = count;
+					
 					// execute reader
 					SqlDataReader dr =
 						cmdRead.ExecuteReader( CommandBehavior.SingleRow );
+					
 					try {
 						// read data from SqlDataReader
 						dr.Read();
-						//create array needed dimention
-						buffer = new byte[Convert.ToInt32( cmdRead.Parameters["@Size"].Value )];
-						// read data to buffer and change read position
-						// return size of read data
+						// put data to buffer
+						// and return size of read data
 						return Convert.ToInt32(
 								dr.GetBytes( 0,
 											 0,
@@ -1288,16 +1403,28 @@ namespace Toolkit.RPL.Storage
 											 0,
 											 Convert.ToInt32( cmdRead.Parameters["@Size"].Value ) ) );
 					} finally { dr.Dispose(); /*dispose DataReader*/}
-				} finally { if( was_closed ) m_con().Close(); /*close connection if was closed*/}
+				} catch( Exception ex ) {
+#region dubug info
+#if (DEBUG)
+					Debug.Print( "[ERROR] @ ODB.SqlImage.Read: " + ex.Message );
+#endif
+#endregion
+					throw;
+				}finally { 
+					if( was_closed ) m_con().Close(); /*close connection if was closed*/
+				}
 			}
+
 
 			public override long Length( int id )
 			{
 				// save connection state
 				bool was_closed = (m_con().State == ConnectionState.Closed);
+				
 				// if connection was closed then open it
 				if( was_closed )
 					m_con().Open();
+				
 				try {
 					// set command to get length of image property.
 					SqlCommand cmdGetLength = m_getcommand(
@@ -1307,12 +1434,22 @@ namespace Toolkit.RPL.Storage
 					// set up the parameters.
 					cmdGetLength.Parameters.Add( "@Length", SqlDbType.Int ).Direction =
 						ParameterDirection.Output;
+					// execute command
 					cmdGetLength.ExecuteNonQuery();
 
 					if( cmdGetLength.Parameters["@Length"] == null ) {
 						throw new KeyNotFoundException( "Specified value is absent!" );
 					} else { return Convert.ToInt32( cmdGetLength.Parameters["@Length"] ); }
-				} finally { if( was_closed ) m_con().Close(); /*close connection if was closed*/}
+				} catch( Exception ex ) {
+#region dubug info
+#if (DEBUG)
+					Debug.Print( "[ERROR] @ ODB.Length: " + ex.Message );
+#endif
+#endregion
+					throw;
+				} finally { 
+					if( was_closed ) m_con().Close(); /*close connection if was closed*/
+				}
 			}
 			#endregion
 		}
