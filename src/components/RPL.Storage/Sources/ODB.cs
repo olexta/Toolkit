@@ -23,6 +23,7 @@ using Toolkit.RPL;
 
 #if (DEBUG)
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 #endif
 
 
@@ -53,13 +54,13 @@ namespace Toolkit.RPL.Storage
 		private const string REGEXP_PRED_COMPARE = REGEXP_BEGIN +
 			@"(?<prop>\w+)(?:\s*)" +
 			@"(?<cond>(?<op>(?:=|<>|!=|>|>=|!>|<|<=|!<))(?:\s*)" +
-			@"(?<exp>(?<char_exp>\'.*\')" +
+			@"(?<exp>(?<char_exp>\'.*?\')" +
 					  "|" +
 					  @"(?<digit_exp>\-?\d+((\.|\,)\d+)?)" +
 					  "|" +
-					  @"(?<sub_exp>CAST\s*\(.+\))" + // catch CAST construction
+					  @"(?<sub_exp>CAST\s*\(.+?\))" + // catch CAST construction
 					  "|" +
-					  @"(?<sub_exp>CONVERT\s*\(.+\))" + // catch CONVERT construction
+					  @"(?<sub_exp>CONVERT\s*\(.+?\))" + // catch CONVERT construction
 			"))" +
 			REGEXP_END;
 		// pattern specifies following SQL predicate:
@@ -67,13 +68,13 @@ namespace Toolkit.RPL.Storage
 		private const string REGEXP_PRED_LIKE = REGEXP_BEGIN +
 			@"(?<prop>\w+)(?:\s+)" +
 			@"(?<cond>(?<op>(?:NOT)?(?:\s+)?(?:LIKE))(?:\s+)" +
-			@"(?<exp>(?<char_exp>\'.*\')" +
+			@"(?<exp>(?<char_exp>\'.*?\')" +
 					  "|" +
 					  @"(?<digit_exp>\-?\d+((\.|\,)\d+)?)" +
 					  "|" +
-					  @"(?<sub_exp>CAST\s*\(.+\))" + // catch CAST construction
+					  @"(?<sub_exp>CAST\s*\(.+?\))" + // catch CAST construction
 					  "|" +
-					  @"(?<sub_exp>CONVERT\s*\(.+\))" + // catch CONVERT construction
+					  @"(?<sub_exp>CONVERT\s*\(.+?\))" + // catch CONVERT construction
 			"))" +
 			REGEXP_END;
 		// pattern specifies following SQL predicate: 
@@ -602,13 +603,13 @@ namespace Toolkit.RPL.Storage
 					}
 					#endregion
 
-					#region DELETE PROPERTIES FROM DB IN CASE THEY ARE IN oldProps
+					#region Deleting properties from DB that oldProps contains
 					if( oldProps.Count > 0 ) {
 						string inQuery = string.Empty;
 						foreach( string prop in oldProps )
 							inQuery += "'" + prop + "',";
 
-						inQuery = inQuery.TrimEnd( new char[1] { ',' } );
+						inQuery = inQuery.TrimEnd( ',' );
 						cmdSql = get_command( "DELETE FROM _images " +
 											 "WHERE [ObjectID] = " + objID +
 													" AND " +
@@ -678,12 +679,12 @@ namespace Toolkit.RPL.Storage
 				#region get object proxy atributes
 				name = string.Empty; // initialize variable
 				stamp = new DateTime(); // -||-
-				string type = string.Empty; // willn't be used but must be passed.
+				string type = string.Empty; // will not be used, but must be passed.
 
 				// retrive object proxy properties
 				getProxyProps( objID, ref name, ref type, ref stamp );
-				// IF TRIGERS IS USED:
-				// MAY NEED FULL PROPS RETRIVE?!
+				// IF TRIGERS ARE USED:
+				//		MAY NEED FULL PROPS RETRIVE?!
 				#endregion
 
 				// assign out parameters
@@ -780,7 +781,6 @@ namespace Toolkit.RPL.Storage
 				}
 			}
 
-			List<PersistentObject> return_objects = new List<PersistentObject>();
 			MatchCollection mc;
 			int count = 0;
 			string sqlWhereText = crit.Where;
@@ -788,6 +788,12 @@ namespace Toolkit.RPL.Storage
 			#region adopt search condition according to DB structure
 			// get collection of predicates which will be replaced
 			mc = Regex.Matches( sqlWhereText, REGEXP_PREDS );
+#region debug info
+#if (DEBUG)
+			Debug.Print( "ODB.Search: \n\tpattern = '" + REGEXP_PREDS + "'\n\t" +
+						"Parse string = '" + sqlWhereText + "'");
+#endif
+#endregion
 
 			// replace each predicate in search condition with one that fits DB
 			for( int i = mc.Count - 1; i >= 0; i-- ) {
@@ -795,6 +801,12 @@ namespace Toolkit.RPL.Storage
 					sqlWhereText.Replace( mc[i].Value,
 										  tunePridicate( mc[i].Value ) );
 			}
+
+#region debug info
+#if (DEBUG)
+			Debug.Print( "ODB.Search: search script = '" + sqlWhereText + "'" );
+#endif
+#endregion
 			#endregion
 			// surround expression with brackets
 			sqlWhereText = "(" + (sqlWhereText == "" ? "1=1" : sqlWhereText) + ")";
@@ -838,6 +850,10 @@ namespace Toolkit.RPL.Storage
 
 				#region create reader over table we got
 				DataTableReader dtr = new DataTableReader( dt );
+				// create list for storing found objects
+				List<PersistentObject> return_objects = 
+					new List<PersistentObject>();
+
 				try {
 					while( dtr.Read() ) {
 						// save properties we found
@@ -858,7 +874,7 @@ namespace Toolkit.RPL.Storage
 						// add object to output List
 						return_objects.Add( obj );
 						// increment counter
-						count += 1;
+						count++;
 					}
 				} finally { dtr.Close(); }
 				#endregion
@@ -1339,7 +1355,7 @@ namespace Toolkit.RPL.Storage
 			}
 
 
-			public override int Read( int id, byte[] buffer, int offset, int count, long position )
+			public override int Read( int id, [In] [Out] byte[] buffer, int offset, int count, long position )
 			{
 				// TODO: Check input params
 

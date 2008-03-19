@@ -17,6 +17,7 @@
 
 using namespace System;
 using namespace System::IO;
+using namespace System::Runtime::InteropServices;
 
 
 _RPL_BEGIN
@@ -100,7 +101,7 @@ public:
 	
 	virtual void Close( void )  override;
 	virtual void Flush( void )  override;
-    virtual int Read( array<unsigned char> ^buffer, int offset, int count )  override;
+    virtual int Read( [InAttribute] [OutAttribute] array<unsigned char> ^buffer, int offset, int count )  override;
 	virtual int ReadByte( void )  override;
 	virtual __int64 Seek( __int64 offset, SeekOrigin origin )  override;
 	virtual void SetLength( __int64 value )  override;
