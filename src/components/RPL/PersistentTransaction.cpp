@@ -26,10 +26,11 @@ using namespace _RPL;
 
 //-------------------------------------------------------------------
 //
-// This function will be called by Broker to expose internal content
-// of transaction. I make call to objects or to Broker (for atomic
-// operations) only - the transaction context was initialized by
-// Process operation.
+// Exposes internal content of transaction.
+//
+// This function will be called by Broker. I make call to objects or
+// to Broker (for atomic operations) only - the transaction context
+// was initialized by Process operation.
 //
 //-------------------------------------------------------------------
 void PersistentTransaction::on_process( void )

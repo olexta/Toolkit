@@ -19,15 +19,17 @@
 using namespace _RPL;
 
 
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //						Toolkit::RPL::ObjectProperties
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 //
-// Class constructor. Stores parent object to give posibility of
-// state checking and event manipulations. It is provided like
-// internal constructor to deny public access.
+// Create ObjectProperties instance initialized with parent object.
+//
+// Stores parent object to give posibility of state checking and
+// event manipulations. It is provided like internal constructor to
+// deny public access.
 //
 //-------------------------------------------------------------------
 ObjectProperties::ObjectProperties( PersistentObject ^owner ): \
@@ -43,12 +45,14 @@ ObjectProperties::ObjectProperties( PersistentObject ^owner ): \
 //-------------------------------------------------------------------
 //
 // Create ObjectProperties instance initialized with all the items in
-// the given collection and store parent object. If properties in
-// collection have not unique names then only the last value will be
-// stored. All null references will be ignored and no events will be
-// faired. PersistentObject have internal handler routines, so we
-// must subscribe it on each property on_change event. Constructor is
-// provided like internal to deny public access.
+// the given collection and store parent object.
+//
+// If properties in collection have not unique names then only the
+// last value will be stored. All null references will be ignored and
+// no events will be faired. PersistentObject have internal handler
+// routines, so we must subscribe it on each property on_change
+// event. Constructor is provided like internal to deny public
+// access.
 //
 //-------------------------------------------------------------------
 ObjectProperties::ObjectProperties( PersistentObject ^owner,			   \
@@ -70,10 +74,11 @@ ObjectProperties::ObjectProperties( PersistentObject ^owner,			   \
 
 //-------------------------------------------------------------------
 //
-// Copy content of ObjectProperties into new instance. This is copy
-// constructor, so it provide deep copying: all property members will
-// be copied so as internal properties of this. Constructor is
-// provided like internal to deny public access.
+// Copy content of ObjectProperties into new instance.
+//
+// This is copy constructor, so it provide deep copying: all property
+// members will be copied so as internal properties of this.
+// Constructor is provided like internal to deny public access.
 //
 //-------------------------------------------------------------------
 ObjectProperties::ObjectProperties( const ObjectProperties %props )

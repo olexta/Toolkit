@@ -12,8 +12,8 @@
 /*																			*/
 /****************************************************************************/
 
+#include "Storage\IPersistenceStorage.h"
 #include "IBrokerFactory.h"
-#include "IPersistenceStorage.h"
 #include "ITransactionSupport.h"
 #include "ObjectLinks.h"
 #include "ObjectProperties.h"
@@ -27,23 +27,28 @@ using namespace _RPL;
 using namespace _RPL::Storage;
 
 
+//
 // Define lock macroses
+//
 #define ENTER(lock)		try { Monitor::Enter( lock );
 #define EXIT(lock)		} finally { Monitor::Exit( lock ); }
 
+//
 // Define macros to ignore exceptions
+//
 #define TRY(expr)		try { expr; } catch( Exception^ ) {};
 
 
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //					C O M M O N   D E C L A R A T I O N S
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 //
 // Default timeout to clear cache inaccessible
 // weak references. Default value is 600 sec.
 //
 #define CLEAR_TIMEOUT		0x000927C0
+
 //
 // This value identify wait timeout for thread aborting.
 // Default value is 10 sec.
@@ -57,15 +62,16 @@ using namespace _RPL::Storage;
 delegate void CLEAR_CACHE( void );
 
 
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //						C O M M O N   F U N C T I O N S
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 //
-// Thread function that provide clearing cache functionality. I pass
-// delegate as parameter, that is pointer to internal cache function
-// Clear.
+// Thread function that provide clearing cache functionality.
+//
+// I pass delegate as parameter, that is pointer to internal cache
+// function Clear.
 //
 //-------------------------------------------------------------------
 void thread_clear_cache( Object ^param )
@@ -123,9 +129,11 @@ String^ PersistenceBroker::BrokerCache::key( IID ^iid )
 
 //-------------------------------------------------------------------
 //
-// Clear cache of objects. I dispose collections of links and
-// properties to free tempory resources. This function remove
-// inaccessible objects, or all objects depend on parameter.
+// Clear cache of objects.
+//
+// I dispose collections of links and properties to free tempory
+// resources. This function remove inaccessible objects, or all
+// objects depend on parameter.
 //
 //-------------------------------------------------------------------
 void PersistenceBroker::BrokerCache::clear( bool bInaccessibleOnly)
@@ -155,9 +163,11 @@ void PersistenceBroker::BrokerCache::clear( bool bInaccessibleOnly)
 
 //-------------------------------------------------------------------
 //
-// Create new cache. I pass here delegate to IPersistenceStorage
-// getter (from parent), so, i will have up-to-date interface after
-// base class Connect called.
+// Create new cache.
+//
+// I pass here delegate to IPersistenceStorage getter (from parent),
+// so, i will have up-to-date interface after base class Connect
+// called.
 //
 //-------------------------------------------------------------------
 PersistenceBroker::BrokerCache::BrokerCache( GET_STORAGE ^fnStorage,	   \
@@ -176,9 +186,11 @@ PersistenceBroker::BrokerCache::BrokerCache( GET_STORAGE ^fnStorage,	   \
 
 //-------------------------------------------------------------------
 //
-// Class disposer. I must use it to clear internal storage and
-// terminate clearing thread (in other case this object will never be
-// destroyed because of object-thread cross references).
+// Class disposer.
+//
+// I must use it to clear internal storage and terminate clearing
+// thread (in other case this object will never be destroyed because
+// of object-thread cross references).
 //
 //-------------------------------------------------------------------
 PersistenceBroker::BrokerCache::~BrokerCache( void )
@@ -202,10 +214,12 @@ EXIT_WRITE(_lock)}
 
 //-------------------------------------------------------------------
 //
-// Add object to cache. I not check for existing weak references to
-// object because of it can contain empty reference. So i create new
-// weak reference always. And this prevent more than one same objects
-// collision if there are errors in IPersistenceStorage.
+// Add object to cache.
+//
+// I not check for existing weak references to object because of it
+// can contain empty reference. So i create new weak reference
+// always. And this prevent more than one same objects collision if
+// there are errors in IPersistenceStorage.
 //
 //-------------------------------------------------------------------
 void PersistenceBroker::BrokerCache::Add( PersistentObject ^obj )
@@ -245,9 +259,10 @@ EXIT_WRITE(_lock)}
 
 //-------------------------------------------------------------------
 //
-// Clear cache of objects (i not define object disposer to prevent of
-// accessing it by clients). This function remove inaccessible
-// objects only.
+// Clear cache of objects.
+//
+// I not define object disposer to prevent of accessing it by
+// clients. This function remove inaccessible objects only.
 //
 //-------------------------------------------------------------------
 void PersistenceBroker::BrokerCache::Clear( void )
@@ -265,8 +280,10 @@ EXIT_WRITE(_lock)}
 
 //-------------------------------------------------------------------
 //
-// Search cache for object with specified Type and ID. If object not
-// found or not exsists already nullptr will be returned.
+// Search cache for object with specified Type and ID.
+//
+// If object not found or not exsists already nullptr will be
+// returned.
 //
 //-------------------------------------------------------------------
 PersistentObject^ PersistenceBroker::BrokerCache::Search( int id, String ^type )
@@ -290,10 +307,11 @@ EXIT_READ(_lock)}
 
 //-------------------------------------------------------------------
 //
-// Search cache for object with specified Type and ID. This routine
-// return up-to-date object: it check specified date stamp and
-// changed state of object. If it must be updated, then call Retrieve
-// from persistent storage.
+// Search cache for object with specified Type and ID.
+//
+// This routine return up-to-date object: it check specified date
+// stamp and changed state of object. If it must be updated, then
+// call Retrieve from persistent storage.
 //
 //-------------------------------------------------------------------
 PersistentObject^ PersistenceBroker::BrokerCache::Search( \
@@ -335,9 +353,9 @@ PersistentObject^ PersistenceBroker::BrokerCache::Search( \
 EXIT_READ(_lock)}
 
 
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //								PersistenceBroker
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 //
@@ -356,11 +374,13 @@ void PersistenceBroker::check_state( void )
 
 //-------------------------------------------------------------------
 //
-// Mark object as passed through transaction. This means that the
-// object create save point (by calling TransactionBegin) and after
-// transaction complete must call TransactionCommit to commit changes
-// or TransactionRollback to return to state of save point. Save
-// point is created only once: by first object access.
+// Mark object as passed through transaction.
+//
+// This means that the object create save point (by calling
+// TransactionBegin) and after transaction complete must call
+// TransactionCommit to commit changes or TransactionRollback to
+// return to state of save point. Save point is created only once:
+// by first object access.
 //
 //-------------------------------------------------------------------
 void PersistenceBroker::add_to_trans( ITransactionSupport ^tobj )
@@ -380,12 +400,13 @@ void PersistenceBroker::add_to_trans( ITransactionSupport ^tobj )
 
 //-------------------------------------------------------------------
 //
-// Get's IPersistentStorage interface. This function is used to
-// emulate some getter interface: i must have routine to access last
-// set by Connect interface of storage. Of course, ideal method is
-// using tracking reference to m_storage, but i can't use it due to
-// CLI restrictions. So, i implement this function to pass it as
-// delegate to BrokerCache instance.
+// Get's IPersistentStorage interface.
+//
+// This function is used to emulate some getter interface: i must
+// have routine to access last set by Connect interface of storage.
+// Of course, ideal method is using tracking reference to m_storage,
+// but i can't use it due to CLI restrictions. So, i implement this
+// function to pass it as delegate to BrokerCache instance.
 //
 //-------------------------------------------------------------------
 IPersistenceStorage^ PersistenceBroker::get_storage( void )

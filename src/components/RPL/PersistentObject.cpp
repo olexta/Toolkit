@@ -21,18 +21,22 @@ using namespace System::IO;
 using namespace _RPL;
 
 
+//
 // Define macros to ignore exceptions
+//
 #define TRY(expr)		try { expr; } catch( Exception^ ) {};
 
 
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //						Toolkit::RPL::PersistentObject
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 //
-// Check for given states and raise exception with specific message
-// if there is any correspondence.
+// Check for object not to be in given states.
+//
+// If there is any correspondence then raise exception with specific
+// message.
 //
 //-------------------------------------------------------------------
 void PersistentObject::check_state( bool notNew, bool notDelete, bool notProxy )
@@ -56,9 +60,11 @@ void PersistentObject::check_state( bool notNew, bool notDelete, bool notProxy )
 
 //-------------------------------------------------------------------
 //
-// Handler routine to catch proxy change event. This is post event,
-// so checking for right object state was performed already. Mark
-// object as changed and call our event routine (ignore exceptions).
+// Handler routine to catch proxy change event.
+//
+// This is post event, so checking for right object state was
+// performed already. Mark object as changed and call our event
+// routine (ignore exceptions).
 //
 //-------------------------------------------------------------------
 void PersistentObject::on_change( void )
@@ -72,8 +78,10 @@ void PersistentObject::on_change( void )
 
 //-------------------------------------------------------------------
 //
-// Handler routine to catch link change event. Check for right object
-// state, call our event routine and mark object as changed.
+// Handler routine to catch link change event.
+//
+// Check for right object state, call our event routine and mark
+// object as changed.
 //
 //-----------------------------------------------------------------
 void PersistentObject::on_change( PersistentObject ^sender )
@@ -89,12 +97,13 @@ void PersistentObject::on_change( PersistentObject ^sender )
 
 //-------------------------------------------------------------------
 //
-// Handler routine to catch property change event. This handler more
-// dificalt because of having special processing for stream internal
-// change events. For this type of events (this is post event
-// notifications) i set object state as changed only. For other
-// events - check for right object state, call our event routine and
-// mark object as changed.
+// Handler routine to catch property change event.
+//
+// This handler more dificalt because of having special processing
+// for stream internal change events. For this type of events (this
+// is post event notifications) i set object state as changed only.
+// For other events - check for right object state, call our event
+// routine and mark object as changed.
 //
 //-------------------------------------------------------------------
 void PersistentObject::on_change( PersistentProperty ^sender, \
@@ -119,11 +128,12 @@ void PersistentObject::on_change( PersistentProperty ^sender, \
 
 //-------------------------------------------------------------------
 //
-// Update existing object with new values. Return true if update can
-// be finished (object is up to date) and false in case of links and
-// properties must be retrieved. There are several states of object
-// before calling this function, so it can be processed in some
-// different ways:
+// Update existing object with new values.
+//
+// Return true if update can be finished (object is up to date) and
+// false in case of links and properties must be retrieved. There are
+// several states of object before calling this function, so it can
+// be processed in some different ways:
 // 1. Object is up to date and was not changed: do nothing and return
 //    true.
 // 2. Object is proxy and not up to date: update needed values and
@@ -179,8 +189,7 @@ bool PersistentObject::on_retrieve( int id, DateTime stamp, String ^name )
 
 //-------------------------------------------------------------------
 //
-// This function is called by Broker to fill object by links and
-// properties.
+// Fills object by specified links and properties.
 //
 //-------------------------------------------------------------------
 void PersistentObject::on_retrieve( IEnumerable<PersistentObject^> ^links, \
@@ -202,6 +211,8 @@ void PersistentObject::on_retrieve( IEnumerable<PersistentObject^> ^links, \
 
 
 //-------------------------------------------------------------------
+//
+// ITransactionSupport::TransactionBegin implementation.
 //
 // I must store all object data until trans_commit will be called to
 // have ability to restore data by trans_rollback.
@@ -233,6 +244,8 @@ void PersistentObject::trans_begin( void )
 
 //-------------------------------------------------------------------
 //
+// ITransactionSupport::TransactionCommit implementation.
+//
 // Transaction was completed successfuly, then we must free resources
 // for transaction support.
 //
@@ -249,7 +262,10 @@ void PersistentObject::trans_commit( void )
 
 //-------------------------------------------------------------------
 //
-// Transaction fails, so we need to rollback object to previous state.
+// ITransactionSupport::TransactionRollback implementation.
+//
+// Transaction fails, so we need to rollback object to previous
+// state.
 //
 //-------------------------------------------------------------------
 void PersistentObject::trans_rollback( void )

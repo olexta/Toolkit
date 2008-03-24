@@ -19,18 +19,21 @@ using namespace System::IO;
 using namespace _RPL;
 
 
+//
 // Define macros to ignore exceptions
+//
 #define TRY(expr)		try { expr; } catch( Exception^ ) {};
 
 
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //						Toolkit::RPL::PersistentProperty
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 //
-// This routine set new value for this property. I need have spetsial
-// processing for stream wrapper class.
+// Sets new value for the property instance.
+//
+// I need have spetsial processing for stream wrapper class.
 //
 //-------------------------------------------------------------------
 void PersistentProperty::set_value( Object ^value )
@@ -60,9 +63,10 @@ void PersistentProperty::set_value( Object ^value )
 
 //-------------------------------------------------------------------
 //
-// This is event handler to catch stream change events. Handler
-// occurs after successfull stream change. So i must notify parent
-// only.
+// Event handler to catch stream change events.
+//
+// Handler occurs after successfull stream change. So i must notify
+// parent only.
 //
 //-------------------------------------------------------------------
 void PersistentProperty::stream_change( StreamWrapper ^sender )
@@ -76,6 +80,8 @@ void PersistentProperty::stream_change( StreamWrapper ^sender )
 
 
 //-------------------------------------------------------------------
+//
+// OnChange event implementation.
 //
 // I must override the default access on the add, remove, and raise
 // events methods to present event as delegate (i must be able copy
@@ -109,10 +115,11 @@ void PersistentProperty::on_change::raise( PersistentProperty ^sender, \
 
 //-------------------------------------------------------------------
 //
-// Set IsChanged property to specified value. Internal asembly 
-// classes must have access to set or reset IsChanged property in
-// case of loading properties from server and adding new property
-// instances to object.
+// Sets IsChanged property to specified value.
+//
+// Internal assembly classes must have access to set or reset
+// IsChanged property in case of loading properties from server and
+// adding new property instances to object.
 //
 //-------------------------------------------------------------------
 void PersistentProperty::set_changed( bool value )

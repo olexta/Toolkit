@@ -14,8 +14,8 @@
 
 #pragma once
 #include "RPL.h"
-#include "IBrokerCache.h"
-#include "IPersistenceStorage.h"
+#include "Storage\IBrokerCache.h"
+#include "Storage\IPersistenceStorage.h"
 
 using namespace System;
 using namespace System::Data;

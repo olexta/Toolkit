@@ -18,14 +18,13 @@
 using namespace _RPL;
 
 
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //							Toolkit::RPL::ObjectLinks
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 //
-// Class constructor. It is provided like internal constructor to
-// deny public access.
+// Create ObjectLinks instance initialized with owner object.
 //
 //-------------------------------------------------------------------
 ObjectLinks::ObjectLinks( PersistentObject ^owner ): \
@@ -41,10 +40,12 @@ ObjectLinks::ObjectLinks( PersistentObject ^owner ): \
 //-------------------------------------------------------------------
 //
 // Create ObjectLinks instance initialized with all the items in the
-// given collection and store owner object. If some object is not
-// unique in collection only the first reference will be added. Null
-// references will not be added to instance. It is provided like
-// internal constructor to deny public access.
+// given collection and store owner object.
+//
+// If some object is not unique in collection only the first
+// reference will be added. Null references will not be added to
+// instance. It is provided like internal constructor to deny public
+// access.
 //
 //-------------------------------------------------------------------
 ObjectLinks::ObjectLinks( PersistentObject ^owner,			   \
@@ -60,8 +61,10 @@ ObjectLinks::ObjectLinks( PersistentObject ^owner,			   \
 
 //-------------------------------------------------------------------
 //
-// Class copy constructor. Create persistent links collection based
-// on another ObjectLinks instance. Copy all internal data.
+// Class copy constructor.
+//
+// Create persistent links collection based on another ObjectLinks
+// instance. Copy all internal data.
 //
 //-------------------------------------------------------------------
 ObjectLinks::ObjectLinks( const ObjectLinks %links )

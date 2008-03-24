@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		IPersistenceStorage.h										*/
 /*																			*/
-/*	Content:	Definition of IPersistenceStorage interface.				*/
+/*	Content:	Definition of Storage::IPersistenceStorage interface.		*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/

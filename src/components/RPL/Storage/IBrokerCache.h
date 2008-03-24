@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		IBrokerCache.h												*/
 /*																			*/
-/*	Content:	Definition of IBrokerCache interface.						*/
+/*	Content:	Definition of Storage::IBrokerCache interface.				*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/

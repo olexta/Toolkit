@@ -44,9 +44,12 @@
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
+				ObjectFile="$(IntDir)"
+				ProgramDataBaseFileName="$(IntDir)vc80.pdb"
 				GenerateXMLDocumentationFiles="true"
+				XMLDocumentationFileName="$(IntDir)"
 				WarningLevel="3"
-				DebugInformationFormat="1"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -60,8 +63,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(NoInherit)"
-				OutputFile="$(OutDir)\$(ProjectName).dll"
+				OutputFile="$(OutDir)$(ProjectName).dll"
 				LinkIncremental="2"
+				ManifestFile="$(IntDir)$(TargetFileName).intermediate.manifest"
 				IgnoreAllDefaultLibraries="false"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
@@ -123,9 +127,12 @@
 				Name="VCCLCompilerTool"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
+				ObjectFile="$(IntDir)"
+				ProgramDataBaseFileName="$(IntDir)vc80.pdb"
 				GenerateXMLDocumentationFiles="true"
+				XMLDocumentationFileName="$(IntDir)"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -139,8 +146,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(NoInherit)"
-				OutputFile="$(OutDir)\$(ProjectName).dll"
+				OutputFile="$(OutDir)$(ProjectName).dll"
 				LinkIncremental="1"
+				ManifestFile="$(IntDir)$(TargetFileName).intermediate.manifest"
 				GenerateDebugInformation="false"
 				TargetMachine="1"
 			/>
@@ -181,10 +189,6 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath=".\AssemblyInfo.cpp"
-				>
-			</File>
 			<File
 				RelativePath="..\DeleteCriteria.cpp"
 				>
@@ -230,10 +234,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\RPL.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\StreamWrapper.cpp"
 				>
 			</File>
@@ -248,98 +248,94 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\RPL.h"
+				RelativePath="..\DeleteCriteria.h"
+				>
+			</File>
+			<File
+				RelativePath="..\IBrokerFactory.h"
+				>
+			</File>
+			<File
+				RelativePath="..\IID.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ITransactionSupport.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ObjectLinks.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ObjectProperties.h"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistenceBroker.h"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentCriteria.h"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentObject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentObjects.h"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentProperties.h"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentProperty.h"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentTransaction.h"
+				>
+			</File>
+			<File
+				RelativePath="..\RetrieveCriteria.h"
+				>
+			</File>
+			<File
+				RelativePath="..\StreamWrapper.h"
+				>
+			</File>
+			<File
+				RelativePath="..\UpdateCriteria.h"
 				>
 			</File>
 			<Filter
-				Name="private"
+				Name="Storage"
 				>
 				<File
-					RelativePath="..\StreamWrapper.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="interfaces"
-				>
-				<File
-					RelativePath="..\IBrokerCache.h"
+					RelativePath="..\Storage\IBrokerCache.h"
 					>
 				</File>
 				<File
-					RelativePath="..\IBrokerFactory.h"
-					>
-				</File>
-				<File
-					RelativePath="..\IID.h"
-					>
-				</File>
-				<File
-					RelativePath="..\IPersistenceStorage.h"
-					>
-				</File>
-				<Filter
-					Name="private"
-					>
-					<File
-						RelativePath="..\ITransactionSupport.h"
-						>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
-				Name="public"
-				>
-				<File
-					RelativePath="..\DeleteCriteria.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ObjectLinks.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ObjectProperties.h"
-					>
-				</File>
-				<File
-					RelativePath="..\PersistenceBroker.h"
-					>
-				</File>
-				<File
-					RelativePath="..\PersistentCriteria.h"
-					>
-				</File>
-				<File
-					RelativePath="..\PersistentObject.h"
-					>
-				</File>
-				<File
-					RelativePath="..\PersistentObjects.h"
-					>
-				</File>
-				<File
-					RelativePath="..\PersistentProperties.h"
-					>
-				</File>
-				<File
-					RelativePath="..\PersistentProperty.h"
-					>
-				</File>
-				<File
-					RelativePath="..\PersistentTransaction.h"
-					>
-				</File>
-				<File
-					RelativePath="..\RetrieveCriteria.h"
-					>
-				</File>
-				<File
-					RelativePath="..\UpdateCriteria.h"
+					RelativePath="..\Storage\IPersistenceStorage.h"
 					>
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath=".\AssemblyInfo.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\RPL.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\RPL.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

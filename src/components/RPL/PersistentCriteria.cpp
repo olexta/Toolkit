@@ -18,21 +18,24 @@
 using namespace _RPL;
 
 
+//
 // Define macros to ignore exceptions
+//
 #define TRY(expr)		try { expr; } catch( Exception^ ) {};
 
 
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //						Toolkit::RPL::PersistentCriteria
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 //
-// This internal function is needed for PersistentBroker to fill our
-// collection by result. To make PersistentBroker interface more easy
-// i implement this routine. So, this function receive proxy objects
-// and fill collection by it. To make addition processing you must
-// override it.
+// Fills collection instanse by search result.
+//
+// To make PersistentBroker interface more easy i implement this
+// routine. So, this function receive proxy objects and fill
+// collection by it. To make addition processing you must override
+// it.
 //
 //-------------------------------------------------------------------
 void PersistentCriteria::on_perform( int found, IEnumerable<PersistentObject^> ^objs )
@@ -66,6 +69,8 @@ void PersistentCriteria::on_perform( int found, IEnumerable<PersistentObject^> ^
 
 //-------------------------------------------------------------------
 //
+// ITransactionSupport::TransactionBegin implementation. 
+//
 // I must store all object data until trans_commit will be called to
 // have ability to restore data by trans_rollback.
 //
@@ -95,6 +100,8 @@ void PersistentCriteria::trans_begin( void )
 
 //-------------------------------------------------------------------
 //
+// ITransactionSupport::TransactionCommit implementation.
+//
 // Transaction was completed successfuly, then we must free resources
 // for transaction support.
 //
@@ -110,6 +117,8 @@ void PersistentCriteria::trans_commit( void )
 
 
 //-------------------------------------------------------------------
+//
+// ITransactionSupport::TransactionRollback implementation.
 //
 // Transaction failed, so we need to rollback object to previous
 // state.
