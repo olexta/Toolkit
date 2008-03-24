@@ -2,7 +2,7 @@
 /*																			*/
 /*	Project:	Toolkit Collections											*/
 /*																			*/
-/*	Module:		BinaryTreeNode.h											*/
+/*	Module:		Node.h														*/
 /*																			*/
 /*	Content:	Definition of BinaryTree::Node class						*/
 /*																			*/
@@ -13,7 +13,7 @@
 /****************************************************************************/
 
 #pragma once
-#include "Collections.h"
+#include "..\Collections.h"
 
 using namespace System;
 using namespace System::Reflection;

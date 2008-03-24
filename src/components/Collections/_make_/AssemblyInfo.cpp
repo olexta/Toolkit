@@ -23,8 +23,8 @@ using namespace System::Runtime::InteropServices;
 // associated with an assembly.
 //
 [assembly:AssemblyTitleAttribute("Toolkit.Collections")];
-[assembly:AssemblyDescriptionAttribute("Contains various collections to manage \
-										group of objects")];
+[assembly:AssemblyDescriptionAttribute("Toolkit.Collections contains various \
+										collections to manage group of objects")];
 [assembly:AssemblyProductAttribute("Toolkit Collections")];
 [assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2006-2007")];
 [assembly:AssemblyInformationalVersionAttribute("1.0")];

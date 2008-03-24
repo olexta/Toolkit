@@ -2,7 +2,7 @@
 /*																			*/
 /*	Project:	Toolkit Collections											*/
 /*																			*/
-/*	Module:		BinaryTreeVisitor.h											*/
+/*	Module:		Visitor.h													*/
 /*																			*/
 /*	Content:	Definition of BinaryTree::Visitor class						*/
 /*																			*/
@@ -13,8 +13,8 @@
 /****************************************************************************/
 
 #pragma once
-#include "Collections.h"
-#include "BinaryTreeNode.h"
+#include "..\Collections.h"
+#include "Node.h"
 
 using namespace System;
 using namespace System::Threading;

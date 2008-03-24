@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		RedBlackTree.h												*/
 /*																			*/
-/*	Content:	Definition of RedBlackTree class							*/
+/*	Content:	Definition of BinaryTree::RedBlackTree class				*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
@@ -13,10 +13,10 @@
 /****************************************************************************/
 
 #pragma once
-#include "Collections.h"
-#include "Association.h"
-#include "BinaryTreeNode.h"
-#include "BinaryTreeVisitor.h"
+#include "..\Collections.h"
+#include "..\Association.h"
+#include "Node.h"
+#include "Visitor.h"
 
 using namespace System;
 using namespace System::Threading;

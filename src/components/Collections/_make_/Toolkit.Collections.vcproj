@@ -181,9 +181,7 @@
 		</Configuration>
 	</Configurations>
 	<References>
-		<AssemblyReference
-			RelativePath="System.dll"
-		/>
+		<AssemblyReference RelativePath="System.dll" />
 	</References>
 	<Files>
 		<Filter
@@ -192,23 +190,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AssemblyInfo.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\Association.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\BinaryTreeNode.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\BinaryTreeVisitor.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Collections.cpp"
 				>
 			</File>
 			<File
@@ -219,10 +201,22 @@
 				RelativePath="..\Map.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\RedBlackTree.cpp"
+			<Filter
+				Name="BinaryTree"
 				>
-			</File>
+				<File
+					RelativePath="..\BinaryTree\Node.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\BinaryTree\RedBlackTree.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\BinaryTree\Visitor.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -230,59 +224,59 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\Collections.h"
+				RelativePath="..\Association.h"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-						DebugInformationFormat="4"
-					/>
-				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\IKeyedObject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\KeyedMap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Map.h"
+				>
 			</File>
 			<Filter
-				Name="interfaces"
+				Name="BinaryTree"
 				>
 				<File
-					RelativePath="..\IKeyedObject.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="public"
-				>
-				<File
-					RelativePath="..\KeyedMap.h"
+					RelativePath="..\BinaryTree\Node.h"
 					>
 				</File>
 				<File
-					RelativePath="..\Map.h"
+					RelativePath="..\BinaryTree\RedBlackTree.h"
 					>
 				</File>
 				<File
-					RelativePath="..\RedBlackTree.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="private"
-				>
-				<File
-					RelativePath="..\Association.h"
-					>
-				</File>
-				<File
-					RelativePath="..\BinaryTreeNode.h"
-					>
-				</File>
-				<File
-					RelativePath="..\BinaryTreeVisitor.h"
+					RelativePath="..\BinaryTree\Visitor.h"
 					>
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath=".\AssemblyInfo.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\Collections.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\Collections.h"
+			>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="0"
+					DebugInformationFormat="4"
+				/>
+			</FileConfiguration>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

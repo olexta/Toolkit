@@ -14,8 +14,8 @@
 
 #pragma once
 #include "Collections.h"
+#include "BinaryTree\RedBlackTree.h"
 #include "IKeyedObject.h"
-#include "RedBlackTree.h"
 
 using namespace System;
 using namespace System::Collections::Generic;
