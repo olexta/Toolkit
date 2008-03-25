@@ -45,7 +45,7 @@ namespace Adapters {
 		initonly CultureInfo	^_ci;
 
 	private:
-		static String^			const _del = ".";
+		static String^			const _del = "/";
 		static unsigned long	const _bufsize = 1024;
 		String^					const _filename;
 		ReaderWriterLock^		const _lock;
