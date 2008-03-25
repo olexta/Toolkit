@@ -644,10 +644,12 @@ void IniFile::flush( String ^loc )
 	for( int i = 0; i < secs->Count; i++ ){
 		// if this is subpath to specified location
 		if( (secs[i] + _del)->StartsWith( loc + _del ) ) {
-			// check that section hasn't keys and isn't leaf
+			// check that section hasn't keys and isn't empty leaf
 			if( (get_ini_string( secs[i], nullptr )->Count == 0) &&
-				((i + 1) < secs->Count) &&
-				secs[i + 1]->Contains( (secs[i] == _del ? "" : secs[i]) + _del ) ) {
+				((m_cache[secs[i]] != nullptr) ||
+				 (((i + 1) < secs->Count) &&
+				  secs[i + 1]->Contains(
+				  	(secs[i] == _del ? "" : secs[i]) + _del ))) ) {
 				// this is unneeded section: remove it
 				set_ini_string( secs[i], nullptr, nullptr );
 			}

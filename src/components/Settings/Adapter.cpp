@@ -228,6 +228,7 @@ void Adapter::SetValue( String ^fullpath, ValueBox value )
 IEnumerable<Node^>^ Adapter::Load( String ^fullpath )
 {
 	// check for null reference
+
 	if( fullpath == nullptr ) throw gcnew ArgumentNullException("fullpath");
 
 	// create list of subitems pathes 
@@ -245,8 +246,9 @@ IEnumerable<Node^>^ Adapter::Load( String ^fullpath )
 	for( int i = 0; i < subPathes->Count; i++ ) {
 		// process as O(n^2)
 		for( int j = i+1; j < subPathes->Count; j++ ) {
-			// if upper path was founded
-			if( subPathes[j]->StartsWith( subPathes[i] + _delimeter ) ) {
+			// if upper path or same path was found
+			if( (subPathes[j] + _delimeter)->StartsWith(
+					 subPathes[i] + _delimeter ) ) {
 				// remove it from list and move iterator back
 				subPathes->RemoveAt( i-- );
 				// return to main cycle
