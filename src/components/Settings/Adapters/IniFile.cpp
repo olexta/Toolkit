@@ -483,6 +483,10 @@ EXIT_WRITE(_lock)}
 IEnumerable<String^>^ IniFile::reload( String ^loc )
 {ENTER_WRITE(_lock)
 
+	// check for existing file
+	if( !IO::File::Exists( _filename ) ) throw gcnew IO::FileNotFoundException(
+		"File not found: '" + _filename + "'." );
+
 	// check for correct path
 	check_path( loc );
 	// modify root location
