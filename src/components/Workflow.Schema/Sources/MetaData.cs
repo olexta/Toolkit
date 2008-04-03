@@ -5,7 +5,7 @@
 //*
 //*	Content		:	Main library class.
 //*	Author		:	Alexander Kurbatov, Nikita Marunyak
-//*	Copyright	:	Copyright © 2006, 2007 Alexander Kurbatov, Nikita Marunyak
+//*	Copyright	:	Copyright © 2006 - 2008 Alexander Kurbatov, Nikita Marunyak
 //*
 //****************************************************************************
 
@@ -122,17 +122,30 @@ namespace Toolkit.Workflow.Schema
 		}
 
 		/// <summary>
-		/// Gets class description.
+		/// Gets object description.
 		/// </summary>
 		public SClass this[ IClassInfo instance ]
 		{
 			get
 			{
+				return this[ instance, null ];
+			}
+		}
+
+		/// <summary>
+		/// Gets description for object in specified state
+		/// </summary>
+		/// <remarks>
+		/// Putting null by stateComponents means work with current object state
+		/// </remarks>
+		public SClass this[ IClassInfo instance, string[] stateComponents ]
+		{
+			get {
 				if( instance == null )
 					throw new ArgumentNullException( "instance" );
 
 				if( m_Classes.Contains( instance.Type ) )
-					return new SClass( instance, m_Classes[ instance.Type ] );
+					return new SClass( instance, m_Classes[ instance.Type ], stateComponents );
 				else
 					throw new NoClassInformationException( instance );
 			}

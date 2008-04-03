@@ -5,7 +5,7 @@
 //*
 //*	Content		:	Internal class for caching purposes.
 //*	Author		:	Nikita Marunyak
-//*	Copyright	:	Copyright © 2007 Nikita Marunyak
+//*	Copyright	:	Copyright © 2007, 2008 Nikita Marunyak
 //*
 //****************************************************************************
 

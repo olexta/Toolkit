@@ -5,7 +5,7 @@
 //*
 //*	Content		:	Implementation of SProperty class
 //*	Author		:	Alexander Kurbatov, Nikita Marunyak
-//*	Copyright	:	Copyright © 2006, 2007 Alexander Kurbatov, Nikita Marunyak
+//*	Copyright	:	Copyright © 2006 - 2008 Alexander Kurbatov, Nikita Marunyak
 //*
 //*	This class is used to store following some class's property information:
 //*	  1) IsRequired - Determines whether or not this property is requiered to be entered

@@ -3,9 +3,9 @@
 //*
 //*	Module		:	SClass.cs
 //*
-//*	Content		:	Public class witch give information about specific object.
+//*	Content		:	Public class witch gives information about specific object.
 //*	Author		:	Nikita Marunyak
-//*	Copyright	:	Copyright © 2007 Nikita Marunyak
+//*	Copyright	:	Copyright © 2007, 2008 Nikita Marunyak
 //*
 //****************************************************************************
 
@@ -42,14 +42,25 @@ namespace Toolkit.Workflow.Schema
 		private ClassNode m_Class;
 
 		/// <summary>
-		/// Internal ctor. 
+		/// Creates instance of class
 		/// </summary>
 		internal SClass( IClassInfo objectInstance, ClassNode classNode )
+			: this( objectInstance, classNode, null )
+		{
+		}
+
+		/// <summary>
+		/// Creates instance of class
+		/// </summary>
+		/// <remarks>
+		/// Putting null by stateComponents means work with current object state
+		/// </remarks>
+		internal SClass( IClassInfo objectInstance, ClassNode classNode, string[] stateComponents )
 		{
 			m_object = objectInstance;
 			m_Class = classNode;
 
-			defineStateMask();
+			defineStateMask( stateComponents );
 			defineStateName();
 		}
 
@@ -202,11 +213,14 @@ namespace Toolkit.Workflow.Schema
 		}
 
 		/// <summary>
-		/// Define mask for current state.
+		/// Define mask for specified object state
 		/// </summary>
-		private void defineStateMask()
+		private void defineStateMask( string[] state )
 		{
-			if( m_object.StateComponents.Length == 0 )
+			if( state == null )
+				state = m_object.StateComponents;
+
+			if( state.Length == 0 )
 				return;
 			// Input string for regular expression
 			string list = "";
@@ -228,10 +242,10 @@ namespace Toolkit.Workflow.Schema
 			regexp = @"(?m)^";
 
 			// repeatably adds stateComponents elements to pattern string
-			for( int i = 0; i < m_object.StateComponents.Length; i++ ) {
+			for( int i = 0; i < state.Length; i++ ) {
 				// 1) First character must be '|'
 				// 2) Next must be specified string or '*'
-				regexp += @"\|(?:" + m_object.StateComponents[ i ] + @"|\*)";
+				regexp += @"\|(?:" + state[ i ] + @"|\*)";
 			}
 			// 1) Last character must be '|'
 			// 2) Continues match only if the subexpression (zero or one carriage return (\r) and end of line($))
