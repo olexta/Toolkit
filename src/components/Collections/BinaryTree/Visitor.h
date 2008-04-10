@@ -17,8 +17,6 @@
 #include "Node.h"
 
 using namespace System;
-using namespace System::Threading;
-using namespace System::Reflection;
 
 
 _BINARY_TREE_BEGIN
@@ -34,7 +32,7 @@ _BINARY_TREE_BEGIN
 /// trees, so it process tree as O(N).
 /// </remarks>
 generic<typename T>
-private ref class Visitor : MarshalByRefObject
+private ref class Visitor
 {
 public:
 	// define traverse modes
@@ -46,22 +44,23 @@ private:
 	
 private:
 	Node<T>^	const _root;		// root node
-	Node<T>^	const _leaf;		// leaf node
+	Node<T>^	const _leaf;		// leaf node (null reference by default)
 	TRAVERSE	const _traverse;	// traverse mode
-	Node<T>		^m_node;			// current node
+	Node<T>		^m_current;			// current node
 	STATE		m_state;			// current automation state
 
 	void check_state( void );
 	bool stop_traverse( STATE state );
 
 protected:
-	ReaderWriterLock^	const _lock;	// lock object
-	bool				m_disposed;		// flag for disposed state
+	bool		m_disposed;			// flag for disposed state
+
+	virtual void OnCheckState( void );
 
 public:
 	Visitor( Node<T> ^root, TRAVERSE traverse );
 	Visitor( Node<T> ^root, TRAVERSE traverse, Node<T> ^leaf );
-	~Visitor( void );
+	virtual ~Visitor( void );
 
 	property T Current {
 		virtual T get( void ) sealed;

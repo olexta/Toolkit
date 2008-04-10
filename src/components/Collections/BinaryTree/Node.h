@@ -16,7 +16,6 @@
 #include "..\Collections.h"
 
 using namespace System;
-using namespace System::Reflection;
 
 
 _BINARY_TREE_BEGIN
@@ -26,7 +25,8 @@ _BINARY_TREE_BEGIN
 /// All specialized tree node structures must be derived from this class. 
 /// </remarks>
 generic<typename T>
-private ref class Node : MarshalByRefObject
+[SerializableAttribute]
+private ref class Node
 {
 protected:
 	Node		^m_parent;	// parent
@@ -39,20 +39,20 @@ public:
 	Node( T data );
 
 	property Node^ Parent {
-		virtual Node^ get( void );
-		virtual void set( Node^ value );
+		Node^ get( void );
+		void set( Node ^value );
 	}
 	property Node^ Left {
-		virtual Node^ get( void );
-		virtual void set( Node^ value );
+		Node^ get( void );
+		void set( Node ^value );
 	}
 	property Node^ Right {
-		virtual Node^ get( void );
-		virtual void set( Node^ value );
+		Node^ get( void );
+		void set( Node ^value );
 	};
 	property T Data {
-		virtual T get( void );
-		virtual void set( T value );
+		T get( void );
+		void set( T value );
 	}
 };
 _BINARY_TREE_END

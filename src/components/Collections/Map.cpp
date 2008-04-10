@@ -30,11 +30,9 @@ using namespace _COLLECTIONS;
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
 KeyValuePair<TKey, TValue> Map<TKey, TValue>::Enumerator::current_item( void )
-{ENTER_READ(_lock)
-
+{
 	return (KeyValuePair<TKey, TValue>) RedBlackVisitor::Current;
-
-EXIT_READ(_lock)}
+}
 
 
 //-------------------------------------------------------------------
@@ -408,11 +406,11 @@ Map<TKey, TValue>::Map( const Map<TKey, TValue> %map )
 /// Gets an object that can be used to synchronize access to the Map.
 /// </summary>
 //-------------------------------------------------------------------
-generic<typename TKey, typename TValue>
-Object^ Map<TKey, TValue>::SyncRoot::get( void  )
-{
-	return _lock;
-}
+//generic<typename TKey, typename TValue>
+//Object^ Map<TKey, TValue>::SyncRoot::get( void  )
+//{
+//	return _lock;
+//}
 
 
 //-------------------------------------------------------------------

@@ -33,6 +33,7 @@ generic<typename T>
 Node<T>::Node( void ) :												  \
 	m_parent(nullptr), m_left(nullptr), m_right(nullptr), m_data(T())
 {
+	// do nothing
 }
 
 
@@ -48,12 +49,13 @@ generic<typename T>
 Node<T>::Node( T data ) :											   \
 	m_parent(nullptr), m_left(nullptr), m_right(nullptr), m_data(data)
 {
+	// do nothing
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Gets/Sets parent node for this.
+/// Gets/sets parent node for this.
 /// </summary>
 //-------------------------------------------------------------------
 generic<typename T>
@@ -63,7 +65,7 @@ Node<T>^ Node<T>::Parent::get( void )
 }
 
 generic<typename T>
-void Node<T>::Parent::set( Node^ value )
+void Node<T>::Parent::set( Node ^value )
 {
 	m_parent = value;
 }
@@ -71,7 +73,7 @@ void Node<T>::Parent::set( Node^ value )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Gets/Sets left subnode for this.
+/// Gets/sets left subnode for this.
 /// </summary>
 //-------------------------------------------------------------------
 generic<typename T>
@@ -81,7 +83,7 @@ Node<T>^ Node<T>::Left::get( void )
 }
 
 generic<typename T>
-void Node<T>::Left::set( Node^ value )
+void Node<T>::Left::set( Node ^value )
 {
 	m_left = value;
 }
@@ -89,7 +91,7 @@ void Node<T>::Left::set( Node^ value )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Gets/Sets right subnode for this.
+/// Gets/sets right subnode for this.
 /// </summary>
 //-------------------------------------------------------------------
 generic<typename T>
@@ -99,7 +101,7 @@ Node<T>^ Node<T>::Right::get( void )
 }
 
 generic<typename T>
-void Node<T>::Right::set( Node^ value )
+void Node<T>::Right::set( Node ^value )
 {
 	m_right = value;
 }
@@ -107,7 +109,7 @@ void Node<T>::Right::set( Node^ value )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Gets/Sets a data that current node contains.
+/// Gets/sets a data that current node contains.
 /// </summary>
 //-------------------------------------------------------------------
 generic<typename T>

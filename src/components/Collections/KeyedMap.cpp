@@ -30,11 +30,9 @@ using namespace _COLLECTIONS;
 //-------------------------------------------------------------------
 generic<typename TKey, typename TItem>
 TItem KeyedMap<TKey, TItem>::Enumerator::current_item( void )
-{ENTER_READ(_lock)
-
-	return RedBlackVisitor::Current->Value;
-
-EXIT_READ(_lock)}
+{
+	return RedBlackVisitor::Current.Value;
+}
 
 
 //-------------------------------------------------------------------
@@ -274,53 +272,6 @@ KeyedMap<TKey, TItem>::KeyedMap( const KeyedMap<TKey, TItem> %map )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Operator ==. Check for another instance of KeyedMap to be equal
-/// to this.
-/// </summary><remarks>
-/// I check content equivalence by using Contains(TItem) call.
-/// </remarks>
-//-------------------------------------------------------------------
-generic<typename TKey, typename TItem>
-bool KeyedMap<TKey, TItem>::operator==( IEnumerable<TItem> ^e )
-{
-	// check for nullptr
-	if( e == nullptr ) return false;
-	// check for same instance
-	if( ReferenceEquals( this, e ) ) return true;
-
-	// this is shallow check for no equal (by items count)
-	int count = 0;
-	for each( TItem item in e ) count++;
-	if( Size() != count ) return false;
-
-	// and this is deep check by content
-	for each( TItem item in e ) {
-		// check for exists and for item equivalent (i can
-		// use only Contains call because it may check for
-		// item equivalent stored in collection.
-		if( !Contains( item ) ) return false;
-	}
-	return true;
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Operator !=. Check for another instance of KeyedMap to be not
-/// equal to this.
-/// </summary><remarks>
-/// It uses Equal operator in implementation.
-/// </remarks>
-//-------------------------------------------------------------------
-generic<typename TKey, typename TItem>
-bool KeyedMap<TKey, TItem>::operator!=( IEnumerable<TItem> ^e )
-{
-	return !(*this == e);
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
 /// Operator +=. Add specified item to collection.
 /// </summary><remarks>
 /// This operator is equivalent to Add(TItem) method.
@@ -368,11 +319,11 @@ KeyedMap<TKey, TItem>% KeyedMap<TKey, TItem>::operator-=( TItem item )
 /// KeyedMap.
 /// </summary>
 //-------------------------------------------------------------------
-generic<typename TKey, typename TItem>
-Object^ KeyedMap<TKey, TItem>::SyncRoot::get( void  )
-{
-	return _lock;
-}
+//generic<typename TKey, typename TItem>
+//Object^ KeyedMap<TKey, TItem>::SyncRoot::get( void  )
+//{
+//	return _lock;
+//}
 
 
 //-------------------------------------------------------------------
@@ -496,16 +447,8 @@ bool KeyedMap<TKey, TItem>::Contains( TKey key )
 /// <summary>
 /// Determines whether the KeyedMap contains a specific item.
 /// </summary><remarks>
-/// This method may use shalow comparison only: it search for the
-/// item having key same as passed and use default equality comparer
-/// to check. The default equality comparer checks whether type T
-/// implements the System.IEquatable generic interface and if so
-/// returns an EqualityComparer that uses that implementation.
-/// Otherwise it returns an EqualityComparer that uses the overrides
-/// of Object.Equals and Object.GetHashCode provided by T.
-/// The default implementation of this method is intended to be
-/// overridden by a derived class to perform "deep" object
-/// comparison through operator == or in some other case.
+/// It checks content equivalence by using default equality comparer
+/// for specified type.
 /// </remarks>
 //-------------------------------------------------------------------
 generic<typename TKey, typename TItem>
@@ -611,19 +554,4 @@ bool KeyedMap<TKey, TItem>::Remove( TItem item )
 	// are unique, so previous check guarantine existing item)
 	// because of need passing real reference to handlers
 	return Remove( item->Key );
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Determines whether the specified Object is equal to the current
-/// KeyedMap instance.
-/// </summary><remarks>
-/// It uses Equal operator in implementation.
-/// </remarks>
-//-------------------------------------------------------------------
-generic<typename TKey, typename TItem>
-bool KeyedMap<TKey, TItem>::Equals( Object ^obj)
-{
-	return (*this == dynamic_cast<IEnumerable<TItem>^>( obj ));
 }

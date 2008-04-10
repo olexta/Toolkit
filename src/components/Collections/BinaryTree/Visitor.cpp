@@ -23,7 +23,7 @@ using namespace _BINARY_TREE;
 
 //-------------------------------------------------------------------
 //
-// Function checks visitor to be in disposed state.
+// Function checks visitor to be in invalid state.
 //
 //-------------------------------------------------------------------
 generic<typename T>
@@ -34,6 +34,9 @@ void Visitor<T>::check_state( void )
 		// throw disposed exception using class as object name
 		throw gcnew ObjectDisposedException(this->ToString());
 	}
+
+	// check binary tree state
+	OnCheckState();
 }
 
 
@@ -65,6 +68,21 @@ bool Visitor<T>::stop_traverse( STATE state )
 
 //-------------------------------------------------------------------
 /// <summary>
+/// Performs additional custom processes before any tree traverse.
+/// </summary><remarks>
+/// The default implementation of this method is intended to be
+/// overridden by a derived class to perform some action before the
+/// traverse is started.
+/// </remarks>
+//-------------------------------------------------------------------
+generic<typename T>
+void Visitor<T>::OnCheckState( void )
+{
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
 /// Creates new instance of the Visitor class for specified binary
 /// tree root node and traverse mode.
 /// </summary><remarks>
@@ -74,13 +92,13 @@ bool Visitor<T>::stop_traverse( STATE state )
 generic<typename T>
 Visitor<T>::Visitor( Node<T> ^root, TRAVERSE traverse ): \
 	_root(root), _leaf(nullptr), _traverse(traverse),	 \
-	_lock(gcnew ReaderWriterLock()), m_disposed(false)
+	m_disposed(false)
 {
 	// check for null reference
 	if( root == nullptr ) throw gcnew ArgumentNullException("root");
 
 	// initialize members
-	m_node = root;
+	m_current = root;
 	m_state = STATE::Start;
 }
 
@@ -98,14 +116,13 @@ Visitor<T>::Visitor( Node<T> ^root, TRAVERSE traverse ): \
 //-------------------------------------------------------------------
 generic<typename T>
 Visitor<T>::Visitor( Node<T> ^root, TRAVERSE traverse, Node<T> ^leaf ) : \
-	_root(root), _leaf(leaf), _traverse(traverse),						 \
-	_lock(gcnew ReaderWriterLock()), m_disposed(false)
+	_root(root), _leaf(leaf), _traverse(traverse), m_disposed(false)
 {
 	// check for null reference
 	if( root == nullptr ) throw gcnew ArgumentNullException("root");
 
 	// initialize members
-	m_node = root;
+	m_current = root;
 	m_state = (root != leaf) ? STATE::Start : STATE::Stop;
 }
 
@@ -118,17 +135,15 @@ Visitor<T>::Visitor( Node<T> ^root, TRAVERSE traverse, Node<T> ^leaf ) : \
 //-------------------------------------------------------------------
 generic<typename T>
 Visitor<T>::~Visitor( void )
-{ENTER_WRITE(_lock)
-	
+{	
 	if( !m_disposed ) {
 		// reset enumerator state
 		m_state = STATE::Stop;
-		m_node = _root;
+		m_current = _root;
 		// set state to disposed
 		m_disposed = true;
 	}
-
-EXIT_WRITE(_lock)}
+}
 
 
 //-------------------------------------------------------------------
@@ -142,8 +157,7 @@ EXIT_WRITE(_lock)}
 //-------------------------------------------------------------------
 generic<typename T>
 T Visitor<T>::Current::get( void )
-{ENTER_READ(_lock)
-
+{
 	// check enumerator state
 	check_state();
 
@@ -154,9 +168,8 @@ T Visitor<T>::Current::get( void )
 		throw gcnew InvalidOperationException(
 			"Enumeration has either not started or has already finished.");
 	}
-	return m_node->Data;
-
-EXIT_READ(_lock)}
+	return m_current->Data;
+}
 
 
 //-------------------------------------------------------------------
@@ -169,8 +182,7 @@ EXIT_READ(_lock)}
 //-------------------------------------------------------------------
 generic<typename T>
 bool Visitor<T>::MoveNext( void )
-{ENTER_WRITE(_lock)
-	
+{	
 	// check enumerator state
 	check_state();
 
@@ -187,10 +199,10 @@ bool Visitor<T>::MoveNext( void )
 			
 			case STATE::Left:
 				// we have left direction now
-				if( m_node->Left != _leaf ) {
+				if( m_current->Left != _leaf ) {
 					// in case of having left child go down to
 					// find minimal element
-					m_node = m_node->Left;
+					m_current = m_current->Left;
 					// change state and check for stop
 					if( stop_traverse( m_state = STATE::Left ) ) return true;
 				} else {
@@ -202,11 +214,11 @@ bool Visitor<T>::MoveNext( void )
 			
 			case STATE::Right:
 				// we have right direction now
-				if( m_node->Right != _leaf) {
+				if( m_current->Right != _leaf) {
 					// node has right subnode, so we change current
 					// node and enter LEFT state to find minimal
 					// element of this subnode
-					m_node = m_node->Right;
+					m_current = m_current->Right;
 					// change state and check for stop
 					if( stop_traverse( m_state = STATE::Left ) ) return true;
 				} else {
@@ -217,15 +229,15 @@ bool Visitor<T>::MoveNext( void )
 	
 			case STATE::Parent:
 				// check for root element
-				if( m_node != _root ) {
+				if( m_current != _root ) {
 					// determine from what child we are looking up
-					if( m_node->Parent->Left == m_node ) {
+					if( m_current->Parent->Left == m_current ) {
 						// from left child we must select right direction
-						m_node = m_node->Parent;
+						m_current = m_current->Parent;
 						if( stop_traverse( m_state = STATE::Right ) ) return true;
 					} else {
 						// in other case look for parent 
-						m_node = m_node->Parent;
+						m_current = m_current->Parent;
 						if( stop_traverse( m_state = STATE::Parent) ) return true;
 					}
 				} else {
@@ -237,8 +249,7 @@ bool Visitor<T>::MoveNext( void )
 	} while( m_state != STATE::Stop );
 
 	return false;
-
-EXIT_WRITE(_lock)}
+}
 
 
 //-------------------------------------------------------------------
@@ -249,13 +260,11 @@ EXIT_WRITE(_lock)}
 //-------------------------------------------------------------------
 generic<typename T>
 void Visitor<T>::Reset( void )
-{ENTER_WRITE(_lock)
-
+{
 	// check enumerator state
 	check_state();
 
 	// reset automation state and current node
 	m_state = (_root != _leaf) ? STATE::Start : STATE::Stop;
-	m_node = _root;
-
-EXIT_WRITE(_lock)}
+	m_current = _root;
+}

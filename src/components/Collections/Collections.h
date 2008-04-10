@@ -32,7 +32,7 @@
 // Define timeout for operations.
 //
 #ifdef _DEBUG
-	#define TIMEOUT	30000
+	#define TIMEOUT	10000
 #else
 	#define TIMEOUT -1
 #endif

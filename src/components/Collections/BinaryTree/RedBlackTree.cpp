@@ -14,6 +14,7 @@
 
 #include "RedBlackTree.h"
 
+using namespace System::Threading;
 using namespace _BINARY_TREE;
 
 
@@ -23,46 +24,39 @@ using namespace _BINARY_TREE;
 
 //-------------------------------------------------------------------
 //
-// Create new Red-Black tree node. This node have initialized data,
-// childs and color (RED). Left and right childs are pointed to
-// leafs. Parent is undefined.
+// Creates Red-Black tree leaf.
+//
+// In Red-Black tree all leafs is sentitel and mark as black nodes.
 //
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
-RedBlackTree<TKey, TValue>::									\
-RedBlackNode::RedBlackNode( Association<TKey, TValue> ^data ) :	\
-	Node(data), m_color(COLOR::Red)
+RedBlackTree<TKey, TValue>::		   \
+RedBlackNode::RedBlackNode( void ):	   \
+	Node(KeyValuePair<TKey, TValue>())
 {
-	// set childs to leafs
-	m_left = sentitel;
-	m_right = sentitel;
+	m_left = this;
+	m_right = this;
+	m_color = COLOR::Black;
 }
 
 
 //-------------------------------------------------------------------
 //
-// This static const property returns leaf representations of node.
-// In Red-Black tree all leafs is sentitel and mark as black nodes.
-// So i define static property, that return reference to initialized
-// leaf node. This implementation minimize memory usage.
+// Creates new Red-Black tree node.
+//
+// This node have initialized data, childs and color (RED). Left and
+// right childs are pointed to leafs. Parent is undefined.
 //
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
-RedBlackTree<TKey, TValue>::											 \
-RedBlackNode^ RedBlackTree<TKey, TValue>::RedBlackNode::NIL::get( void )
+RedBlackTree<TKey, TValue>::								 \
+RedBlackNode::RedBlackNode( KeyValuePair<TKey, TValue> data, \
+							RedBlackNode ^leaf ) :			 \
+	Node(data), m_color(COLOR::Red)
 {
-	if( sentitel == nullptr ) {
-		// create new static instance and initialize it
-		sentitel = gcnew RedBlackNode(nullptr);
-		sentitel->m_color = RedBlackNode::COLOR::Black;
-		// there is one BUG in MC++ property visible scope:
-		// i can't access to the protected members of parent
-		// class Node (from functions access is permited), so
-		// i set childs through public accessors
-		sentitel->Left = sentitel;
-		sentitel->Right = sentitel;
-	}
-	return sentitel;
+	// set childs to leafs
+	m_left = leaf;
+	m_right = leaf;
 }
 
 
@@ -110,8 +104,7 @@ RedBlackNode::Right::get( void )
 
 //-------------------------------------------------------------------
 //
-// Provide implicit Right property conversion from BinaryTree::Node
-// to RedBlackNode.
+// Gets/sets node color.
 //
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
@@ -135,36 +128,35 @@ RedBlackNode::Color::set( COLOR value  )
 
 //-------------------------------------------------------------------
 //
-// Creates new instance of the RedBlackVisitor class for specified
-// red-black tree. At this time parent tree will be locked for
-// readonly access until this enumerator will be disposed.
+// Check that tree was modified during enumeration.
 //
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
-RedBlackTree<TKey, TValue>::										   \
-RedBlackVisitor::RedBlackVisitor( RedBlackTree ^rbt ) :				   \
-	Visitor(rbt->m_root, Visitor::TRAVERSE::Infix, RedBlackNode::NIL), \
-	_rbt(rbt)
-{
-	// lock parent tree for readonly access
-	_rbt->_lock->AcquireReaderLock( TIMEOUT );
+void RedBlackTree<TKey, TValue>:: \
+RedBlackVisitor::OnCheckState( void )
+{	
+	if( _fnGetStamp() != _stamp ) {
+		throw gcnew InvalidOperationException(
+			"Collection was modified; enumeration operation may not execute.");
+	}
 }
 
 
 //-------------------------------------------------------------------
 //
-// Release readonly access to parent tree.
+// Creates new instance of the RedBlackVisitor class for specified
+// red-black tree.
 //
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
-RedBlackTree<TKey, TValue>:: \
-RedBlackVisitor::~RedBlackVisitor( void )
-{ENTER_WRITE(_lock)
-	
-	// release readonly access
-	if( !m_disposed ) _rbt->_lock->ReleaseReaderLock();
-
-EXIT_WRITE(_lock)}
+RedBlackTree<TKey, TValue>::									 \
+RedBlackVisitor::RedBlackVisitor( RedBlackTree ^rbt ) :			 \
+	Visitor(rbt->m_root, Visitor::TRAVERSE::Infix, rbt->_leaf),	 \
+	_fnGetStamp(gcnew GET_STAMP(rbt, &RedBlackTree::get_stamp)), \
+	_stamp(rbt->m_stamp)
+{
+	// do nothing
+}
 
 
 //-----------------------------------------------------------------------------
@@ -173,19 +165,33 @@ EXIT_WRITE(_lock)}
 
 //-------------------------------------------------------------------
 //
+// Return current tree stamp.
+//
+// This function is used by Enumerator to check tree modification.
+//
+//-------------------------------------------------------------------
+generic<typename TKey, typename TValue>
+long long RedBlackTree<TKey, TValue>::get_stamp( void )
+{
+	return Interlocked::Read( m_stamp );
+}
+
+
+//-------------------------------------------------------------------
+//
 // Store information (depending on current action) to provide future
 // restoration procedure.
 //
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
-bool RedBlackTree<TKey, TValue>::backup( Association<TKey, TValue> ^data,
+bool RedBlackTree<TKey, TValue>::backup( KeyValuePair<TKey, TValue> data,
 										 RedBlackTree::RESTORE_POINT::ACTION action )
 {
 	// save information about action
-	if( data != nullptr ) _backup._data = data;
-	_backup._action = action;
-	_backup._count = m_count;
-	_backup._root = m_root;
+	m_backup._data = data;
+	m_backup._action = action;
+	m_backup._count = m_count;
+	m_backup._root = m_root;
 	
 	// return true if tree can be reverted to
 	// previous state
@@ -205,10 +211,10 @@ void RedBlackTree<TKey, TValue>::rotate_left( RedBlackNode ^x )
 
 	// establish x->right link
 	x->Right = y->Left;
-	if( y->Left != RedBlackNode::NIL ) y->Left->Parent = x;
+	if( y->Left != _leaf ) y->Left->Parent = x;
 
 	// establish y->parent link
-	if( y != RedBlackNode::NIL ) y->Parent = x->Parent;
+	if( y != _leaf ) y->Parent = x->Parent;
 	if( x->Parent != nullptr ) {
 		if( x == x->Parent->Left ) {
 			x->Parent->Left = y;
@@ -221,7 +227,7 @@ void RedBlackTree<TKey, TValue>::rotate_left( RedBlackNode ^x )
 
 	// link x and y
 	y->Left = x;
-	if( x != RedBlackNode::NIL ) x->Parent = y;
+	if( x != _leaf ) x->Parent = y;
 }
 
 
@@ -237,10 +243,10 @@ void RedBlackTree<TKey, TValue>::rotate_right( RedBlackNode ^x )
 
 	// establish x->left link
 	x->Left = y->Right;
-	if( y->Right != RedBlackNode::NIL ) y->Right->Parent = x;
+	if( y->Right != _leaf ) y->Right->Parent = x;
 
 	// establish y->parent link
-	if( y != RedBlackNode::NIL ) y->Parent = x->Parent;
+	if( y != _leaf ) y->Parent = x->Parent;
 	if( x->Parent != nullptr ) {
 		if( x == x->Parent->Right ) {
 			x->Parent->Right = y;
@@ -253,7 +259,7 @@ void RedBlackTree<TKey, TValue>::rotate_right( RedBlackNode ^x )
 
 	// link x and y
 	y->Right = x;
-	if( x != RedBlackNode::NIL ) x->Parent = y;
+	if( x != _leaf ) x->Parent = y;
 }
 
 
@@ -399,8 +405,10 @@ void RedBlackTree<TKey, TValue>::delete_fixup( RedBlackNode ^x )
 
 //-------------------------------------------------------------------
 //
-// Add node to tree. If node with the same key already exists in the 
-// tree than new value will be set.
+// Add node to tree.
+//
+// If node with the same key already exists in the tree than new
+// value will be set.
 //
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
@@ -412,16 +420,16 @@ void RedBlackTree<TKey, TValue>::insert_node( RedBlackNode ^x )
 	// find where node belongs
 	current = m_root;
 	parent = nullptr;
-	while( current != RedBlackNode::NIL ) {
+	while( current != _leaf ) {
 		// in case of containing the item with specified key
-		if( x->Data->Key->CompareTo(current->Data->Key ) == 0 ) {
+		if( x->Data.Key->CompareTo(current->Data.Key ) == 0 ) {
 			// set new value in association
-			current->Data->Value = x->Data->Value;
+			current->Data = x->Data;
 			// and return
 			return;
 		}
 		parent = current;
-		current = (x->Data->Key->CompareTo(current->Data->Key) < 0) ? \
+		current = (x->Data.Key->CompareTo(current->Data.Key) < 0) ? \
 				  current->Left : current->Right;
 	}
 	x->Parent = parent;
@@ -429,7 +437,7 @@ void RedBlackTree<TKey, TValue>::insert_node( RedBlackNode ^x )
 	// insert node in the tree
 	if( parent != nullptr ) {
 		// check for node place
-		if( x->Data->Key->CompareTo(parent->Data->Key) < 0 ) {
+		if( x->Data.Key->CompareTo(parent->Data.Key) < 0 ) {
 			// new node must be left child for founded parent
 			parent->Left = x;
 		} else {
@@ -457,18 +465,18 @@ void RedBlackTree<TKey, TValue>::delete_node( RedBlackNode ^x )
     RedBlackNode	^y = nullptr;
 	RedBlackNode	^z = nullptr;
 
-    if( (x->Left == RedBlackNode::NIL) || (x->Right == RedBlackNode::NIL) ) {
+    if( (x->Left == _leaf) || (x->Right == _leaf) ) {
         // z has a NIL node as a child
         z = x;
     } else {
         // find tree successor with a NIL node as a child
         z = x->Right;
 
-        while( z->Left != RedBlackNode::NIL ) z = z->Left;
+        while( z->Left != _leaf ) z = z->Left;
     }
 
     // y is z's only child
-	if( z->Left != RedBlackNode::NIL ) {
+	if( z->Left != _leaf ) {
 		// set y by left child
 		y = z->Left;
 	} else {
@@ -502,8 +510,9 @@ void RedBlackTree<TKey, TValue>::delete_node( RedBlackNode ^x )
 
 //-------------------------------------------------------------------
 //
-// Find node containing data specified item. This search process last
-// as O(log N).
+// Find node containing data specified item.
+//
+// This search process last as O(log N).
 //
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
@@ -512,14 +521,14 @@ RedBlackNode^ RedBlackTree<TKey, TValue>::find_node( TKey key )
 {
 	RedBlackNode	^x = m_root;
 
-	while( x != RedBlackNode::NIL ) {
+	while( x != _leaf ) {
 		// check for equal keys
-		if( key->CompareTo( x->Data->Key ) == 0 ) {
+		if( key->CompareTo( x->Data.Key ) == 0 ) {
 			// return current node
 			return x;
 		} else {
 			// prepare for next iteration
-			x = key->CompareTo( x->Data->Key ) < 0 ? x->Left : x->Right;
+			x = key->CompareTo( x->Data.Key ) < 0 ? x->Left : x->Right;
 		}
 	}
 	// node with specified key was not found
@@ -535,9 +544,10 @@ RedBlackNode^ RedBlackTree<TKey, TValue>::find_node( TKey key )
 /// </remarks>
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
-RedBlackTree<TKey, TValue>::RedBlackTree( void ):						   \
-	_lock(gcnew ReaderWriterLock()), m_count(0), m_root(RedBlackNode::NIL)
+RedBlackTree<TKey, TValue>::RedBlackTree( void ):		   \
+	_leaf(gcnew RedBlackNode()), m_count(0), m_root(_leaf)
 {
+	// do nothing
 }
 
 
@@ -551,8 +561,7 @@ RedBlackTree<TKey, TValue>::RedBlackTree( void ):						   \
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
 bool RedBlackTree<TKey, TValue>::Find( TKey key, TValue %value )
-{ENTER_READ(_lock)
-
+{
 	// check for initialized key
 	if( key == nullptr ) throw gcnew ArgumentNullException("key");
 
@@ -560,9 +569,8 @@ bool RedBlackTree<TKey, TValue>::Find( TKey key, TValue %value )
 	RedBlackNode	^x = find_node( key );
 
 	// return result
-	return (x != nullptr) ? value = x->Data->Value, true : false;
-	
-EXIT_READ(_lock)}
+	return (x != nullptr) ? value = x->Data.Value, true : false;
+}
 
 
 //-------------------------------------------------------------------
@@ -577,8 +585,7 @@ EXIT_READ(_lock)}
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
 bool RedBlackTree<TKey, TValue>::Insert( TKey key, TValue value, bool overwrite )
-{ENTER_WRITE(_lock)
-
+{
 	// check for initialized key
 	if( key == nullptr ) throw gcnew ArgumentNullException("key");
 
@@ -588,18 +595,22 @@ bool RedBlackTree<TKey, TValue>::Insert( TKey key, TValue value, bool overwrite 
 	if( x != nullptr ) {
 		// check for overwrite flag and replace data
 		if( overwrite ) {
+			// mark tree as modified
+			Interlocked::Increment( m_stamp );
 			// backup current state
 			backup( x->Data, RESTORE_POINT::ACTION::Set );
 			// set new value in association
-			x->Data->Value = value;
+			x->Data = KeyValuePair<TKey, TValue>(key, value);
 		}
 		// return non insert result
 		return false;
 	}
 
 	// setup new node
-	x = gcnew RedBlackNode(gcnew Association<TKey, TValue>(key, value));
+	x = gcnew RedBlackNode(KeyValuePair<TKey, TValue>(key, value), _leaf);
 
+	// mark tree as modified
+	Interlocked::Increment( m_stamp );
 	// backup current state
 	backup( x->Data, RESTORE_POINT::ACTION::Insert );
 
@@ -607,13 +618,11 @@ bool RedBlackTree<TKey, TValue>::Insert( TKey key, TValue value, bool overwrite 
 	// with specified key: look for first before, but i do this for
 	// more integriti function logic structure)
 	insert_node( x );
-
 	// change dictionary properties
 	m_count++;
 
 	return true;
-
-EXIT_WRITE(_lock)}
+}
 
 
 //-------------------------------------------------------------------
@@ -626,27 +635,26 @@ EXIT_WRITE(_lock)}
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
 bool RedBlackTree<TKey, TValue>::Delete( TKey key )
-{ENTER_WRITE(_lock)
-
+{
 	// check for initialized key
 	if( key == nullptr ) throw gcnew ArgumentNullException("key");
 
     RedBlackNode	^x = find_node( key );	// find node for specified key
 
-	if( (x == nullptr) || (x == RedBlackNode::NIL) ) return false;
+	if( (x == nullptr) || (x == _leaf) ) return false;
 
+	// mark tree as modified
+	Interlocked::Increment( m_stamp );
     // backup current state
 	backup( x->Data, RESTORE_POINT::ACTION::Delete );
-
+	
 	// delete founded node
 	delete_node( x );
-
 	// modyfy dictionary properties
 	m_count--;
 
 	return true;
-
-EXIT_WRITE(_lock)}
+}
 
 
 //-------------------------------------------------------------------
@@ -656,16 +664,16 @@ EXIT_WRITE(_lock)}
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
 void RedBlackTree<TKey, TValue>::DeleteAll( void )
-{ENTER_WRITE(_lock)
-
+{
+	// mark tree as modified
+	Interlocked::Increment( m_stamp );
 	// backup data
-	backup( nullptr, RESTORE_POINT::ACTION::DeleteAll );
+	backup( KeyValuePair<TKey, TValue>(), RESTORE_POINT::ACTION::DeleteAll );
 
 	// clear tree: this is delete reference to root only
-	m_root = RedBlackNode::NIL;
+	m_root = _leaf;
 	m_count = 0;
-
-EXIT_WRITE(_lock)}
+}
 
 
 //-------------------------------------------------------------------
@@ -678,21 +686,20 @@ EXIT_WRITE(_lock)}
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
 bool RedBlackTree<TKey, TValue>::Undo( void )
-{ENTER_WRITE(_lock)
-
+{
 	bool			res = false;
 	RedBlackNode	^x = nullptr;
 
 	// if no action was stored then restoration procedure is unavialable
-	if( _backup._action == RESTORE_POINT::ACTION::None ) return false;
+	if( m_backup._action == RESTORE_POINT::ACTION::None ) return false;
 
 	// depend on action type proccess different
 	// restoration procedure
-	switch( _backup._action ) {
+	switch( m_backup._action ) {
 		
 		case RESTORE_POINT::ACTION::Insert:
 			// find node for specified key
-			if( (x = find_node( _backup._data.Key )) == nullptr ) break;
+			if( (x = find_node( m_backup._data.Key )) == nullptr ) break;
 
 			// delete node from the tree
 			delete_node( x );
@@ -702,46 +709,44 @@ bool RedBlackTree<TKey, TValue>::Undo( void )
 
 		case RESTORE_POINT::ACTION::Set:
 			// find node for specified key
-			if( (x = find_node( _backup._data.Key )) == nullptr ) break;
+			if( (x = find_node( m_backup._data.Key )) == nullptr ) break;
 
 			// set stored data
-			x->Data->Value = _backup._data.Value;
+			x->Data = m_backup._data;
 			// save successful result 
 			res = true;
 		break;
 
 		case RESTORE_POINT::ACTION::Delete:
 			// check for existing node
-			if( find_node( _backup._data.Key ) != nullptr ) break;
+			if( find_node( m_backup._data.Key ) != nullptr ) break;
 
 			// add new node with stored data
-			insert_node( gcnew RedBlackNode(gcnew Association<TKey, TValue>(
-						 _backup._data)) );
+			insert_node( gcnew RedBlackNode(m_backup._data, _leaf) );
 			// save successful result
 			res = true;
 		break;
 		
 		case RESTORE_POINT::ACTION::DeleteAll:
 			// check for empty tree
-			if( m_root != RedBlackNode::NIL ) break;
+			if( m_root != _leaf ) break;
 
 			// restore m_root pointer
-			m_root = _backup._root;
+			m_root = m_backup._root;
 			// save successful result
 			res = true;
 		break;
 
 		default: return false;
 	}
-	if( res ) m_count = _backup._count;
+	if( res ) m_count = m_backup._count;
 
 	// clear backup data
-	_backup._action = RESTORE_POINT::ACTION::None;
+	m_backup._action = RESTORE_POINT::ACTION::None;
 
 	return res;
+}
 
-EXIT_WRITE(_lock)}
-	
 
 //-------------------------------------------------------------------
 /// <summary>
@@ -750,8 +755,6 @@ EXIT_WRITE(_lock)}
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
 int RedBlackTree<TKey, TValue>::Size( void )
-{ENTER_READ(_lock)
-
+{
 	return m_count;
-
-EXIT_READ(_lock)}
+}

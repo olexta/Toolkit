@@ -190,10 +190,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\Association.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\KeyedMap.cpp"
 				>
 			</File>
@@ -223,10 +219,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="..\Association.h"
-				>
-			</File>
 			<File
 				RelativePath="..\IKeyedObject.h"
 				>

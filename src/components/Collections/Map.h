@@ -33,6 +33,7 @@ _COLLECTIONS_BEGIN
 /// </remarks>
 generic<typename TKey, typename TValue> 
 	where TKey : IComparable<TKey>
+[SerializableAttribute]
 public ref class Map : RedBlackTree<TKey, TValue>, IDictionary<TKey, TValue>
 {
 private:
@@ -87,9 +88,6 @@ public:
 	explicit Map( IEnumerable<KeyValuePair<TKey, TValue>> ^e );
 	Map( const Map<TKey, TValue> %map );
 
-	property Object^ SyncRoot {
-		Object^ get( void );
-	}
 	property TValue default[TKey] {
 		virtual TValue get( TKey key );
 		virtual void set( TKey key, TValue value );

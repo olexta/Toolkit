@@ -37,6 +37,7 @@ _COLLECTIONS_BEGIN
 generic<typename TKey, typename TItem> 
 	where TKey : IComparable<TKey>
 	where TItem : IKeyedObject<TKey>
+[SerializableAttribute]
 public ref class KeyedMap : RedBlackTree<TKey, TItem>, ICollection<TItem>
 {
 private:
@@ -80,14 +81,9 @@ public:
 	explicit KeyedMap( IEnumerable<TItem> ^e );
 	KeyedMap( const KeyedMap<TKey, TItem> %map );
 
-	bool operator==( IEnumerable<TItem> ^e );
-	bool operator!=( IEnumerable<TItem> ^e );
 	KeyedMap% operator+=( TItem item );
 	KeyedMap% operator-=( TItem item );
 
-	property Object^ SyncRoot {
-		Object^ get( void );
-	}
 	property TItem default[TKey] {
 		virtual TItem get( TKey key );
 	}
@@ -102,7 +98,5 @@ public:
 	virtual void CopyTo( array<TItem> ^dest, int index );
 	virtual bool Remove( TKey key );
 	virtual bool Remove( TItem item );
-	
-	virtual bool Equals( Object ^obj ) override;
 };
 _COLLECTIONS_END
