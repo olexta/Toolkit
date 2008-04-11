@@ -445,7 +445,7 @@ EXIT_WRITE(_lock)}
 /// moment when item will be connected to adapter.
 /// </remarks>
 //-------------------------------------------------------------------
-ValueBox Item::Value::get( void )
+Node::ValueBox Item::Value::get( void )
 {ENTER_READ(_lock)
 
 	// depend on current state returns

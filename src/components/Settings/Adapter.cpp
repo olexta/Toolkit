@@ -12,7 +12,6 @@
 /*																			*/
 /****************************************************************************/
 
-#include "ValueBox.h"
 #include "Nodes.h"
 #include "Item.h"
 #include "Adapter.h"
@@ -168,7 +167,7 @@ EXIT_WRITE(_lock)}
 // ValueBox with null reference and setter throws exception.
 //
 //-------------------------------------------------------------------
-ValueBox Adapter::Value::get( void )
+Node::ValueBox Adapter::Value::get( void )
 {
 	return nullptr;
 }
@@ -188,7 +187,7 @@ void Adapter::Value::set( ValueBox value )
 // Function does not accept relative path.
 //
 //-------------------------------------------------------------------
-ValueBox Adapter::GetValue( String ^fullpath )
+Node::ValueBox Adapter::GetValue( String ^fullpath )
 {
 	// check for null reference
 	if( fullpath == nullptr )

@@ -12,7 +12,6 @@
 /*																			*/
 /****************************************************************************/
 
-#include "ValueBox.h"
 #include "Nodes.h"
 #include "Item.h"
 #include "Adapter.h"
@@ -148,7 +147,7 @@ EXIT_WRITE(_lock)}
 /// ValueBox with null reference and setter throws exception.
 /// </remarks>
 //-------------------------------------------------------------------
-ValueBox Manager::Value::get( void )
+Node::ValueBox Manager::Value::get( void )
 {
 	return nullptr;
 }

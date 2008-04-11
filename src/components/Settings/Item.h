@@ -13,7 +13,6 @@
 /****************************************************************************/
 
 #pragma once
-#include "ValueBox.h"
 #include "Settings.h"
 #include "Node.h"
 
