@@ -14,11 +14,11 @@
 
 #pragma once
 #include "..\Collections.h"
-#include "..\Association.h"
 #include "Node.h"
 #include "Visitor.h"
 
 using namespace System;
+using namespace System::Collections::Generic;
 using namespace _COLLECTIONS;
 
 
