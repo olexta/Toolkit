@@ -263,8 +263,7 @@ KeyedMap<TKey, TItem>::KeyedMap( const KeyedMap<TKey, TItem> %map )
 		// copy from KeyedMap which handle this issue)
 		if( !Insert( item->Key, item, false ) ) {
 			// input collection is invalid
-			throw gcnew ArgumentException(
-				"Dublicate key exists in input collection.", "map");
+			throw gcnew ArgumentException(ERR_DUBLICATE_KEY, "map");
 		}
 	}
 }
@@ -306,8 +305,8 @@ KeyedMap<TKey, TItem>% KeyedMap<TKey, TItem>::operator-=( TItem item )
 	if( item == nullptr ) throw gcnew ArgumentNullException("item");
 
 	// remove item from tree
-	if( !Remove( item ) ) throw gcnew KeyNotFoundException(
-		"The given key was not present in the collection." );;
+	if( !Remove( item ) )
+		throw gcnew KeyNotFoundException(ERR_KEY_NOT_FOUND);
 
 	return *this;
 }
@@ -344,8 +343,8 @@ TItem KeyedMap<TKey, TItem>::default::get( TKey key )
 
 	// find item with specified key (in case of unsuccessful search
 	// exception KeyNotFoundException will be raised)
-	if( !Find( key, item ) ) throw gcnew KeyNotFoundException(
-		"The given key was not present in the collection.");
+	if( !Find( key, item ) )
+		throw gcnew KeyNotFoundException(ERR_KEY_NOT_FOUND);
 
 	return item;
 }
@@ -382,8 +381,7 @@ void KeyedMap<TKey, TItem>::Add( TItem item )
 	// item exists)
 	if( !Insert( item->Key, item, false ) ) {
 		// raise exception
-		throw gcnew ArgumentException(
-			"An item with the same key already exists.");
+		throw gcnew ArgumentException(ERR_ITEM_EXISTS);
 	}
 
 	// fire event after the action (if error will be raised
@@ -481,17 +479,15 @@ void KeyedMap<TKey, TItem>::CopyTo( array<TItem> ^dest, int index )
 	if( dest == nullptr ) throw gcnew ArgumentNullException("dest");
 	
 	// check for array index is less than 0
-	if( index < 0 ) throw gcnew ArgumentOutOfRangeException("index",
-		"Number was less than the array's lower bound in the first dimension.");
+	if( index < 0 )
+		throw gcnew ArgumentOutOfRangeException("index", ERR_OUT_OF_RANGE);
 
 	// check for array index is equal to or greater than the length of array
 	// or the number of elements in the source ICollection is greater than
 	// the available space from array index to the end of the destination array.
 	if( (dest->Length - index) < Size() ) {
 		// throw exception
-		throw gcnew ArgumentException(
-			"Destination array was not long enough. Check destIndex and " + 
-			"length, and the array's lower bounds." );
+		throw gcnew ArgumentException(ERR_ARRAY_TOO_SMALL);
 	}
 	
 	// copy collection content

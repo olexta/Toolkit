@@ -136,8 +136,8 @@ void RedBlackTree<TKey, TValue>:: \
 RedBlackVisitor::OnCheckState( void )
 {	
 	if( _fnGetStamp() != _stamp ) {
-		throw gcnew InvalidOperationException(
-			"Collection was modified; enumeration operation may not execute.");
+		// tree was changed, next iteration may be unpredictable
+		throw gcnew InvalidOperationException(ERR_ENUM_EXEC);
 	}
 }
 

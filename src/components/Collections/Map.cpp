@@ -138,17 +138,15 @@ void Map<TKey, TValue>::pairs_copy_to( array<KeyValuePair<TKey, TValue>> ^dest,
 	if( dest == nullptr ) throw gcnew ArgumentNullException("dest");
 	
 	// check for array index is less than 0
-	if( index < 0 ) throw gcnew ArgumentOutOfRangeException("index",
-		"Number was less than the array's lower bound in the first dimension.");
+	if( index < 0 )
+		throw gcnew ArgumentOutOfRangeException("index", ERR_OUT_OF_RANGE);
 
 	// check for array index is equal to or greater than the length of array
 	// or the number of elements in the source ICollection is greater than
 	// the available space from array index to the end of the destination array.
 	if( (dest->Length - index) < Size() ) {
 		// throw exception
-		throw gcnew ArgumentException(
-			"Destination array was not long enough. Check destIndex and" + 
-			"length, and the array's lower bounds." );
+		throw gcnew ArgumentException(ERR_ARRAY_TOO_SMALL);
 	}
 	
 	// copy collection content
@@ -394,8 +392,7 @@ Map<TKey, TValue>::Map( const Map<TKey, TValue> %map )
 		// we copy from Map which handle this issue)
 		if( !Insert( pair.Key, pair.Value, false ) ) {
 			// input collection is invalid
-			throw gcnew ArgumentException(
-				"Dublicate key exists in input collection.", "map");
+			throw gcnew ArgumentException(ERR_DUBLICATE_KEY, "map");
 		}
 	}
 }
@@ -432,8 +429,8 @@ TValue Map<TKey, TValue>::default::get( TKey key )
 	
 	// find value with specified key (in case of unsuccessful search
 	// exception KeyNotFoundException will be raised by)
-	if( !Find( key, value ) ) throw gcnew KeyNotFoundException(
-		"The given key was not present in the collection.");
+	if( !Find( key, value ) )
+		throw gcnew KeyNotFoundException(ERR_KEY_NOT_FOUND);
 
 	return value;
 }
@@ -549,8 +546,7 @@ void Map<TKey, TValue>::Add( TKey key, TValue value )
 	// pair exists)
 	if( !Insert( key, value, false ) ) {
 		// raise exception
-		throw gcnew ArgumentException(
-			"An item with the same key already exists.");
+		throw gcnew ArgumentException(ERR_ITEM_EXISTS);
 	}
 
 	// fire event after the action (if error will be raised

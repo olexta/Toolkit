@@ -165,8 +165,7 @@ T Visitor<T>::Current::get( void )
 	// initial and finish states
 	if( (m_state == STATE::Start) || (m_state == STATE::Stop) ) {
 		// throw exception
-		throw gcnew InvalidOperationException(
-			"Enumeration has either not started or has already finished.");
+		throw gcnew InvalidOperationException(ERR_ENUM_NOT_STARTED);
 	}
 	return m_current->Data;
 }

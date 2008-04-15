@@ -16,6 +16,26 @@
 
 
 //
+// Define error messages
+//
+#define ERR_ENUM_EXEC														\
+	"Collection was modified; enumeration operation may not execute."
+#define ERR_ENUM_NOT_STARTED												\
+	"Enumeration has either not started or has already finished."
+#define ERR_ITEM_EXISTS														\
+	"An item with the same key already exists."
+#define ERR_DUBLICATE_KEY													\
+	"Dublicate key exists in input collection."
+#define ERR_KEY_NOT_FOUND													\
+	"The given key was not present in the collection."
+#define ERR_OUT_OF_RANGE													\
+	"Number was less than the array's lower bound in the first dimension."
+#define ERR_ARRAY_TOO_SMALL													\
+	"Destination array was not long enough. Check destIndex and length, "	+\
+	"and the array's lower bounds."
+
+
+//
 // Define namespace macros definition. All public classes
 // must be defined in this namespaces.
 //
@@ -36,7 +56,6 @@
 #else
 	#define TIMEOUT -1
 #endif
-
 
 //
 // Define lock macroses.
