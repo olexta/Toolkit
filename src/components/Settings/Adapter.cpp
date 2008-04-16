@@ -39,10 +39,8 @@ String^ Adapter::path_to_adp( String ^fullpath )
 	if( (_delimeter != _adp->Delimeter) &&
 		fullpath->Contains( _adp->Delimeter ) ) {
 		// throw argument exception
-		throw gcnew ArgumentException(
-			"Adapter '" + _name + 
-			"' doesn't accept any of the following strings in the path: " +
-			"'" + _adp->Delimeter + "'.");
+		throw gcnew ArgumentException(String::Format(
+		ERR_ADP_ACCEPT_PATH, _name, _adp->Delimeter ));
 	}
 	
 	// compose prefix for valid fullpath (it consists of
@@ -52,9 +50,8 @@ String^ Adapter::path_to_adp( String ^fullpath )
 	// check that specified full path starts with prefix
 	if( !fullpath->StartsWith( prefix ) ) {
 		// throw argument exception
-		throw gcnew ArgumentException(
-			"String '" + fullpath + "' is not valid full path: " +
-			"must starts with '" + prefix + "'.");
+		throw gcnew ArgumentException(String::Format(
+		ERR_PATH_STARTS, fullpath, "full", prefix ));
 	}
 	
 	// replace prefix at the begining by delimeter
@@ -79,9 +76,8 @@ String^ Adapter::adp_to_path( String ^adppath )
 	if( (_delimeter != _adp->Delimeter) &&
 		adppath->Contains( _delimeter ) ) {
 		// throw argument exception
-		throw gcnew ArgumentException(
-			"An adapter path cann't contain any of the following strings: " + 
-			"'" + _delimeter + "'.");
+		throw gcnew ArgumentException(String::Format(
+		ERR_STR_CONTAINS, "An adapter path", _delimeter ));
 	}
 
 	// compose node path
@@ -101,9 +97,7 @@ String^ Adapter::adp_to_path( String ^adppath )
 void Adapter::OnSetParent( Node ^parent )
 {
 	// throw invalid parent type exception
-	throw gcnew InvalidOperationException(
-		"Adapter cann't be added/removed through Child's routines. " + 
-		"Use Manager::Add and Manager::Remove instead.");
+	throw gcnew InvalidOperationException(ERR_ADP_REMOVE);
 }
 
 
@@ -119,8 +113,9 @@ Adapter::Adapter( Node ^parent, IAdapter ^adapter ) : \
 	// check name of node (name cann't be empty string)
 	// parent constructor was already called, so check
 	// initialized const name
-	if( _name == "" ) throw gcnew ArgumentException(
-		"Name of the adapter cann't be empty string.");
+	if( _name == "" )
+		throw gcnew ArgumentException(String::Format(
+		ERR_EMPTY_NAME, "adapter" ));
 	// check adapter interface for null reference
 	if( adapter == nullptr ) throw gcnew ArgumentNullException("adapter");
 }
@@ -174,9 +169,8 @@ Node::ValueBox Adapter::Value::get( void )
 
 void Adapter::Value::set( ValueBox value )
 {
-	throw gcnew InvalidOperationException(
-		"Operation is not allowed for this type of node: '" +
-		this->GetType()->ToString() + "'.");
+	throw gcnew InvalidOperationException(String::Format(
+	ERR_NODE_OPERATION, this->GetType()->ToString() ));
 }
 
 
@@ -190,8 +184,7 @@ void Adapter::Value::set( ValueBox value )
 Node::ValueBox Adapter::GetValue( String ^fullpath )
 {
 	// check for null reference
-	if( fullpath == nullptr )
-		throw gcnew ArgumentNullException("fullpath");
+	if( fullpath == nullptr ) throw gcnew ArgumentNullException("fullpath");
 
 	// convert path to adapter format and return value
 	return ValueBox(_adp[path_to_adp( fullpath )]);
@@ -208,8 +201,7 @@ Node::ValueBox Adapter::GetValue( String ^fullpath )
 void Adapter::SetValue( String ^fullpath, ValueBox value )
 {
 	// check for null reference
-	if( fullpath == nullptr )
-		throw gcnew ArgumentNullException("fullpath");
+	if( fullpath == nullptr ) throw gcnew ArgumentNullException("fullpath");
 
 	// convert path to adapter format and set new value
 	_adp[path_to_adp( fullpath )] = value.ToObject();
@@ -292,8 +284,7 @@ IEnumerable<Node^>^ Adapter::Load( String ^fullpath )
 void Adapter::Save( String ^fullpath )
 {
 	// check for null reference
-	if( fullpath == nullptr )
-		throw gcnew ArgumentNullException("fullpath");
+	if( fullpath == nullptr ) throw gcnew ArgumentNullException("fullpath");
 
 	// convert path to adapter format and notify
 	// adapter about flush request
@@ -311,8 +302,7 @@ void Adapter::Save( String ^fullpath )
 void Adapter::Remove( String ^fullpath )
 {
 	// check for null reference
-	if( fullpath == nullptr )
-		throw gcnew ArgumentNullException("fullpath");
+	if( fullpath == nullptr ) throw gcnew ArgumentNullException("fullpath");
 
 	// convert path to adapter format and call 'Remove'
 	String	^adppath = path_to_adp( fullpath );

@@ -29,7 +29,7 @@ ref class Nodes;
 /// This is the class from which all classes that accept tree
 /// approach inherit from. Each node have it's own key - name,
 /// so class implements Toolkit::Collections::IKeyedObject
-/// interface. Name is const during node's lifecycle. Also,	Path
+/// interface. Name is const during node's lifecycle. Also, Path
 /// property returns path to root node (where each node is
 /// separated by delimeter). Default accessor gets or sets value
 /// by specified relative path (this node value can be modified
@@ -39,15 +39,15 @@ ref class Nodes;
 public ref class Node abstract: IKeyedObject<String^>
 {
 public:
-	///	<summary>
-	///	This class incapsulate type check for setting value.
-	///	</summary><remarks>
+	/// <summary>
+	/// This class incapsulate type check for setting value.
+	/// </summary><remarks>
 	/// ValueBox is wrapper arroud Object handle and provide runtime
 	/// type check, implicit and explicit cast operators, Equal
 	/// comparison.
 	/// Now, the following types are supported: bool, int, double,
 	/// DateTime and String.
-	///	</remarks>
+	/// </remarks>
 	value class ValueBox : IEquatable<ValueBox>
 	{
 	private:

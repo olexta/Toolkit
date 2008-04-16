@@ -230,9 +230,8 @@ void IniFile::check_path( String ^path )
 	// starts with adapter's delimeter)
 	if( !path->StartsWith( _del ) ) {
 		// throw argument exception
-		throw gcnew ArgumentException(
-			"String '" + path + "' is not valid adapter path: " +
-			"must starts with '" + _del + "'.");
+		throw gcnew ArgumentException(String::Format(
+		ERR_PATH_STARTS, path, "adapter", _del ));
 	}
 }
 
@@ -260,8 +259,8 @@ void IniFile::check_value( Object ^value )
 		return;
 	} else {
 		// we doesn't support this type
-		throw gcnew ArgumentException(
-			"Type '" + t->ToString() + "' is not supported.");
+		throw gcnew ArgumentException(String::Format(
+		ERR_INVALID_TYPE, t->ToString() ));
 	}
 }
 
@@ -300,8 +299,8 @@ String^ IniFile::obj_to_str( Object ^value )
 		return static_cast<String^>( value );
 	} else {
 		// we doesn't support this type of value
-		throw gcnew ArgumentException(
-			"Type '" + type->ToString() + "' is not supported.");
+		throw gcnew ArgumentException(String::Format(
+		ERR_INVALID_TYPE, type->ToString() ));
 	}
 }
 
@@ -484,8 +483,9 @@ IEnumerable<String^>^ IniFile::reload( String ^loc )
 {ENTER_WRITE(_lock)
 
 	// check for existing file
-	if( !IO::File::Exists( _filename ) ) throw gcnew IO::FileNotFoundException(
-		"File not found: '" + _filename + "'." );
+	if( !IO::File::Exists( _filename ) )
+		throw gcnew IO::FileNotFoundException(String::Format(
+		ERR_PATH_NOT_FOUND, _filename ));
 
 	// check for correct path
 	check_path( loc );
@@ -527,10 +527,9 @@ IEnumerable<String^>^ IniFile::reload( String ^loc )
 		// load all keys
 		for each( String ^key in get_ini_string( secs[i], nullptr ) ) {
 			// check key for valid symbols
-			if( key->Contains( _del ) ) throw gcnew IO::InvalidDataException(
-				"INI file is corrupt. " +
-				"A key cann't contain any of the following strings: " + 
-				"'" + _del + "'.");
+			if( key->Contains( _del ) )
+				throw gcnew IO::InvalidDataException(String::Format(
+				ERR_INI_FILE, _del ));
 
 			// produce location
 			String		^path = sec + _del + key;
@@ -615,9 +614,9 @@ void IniFile::flush( String ^loc )
 				// and write value to file
 				int res = set_ini_string( sec, key, 
 										  obj_to_str( m_cache[locs[i]] ) );
-				if( res != 0 ) throw gcnew IO::IOException(
-					"Write to INI '" + _filename + "' failed. " +
-					"Error code #" + res + ".");
+				if( res != 0 )
+					throw gcnew IO::IOException(String::Format(
+					ERR_INI_WRITE, _filename, res ));
 			} else {
 				// try to delete key-value pair from file
 				set_ini_string( sec, key, nullptr );
@@ -631,9 +630,9 @@ void IniFile::flush( String ^loc )
 					int res = set_ini_string( locs[i], guid, "fake" );
 					// and now delete it
 					if( res ==0 ) res = set_ini_string( locs[i], guid, nullptr );
-					if( res != 0 ) throw gcnew IO::IOException(
-						"Write to INI '" + _filename + "' failed. " +
-						"Error code #" + res + ".");
+					if( res != 0 )
+						throw gcnew IO::IOException(String::Format(
+						ERR_INI_WRITE, _filename, res ));
 				}
 			}
 		}

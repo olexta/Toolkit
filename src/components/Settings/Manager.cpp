@@ -35,8 +35,7 @@ using namespace _SETTINGS;
 //-------------------------------------------------------------------
 void Manager::OnSetParent( Node ^parent )
 {
-	throw gcnew InvalidOperationException(
-		"Root cann't have parent.");
+	throw gcnew InvalidOperationException(ERR_ROOT_PARENT);
 }
 
 
@@ -51,8 +50,7 @@ Manager::Manager( void ) : \
 	// check name of node (name must be empty string)
 	// parent constructor was already called, so check
 	// initialized const name
-	if( _name != "" ) throw gcnew ArgumentException(
-		"Name of the root must be empty string.");
+	if( _name != "" ) throw gcnew ArgumentException(ERR_ROOT_NAME);
 }
 
 
@@ -68,8 +66,7 @@ Manager::Manager( IAdapter ^adapter ) : \
 	// check name of node (name must be empty string)
 	// parent constructor was already called, so check
 	// initialized const name
-	if( _name != "" ) throw gcnew ArgumentException(
-		"Name of the root be empty string.");
+	if( _name != "" ) throw gcnew ArgumentException(ERR_ROOT_NAME);
 
 	// reinitialize _childs member by creating collection
 	// using another constructor (this prevent unneeded
@@ -90,8 +87,7 @@ Manager::Manager( IEnumerable<IAdapter^> ^adapters ) : \
 	// check name of node (name must be empty string)
 	// parent constructor was already called, so check
 	// initialized const name
-	if( _name != "" ) throw gcnew ArgumentException(
-		"Name of the root must be empty string.");
+	if( _name != "" ) throw gcnew ArgumentException(ERR_ROOT_NAME);
 
 	// create list of nodes that will contain childs
 	List<Node^>	^childs = gcnew List<Node^>();
@@ -154,8 +150,8 @@ Node::ValueBox Manager::Value::get( void )
 
 void Manager::Value::set( ValueBox value )
 {
-	throw gcnew InvalidOperationException(
-		"Operation is not allowed for root.");
+	throw gcnew InvalidOperationException(String::Format(
+	ERR_NODE_OPERATION, this->GetType()->ToString() ));
 }
 
 
@@ -192,8 +188,7 @@ void Manager::Remove( String ^adapter )
 {ENTER_WRITE(_lock)
 
 	// check for null reference
-	if( adapter == nullptr )
-		throw gcnew ArgumentNullException("adapter");
+	if( adapter == nullptr ) throw gcnew ArgumentNullException("adapter");
 	
 	// dispose adapter with all it childs
 	delete _childs[adapter];

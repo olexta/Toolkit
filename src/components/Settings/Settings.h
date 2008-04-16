@@ -16,6 +16,59 @@
 
 
 //
+// Define error messages
+//
+#define ERR_STR_CONTAINS												\
+	"{0} cann't contain any of the following strings: '{1}'."
+#define ERR_PATH_STARTS											\
+	"String '{0}' is not valid {1} path: must starts with '{2}'."
+#define ERR_EMPTY_NAME													\
+	"Name of the {0} cann't be empty string."
+#define ERR_RESERVED_NAME												\
+	"Names '{0}' and '{1}' are reserved."
+#define ERR_PATH_NOT_FOUND												\
+	"Path not found: '{0}'."
+#define ERR_INVALID_TYPE												\
+	"Type '{0}' is not supported."
+#define ERR_CAST_FROM_TO												\
+	"Specified cast is not valid: from '{0}' to '{1}'."
+#define ERR_NODE_PARENT													\
+	"Object of type '{0}' cann't be parent node to '{1}'."
+#define ERR_NODE_OPERATION												\
+	"Operation is not allowed for this type of node: '{0}'."
+#define ERR_ADP_ACCEPT_PATH												\
+	"Adapter '{0}' doesn't accept any of the following strings in the "	+\
+	"path: '{1}'."
+#define ERR_ADP_REMOVE													\
+	"Adapter cann't be added/removed through Child's routines. Use "	+\
+	"Manager::Add and Manager::Remove instead."
+#define ERR_ITEM_CHAIN_PATH												\
+	"Create chain failed: invalid path."
+#define ERR_ITEM_EXISTS													\
+	"An item with the same key already exists."
+#define ERR_ITEM_PARENT_STATE											\
+	"'{0}' item cann't be parent to '{1}' item."
+#define ERR_ITEM_STATE													\
+	"Invalid state of Item: '{0}'."
+#define ERR_ITEM_SYNC													\
+	"Cann't synchronize with adapter while switching from '{0}' to "	+\
+	"'{1}' state."
+#define ERR_ITEM_SYNC_STATE												\
+	"Unsuitable state for items's synchronization with adapter."
+#define ERR_ROOT_NAME													\
+	"Name of the root must be empty string."
+#define ERR_ROOT_LOCATE													\
+	"Cann't locate root node."
+#define ERR_ROOT_PARENT													\
+	"Root cann't have parent."
+#define ERR_INI_FILE													\
+	"INI file is corrupt. A key cann't contain any of the following "	+\
+	"strings: '{0}'."
+#define ERR_INI_WRITE													\
+	"Write to INI '{0}' failed. Error code #{1}."
+
+
+//
 // Define namespace macros definition. All public classes
 // must be defined in this namespaces.
 //

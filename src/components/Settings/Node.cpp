@@ -45,10 +45,9 @@ Node::ValueBox::operator type( ValueBox box )									\
 																				\
 	if( r == t ) return static_cast<type>( box.m_value );						\
 																				\
-	throw gcnew InvalidCastException(											\
-		"Specified cast is not valid: from '" +									\
-		(r != nullptr ? r->ToString() : "null") + "' to '" +					\
-		(t != nullptr ? t->ToString() : "null") + "'.");						\
+	throw gcnew InvalidCastException(String::Format(							\
+	ERR_CAST_FROM_TO, (r != nullptr ? r->ToString() : "null"),					\
+					  (t != nullptr ? t->ToString() : "null") ));				\
 }
 
 //
@@ -64,10 +63,9 @@ Node::ValueBox::operator to( ValueBox box )										\
 																				\
 	if( r == f ) return SCAST_(to, from, box.m_value );							\
 																				\
-	throw gcnew InvalidCastException(											\
-		"Specified cast is not valid: from '" +									\
-		(r != nullptr ? r->ToString() : "null") + "' to '" +					\
-		(t != nullptr ? t->ToString() : "null") + "'.");						\
+	throw gcnew InvalidCastException(String::Format(							\
+	ERR_CAST_FROM_TO, (r != nullptr ? r->ToString() : "null"),					\
+					  (t != nullptr ? t->ToString() : "null") ));				\
 }
 
 
@@ -133,8 +131,8 @@ Node::ValueBox::ValueBox( Object ^value ): \
 		m_value = SCAST_(double, float, value );
 	} else {
 		//unsupported type: throw exception
-		throw gcnew ArgumentException(
-			"Type '" + type->ToString() + "' is not supported.");
+		throw gcnew ArgumentException(String::Format(
+		ERR_INVALID_TYPE, type->ToString() ));
 	}
 }
 
@@ -432,16 +430,15 @@ void Node::check_name( String ^name )
 	// check for illegal names ('path to current' and 'path to parent')
 	if( (name == _cur_path) || (name == _par_path) ) {
 		// throw reserved names exception 
-		throw gcnew ArgumentException(
-			"Names '" + _cur_path + "' and '" + _par_path + "' are reserved.");
+		throw gcnew ArgumentException(String::Format(
+		ERR_RESERVED_NAME, _cur_path, _par_path ));
 	}
 
 	// check for illegal symbols (name cann't contains delimeter)
 	if( name->Contains( _delimeter ) ) {
 		// throw illegal symbol exception
-		throw gcnew ArgumentException(
-			"A name cann't contain any of the following strings: " + 
-			"'" + _delimeter + "'.");
+		throw gcnew ArgumentException(String::Format(
+		ERR_STR_CONTAINS, "A name", _delimeter ));
 	}
 }
 
@@ -587,8 +584,7 @@ Node^ Node::Find( String^ %path )
 		// "real" root (have empty name)
 		if( RootTraverse( &node ), (node->_name != "") ) {
 			// throw exception
-			throw gcnew InvalidOperationException(
-			"Cann't locate root node.");
+			throw gcnew InvalidOperationException(ERR_ROOT_LOCATE);
 		}
 	} else if( subnode == _cur_path ) {
 		// just return this
@@ -791,8 +787,9 @@ Node::ValueBox Node::default::get( String ^path )
 	Node	^node = Find( relpath );
 	
 	// if specified item was not found, throw exception
-	if( relpath != "" ) throw gcnew ArgumentException(
-		"Path '" + path + "' not found.");
+	if( relpath != "" )
+		throw gcnew ArgumentException(String::Format(
+		ERR_PATH_NOT_FOUND, path ));
 
 	// all right, pas call to derived class
 	return node->Value;
@@ -811,8 +808,9 @@ void Node::default::set( String ^path, ValueBox value )
 	Node	^node = Find( relpath );
 	
 	// if specified item was not found, throw exception
-	if( relpath != "" ) throw gcnew ArgumentException(
-		"Path '" + path + "' not found.");
+	if( relpath != "" )
+		throw gcnew ArgumentException(String::Format(
+		ERR_PATH_NOT_FOUND, path ));
 
 	// all right, pas call to derived object
 	node->Value = value;

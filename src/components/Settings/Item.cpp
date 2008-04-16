@@ -49,10 +49,8 @@ Item::STATE Item::check_parent( Node ^parent )
 		state = static_cast<Item^>( parent )->m_state;
 	} else {
 		// throw invalid parent type exception
-		throw gcnew ArgumentException(
-			"Object of type '" + t->ToString() +
-			"' cann't be parent node to '" +
-			this->GetType()->ToString() + "'.");
+		throw gcnew ArgumentException(String::Format(
+		ERR_NODE_PARENT, t->ToString(), this->GetType()->ToString() ));
 	}
 
 	// check for capable states
@@ -72,9 +70,9 @@ Item::STATE Item::check_parent( Node ^parent )
 		// this in only the stab
 		default: bErrState = true;
 	}
-	if( bErrState ) throw gcnew InvalidOperationException(
-		"'" + state.ToString() + "' item cann't be parent to " +
-		"'" + m_state.ToString() + "' item.");
+	if( bErrState )
+		throw gcnew InvalidOperationException(String::Format(
+		ERR_ITEM_PARENT_STATE, state.ToString(), m_state.ToString() ));
 
 	return state;
 }
@@ -95,8 +93,8 @@ Adapter^ Item::get_adapter( void )
 	String	^path = RootTraverse( nullptr );
 
 	// check that local root is "real" root
-	if( !path->StartsWith( _delimeter ) ) throw gcnew InvalidOperationException(
-		"Cann't locate root node.");
+	if( !path->StartsWith( _delimeter ) )
+		throw gcnew InvalidOperationException(ERR_ROOT_LOCATE);
 
 	// and return search for adapter request result
 	return static_cast<Adapter^>(
@@ -123,9 +121,9 @@ bool Item::set_state( STATE state, bool sync )
 	if( sync ) switch( state ) {
 		// have to be in Online state to load values from adapter
 		case STATE::Offline:
-			if( m_state != STATE::Online ) throw gcnew InvalidOperationException(
-				"Cann't synchronize with adapter while switching from " +
-				m_state.ToString() + " to " + state.ToString() + " state.");
+			if( m_state != STATE::Online )
+				throw gcnew InvalidOperationException(String::Format(
+				ERR_ITEM_SYNC, m_state.ToString(), state.ToString() ));
 			
 			// load value from adapter and store it
 			m_value = get_adapter()->GetValue( RootTraverse( nullptr ) );
@@ -133,9 +131,9 @@ bool Item::set_state( STATE state, bool sync )
 
 		// have to be Offline state to load values into adapter
 		case STATE::Online:
-			if ( m_state != STATE::Offline ) throw gcnew InvalidOperationException(
-				"Cann't synchronize with adapter while switching from " +
-				m_state.ToString() + " to " + state.ToString() + " state.");
+			if ( m_state != STATE::Offline )
+				throw gcnew InvalidOperationException(String::Format(
+				ERR_ITEM_SYNC, m_state.ToString(), state.ToString() ));
 
 			// upload stored value into adapter
 			get_adapter()->SetValue( RootTraverse( nullptr ), m_value );
@@ -144,8 +142,7 @@ bool Item::set_state( STATE state, bool sync )
 		break;
 
 		case STATE::Unknown:
-		default: throw gcnew InvalidOperationException(
-			"Unsuitable state for items's synchronization with adapter.");
+		default: throw gcnew InvalidOperationException(ERR_ITEM_SYNC_STATE);
 	}
 
 	// store specified state for this items
@@ -174,8 +171,9 @@ Item::Item( Item ^parent, String ^path, Item^ *leaf ) : \
 	// check name of node (name cann't be empty string)
 	// parent constructor was already called, so check
 	// initialized const name
-	if( _name == "" ) throw gcnew ArgumentException(
-		"Name of the item cann't be empty string.");
+	if( _name == "" )
+		throw gcnew ArgumentException(String::Format(
+		ERR_EMPTY_NAME, "item" ));
 
 	// set item state to Unknown
 	m_state = STATE::Unknown;
@@ -220,8 +218,7 @@ Item^ Item::create_chain( Item ^parent, String ^path )
 	Item	^last = dynamic_cast<Item^>( parent->Find( path ) );
 	// if dynamic cast failed throw exception:
 	// invalid path was specified
-	if( last == nullptr ) throw gcnew ArgumentException(
-		"Cast operation failed: invalid path.");
+	if( last == nullptr ) throw gcnew ArgumentException(ERR_ITEM_CHAIN_PATH);
 
 	// create simple chain by path tail
 	Item	^chain = gcnew Item(nullptr, path, nullptr);
@@ -313,8 +310,9 @@ Item::Item( String ^name ) : \
 	Node(name)
 {
 	// check name of node (name cann't be empty string)
-	if( name == "" ) throw gcnew ArgumentException(
-		"Name of the item cann't be empty string.");
+	if( name == "" )
+		throw gcnew ArgumentException(String::Format(
+		ERR_EMPTY_NAME, "item" ));
 
 	// set state to offline mode (now we
 	// created standalone property)
@@ -332,8 +330,9 @@ Item::Item( String ^name, ValueBox value ) : \
 	Node(name)
 {
 	// check name of node (name cann't be empty string)
-	if( name == "" ) throw gcnew ArgumentException(
-		"Name of the item cann't be empty string.");	
+	if( name == "" )
+		throw gcnew ArgumentException(String::Format(
+		ERR_EMPTY_NAME, "item" ));	
 	
 	// store value in local variable (now we
 	// created standalone property)
@@ -355,8 +354,8 @@ Item::Item( Item ^item ) : \
 {
 	// check for item state
 	if( item->m_state == STATE::Unknown )  {
-		throw gcnew InvalidOperationException(
-		"Cann't duplicate item with state '" + m_state.ToString() +"'.");
+		throw gcnew InvalidOperationException(String::Format(
+		ERR_ITEM_STATE, m_state.ToString() ));
 	}
 
 	// init object state
@@ -460,8 +459,9 @@ Node::ValueBox Item::Value::get( void )
 			return get_adapter()->GetValue( RootTraverse( nullptr ) );
 		break;
 		// undepricable results
-		default: throw gcnew InvalidOperationException(
-					 "Invalid state of Item: '" + m_state.ToString() + "'." );
+		default:
+			throw gcnew InvalidOperationException(String::Format(
+			ERR_ITEM_STATE, m_state.ToString() ));
 	}
 
 EXIT_READ(_lock)}
@@ -481,8 +481,9 @@ void Item::Value::set( ValueBox value )
 			return get_adapter()->SetValue( RootTraverse( nullptr ), value );
 		break;
 		// undepricable results
-		default: throw gcnew InvalidOperationException(
-					 "Invalid state of Item: '" + m_state.ToString() + "'." );
+		default:
+			throw gcnew InvalidOperationException(String::Format(
+			ERR_ITEM_STATE, m_state.ToString() ));
 	}
 
 EXIT_WRITE(_lock)}
@@ -499,8 +500,9 @@ void Item::Load( void )
 {ENTER_WRITE(_lock)
 
 	// check for corresponding state
-	if( m_state != STATE::Online ) throw gcnew InvalidOperationException(
-		"Invalid state of Item: '" + m_state.ToString() + "'." );
+	if( m_state != STATE::Online )
+		throw gcnew InvalidOperationException(String::Format(
+		ERR_ITEM_STATE, m_state.ToString() ));
 	
 	// dispose all childs
 	for each( Node ^node in _childs ) delete node;
@@ -528,8 +530,9 @@ void Item::Save( void )
 {ENTER_WRITE(_lock)
 
 	// check for corresponding state
-	if( m_state != STATE::Online ) throw gcnew InvalidOperationException(
-		"Invalid state of Item: '" + m_state.ToString() + "'." );
+	if( m_state != STATE::Online )
+		throw gcnew InvalidOperationException(String::Format(
+		ERR_ITEM_STATE, m_state ));
 	
 	// call flush for this node
 	get_adapter()->Save( RootTraverse( nullptr ) );

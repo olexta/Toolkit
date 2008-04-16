@@ -80,8 +80,7 @@ Nodes::Nodes( Node ^parent ) : \
 	_parent(parent)
 {
 	// check for the null reference
-	if( parent == nullptr ) 
-		throw gcnew ArgumentNullException("parent");
+	if( parent == nullptr ) throw gcnew ArgumentNullException("parent");
 }
 
 
@@ -95,8 +94,7 @@ Nodes::Nodes( Node ^parent, Node ^child ) : \
 	KeyedMap(child), _parent(parent)
 {
 	// check for the null reference
-	if( parent == nullptr ) 
-		throw gcnew ArgumentNullException("parent");
+	if( parent == nullptr ) throw gcnew ArgumentNullException("parent");
 
 }
 
@@ -111,8 +109,7 @@ Nodes::Nodes( Node ^parent, IEnumerable<Node^> ^childs ) : \
 	KeyedMap(childs), _parent(parent)
 {
 	// check for the null reference
-	if( parent == nullptr ) 
-		throw gcnew ArgumentNullException("parent");
+	if( parent == nullptr ) throw gcnew ArgumentNullException("parent");
 
 }
 
@@ -137,8 +134,8 @@ Node^ Nodes::default::get( String ^path )
 		Node	^node = _parent->get_child( path );
 		// check for succeeded request
 		if( node == nullptr ) {
-			throw gcnew ArgumentException(
-				"Path '" + path + "' not found.");
+			throw gcnew ArgumentException(String::Format(
+			ERR_PATH_NOT_FOUND, path ));
 		}
 		return node;
 	} else {
@@ -196,8 +193,7 @@ void Nodes::Add( Node ^node, bool force )
 		// without any additional processing
 		if( !Insert( node->Name, node, false ) ) {
 			// raise exception
-			throw gcnew ArgumentException(
-				"An item with the same key already exists.");
+			throw gcnew ArgumentException(ERR_ITEM_EXISTS);
 		}
 	}
 }
