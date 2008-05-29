@@ -21,7 +21,7 @@ namespace Toolkit.Workflow.Schema
 	/// <summary>
 	/// This class is used to store class's property information
 	/// </summary>
-	public class SProperty : SClassMember
+	public class SProperty : SClassMember, IComparable<SProperty>
 	{
 		/// <summary>
 		/// Stores property type.
@@ -208,5 +208,22 @@ namespace Toolkit.Workflow.Schema
 			IsRequired = prop.IsRequired;
 			DefaultValue = prop.DefaultValue;
 		}
+
+		#region IComparable<SProperty> Members
+
+		/// <summary>
+		/// Compares the current object with another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// Less than zero if object is less than other,
+		/// zero if object equals other and greater than zero if object is greate than other.
+		/// </returns>
+		public int CompareTo( SProperty other )
+		{
+			return DisplayOrder - other.DisplayOrder;
+		}
+
+		#endregion
 	}
 }

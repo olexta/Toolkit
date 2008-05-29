@@ -106,7 +106,7 @@ namespace Toolkit.Workflow.Schema
 				// adds SProperty to cache
 				m_Properties.Add( property );
 			}
-			
+
 			// getting all methods
 			foreach( XmlNode methodNode in classNode.SelectNodes(
 				"ws:methods/ws:method", MetaData.Instance.XMLNsMgr ) ) {

@@ -87,10 +87,14 @@ namespace Toolkit.Workflow.Schema
 		{
 			get
 			{
-				string[] res = new string[ m_Class.Properties.Count ];
+				SProperty[] props = new SProperty[ m_Class.Properties.Count ];
+				m_Class.Properties.CopyTo( props, 0 );
+				Array.Sort<SProperty>( props );
+
+				string[] res = new string[ props.Length ];
 				int i = 0;
-				foreach( SProperty prop in m_Class.Properties )
-					res[ i++ ] = prop.Name;
+				foreach( SProperty prop in props )
+					res[ i++ ] = prop.Name;			
 
 				return res;
 			}
