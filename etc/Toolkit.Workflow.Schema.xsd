@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- SVN: $Id$ -->
 <xsd:schema
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://abbyy.ua/Toolkit/Workflow.Schema"
@@ -11,6 +12,8 @@
 	<xsd:complexType name="Schema">
 		<xsd:sequence>
 			<xsd:element name="class" type="target:Class" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="enum" type="target:Enum"  minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="dictionary" type="target:Dictionary"  minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 	</xsd:complexType>
@@ -38,7 +41,8 @@
 			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="description" type="xsd:string" />
 			<xsd:element name="localizedDescription" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="type" type="target:PropertyType" />
+			<!-- <xsd:element name="type" type="target:PropertyType" /> -->
+			<xsd:element name="type" type="xsd:string" />
 			<xsd:element name="defaultValue" type="xsd:string" minOccurs="0" maxOccurs="1"/>
 			<xsd:element name="displayOrder" type="xsd:int" />
 			<xsd:element name="isReadOnly" type="xsd:boolean" />
@@ -150,17 +154,6 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 
-	<!-- Extending xsd:string type with type attribute -->
-	<!--
-	<xsd:complexType name="DefaultValue">
-		<xsd:simpleContent>
-			<xsd:extension base="xsd:string">
-				<xsd:attribute name="type" type="target:PropertyType" use="required" />
-			</xsd:extension>
-		</xsd:simpleContent>
-	</xsd:complexType>
-	-->
-
 	<!-- Extending xsd:string type with uiculture attribute -->
 	<xsd:complexType name="LocalizedString">
 		<xsd:simpleContent>
@@ -168,6 +161,39 @@
 				<xsd:attribute name="uiculture" type="target:LocaleType" use="required" />
 			</xsd:extension>
 		</xsd:simpleContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="Enum">
+		<xsd:sequence>
+			<xsd:element name="flags" type="xsd:boolean" />
+			<xsd:element name="const" type="target:Const" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+		<xsd:attribute name="type" type="xsd:string" use="required" />
+	</xsd:complexType>
+
+	<xsd:complexType name="Const">
+		<xsd:sequence>
+			<xsd:element name="value" type="xsd:int" />
+			<xsd:element name="caption" type="xsd:string" />
+			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="Dictionary">
+		<xsd:sequence>
+			<xsd:element name="key" type="target:DictionaryKey" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+		<xsd:attribute name="keyType" type="xsd:string" use="required" />
+		<xsd:attribute name="valueType" type="xsd:string" use="required" />
+	</xsd:complexType>
+
+	<xsd:complexType name="DictionaryKey">
+		<xsd:sequence>
+			<xsd:element name="value" type="xsd:string" />
+			<xsd:element name="caption" type="xsd:string" />
+			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
 	</xsd:complexType>
 
 </xsd:schema>
