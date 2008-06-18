@@ -249,28 +249,6 @@ KeyedMap<TKey, TItem>::KeyedMap( IEnumerable<TItem> ^e )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Copy content of KeyedMap into the new instance.
-/// </summary><remarks>
-/// This is copy constructor, but it provide shalow copying: only
-/// item's pointers will be copied.
-/// </remarks>
-//-------------------------------------------------------------------
-generic<typename TKey, typename TItem>
-KeyedMap<TKey, TItem>::KeyedMap( const KeyedMap<TKey, TItem> %map )
-{
-	for each( TItem item in const_cast<KeyedMap<TKey, TItem>^>(%map) ) {
-		// add item to collection (don't worry about null references, we
-		// copy from KeyedMap which handle this issue)
-		if( !Insert( item->Key, item, false ) ) {
-			// input collection is invalid
-			throw gcnew ArgumentException(ERR_DUBLICATE_KEY, "map");
-		}
-	}
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
 /// Operator +=. Add specified item to collection.
 /// </summary><remarks>
 /// This operator is equivalent to Add(TItem) method.
@@ -310,19 +288,6 @@ KeyedMap<TKey, TItem>% KeyedMap<TKey, TItem>::operator-=( TItem item )
 
 	return *this;
 }
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Gets an object that can be used to synchronize access to the
-/// KeyedMap.
-/// </summary>
-//-------------------------------------------------------------------
-//generic<typename TKey, typename TItem>
-//Object^ KeyedMap<TKey, TItem>::SyncRoot::get( void  )
-//{
-//	return _lock;
-//}
 
 
 //-------------------------------------------------------------------

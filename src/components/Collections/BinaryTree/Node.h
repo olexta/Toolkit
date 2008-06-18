@@ -25,7 +25,7 @@ _BINARY_TREE_BEGIN
 /// All specialized tree node structures must be derived from this class. 
 /// </remarks>
 generic<typename T>
-[SerializableAttribute]
+[Serializable]
 private ref class Node
 {
 protected:

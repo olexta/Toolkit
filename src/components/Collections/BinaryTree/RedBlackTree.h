@@ -33,14 +33,14 @@ _BINARY_TREE_BEGIN
 /// </remarks>
 generic<typename TKey, typename TValue> 
 	where TKey : IComparable<TKey>
-[SerializableAttribute]
+[Serializable]
 public ref class RedBlackTree abstract
 {
 private:
 	//
 	// Red-Black tree node
 	//
-	[SerializableAttribute]
+	[Serializable]
 	ref class RedBlackNode : Node<KeyValuePair<TKey, TValue>>
 	{
 	public:
@@ -99,7 +99,7 @@ private:
 	// Struct contains last action info that is used
 	// by class instance to provide undo operation
 	//
-	[SerializableAttribute]
+	[Serializable]
 	value struct RESTORE_POINT {
 		// enum of available actions
 		typedef enum class ACTION {None, Insert, Set, Delete, DeleteAll};

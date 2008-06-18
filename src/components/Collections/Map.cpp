@@ -378,40 +378,6 @@ Map<TKey, TValue>::Map( IEnumerable<KeyValuePair<TKey, TValue>> ^e )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Copy content of Map into the new instance.
-/// </summary><remarks>
-/// This is copy constructor, but it provides shalow copying only.
-/// </remarks>
-//-------------------------------------------------------------------
-generic<typename TKey, typename TValue>
-Map<TKey, TValue>::Map( const Map<TKey, TValue> %map )
-{
-	for each( KeyValuePair<TKey, TValue> pair in
-			  const_cast<Map<TKey, TValue>^>(%map) ) {
-		// add pair to collection (don't worry about key's null references,
-		// we copy from Map which handle this issue)
-		if( !Insert( pair.Key, pair.Value, false ) ) {
-			// input collection is invalid
-			throw gcnew ArgumentException(ERR_DUBLICATE_KEY, "map");
-		}
-	}
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Gets an object that can be used to synchronize access to the Map.
-/// </summary>
-//-------------------------------------------------------------------
-//generic<typename TKey, typename TValue>
-//Object^ Map<TKey, TValue>::SyncRoot::get( void  )
-//{
-//	return _lock;
-//}
-
-
-//-------------------------------------------------------------------
-/// <summary>
 /// Gets or sets the value associated with the specified key.
 /// </summary><remarks>
 /// If the specified key is not found, a get operation throws a

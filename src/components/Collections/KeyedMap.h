@@ -37,7 +37,7 @@ _COLLECTIONS_BEGIN
 generic<typename TKey, typename TItem> 
 	where TKey : IComparable<TKey>
 	where TItem : IKeyedObject<TKey>
-[SerializableAttribute]
+[Serializable]
 public ref class KeyedMap : RedBlackTree<TKey, TItem>, ICollection<TItem>
 {
 private:
@@ -79,7 +79,6 @@ public:
 	KeyedMap( void );
 	explicit KeyedMap( TItem item );
 	explicit KeyedMap( IEnumerable<TItem> ^e );
-	KeyedMap( const KeyedMap<TKey, TItem> %map );
 
 	KeyedMap% operator+=( TItem item );
 	KeyedMap% operator-=( TItem item );

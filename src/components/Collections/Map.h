@@ -1,4 +1,5 @@
 /****************************************************************************/
+/****************************************************************************/
 /*																			*/
 /*	Project:	Toolkit Collections											*/
 /*																			*/
@@ -33,7 +34,7 @@ _COLLECTIONS_BEGIN
 /// </remarks>
 generic<typename TKey, typename TValue> 
 	where TKey : IComparable<TKey>
-[SerializableAttribute]
+[Serializable]
 public ref class Map : RedBlackTree<TKey, TValue>, IDictionary<TKey, TValue>
 {
 private:
@@ -86,7 +87,6 @@ public:
 	Map( void );
 	explicit Map( KeyValuePair<TKey, TValue> pair );
 	explicit Map( IEnumerable<KeyValuePair<TKey, TValue>> ^e );
-	Map( const Map<TKey, TValue> %map );
 
 	property TValue default[TKey] {
 		virtual TValue get( TKey key );
