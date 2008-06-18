@@ -11,7 +11,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 
-namespace Toolkit.Controls
+namespace Toolkit.Controls.ImagesViewer
 {
 	/// <summary>
 	/// Компонент почергового огляду сукупності зображень,
@@ -42,6 +42,8 @@ namespace Toolkit.Controls
 
 			m_Panel.HorizontalScroll.SmallChange = 50;
 			m_Panel.VerticalScroll.SmallChange = 50;
+
+			check_buttons();
 		}
 
 		/// <summary>
@@ -216,6 +218,7 @@ namespace Toolkit.Controls
 					m_PicBox.Image.Width + "x" +
 					m_PicBox.Image.Height + "x" +
 					Bitmap.GetPixelFormatSize( m_PicBox.Image.PixelFormat );
+				check_buttons();
 			} catch ( ApplicationException e ) {
 				System.Resources.ResourceManager rm = new System.Resources.ResourceManager(
 					"Toolkit.Controls.ImagesViewer.ImagesViewer_Msgs",
@@ -258,6 +261,20 @@ namespace Toolkit.Controls
 			if( m_Panel.Height > m_PicBox.Height )
 				y = m_Panel.Height / 2 - m_PicBox.Height / 2 ;
 			m_PicBox.Location = new Point( x, y );
+		}
+		// 
+		// Здійснює вмикання/вимикання кнопок "Попереднє"/"Наступне"
+		// в залежності від поточного стану перегляду
+		//
+		private void check_buttons()
+		{
+			if( images_count() == 0 ) {
+				m_ToolNext.Enabled = m_ToolPrev.Enabled = false;
+				return;
+			}
+			
+			m_ToolPrev.Enabled = m_Index != 0;
+			m_ToolNext.Enabled = m_Index != images_count() - 1;
 		}
 		// ***
 		// Обробник події зміни розміру вікна

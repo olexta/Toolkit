@@ -58,6 +58,7 @@
     <Compile Include="ImagesViewer\ImagesViewer.designer.cs">
       <DependentUpon>ImagesViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="ResourceHelper.cs" />
     <Compile Include="TreeViewer\TreeViewer.cs">
       <SubType>Component</SubType>
     </Compile>
