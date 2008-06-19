@@ -1,4 +1,4 @@
-namespace Toolkit.Controls.TreeViewer
+﻿namespace Toolkit.Controls.TreeViewer
 {
 	partial class TreeViewer
 	{
