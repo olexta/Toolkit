@@ -1,11 +1,11 @@
-//****************************************************************************
+﻿//****************************************************************************
 //*	Project		:	Workflow.Schema
 //*
 //*	Module		:	MetaData.cs
 //*
 //*	Content		:	Main library class.
 //*	Author		:	Alexander Kurbatov, Nikita Marunyak
-//*	Copyright	:	Copyright � 2006 - 2008 Alexander Kurbatov, Nikita Marunyak
+//*	Copyright	:	Copyright © 2006 - 2008 Alexander Kurbatov, Nikita Marunyak
 //*
 //****************************************************************************
 

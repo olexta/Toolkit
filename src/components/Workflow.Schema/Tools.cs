@@ -1,11 +1,11 @@
-//****************************************************************************
+﻿//****************************************************************************
 //*	Project		:	Workflow.Schema
 //*
 //*	Module		:	Tools.cs
 //*
 //*	Content		:	Usefull code for internal purposes
 //*	Author		:	Nikita Marunyak
-//*	Copyright	:	Copyright � 2007 Nikita Marunyak
+//*	Copyright	:	Copyright © 2007 Nikita Marunyak
 //*
 //****************************************************************************
 

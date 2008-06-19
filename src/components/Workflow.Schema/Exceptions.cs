@@ -1,11 +1,11 @@
-//****************************************************************************
+﻿ //****************************************************************************
 //*	Project		:	Workflow.Schema
 //*
 //*	Module		:	Exceptions.cs
 //*
 //*	Content		:	Custom library exceptions
 //*	Author		:	Nikita Marunyak
-//*	Copyright	:	Copyright � 2007 Nikita Marunyak
+//*	Copyright	:	Copyright © 2007 Nikita Marunyak
 //*
 //****************************************************************************
 

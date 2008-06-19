@@ -1,11 +1,11 @@
-//****************************************************************************
+﻿//****************************************************************************
 //*	Project		:	Workflow.Schema
 //*
 //*	Module		:	SClassMember.cs
 //*
 //*	Content		:	Abstract class that represent type members.
 //*	Author		:	Nikita Marunyak
-//*	Copyright	:	Copyright � 2007 Nikita Marunyak
+//*	Copyright	:	Copyright © 2007 Nikita Marunyak
 //*
 //****************************************************************************
 
