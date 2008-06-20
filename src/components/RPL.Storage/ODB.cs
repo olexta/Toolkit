@@ -523,7 +523,6 @@ namespace Toolkit.RPL.Storage
 				// needed for BinarySearch later
 				oldProps.Sort();
 				#endregion
-
 				// modify props only in case of their change in object
 				if( props.IsChanged ) {
 					#region update/save properties
@@ -564,8 +563,17 @@ namespace Toolkit.RPL.Storage
 															 " WHERE ( [ObjectID] = " + objID + " AND " +
 																	  "[Name] = '" + PropName + "');";
 									// add parametrs to command
-									cmdUpdate.Parameters.Add( "@PropValue_" + PropName, SqlDbType.Variant ).Value =
+									// TODO: Разобраться с проблеммой конвертации
+									// System.Double в SqlDbType.Variant
+									if( outprops[prop.Name].Value is double ) {
+									
+										cmdUpdate.Parameters.Add( "@PropValue_" + PropName, SqlDbType.Variant ).Value =
+										(float)(double) outprops[prop.Name].Value;
+									} else {
+										
+										cmdUpdate.Parameters.Add( "@PropValue_" + PropName, SqlDbType.Variant ).Value =
 										outprops[prop.Name].Value;
+									}
 								} else {
 									// this is new property
 									if( cmdInsert == null ) {
@@ -575,9 +583,19 @@ namespace Toolkit.RPL.Storage
 															 "VALUES (" + objID + ", " +
 																	 "'" + PropName + "', " +
 																	 "@PropValue_" + PropName + ");";
+									
 									// add parametrs to command
-									cmdInsert.Parameters.Add( "@PropValue_" + PropName, SqlDbType.Variant ).Value =
+									// TODO: Разобраться с проблеммой конвертации
+									// System.Double в SqlDbType.Variant
+									if( outprops[prop.Name].Value is double ) {
+									
+										cmdInsert.Parameters.Add( "@PropValue_" + PropName, SqlDbType.Variant ).Value =
+										(float)(double) outprops[prop.Name].Value;
+									} else {
+									
+										cmdInsert.Parameters.Add( "@PropValue_" + PropName, SqlDbType.Variant ).Value =
 										outprops[prop.Name].Value;
+									}
 								}
 								#endregion
 							}
@@ -707,7 +725,7 @@ namespace Toolkit.RPL.Storage
 			} catch( Exception ex ) {
 #region debug info
 #if (DEBUG)
-				Debug.Print( "[ERROR] @ ODB.Save: " + ex.Message );
+				Debug.Print( "[ERROR] @ ODB.Save: " + ex.ToString() );
 #endif
 #endregion
 				// role back local transaction

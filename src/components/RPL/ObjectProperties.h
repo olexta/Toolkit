@@ -30,6 +30,7 @@ ref class PersistentObject;
 /// This class derived from PersistentProperties and was developed to link
 /// properties with it's owner object.
 /// </remarks>
+[Serializable]
 public ref class ObjectProperties sealed : PersistentProperties
 {
 private:

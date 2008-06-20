@@ -32,6 +32,7 @@ _RPL_BEGIN
 /// Clear() method due to potential errors (i cann't guaranty errorless batch
 /// processing).
 /// </remarks>
+[Serializable]
 public ref class PersistentProperties : KeyedMap<String^, PersistentProperty^>
 {
 public:

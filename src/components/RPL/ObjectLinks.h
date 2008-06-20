@@ -31,6 +31,7 @@ ref class PersistentObject;
 /// you need to do. Class derive from PersistentObjects and add built in
 /// event support.
 /// </remarks>
+[Serializable]
 public ref class ObjectLinks sealed : PersistentObjects
 {
 private:

@@ -436,8 +436,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 /* Template: Update object modification time */
-CREATE TRIGGER [dbo].[links_objects] ON [dbo].[_links] FOR INSERT, UPDATE, DELETE
-AS
+--CREATE TRIGGER [dbo].[links_objects] ON [dbo].[_links] FOR INSERT, UPDATE, DELETE
+--AS
    
 /*
     -- check for dublicate links and porimitive recurse
@@ -450,15 +450,16 @@ AS
     END
 */
     -- update object timestamp
-    UPDATE [_objects] SET [TimeStamp] = GETDATE()
-    WHERE [ID] IN (SELECT [ObjectID_1] FROM [deleted]
-                               UNION
-                               SELECT [ObjectID_2] FROM [deleted]
-                               UNION
-                               SELECT [ObjectID_1] FROM [inserted]
-                               UNION
-                               SELECT [ObjectID_2] FROM [inserted])
-GO
+--  UPDATE [_objects] SET [TimeStamp] = GETDATE()
+--  WHERE [ID] IN (SELECT [ObjectID_1] FROM [deleted]
+--                             UNION
+--                            SELECT [ObjectID_2] FROM [deleted]
+--                             UNION
+--                             SELECT [ObjectID_1] FROM [inserted]
+--                             UNION
+--                             SELECT [ObjectID_2] FROM [inserted])
+--GO
+
 /****** Object:  Trigger [properties_objects]    Script Date: 08/22/2007 15:25:28 ******/
 SET ANSI_NULLS ON
 GO
