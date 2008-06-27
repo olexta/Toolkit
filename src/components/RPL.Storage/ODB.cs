@@ -20,10 +20,10 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Toolkit.RPL;
+using System.Runtime.InteropServices;
 
 #if (DEBUG)
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 #endif
 
 
@@ -1473,7 +1473,7 @@ namespace Toolkit.RPL.Storage
 
 					if( cmdGetLength.Parameters["@Length"] == null ) {
 						throw new KeyNotFoundException( "Specified value is absent!" );
-					} else { return Convert.ToInt32( cmdGetLength.Parameters["@Length"] ); }
+					} else { return Convert.ToInt32( cmdGetLength.Parameters["@Length"].Value ); }
 				} catch( Exception ex ) {
 #region dubug info
 #if (DEBUG)
