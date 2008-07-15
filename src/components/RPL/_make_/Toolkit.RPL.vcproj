@@ -8,9 +8,7 @@
 	Keyword="ManagedCProj"
 	>
 	<Platforms>
-		<Platform
-			Name="Win32"
-		/>
+		<Platform Name="Win32" />
 	</Platforms>
 	<ToolFiles>
 	</ToolFiles>
@@ -23,20 +21,39 @@
 			CharacterSet="1"
 			ManagedExtensions="1"
 			>
+			<Tool Name="VCPreBuildEventTool" />
+			<Tool Name="VCCustomBuildTool" />
+			<Tool Name="VCXMLDataGeneratorTool" />
+			<Tool Name="VCWebServiceProxyGeneratorTool" />
+			<Tool Name="VCMIDLTool" />
+			<Tool Name="VCBscMakeTool" />
+			<Tool Name="VCFxCopTool" />
+			<Tool Name="VCAppVerifierTool" />
+			<Tool Name="VCWebDeploymentTool" />
+			<Tool Name="VCManagedResourceCompilerTool" />
+			<Tool Name="VCResourceCompilerTool" />
+			<Tool Name="VCPreLinkEventTool" />
+			<Tool Name="VCALinkTool" />
+			<Tool Name="VCManifestTool" />
 			<Tool
-				Name="VCPreBuildEventTool"
+				Name="VCPostBuildEventTool"
+				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
 			/>
 			<Tool
-				Name="VCCustomBuildTool"
+				Name="VCXDCMakeTool"
+				SuppressStartupBanner="true"
+				ValidateIntelliSense="false"
 			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
+				Name="VCLinkerTool"
+				AdditionalDependencies="$(NoInherit)"
+				OutputFile="$(OutDir)$(ProjectName).dll"
+				LinkIncremental="2"
+				ManifestFile="$(IntDir)$(TargetFileName).intermediate.manifest"
+				IgnoreAllDefaultLibraries="false"
+				GenerateDebugInformation="true"
+				AssemblyDebug="1"
+				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -51,53 +68,6 @@
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="$(NoInherit)"
-				OutputFile="$(OutDir)$(ProjectName).dll"
-				LinkIncremental="2"
-				ManifestFile="$(IntDir)$(TargetFileName).intermediate.manifest"
-				IgnoreAllDefaultLibraries="false"
-				GenerateDebugInformation="true"
-				AssemblyDebug="1"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-				SuppressStartupBanner="true"
-				ValidateIntelliSense="false"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
-			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -108,40 +78,24 @@
 			ManagedExtensions="1"
 			WholeProgramOptimization="1"
 			>
+			<Tool Name="VCPreBuildEventTool" />
+			<Tool Name="VCCustomBuildTool" />
+			<Tool Name="VCXMLDataGeneratorTool" />
+			<Tool Name="VCWebServiceProxyGeneratorTool" />
+			<Tool Name="VCMIDLTool" />
+			<Tool Name="VCALinkTool" />
+			<Tool Name="VCManifestTool" />
+			<Tool Name="VCXDCMakeTool" />
+			<Tool Name="VCBscMakeTool" />
+			<Tool Name="VCFxCopTool" />
+			<Tool Name="VCAppVerifierTool" />
+			<Tool Name="VCWebDeploymentTool" />
+			<Tool Name="VCManagedResourceCompilerTool" />
+			<Tool Name="VCResourceCompilerTool" />
+			<Tool Name="VCPreLinkEventTool" />
 			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG"
-				RuntimeLibrary="2"
-				ObjectFile="$(IntDir)"
-				ProgramDataBaseFileName="$(IntDir)vc80.pdb"
-				GenerateXMLDocumentationFiles="true"
-				XMLDocumentationFileName="$(IntDir)"
-				WarningLevel="3"
-				DebugInformationFormat="0"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
+				Name="VCPostBuildEventTool"
+				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
 			/>
 			<Tool
 				Name="VCLinkerTool"
@@ -153,29 +107,15 @@
 				TargetMachine="1"
 			/>
 			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
+				Name="VCCLCompilerTool"
+				PreprocessorDefinitions="WIN32;NDEBUG"
+				RuntimeLibrary="2"
+				ObjectFile="$(IntDir)"
+				ProgramDataBaseFileName="$(IntDir)vc80.pdb"
+				GenerateXMLDocumentationFiles="true"
+				XMLDocumentationFileName="$(IntDir)"
+				WarningLevel="3"
+				DebugInformationFormat="0"
 			/>
 		</Configuration>
 	</Configurations>
@@ -190,6 +130,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\Factories\PersistenceBroker.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\DeleteCriteria.cpp"
 				>
 			</File>
@@ -199,10 +143,6 @@
 			</File>
 			<File
 				RelativePath="..\ObjectProperties.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\PersistenceBroker.cpp"
 				>
 			</File>
 			<File
@@ -222,7 +162,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\PersistentProperty.cpp"
+				RelativePath="..\PersistentStream.cpp"
 				>
 			</File>
 			<File
@@ -234,11 +174,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\StreamWrapper.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\UpdateCriteria.cpp"
+				RelativePath="..\ValueBox.cpp"
 				>
 			</File>
 		</Filter>
@@ -252,15 +188,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\IBrokerFactory.h"
-				>
-			</File>
-			<File
-				RelativePath="..\IID.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ITransactionSupport.h"
+				RelativePath="..\ITransaction.h"
 				>
 			</File>
 			<File
@@ -269,10 +197,6 @@
 			</File>
 			<File
 				RelativePath="..\ObjectProperties.h"
-				>
-			</File>
-			<File
-				RelativePath="..\PersistenceBroker.h"
 				>
 			</File>
 			<File
@@ -292,7 +216,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\PersistentProperty.h"
+				RelativePath="..\PersistentStream.h"
 				>
 			</File>
 			<File
@@ -304,20 +228,28 @@
 				>
 			</File>
 			<File
-				RelativePath="..\StreamWrapper.h"
-				>
-			</File>
-			<File
-				RelativePath="..\UpdateCriteria.h"
+				RelativePath="..\ValueBox.h"
 				>
 			</File>
 			<Filter
-				Name="Storage"
+				Name="Factories"
 				>
 				<File
-					RelativePath="..\Storage\IBrokerCache.h"
+					RelativePath="..\Factories\IBrokerFactory.h"
 					>
 				</File>
+				<File
+					RelativePath="..\Factories\IObjectFactory.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Factories\PersistenceBroker.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Storage"
+				>
 				<File
 					RelativePath="..\Storage\IPersistenceStorage.h"
 					>

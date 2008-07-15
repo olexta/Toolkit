@@ -7,7 +7,7 @@
 /*	Content:	Module provide assembly information and properties.			*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -26,7 +26,7 @@ using namespace System::Runtime::InteropServices;
 [assembly:AssemblyDescriptionAttribute("Toolkit.RPL module provide persistence \
 										objects management")];
 [assembly:AssemblyProductAttribute("Robust Persistence Layer")];
-[assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2006-2007")];
+[assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2006-2008")];
 [assembly:AssemblyInformationalVersionAttribute("1.0")];
 
 [assembly:ComVisible(false)];

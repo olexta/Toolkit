@@ -7,7 +7,7 @@
 /*	Content:	Definition of PersistentObjects class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -23,13 +23,11 @@ _RPL_BEGIN
 ref class PersistentObject;
 
 /// <summary>
-/// This class is used for storing collection of objects.
+/// This class provide services for collection of objects.
 /// </summary><remarks>
-/// It provides some usefull routines such as unique object contrtol,
-/// null reference control and find functions. I implement OnXXX
-/// events to control collection access too. But this class haven't
-/// Clear() method due to potential errors (i cann't guaranty 
-/// errorless batch processing).
+/// It provides some usefull routines such as unique object control,
+/// null reference control and some others. It implements OnXXX events
+/// to control collection access too.
 /// </remarks>
 public ref class PersistentObjects : MarshalByRefObject,
 									 ICollection<PersistentObject^>
@@ -48,28 +46,30 @@ private:
 protected:
 	List<PersistentObject^>	m_list;
 
+	virtual void OnClear( void );
 	virtual void OnInsert( PersistentObject ^prop );
 	virtual void OnRemove( PersistentObject ^prop );
+	virtual void OnClearComplete( void );
 	virtual void OnInsertComplete( PersistentObject ^prop );
 	virtual void OnRemoveComplete( PersistentObject ^prop );
 
 public:
-	PersistentObjects( void );
-	PersistentObjects( IEnumerable<PersistentObject^> ^e );
+	// TODO: понять как будет работать даное решение при тонком клиенте
+	// (объект PersistentObjects находится на сервере + мы добавляем объект
+	// MarshalByRef, который находится на том-же сервере: вопрос, не будут-ли
+	// запросы от PersistentObjects на объект проходить через клиент)
 
-	bool operator==( const PersistentObjects %objs );
-	bool operator!=( const PersistentObjects %objs );
+	PersistentObjects( void );
+	explicit PersistentObjects( IEnumerable<PersistentObject^> ^e );
 
 	property int Count {
 		virtual int get( void );
 	}
-	
+
 	virtual void Add( PersistentObject ^obj );
 	virtual void Clear( void );
 	virtual bool Contains( PersistentObject ^obj );
 	virtual void CopyTo( array<PersistentObject^> ^dest, int index );
 	virtual bool Remove( PersistentObject ^obj );
-
-	virtual bool Equals( Object ^obj ) override;
 };
 _RPL_END

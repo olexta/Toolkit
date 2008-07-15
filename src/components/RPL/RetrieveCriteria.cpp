@@ -7,7 +7,7 @@
 /*	Content:	Implementation of RetrieveCriteria class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -31,16 +31,16 @@ using namespace _RPL;
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Clear all results of collection processing.
+/// Clear search result.
 /// </summary><remarks>
 /// Call base class implementation and reset current cursor position
-/// that could be modified by using cursor routines: "Move".
+/// that could be modified by using cursor routine "Move".
 /// </remarks>
 //-------------------------------------------------------------------
-void RetrieveCriteria::ResetResults( void )
+void RetrieveCriteria::Reset( void )
 {
 	// call to base method
-	PersistentCriteria::ResetResults();
+	PersistentCriteria::Reset();
 	// and reset position
 	m_pos = -1;
 }
@@ -48,85 +48,41 @@ void RetrieveCriteria::ResetResults( void )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Performs additional custom processes when transaction starts.
-/// </summary><remarks>
-/// I must store all object data (create object's save point) until
-/// "OnTransactionComplete" will be called to have ability to restore
-/// data by "OnTransactionRollback".
-/// </remarks>
-//-------------------------------------------------------------------
-void RetrieveCriteria::OnTransactionBegin( void )
-{
-	// create new struct to store backup data
-	BACKUP_STRUCT ^backup = gcnew BACKUP_STRUCT();
-
-	// copy simple object attributes
-	backup->_as_proxies = m_asProxies;
-	backup->_pos = m_pos;
-
-	// store backup in transaction stack
-	m_trans_stack.Push( backup );
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Performs additional custom processes for successfull transaction.
-/// </summary><remarks>
-/// Transaction was completed successfuly, so i must free resources
-/// for transaction support (delete object's save point).
-/// </remarks>
-//-------------------------------------------------------------------
-void RetrieveCriteria::OnTransactionCommit( void )
-{
-	// remove stored backup data
-	m_trans_stack.Pop();
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Performs additional custom processes when transaction fails.
-/// </summary><remarks>
-/// Transaction was failed, so i need to rollback object to previous
-/// state (object's save point).
-/// </remarks>
-//-------------------------------------------------------------------
-void RetrieveCriteria::OnTransactionRollback( void )
-{
-	// get sored backup data
-	BACKUP_STRUCT ^backup = m_trans_stack.Pop();
-	
-	// restore simple object attributes
-	m_asProxies = backup->_as_proxies;
-	m_pos = backup->_pos;
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
 /// Performs additional custom processes after filling collection by
-/// proxies.
+/// proxies: make objects up-to-date and retrieves full objects from
+/// persistence storage if needed.
 /// </summary><remarks>
-/// Retrieves full objects from persistence storage. Because of many
-/// custom processings exists for each criteria i not retrieve full
-/// objects in PersistentBroker (even if this option is active for
-/// retrieve criteria). There are a lot of class schemas that can
-/// have it's own implementation, so i simple call Retrieve for each
-/// object to get it's links and properties from persistent storage.
+/// This is atomar operation, so it performs under transactional
+/// control.
 /// </remarks>
 //-------------------------------------------------------------------
 void RetrieveCriteria::OnPerformComplete( void )
 {
-	// we got objects as proxies already
-	if( !m_asProxies ) {
-		// pass througght all founded objects
+	// declare stack of changes to emulate transaction
+	Stack<ITransaction^>	changes;
+	try {
 		for each( PersistentObject ^obj in m_list ) {
-			// and retrieve links and properties
-			obj->Retrieve();
+			// save all object's properties
+			static_cast<ITransaction^>( obj )->Begin();
+			// add push to stack to future rollback
+			changes.Push( obj );
+			
+			// now make request based on type of retrieve criteria
+			// (if no full retrieve is needed then make object
+			// (proxy or full) up-to-date only)
+			obj->Retrieve( !m_asProxies );
 		}
-	}
+		// retrieve operations was completed
+		// successfuly, now commit object changes 
+		while( changes.Count > 0 ) changes.Pop()->Commit();
+	} catch( Exception^ ) {
+		// revert all modified objects to previous state
+		while( changes.Count > 0 ) changes.Pop()->Rollback();
+		// and restore exception
+		throw;
+	}	
 }
+
 
 //-------------------------------------------------------------------
 /// <summary>
@@ -137,6 +93,7 @@ void RetrieveCriteria::OnPerformComplete( void )
 RetrieveCriteria::RetrieveCriteria( String ^type ): \
 	PersistentCriteria(type), m_asProxies(false), m_pos(-1)
 {
+	// do nothing
 }
 
 
@@ -149,37 +106,30 @@ RetrieveCriteria::RetrieveCriteria( String ^type ): \
 RetrieveCriteria::RetrieveCriteria( String ^type, String ^sWhere ): \
 	PersistentCriteria(type), m_asProxies(false), m_pos(-1)
 {
-	Where = sWhere;
+	// check for initialized reference
+	if( sWhere == nullptr ) throw gcnew ArgumentNullException("sWhere");
+	
+	m_where = sWhere;
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
 /// Create instance of the RetrieveCriteria class to retrieve the
-/// objects of given type that sutisfy spicified WHERE and ORDER BY
+/// objects of given type that sutisfy specified WHERE and ORDER BY
 /// clauses.
 /// </summary>
 //-------------------------------------------------------------------
-RetrieveCriteria::RetrieveCriteria( String ^type, String ^sWhere, String ^orderBy ): \
+RetrieveCriteria::RetrieveCriteria( String ^type, String ^sWhere, \
+									String ^orderBy ):			  \
 	PersistentCriteria(type), m_asProxies(false), m_pos(-1)
 {
-	Where = sWhere;
-	OrderBy = orderBy;
-}
+	// check for initialized references
+	if( sWhere == nullptr ) throw gcnew ArgumentNullException("sWhere");
+	if( orderBy == nullptr ) throw gcnew ArgumentNullException("orderBy");
 
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Create retrieve criteria based on another PersistentCriteria
-/// instance.
-/// </summary><remarks>
-/// Copy all internal data: base class will copy common propertis
-/// except collection content.
-/// </remarks>
-//-------------------------------------------------------------------
-RetrieveCriteria::RetrieveCriteria( const PersistentCriteria %crit ): \
-	PersistentCriteria(crit), m_asProxies(false), m_pos(-1)
-{
+	m_where = sWhere;
+	m_orderBy = orderBy;
 }
 
 
@@ -220,7 +170,6 @@ bool RetrieveCriteria::Move( int count )
 	int	oldBottom = m_bottom;
 	int oldCount = m_count;
 
-
 	// init cursor position for first request.
 	// m_pos identify current cursor location for
 	// request without top and count limits
@@ -238,14 +187,14 @@ bool RetrieveCriteria::Move( int count )
 		m_count = m_pos - m_bottom;
 	}
 
-	// try perform operation. we must restore old bottom
-	// and count limits by fail, so in use finally block
+	// try perform operation: we must restore old bottom
+	// and count limits in any case, so use finally block
 	try {
 		Perform();
 
 		// set new cursor location. if after last request count
 		// of elements was changed, then for "previous" offset
-		// i set new position directly (not throught returned
+		// i set new position directly (not through returned
 		// value: Count)
 		m_pos += (count > 0 ? Count : -m_count);
 	} finally {

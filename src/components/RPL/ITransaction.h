@@ -2,12 +2,12 @@
 /*																			*/
 /*	Project:	Robust Persistence Layer									*/
 /*																			*/
-/*	Module:		IBrokerFactory.h											*/
+/*	Module:		ITransactiont.h												*/
 /*																			*/
-/*	Content:	Definition of IBrokerFactory interface.						*/
+/*	Content:	Definition of ITransaction interface.						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -19,17 +19,15 @@ using namespace System;
 
 
 _RPL_BEGIN
-ref class PersistenceBroker;
-
 /// <summary>
-/// Encapsulates the behavior needed for broker creation.
+/// Encapsulates the behavior needed for transaction support.
 /// </summary><remarks>
-///	It can be usefull to define custom creation algorithm for broker. For
-/// example, you want create all instances of PersistenceBroker in separated
-/// domains.
+/// All objects that support transactions must implement this interface.
 /// </remarks>
-public interface class IBrokerFactory
+private interface class ITransaction
 {
-	PersistenceBroker^ CreateInstance( void );
+	void Begin( void );
+	void Commit( void );
+	void Rollback( void );
 };
 _RPL_END

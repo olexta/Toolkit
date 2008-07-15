@@ -7,21 +7,16 @@
 /*	Content:	Implementation of PersistentCriteria class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
 
-#include "PersistenceBroker.h"
+#include ".\Factories\PersistenceBroker.h"
 #include "PersistentCriteria.h"
 
 using namespace _RPL;
-
-
-//
-// Define macros to ignore exceptions
-//
-#define TRY(expr)		try { expr; } catch( Exception^ ) {};
+using namespace _RPL::Factories;
 
 
 //-----------------------------------------------------------------------------
@@ -29,131 +24,13 @@ using namespace _RPL;
 //-----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
-//
-// Fills collection instanse by search result.
-//
-// To make PersistentBroker interface more easy i implement this
-// routine. So, this function receive proxy objects and fill
-// collection by it. To make addition processing you must override
-// it.
-//
-//-------------------------------------------------------------------
-void PersistentCriteria::on_perform( int found, IEnumerable<PersistentObject^> ^objs )
-{
-	// store CountFound property
-	m_countFound = found;
-	// first of all clear current list
-	m_list.Clear();
-	// and add elements to the end of it
-	for each( PersistentObject ^obj in objs ) {
-		// disable add null references
-		if( obj == nullptr ) continue;
-		// and add object if it is not
-		// in collection already
-		if( !Contains( obj ) ) m_list.Add( obj );
-	}
-	
-	// now we must process all addition actions
-	// that depends on type of criteria 
-	try {
-		// notify about perfom complete
-		OnPerformComplete();
-	} catch( Exception^ ) {
-		// clear collection
-		ResetResults();
-		// and rerise exception
-		throw;
-	}
-}
-
-
-//-------------------------------------------------------------------
-//
-// ITransactionSupport::TransactionBegin implementation. 
-//
-// I must store all object data until trans_commit will be called to
-// have ability to restore data by trans_rollback.
-//
-//-------------------------------------------------------------------
-void PersistentCriteria::trans_begin( void )
-{
-	// addition processing before transaction begin
-	TRY( OnTransactionBegin() )
-
-	// make object copy
-	BACKUP_STRUCT ^backup = gcnew BACKUP_STRUCT();
-	// copy simple object attributes
-	backup->_type = m_type;
-	backup->_inner_query = m_innerQuery;
-	backup->_where = m_where;
-	backup->_order_by = m_orderBy;
-	backup->_bottom = m_bottom;
-	backup->_count = m_count;
-	backup->_count_found = m_countFound;
-	// copy content
-	backup->_objs = gcnew PersistentObjects(%m_list);
-
-	// store backup in transaction stack
-	m_trans_stack.Push( backup );
-}
-
-
-//-------------------------------------------------------------------
-//
-// ITransactionSupport::TransactionCommit implementation.
-//
-// Transaction was completed successfuly, then we must free resources
-// for transaction support.
-//
-//-------------------------------------------------------------------
-void PersistentCriteria::trans_commit( void )
-{
-	// addition processing before transaction commit
-	TRY( OnTransactionCommit() )
-
-	// remove stored backup data
-	m_trans_stack.Pop();
-}
-
-
-//-------------------------------------------------------------------
-//
-// ITransactionSupport::TransactionRollback implementation.
-//
-// Transaction failed, so we need to rollback object to previous
-// state.
-//
-//-------------------------------------------------------------------
-void PersistentCriteria::trans_rollback( void )
-{
-	// addition processing before transaction rollback
-	TRY( OnTransactionRollback() )
-	
-	// get sored backup data
-	BACKUP_STRUCT ^backup = m_trans_stack.Pop();
-
-	// restore simple object attributes
-	m_type = backup->_type;
-	m_innerQuery = backup->_inner_query;
-	m_where = backup->_where;
-	m_orderBy = backup->_order_by;
-	m_bottom = backup->_bottom;
-	m_count = backup->_count;
-	m_countFound = backup->_count_found;
-	// restore content
-	m_list.Clear();
-	m_list.AddRange( backup->_objs );
-}
-
-
-//-------------------------------------------------------------------
 /// <summary>
 /// Create new instance of the PersistentCriteria class for given
 /// object type.
 /// </summary>
 //-------------------------------------------------------------------
-PersistentCriteria::PersistentCriteria( String ^type ): \
-	m_innerQuery(""), m_where(""), m_orderBy(""),		\
+PersistentCriteria::PersistentCriteria( String ^type ):		   \
+	_type(type), m_innerQuery(""), m_where(""), m_orderBy(""), \
 	m_bottom(0), m_count(Int32::MaxValue), m_countFound(0)
 {
 	dbgprint( String::Format( "-> {0}\n{1}", 
@@ -162,92 +39,23 @@ PersistentCriteria::PersistentCriteria( String ^type ): \
 	// check for initialized reference
 	if( type == nullptr ) throw gcnew ArgumentNullException("type");
 
-	m_type = type;
-
 	dbgprint( String::Format( "<- {0}", this->GetType() ) );
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create persistent criteria based on another PersistentCriteria
-/// instance.
+/// Clear search result and reset criteria to it initial state.
 /// </summary><remarks>
-/// Copy only common clauses (content of the criteria will not be
-/// copied).
+/// This function must be called from setters that is used to compose
+/// SQL request (those, that can change search result). Derived class
+/// can override this function to process reset request.
 /// </remarks>
 //-------------------------------------------------------------------
-PersistentCriteria::PersistentCriteria( const PersistentCriteria %crit )
-{
-	// first of all clear current content
-	m_list.Clear();
-	
-	// and copy all criterias
-	m_type = crit.m_type;
-	m_innerQuery = crit.m_innerQuery;
-	m_where = crit.m_where;
-	m_orderBy = crit.m_orderBy;
-	m_bottom = crit.m_bottom;
-	m_count = crit.m_count;
-	
-	// we create empty collection
-	m_countFound = 0;
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Clear all results of collection processing.
-/// </summary><remarks>
-/// This function must be called by derived class property setters
-/// that is used to create SQL requet (that can change search result).
-/// </remarks>
-//-------------------------------------------------------------------
-void PersistentCriteria::ResetResults( void )
+void PersistentCriteria::Reset( void )
 {
 	m_list.Clear();
 	m_countFound = 0;
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Performs additional custom processes when transaction starts.
-/// </summary><remarks>
-/// The default implementation of this method is intended to be
-/// overridden by a derived class to create it's own save point.
-/// </remarks>
-//-------------------------------------------------------------------
-void PersistentCriteria::OnTransactionBegin( void )
-{
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Performs additional custom processes for successfull transaction.
-/// </summary><remarks>
-/// The default implementation of this method is intended to be
-/// overridden by a derived class to delete it's own save point that
-/// was created by "OnTransactionBegin" early.
-/// </remarks>
-//-------------------------------------------------------------------
-void PersistentCriteria::OnTransactionCommit( void )
-{
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Performs additional custom processes when transaction fails.
-/// </summary><remarks>
-/// The default implementation of this method is intended to be
-/// overridden by a derived class to restore it's state to previous,
-/// saved by "OnTransactionBegin".
-/// </remarks>
-//-------------------------------------------------------------------
-void PersistentCriteria::OnTransactionRollback( void )
-{
 }
 
 
@@ -271,12 +79,14 @@ void PersistentCriteria::OnPerformComplete( void )
 /// Performs additional custom processes before removing an element
 /// from the PersistentCriteria instance.
 /// </summary><remarks>
-/// This sealed method raises error to notify about read-only object.
+/// This sealed method raises error to notify about read-only
+/// collection.
 /// </remarks>
 //-------------------------------------------------------------------
 void PersistentCriteria::OnRemove( PersistentObject ^obj )
 {
-	throw gcnew InvalidOperationException("The collection is read-only!");
+	throw gcnew InvalidOperationException(String::Format(
+	ERR_SUPPORTED_OPERATION, this->GetType()->ToString() ));
 }
 
 
@@ -285,12 +95,14 @@ void PersistentCriteria::OnRemove( PersistentObject ^obj )
 /// Performs additional custom processes before inserting a new object
 /// into the PersistentCriteria instance.
 /// </summary><remarks>
-/// This sealed method raises error to notify about read-only object.
+/// This sealed method raises error to notify about read-only
+/// collection.
 /// </remarks>
 //-------------------------------------------------------------------
 void PersistentCriteria::OnInsert( PersistentObject ^obj )
 {
-	throw gcnew InvalidOperationException("The collection is read-only!");
+	throw gcnew InvalidOperationException( String::Format(
+	ERR_SUPPORTED_OPERATION, this->GetType()->ToString() ));
 }
 
 
@@ -301,7 +113,7 @@ void PersistentCriteria::OnInsert( PersistentObject ^obj )
 //-------------------------------------------------------------------
 String^ PersistentCriteria::Type::get( void )
 {
-	return m_type;
+	return _type;
 }
 
 
@@ -311,9 +123,7 @@ String^ PersistentCriteria::Type::get( void )
 /// </summary><remarks>
 /// This is SQL request to which WHERE and ORDER BY clauses will be
 /// applied. You have to avoid using of this approach, because in
-/// this case you use internal DB structure that can be modified. Of
-/// course, not all criterias can have this property. In this case it
-/// must be overriden by derived class to throw exception.
+/// this case you use internal DB structure that can be modified.
 /// </remarks>
 //-------------------------------------------------------------------
 String^ PersistentCriteria::InnerQuery::get( void )
@@ -326,7 +136,7 @@ void PersistentCriteria::InnerQuery::set( String ^value )
 	// check for initialized reference
 	if( value == nullptr ) throw gcnew ArgumentNullException("value");
 	// clear content to prevent request-result collisions
-	ResetResults();
+	Reset();
 
 	m_innerQuery = value;
 }
@@ -335,11 +145,7 @@ void PersistentCriteria::InnerQuery::set( String ^value )
 //-------------------------------------------------------------------
 /// <summary>
 /// Gets or sets SQL WHERE clause.
-/// </summary><remarks>
-/// This clause presents in all criterias, but for more capability i
-/// provide it as virtual property to give ability to override it if
-/// needed.
-/// </remarks>
+/// </summary>
 //-------------------------------------------------------------------
 String^ PersistentCriteria::Where::get( void )
 {
@@ -351,7 +157,7 @@ void PersistentCriteria::Where::set( String ^value )
 	// check for initialized reference
 	if( value == nullptr ) throw gcnew ArgumentNullException("value");
 	// clear content to prevent request-result collisions
-	ResetResults();
+	Reset();
 
 	m_where = value;
 }
@@ -360,10 +166,7 @@ void PersistentCriteria::Where::set( String ^value )
 //-------------------------------------------------------------------
 /// <summary>
 /// Gets or sets SQL ORDER BY clause.
-/// </summary><remarks>
-/// Not all criterias can have this property. In this case it must be
-/// overriden by derived class to throw exception.
-/// </remarks>
+/// </summary>
 //-------------------------------------------------------------------
 String^ PersistentCriteria::OrderBy::get( void )
 {	
@@ -375,11 +178,10 @@ void PersistentCriteria::OrderBy::set( String ^value )
 	// check for initialized reference
 	if( value == nullptr ) throw gcnew ArgumentNullException("value");
 	// clear content to prevent request-result collisions
-	ResetResults();
+	Reset();
 	
 	m_orderBy = value;
 }
-
 
 
 //-------------------------------------------------------------------
@@ -397,10 +199,9 @@ int PersistentCriteria::BottomLimit::get( void )
 
 void PersistentCriteria::BottomLimit::set( int value )
 {
-	if( value < 0 ) throw gcnew ArgumentException("Incorrect Bottom value!");
-	
+	if( value < 0 ) throw gcnew ArgumentException(ERR_LESS_THEN_ZERRO);
 	// clear content to prevent request-result collisions
-	ResetResults();
+	Reset();
 	
 	m_bottom = value;
 }
@@ -421,12 +222,9 @@ int PersistentCriteria::CountLimit::get( void )
 
 void PersistentCriteria::CountLimit::set( int value )
 {
-	if( value < 0 ) {
-
-		throw gcnew ArgumentException("Incorrect CountLimit value!");
-	}
+	if( value < 0 ) throw gcnew ArgumentException(ERR_LESS_THEN_ZERRO);
 	// clear content to prevent request-result collisions
-	ResetResults();
+	Reset();
 
 	m_count = value;
 }
@@ -434,7 +232,7 @@ void PersistentCriteria::CountLimit::set( int value )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Gets number of founded objects using specified InnerQuery request
+/// Gets number of found objects using specified InnerQuery request
 /// with current WHERE clause.
 /// </summary><remarks>
 /// To get count of objects that was processed by this criteria
@@ -476,13 +274,47 @@ int PersistentCriteria::IndexOf( PersistentObject ^obj )
 /// <summary>
 /// Performs criteria operation.
 /// </summary><remarks>
-/// After searching of objects "on_perform" will be called to fill
-/// collection by result (proxy objects) and to make addition
-/// processing depend on criteria type. If you want to use perform
-/// operation as atomic, it must be called in transaction context.
+/// This operation is atomic and performs in transaction context.
 /// </remarks>
 //-------------------------------------------------------------------
 void PersistentCriteria::Perform( void )
 {
-	PersistenceBroker::Broker->Process( this );
+	// array to store search results
+	array<HEADER>	^headers = nullptr;
+
+	// lock storage for one executable thread
+	Monitor::Enter( PersistenceBroker::Storage );
+	try {
+		// perform storage search request and set CountFound property
+		m_countFound = PersistenceBroker::Storage->Search(
+							_type,
+							m_innerQuery, m_where, m_orderBy, m_bottom, m_count,
+							headers );
+
+		// first of all clear objects list
+		m_list.Clear();
+		// look through all founded object headers
+		for each( HEADER header in headers ) {
+			// get object from cache by header
+			PersistentObject	^obj = PersistenceBroker::Cache[header];
+			// disable add null references
+			if( obj == nullptr ) continue;
+			// and add object to the list
+			m_list.Add( obj );
+		}
+		
+		// process addition action depend on type of criteria
+		try {
+			// notify about search complete
+			OnPerformComplete();
+		} catch( Exception^ ) {
+			// clear collection
+			Reset();
+			// and restore exception
+			throw;
+		}
+	} finally {
+		// unlock storage in any case
+		Monitor::Exit( PersistenceBroker::Storage );
+	}
 }

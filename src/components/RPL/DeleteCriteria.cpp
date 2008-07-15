@@ -7,12 +7,13 @@
 /*	Content:	Implementation of DeleteCriteria class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
 
 #include "PersistentObject.h"
+#include "PersistentTransaction.h"
 #include "DeleteCriteria.h"
 
 using namespace _RPL;
@@ -24,20 +25,44 @@ using namespace _RPL;
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Perform delete operation in persistence storage.
-/// </summary><remarks>
+/// Performs additional custom processes after filling collection by
+/// proxies: delete objects in persistence storage.
+/// </summary><remarks><para>
 /// I can't simply create DELETE SQL request to prevent data lost
-/// without business logic checking. So, i use single call of Delete
-/// to retrieve full object and apply business check. If no errors
-/// was raised then criteria will contain set of deleted objects.
-/// </remarks>
+/// without business logic checking: then, i use single Delete call
+/// to each object to apply business check. But this is atomar
+/// operation, so it performs under transactional control.</para><para>
+/// If no errors was raised then criteria will contain set of deleted
+/// objects.
+/// </para></remarks>
 //-------------------------------------------------------------------
 void DeleteCriteria::OnPerformComplete( void )
 {
-	// pass throught all founded objects
-	for each( PersistentObject ^obj in m_list ) {
-		// call method of deletion
-		obj->Delete();
+	// declare stack of changes to emulate transaction
+	Stack<ITransaction^>	changes;
+	try {
+		for each( PersistentObject ^obj in m_list ) {
+			// save all object's properties
+			static_cast<ITransaction^>( obj )->Begin();
+			// push to stack to future rollback
+			changes.Push( obj );
+			
+			// now make retrieve request
+			obj->Retrieve( true );
+		}
+		// create new transaction with list of objects
+		PersistentTransaction	^trans = gcnew PersistentTransaction();
+		trans->Add( %m_list, PersistentTransaction::ACTION::Delete );
+		// and process it
+		trans->Process();
+
+		// all changes was completed successfuly, save it
+		while( changes.Count > 0 ) changes.Pop()->Commit();
+	} catch( Exception^ ) {
+		// revert all modified objects to previous state
+		while( changes.Count > 0 ) changes.Pop()->Rollback();
+		// and restore exception
+		throw;
 	}
 }
 
@@ -51,6 +76,7 @@ void DeleteCriteria::OnPerformComplete( void )
 DeleteCriteria::DeleteCriteria( String ^type ): \
 	PersistentCriteria( type )
 {
+	// do nothing
 };
 
 
@@ -63,7 +89,10 @@ DeleteCriteria::DeleteCriteria( String ^type ): \
 DeleteCriteria::DeleteCriteria( String ^type, String ^sWhere ): \
 	PersistentCriteria( type )
 {
-	Where = sWhere;
+	// check for initialized reference
+	if( sWhere == nullptr ) throw gcnew ArgumentNullException("sWhere");
+
+	m_where = sWhere;
 }
 
 
@@ -77,20 +106,10 @@ DeleteCriteria::DeleteCriteria( String ^type, String ^sWhere, \
 							    String ^orderBy ):			  \
 	PersistentCriteria(type)
 {
-	Where = sWhere;
-	OrderBy = orderBy;
-}
+	// check for initialized references
+	if( sWhere == nullptr ) throw gcnew ArgumentNullException("sWhere");
+	if( orderBy == nullptr ) throw gcnew ArgumentNullException("orderBy");
 
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Create instance of the DeleteCriteria class based on another
-/// PersistentCriteria instance.
-/// </summary><remarks>
-/// Copy common clauses only from the specified instance.
-/// </remarks>
-//-------------------------------------------------------------------
-DeleteCriteria::DeleteCriteria( const PersistentCriteria %crit ): \
-	PersistentCriteria(crit)
-{
+	m_where = sWhere;
+	m_orderBy = orderBy;
 }

@@ -7,24 +7,18 @@
 /*	Content:	Implementation of PersistentObject class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
 
-#include "PersistenceBroker.h"
+#include ".\Factories\PersistenceBroker.h"
 #include "ObjectLinks.h"
 #include "ObjectProperties.h"
 #include "PersistentObject.h"
 
-using namespace System::IO;
 using namespace _RPL;
-
-
-//
-// Define macros to ignore exceptions
-//
-#define TRY(expr)		try { expr; } catch( Exception^ ) {};
+using namespace _RPL::Factories;
 
 
 //-----------------------------------------------------------------------------
@@ -33,7 +27,7 @@ using namespace _RPL;
 
 //-------------------------------------------------------------------
 //
-// Check for object not to be in given states.
+// Check for object not to be in specified states.
 //
 // If there is any correspondence then raise exception with specific
 // message.
@@ -49,30 +43,34 @@ void PersistentObject::check_state( bool notNew, bool notDelete, bool notProxy )
 	} else if( notDelete && (m_id < 0) ) {
 		// raise for deleted state
 		s = "deleted object";
-	} else if( notProxy && IsProxy ) {
+	} else if( notProxy && (m_state == STATE::Proxy) ) {
 		// raise for proxy
 		s = "proxy object";
+	} else {
+		// all right
+		return;
 	}
-	if( s != nullptr ) throw gcnew InvalidOperationException( 
-							"Cann't perform operation for " + s + "!");
+	throw gcnew InvalidOperationException( String::Format(
+	ERR_PERFORM_OPERATION, s ));
 }
 
 
 //-------------------------------------------------------------------
 //
-// Handler routine to catch proxy change event.
+// Handler routine to catch object's name change.
 //
-// This is post event, so checking for right object state was
-// performed already. Mark object as changed and call our event
-// routine (ignore exceptions).
+// Check for right object state, call event routine and mark object
+// as changed.
 //
 //-------------------------------------------------------------------
-void PersistentObject::on_change( void )
+void PersistentObject::on_change( String ^oldName, String ^newName )
 {
+	// check object state
+	check_state( false, true, false );
+	// notify about name change
+	OnChange( oldName, newName );
 	// mark as changed
 	m_changed = true;
-	// notify about changes
-	TRY( OnChange() );
 }
 
 
@@ -80,16 +78,16 @@ void PersistentObject::on_change( void )
 //
 // Handler routine to catch link change event.
 //
-// Check for right object state, call our event routine and mark
-// object as changed.
+// Check for right object state, call event routine and mark object
+// as changed.
 //
 //-----------------------------------------------------------------
-void PersistentObject::on_change( PersistentObject ^sender )
+void PersistentObject::on_change( PersistentObject ^obj )
 {
 	// check object state
 	check_state( false, true, true );
 	// fair OnChange event
-	OnChange( sender );
+	OnChange( obj );
 	// mark as changed
 	m_changed = true;
 }
@@ -97,30 +95,19 @@ void PersistentObject::on_change( PersistentObject ^sender )
 
 //-------------------------------------------------------------------
 //
-// Handler routine to catch property change event.
+// Handler routine to catch property change.
 //
-// This handler more dificalt because of having special processing
-// for stream internal change events. For this type of events (this
-// is post event notifications) i set object state as changed only.
-// For other events - check for right object state, call our event
-// routine and mark object as changed.
+// Check for right object state, call event routine and mark object
+// as changed.
 //
 //-------------------------------------------------------------------
-void PersistentObject::on_change( PersistentProperty ^sender, \
-								  Object ^oldValue, Object ^newValue )
+void PersistentObject::on_change( String ^prop,							 \
+								  ValueBox oldValue, ValueBox newValue )
 {
-	// determine stream content change events
-	bool	content = (dynamic_cast<Stream^>( newValue )) && 
-					  (newValue == oldValue);
-	
-	// for stream content change events i must always set
-	// state to changed (to provide ability of Retrieve)
-	if( content ) m_changed = true;
-	
 	// check object state
 	check_state( false, true, true );
-	// fair OnChange event for non stream content change events
-	if( !content ) OnChange( sender, oldValue, newValue );
+	// fair OnChange event
+	OnChange( prop, oldValue, newValue );
 	// mark as changed
 	m_changed = true;
 }
@@ -128,239 +115,172 @@ void PersistentObject::on_change( PersistentProperty ^sender, \
 
 //-------------------------------------------------------------------
 //
-// Update existing object with new values.
+// ITransaction::Begin implementation.
 //
-// Return true if update can be finished (object is up to date) and
-// false in case of links and properties must be retrieved. There are
-// several states of object before calling this function, so it can
-// be processed in some different ways:
-// 1. Object is up to date and was not changed: do nothing and return
-//    true.
-// 2. Object is proxy and not up to date: update needed values and
-//    return true.
-// 3. Object is full, not up to date or was changed: update needed
-//    values and return false.
-//
-//-------------------------------------------------------------------
-bool PersistentObject::on_retrieve( int id, DateTime stamp, String ^name )
-{
-	// check for up to date in storage
-	if( (m_stamp == stamp) && !m_changed &&
-		(m_state != STATE::filling) ) return true;
-
-	// clear links and properties by recreate it.
-	// i use Dispose to free tempory resources.
-	delete m_links;
-	delete m_props;
-	m_links = gcnew ObjectLinks(this);
-	m_props = gcnew ObjectProperties(this);
-
-	// determine need of OnChange raising (this can be
-	// only for existing objects by retrieve request)
-	bool changed = ((m_id == id) && (m_stamp != stamp));
-	// determine need of links and properties
-	// retrieve (if this is proxy, or object was
-	// deleted we cann't fill links and properties)
-	bool retrieve = !((m_state == STATE::proxy) || (id < 0));
-
-	// update values
-	m_id = id;
-	m_stamp = stamp;
-	m_name = name;
-	m_changed = false;
-
-	// i must prevent retrieve by exception in events
-	try {
-		// raise OnChange if needed
-		if( changed ) OnChange();
-		// raise OnRetrieve if needed (this is low-lewel function to 
-		// work with object, so i cann't use upper-level function
-		// Retrieve after it in server, therefore i place here event)
-		if( retrieve ) OnRetrieve();
-	} catch( Exception^ ) {
-		// mark object as proxy and not for future retrieve
-		m_state = STATE::proxy;
-		retrieve = false;
-	}
-
-	return !retrieve;
-}
-
-
-//-------------------------------------------------------------------
-//
-// Fills object by specified links and properties.
-//
-//-------------------------------------------------------------------
-void PersistentObject::on_retrieve( IEnumerable<PersistentObject^> ^links, \
-									IEnumerable<PersistentProperty^> ^props )
-{
-	// recreate links and properties
-	m_links = gcnew ObjectLinks(this, links);
-	m_props = gcnew ObjectProperties(this, props);
-	// set state as full object
-	m_state = STATE::full;
-
-	try {
-		// notify about object retrieve
-		OnRetrieveComplete();
-	} catch( Exception^ ) {
-		// ignore all exceptions in notification routine
-	};
-}
-
-
-//-------------------------------------------------------------------
-//
-// ITransactionSupport::TransactionBegin implementation.
-//
-// I must store all object data until trans_commit will be called to
-// have ability to restore data by trans_rollback.
+// Stores all object's data until trans_commit will be called to have
+// ability to restore data by trans_rollback.
 //
 //-------------------------------------------------------------------
 void PersistentObject::trans_begin( void )
 {
 	// addition processing before transaction begin
-	TRY( OnTransactionBegin() );
+	OnTransactionBegin();
 
-	// make object copy
-	BACKUP_STRUCT ^backup = gcnew BACKUP_STRUCT();
+	// create backup record
+	RESTORE_POINT	point;
+	// and fill it by current data
+	point._id = m_id;
+	point._stamp = m_stamp;
+	point._name = m_name;
+	point._state = m_state;
+	point._changed = m_changed;
 	
-	// copy simple object attributes
-	backup->_id = m_id;
-	backup->_state = m_state;
-	backup->_stamp = m_stamp;
-	backup->_name = m_name;
-	backup->_changed = m_changed;
-	// dublicate properties and links
-	// using copy constructor
-	backup->_links = gcnew ObjectLinks(*m_links);
-	backup->_props = gcnew ObjectProperties(*m_props);
+	// call to collections about transaction begin
+	static_cast<ITransaction^>( _links )->Begin();
+	static_cast<ITransaction^>( _props )->Begin();
 
-	// store backup in transaction stack
-	m_trans_stack.Push( backup );
+	// push record to stack
+	backup.Push( point );
 }
 
 
 //-------------------------------------------------------------------
 //
-// ITransactionSupport::TransactionCommit implementation.
+// ITransaction::Commit implementation.
 //
-// Transaction was completed successfuly, then we must free resources
-// for transaction support.
+// Transaction was completed successfuly, so free backup record.
 //
 //-------------------------------------------------------------------
 void PersistentObject::trans_commit( void )
 {
 	// addition processing before transaction commit
-	TRY( OnTransactionCommit() );
+	OnTransactionCommit();
 
-	// remove stored backup data
-	m_trans_stack.Pop();
+	// remove top record from stack
+	backup.Pop();
+
+	// call to collections about successful transaction
+	static_cast<ITransaction^>( _links )->Commit();
+	static_cast<ITransaction^>( _props )->Commit();
 }
 
 
 //-------------------------------------------------------------------
 //
-// ITransactionSupport::TransactionRollback implementation.
+// ITransaction::Rollback implementation.
 //
-// Transaction fails, so we need to rollback object to previous
-// state.
+// Transaction fails, so rollback object to previous state.
 //
 //-------------------------------------------------------------------
 void PersistentObject::trans_rollback( void )
 {
 	// addition processing before transaction rollback
-	TRY( OnTransactionRollback() );
+	OnTransactionRollback();
 
-	// get sored backup data
-	BACKUP_STRUCT ^backup = m_trans_stack.Pop();
+	// get top record from stack
+	RESTORE_POINT	point = backup.Pop();
+	// normalize objects cache
+	if( (point._id == 0) && (m_id > 0) ) {
+		// object was added, so remove from cache
+		PersistenceBroker::Cache[HEADER(Type, m_id,
+										m_stamp, m_name)] = nullptr;
+	} else if( (point._id > 0) && (m_id < 0) ) {
+		// object was deleted, so add to cache
+		PersistenceBroker::Cache[HEADER(Type, point._id,
+										point._stamp, point._name)] = this;
+	}
+	// restore previous state
+	m_id = point._id;
+	m_stamp = point._stamp;
+	m_name = point._name;
+	m_state = point._state;
+	m_changed = point._changed;
 
-	// restore simple object attributes
-	m_id = backup->_id;
-	m_state = backup->_state;
-	m_stamp = backup->_stamp;
-	m_name = backup->_name;
-	m_changed = backup->_changed;
-	// restore properties and links by
-	// simple coping of references
-	m_links = backup->_links;
-	m_props = backup->_props;
+	// call to collections about transaction rollback
+	static_cast<ITransaction^>( _links )->Rollback();
+	static_cast<ITransaction^>( _props )->Rollback();
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Default class constructor to build new persistent object.
+/// Submit hardcoded SQL statements to the persistence.
+/// </summary><remarks>
+/// This is critical feature that allows you to embed SQL in your
+/// application code.
+/// </remarks>
+//-------------------------------------------------------------------
+DataSet^ PersistentObject::ProcessSQL( String ^sql )
+{
+	return PersistenceBroker::Storage->ProcessSQL( sql );
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
+/// Default class constructor builds new persistent object.
 /// </summary><remarks>
 /// For the new objects ID will be set to 0 and IsProxy to false.
 /// </remarks>
 //-------------------------------------------------------------------
 PersistentObject::PersistentObject( void ):	\
-	m_id(0), m_state(STATE::full), m_stamp(), m_name(""), m_changed(false)
+	m_id(0), m_stamp(), m_name(""),			\
+	m_state(STATE::Full), m_changed(false)
 {
-	dbgprint( String::Format( "-> {0}", this->GetType() ) );
+	dbgprint( "-> " + this->GetType()->ToString() );
 	
 	// create empty collections
-	m_links = gcnew ObjectLinks(this);
-	m_props = gcnew ObjectProperties(this);
+	_links = gcnew ObjectLinks(this);
+	_props = gcnew ObjectProperties(this);
 
-	dbgprint( String::Format( "<- {0}", this->GetType() ) );
+	dbgprint( "<- " + this->GetType()->ToString() );
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create PersistentObject instance of proxy persistent object.
-/// </summary><remarks>
-/// For this type of object Propertis and Links collections will be
-/// empty and no operations is allowed for it.
-/// </remarks>
+/// Creates proxy PersistentObject instance.
+/// </summary><remarks><para>
+/// Such constructor must provide each derived class.</para><para>
+/// For this type of object Propertis and Links will be empty and no
+/// operations are allowed for it.
+/// </para></remarks>
 //-------------------------------------------------------------------
 PersistentObject::PersistentObject( int id, DateTime stamp, String ^name ): \
-	m_id(id), m_state(STATE::proxy), m_stamp(stamp), m_changed(false)
+	m_id(id), m_stamp(stamp), m_name(name),									\
+	m_state(STATE::Proxy), m_changed(false)
 {
-	dbgprint( String::Format( "-> {0}\n{1}, {2}, {3}",
-							  this->GetType(), id, stamp, name ) );
+	dbgprint( String::Format( 
+	"-> {0}\n{1}, {2}, {3}", this->GetType(), id, stamp, name ) );
 
 	// check for initialized reference
 	if( name == nullptr ) throw gcnew ArgumentNullException("name");
 
-	m_name = name;
-
 	// create empty collections
-	m_links = gcnew ObjectLinks(this);
-	m_props = gcnew ObjectProperties(this);
+	_links = gcnew ObjectLinks(this);
+	_props = gcnew ObjectProperties(this);
 
-	dbgprint( String::Format( "<- {0}", this->GetType() ) );
+	dbgprint( "<- " + this->GetType()->ToString() );
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Create PersistentObject instance of full persistent object.
-/// </summary>
+/// Class destructor.
+/// </summary><remarks>
+/// Switch object to proxy state. This disposer clears transaction
+/// stack, mark object as proxy, dispose links and properties.
+/// </remarks>
 //-------------------------------------------------------------------
-PersistentObject::PersistentObject( int id, DateTime stamp, String ^name,	   \
-									IEnumerable<PersistentObject^> ^links,	   \
-									IEnumerable<PersistentProperty^> ^props ): \
-	m_id(id), m_state(STATE::full), m_stamp(stamp),	m_changed(false)
+PersistentObject::~PersistentObject( void )
 {
-	dbgprint( String::Format( "-> {0}\n{1}, {2}, {3}, {4}, {5}", 
-							  this->GetType(), id, stamp, name, links, props ) );
+	// first of all clear transaction stack
+	backup.Clear();
 
-	// check for initialized references
-	if( name == nullptr ) throw gcnew ArgumentNullException("name");
-	if( links == nullptr ) throw gcnew ArgumentNullException("links");
-	if( props == nullptr ) throw gcnew ArgumentNullException("props");
-
-	m_name = name;
-
-	// create filled collections
-	m_links = gcnew ObjectLinks(this, links);
-	m_props = gcnew ObjectProperties(this, props);
-
-	dbgprint( String::Format( "<- {0}", this->GetType() ) );
+	// now, mark object as proxy
+	m_state = STATE::Proxy;
+	delete _links;
+	delete _props;
 }
 
 
@@ -373,25 +293,25 @@ PersistentObject::PersistentObject( int id, DateTime stamp, String ^name,	   \
 /// logic control.
 /// </remarks>
 //-------------------------------------------------------------------
-ObjectLinks^ PersistentObject::Links::get( void )
+PersistentObjects^ PersistentObject::Links::get( void )
 {
-	return m_links;
+	return _links;
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
 /// Gets collection of object's properties.
-/// </summary><remarks>
+/// </summary><remarks><para>
 /// It's recomended to implement all properties in derived classes
-/// as native routines to provide more deep control of busines logic.
-/// You can access to non existing property - in this case it will be
-/// created automatically and added to properties list.
-/// </remarks>
+/// as native routines to provide more deep control of busines
+/// logic.</para><para>
+/// You can setup new property by using default setter.
+/// </para></remarks>
 //-------------------------------------------------------------------
-ObjectProperties^ PersistentObject::Properties::get( void )
+PersistentProperties^ PersistentObject::Properties::get( void )
 {
-	return m_props;
+	return _props;
 }
 
 
@@ -400,7 +320,8 @@ ObjectProperties^ PersistentObject::Properties::get( void )
 /// Performs additional custom processes when transaction starts.
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
-/// overridden by a derived class to create it's own save point.
+/// overridden by a derived class to create it's own save point. But
+/// be shure that no exceptions is raised.
 /// </remarks>
 //-------------------------------------------------------------------
 void PersistentObject::OnTransactionBegin( void )
@@ -414,7 +335,8 @@ void PersistentObject::OnTransactionBegin( void )
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to delete it's own save point that
-/// was created by "OnTransactionBegin" early.
+/// was created by "OnTransactionBegin" early.  But be shure that no
+/// exceptions is raised.
 /// </remarks>
 //-------------------------------------------------------------------
 void PersistentObject::OnTransactionCommit( void )
@@ -428,7 +350,8 @@ void PersistentObject::OnTransactionCommit( void )
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to restore it's state to previous,
-/// saved by "OnTransactionBegin".
+/// saved by "OnTransactionBegin". But be shure that no exceptions is
+/// raised.
 /// </remarks>
 //-------------------------------------------------------------------
 void PersistentObject::OnTransactionRollback( void )
@@ -438,14 +361,13 @@ void PersistentObject::OnTransactionRollback( void )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Performs additional custom processes before retrieve properties
-/// of PersistentObject instance.
+/// Performs additional custom processes before retrieve up-to-date
+/// DB data of PersistentObject instance.
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action before the
 /// object is retrieved from persistance storage.
 /// </remarks>
-
 //-------------------------------------------------------------------
 void PersistentObject::OnRetrieve( void )
 {
@@ -454,8 +376,8 @@ void PersistentObject::OnRetrieve( void )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Performs additional custom processes after retrieve properties of
-/// PersistentObject instance.
+/// Performs additional custom processes after retrieve up-to-date DB
+/// data of PersistentObject instance.
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action after the
@@ -529,15 +451,14 @@ void PersistentObject::OnDeleteComplete( void )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Performs additional custom processes after change proxy object
-/// properties (name, datetime).
+/// Performs additional custom processes before change object name.
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
-/// overridden by a derived class to perform some action after the
-/// proxy object properties are changeded.
+/// overridden by a derived class to perform some action before the
+/// object name is changeded.
 /// </remarks>
 //-------------------------------------------------------------------
-void PersistentObject::OnChange( void )
+void PersistentObject::OnChange( String ^oldName, String ^newName )
 {
 }
 
@@ -546,13 +467,15 @@ void PersistentObject::OnChange( void )
 /// <summary>
 /// Performs additional custom processes before add/delete new object
 /// link to the PersistentObject instance. 
-/// </summary><remarks>
+/// </summary><remarks><para>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action before the
 /// new object's link is added/deleted. Event occurs before action,
 /// so you must check for this link exists already to determine type
-/// of action.
-/// </remarks>
+/// of action.</para><para>
+/// If "obj" parameter is null reference then content of the links
+/// collection will be cleared.
+/// </para></remarks>
 //-------------------------------------------------------------------
 void PersistentObject::OnChange( PersistentObject ^obj )
 {
@@ -563,31 +486,19 @@ void PersistentObject::OnChange( PersistentObject ^obj )
 /// <summary>
 /// Performs additional custom processes before add/delete/change
 /// persistent property of the PersistantObject instance.
-/// </summary><remarks>
+/// </summary><remarks><para>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action before the
-/// object's persistent property is added/deleted/changed. If there
-/// is add event, then oldValue will be set to nullptr. If there is
-/// delete event, then newValue will be set to nullptr.
-/// </remarks>
+/// object's persistent property is added/deleted/changed. If this
+/// is add event, then oldValue will be set to DBNull. If this is
+/// delete event, then newValue will be set to nullptr.</para><para>
+/// If "prop" parameter is null reference then content of properties
+/// will be cleared.
+/// </para></remarks>
 //-------------------------------------------------------------------
-void PersistentObject::OnChange( PersistentProperty ^prop, \
-								 Object ^oldValue, Object ^newValue )
+void PersistentObject::OnChange( String ^prop,							\
+								 ValueBox oldValue, ValueBox newValue )
 {
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Operator (String^). Return string representation of the object.
-/// </summary><remarks>
-/// To get object string representation more easy i overload Implicit
-/// operator. This is only ToString call.
-/// </remarks>
-//-------------------------------------------------------------------
-PersistentObject::operator String^( void )
-{
-	return ToString();
 }
 
 
@@ -595,8 +506,8 @@ PersistentObject::operator String^( void )
 /// <summary>
 /// Gets identifier that represent object in persistence storage.
 /// </summary><remarks>
-/// This ID may be not unique identifier in persistance storage, but
-/// combination of object type and ID must be unique.
+/// This ID may be not unique in persistance storage, but combination
+/// of object type and ID must be unique.
 /// </remarks>
 //-------------------------------------------------------------------
 int PersistentObject::ID::get( void )
@@ -612,7 +523,7 @@ int PersistentObject::ID::get( void )
 //-------------------------------------------------------------------
 bool PersistentObject::IsProxy::get( void )
 {
-	return (m_state == STATE::proxy);
+	return (m_state == STATE::Proxy);
 }
 
 
@@ -642,7 +553,7 @@ bool PersistentObject::IsChanged::get( void )
 /// <summary>
 /// Gets or sets object's short name.
 /// </summary><remarks>
-/// This property can be overriden in derived classes to be build
+/// This property can be overriden in derived classes to be composed
 /// from one or more object properties.
 /// </remarks>
 //-------------------------------------------------------------------
@@ -653,43 +564,94 @@ String^ PersistentObject::Name::get( void )
 
 void PersistentObject::Name::set( String ^value )
 {
-	// check object state
-	check_state( false, true, false );
+	// fire OnChange event
+	on_change( m_name, value );
 	// set new value
 	m_name = value;
-	// fire OnChange event
-	on_change();
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Retrive object properties and links from persistance mechanism.
-/// </summary><remarks>
-/// It can be used for build full object by proxy. Two events will be
-/// raised: OnRetrieve befor and OnRetrieveComplete after operation
-/// (this function not fire events emplicitly, it will be fired by
-/// filling this object throught on_retrieve). Default implementation
-/// check for the next object states: "new" and "deleted".
+/// Reload proxy/full object from persistance mechanism making it
+/// up-to-date.
+/// </summary>
+/// <param name="upgrade">
+/// Used to build full object by proxy.
+/// </param><remarks>
+/// Two events will be raised during processing: OnRetrieve before
+/// and OnRetrieveComplete after operation. Default implementation
+/// checks for the next object states: "new" and "deleted".
 /// </remarks>
 //-------------------------------------------------------------------
-void PersistentObject::Retrieve( void )
+void PersistentObject::Retrieve( bool upgrade )
 {
 	// check object state
 	check_state( true, true, false );
 
-	// if object is proxy now then
-	// mark it for filling
-	if( m_state == STATE::proxy ) m_state = STATE::filling;
+	// lock storage for one executable thread
+	Monitor::Enter( PersistenceBroker::Storage );
+	try {
+		// fire OnRetrieve event
+		OnRetrieve();
 
-	// call to Broker
-	PersistenceBroker::Broker->RetrieveObject( this );
+		// have to ignore stamp check in some cases
+		bool ignore = (_links->IsChanged || _props->IsChanged || 
+					   (upgrade && (m_state == STATE::Proxy)));
+		// if no timestamp check is needed pass initial DateTime
+		HEADER			header(Type, m_id, (ignore ? DateTime() : m_stamp), m_name);
+		array<LINK>		^links = nullptr;
+		array<PROPERTY>	^props = nullptr;
+
+		// depend on current state select retreive request
+		if( upgrade || (m_state == STATE::Full) ) {
+			// full retreive request
+			PersistenceBroker::Storage->Retrieve( header, links, props );
+		} else {
+			// retreive header only
+			PersistenceBroker::Storage->Retrieve( header );
+		}
+
+		// update object
+		m_stamp = header.Stamp;
+		m_name = header.Name;
+		m_changed = false;
+		m_state = (upgrade ? STATE::Full : m_state);
+		// update links if needed
+		if( links != nullptr ) {
+			// create list of new links
+			PersistentObjects		^newlinks = gcnew PersistentObjects;
+			// look through each link in received array
+			for each( LINK link in links ) {
+				// request object frome cache and add it to list
+				newlinks->Add( PersistenceBroker::Cache[link.Header] );
+			}
+			_links->Reload( newlinks );
+		}
+		// update properties if needed
+		if( props != nullptr ) {
+			// create list of new properties
+			PersistentProperties	^newprops = gcnew PersistentProperties;
+			// look through each property in received array
+			for each( PROPERTY prop in props ) {
+				// add it to the list
+				newprops->Add( prop.Name, prop.Value );
+			}
+			_props->Reload( newprops );
+		}	
+
+		// notify about complete
+		OnRetrieveComplete();
+	} finally {
+		// unlock storage in any case
+		Monitor::Exit( PersistenceBroker::Storage );
+	}
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Save object links and properties to persistance mechanism.
+/// Save object to persistance mechanism.
 /// </summary><remarks>
 /// For the proxy object name will be stored in DB only. After this
 /// operation timestamp will be modified and for the new objects auto
@@ -703,14 +665,117 @@ void PersistentObject::Save( void )
 	// check for object state
 	check_state( false, true, false );
 
-	// fire OnSave event
-	OnSave();
+	// lock storage for one executable thread
+	Monitor::Enter( PersistenceBroker::Storage );
+	try {
+		// fire OnSave event
+		OnSave();
 
-	//call to PersistenceBroker
-	PersistenceBroker::Broker->SaveObject( this );
+		HEADER	header(Type, m_id, m_stamp, m_name);
+		List<LINK>		^links = gcnew List<LINK>;
+		List<PROPERTY>	^props = gcnew List<PROPERTY>;
+		array<LINK>		^mlinks = nullptr;
+		array<PROPERTY>	^mprops = nullptr;
 
-	// notify about complete
-	OnSaveComplete();
+		// compose list of changed links
+		for each( PersistentObject ^obj in
+				  _links->Get(ObjectLinks::STATE::New) ) {
+			links->Add( 
+				LINK(HEADER(obj->Type, obj->m_id, obj->m_stamp, obj->m_name),
+				LINK::STATE::New ) );
+		}
+		for each( PersistentObject ^obj in
+				  _links->Get(ObjectLinks::STATE::Deleted) ) {
+			links->Add( 
+				LINK(HEADER(obj->Type, obj->m_id, obj->m_stamp, obj->m_name),
+				LINK::STATE::Deleted ) );
+		}
+		// compose list of changed properties
+		for each( KeyValuePair<String^, ValueBox> prop in
+				  _props->Get(ObjectProperties::STATE::New) ) {
+			props->Add(
+				PROPERTY(prop.Key, prop.Value, PROPERTY::STATE::New) );
+		}
+		for each( KeyValuePair<String^, ValueBox> prop in
+				  _props->Get(ObjectProperties::STATE::Deleted) ) {
+			props->Add(
+				PROPERTY(prop.Key, prop.Value, PROPERTY::STATE::Deleted) );
+		}
+		for each( KeyValuePair<String^, ValueBox> prop in
+				  _props->Get(ObjectProperties::STATE::Changed) ) {
+			props->Add(
+				PROPERTY(prop.Key, prop.Value, PROPERTY::STATE::Changed) );
+		}
+
+		// request storage to save changes
+		PersistenceBroker::Storage->Save( header,
+										  links->ToArray(), props->ToArray(),
+										  mlinks, mprops );
+		// if this is new object - add to cache
+		if( m_id == 0 ) PersistenceBroker::Cache[header] = this;
+
+		// update object
+		m_id = header.ID;
+		m_stamp = header.Stamp;
+		m_name = header.Name;
+		m_changed = false;
+		// update links if needed
+		if( (mlinks != nullptr) && (mlinks->Length > 0) ) {
+			// duplicate existing links
+			PersistentObjects		^newlinks = gcnew PersistentObjects(_links);
+			// look through all changes
+			for each( LINK link in mlinks ) {
+				// depend on action
+				switch( link.State ) {
+					// create new link
+					case LINK::STATE::New:
+						newlinks->Add( PersistenceBroker::Cache[link.Header] );
+					break;
+					// delete existing link
+					case LINK::STATE::Deleted:
+						newlinks->Remove( PersistenceBroker::Cache[link.Header] );
+					break;
+				}
+			}
+			_links->Reload( newlinks );
+		} else {
+			// just accept links changes
+			_links->Accept();
+		}
+		// update properties if needed
+		if( mprops != nullptr && mprops->Length > 0 ) {
+			// duplicate existing properties
+			PersistentProperties	^newprops = gcnew PersistentProperties(_props);
+			// look through all changes
+			for each( PROPERTY prop in mprops ) {
+				// depend on action
+				switch( prop.State ) {
+					// create new property
+					case PROPERTY::STATE::New:
+						newprops->Add( prop.Name, prop.Value );
+					break;
+					// delete existing property
+					case PROPERTY::STATE::Deleted:
+						newprops->Remove( prop.Name );
+					break;
+					// change property value
+					case PROPERTY::STATE::Changed:
+						newprops[prop.Name] = prop.Value;
+					break;
+				}
+			}
+			_props->Reload( newprops );
+		} else {
+			// just accept property changes
+			_props->Accept();
+		}
+
+		// notify about complete
+		OnSaveComplete();
+	} finally {
+		// unlock storage in any case
+		Monitor::Exit( PersistenceBroker::Storage );
+	}
 }
 
 
@@ -720,10 +785,8 @@ void PersistentObject::Save( void )
 /// </summary><remarks>
 /// After this operation object will be proxy with ID(-1), stamp(0)
 /// and it's own name. No links and properties will be accessed after
-/// operation. Proxy object cann't be deleted to prevent data lost
-/// without business check, so i retrieve object before. Default
-/// implementation check for the next object states: "new" and
-/// "deleted".
+/// operation. Default implementation check for the next object
+/// states: "new" and "deleted".
 /// </remarks>
 //-------------------------------------------------------------------
 void PersistentObject::Delete( void )
@@ -731,18 +794,54 @@ void PersistentObject::Delete( void )
 	// check for object state
 	check_state( true, true, false );
 
-	// retrieve object to get new properties for
-	// business check
-	Retrieve();
+	// lock storage for one executable thread
+	Monitor::Enter( PersistenceBroker::Storage );
+	try {
+		// fair OnDelete event
+		OnDelete();
 
-	// fair OnDelete event
-	OnDelete();
+		HEADER	header(Type, m_id, m_stamp, m_name);
 
-	//call to PersistenceBroker
-	PersistenceBroker::Broker->DeleteObject( this );
+		// perform storage delete request
+		PersistenceBroker::Storage->Delete( header );
+		// remove from cache
+		PersistenceBroker::Cache[header] = nullptr;
 
-	// notify about complete
-	OnDeleteComplete();
+		// clear object
+		m_id = -1;
+		m_stamp = DateTime();
+		m_changed = false;
+		m_state = STATE::Proxy;
+		// dispose object links and properties
+		delete _links;
+		delete _props;
+
+		// notify about complete
+		OnDeleteComplete();
+	} finally {
+		// unlock storage in any case
+		Monitor::Exit( PersistenceBroker::Storage ); 
+	}
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
+/// Returns hash code for the current PersistentObject.
+/// </summary><remarks>
+/// If object is stored in DB then function returns hash code for
+/// string composed from object Type and ID.
+/// </remarks>
+//-------------------------------------------------------------------
+int PersistentObject::GetHashCode( void )
+{
+	if( m_id > 0) {
+		// compose unique string for this instance
+		return (Type + m_id)->GetHashCode();
+	}
+
+	// return base method
+	return Object::GetHashCode();
 }
 
 
@@ -750,8 +849,8 @@ void PersistentObject::Delete( void )
 /// <summary>
 /// Returns a String that represents the current Object.
 /// </summary><remarks>
-/// Override standart object method ToString(): return object name as
-/// string representation.
+/// Override standart object method ToString(): returns object name
+/// in string representation.
 /// </remarks>
 //-------------------------------------------------------------------
 String^ PersistentObject::ToString( void )

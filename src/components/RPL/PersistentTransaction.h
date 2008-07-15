@@ -7,7 +7,7 @@
 /*	Content:	Definition of PersistentTransaction class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -16,59 +16,54 @@
 #include "RPL.h"
 
 using namespace System;
+using namespace System::Collections::Generic;
 
 
 _RPL_BEGIN
+interface class ITransaction;
 ref class PersistentObject;
-ref class PersistentCriteria;
-
-/// <sumamry>
-/// Provide internal access to the PersistentTransaction class.
-/// </sumamry><remarks>
-/// This is more flexible realisation of a "internal" access modifier. This
-/// interface can be used in .NET Remoting.
-/// </remarks>
-private interface class IIPersistentTransaction
-{
-	void OnProcess( void );
-};
 
 /// <summary>
-/// This class encapsulates the behavior needed to use transactions.
-/// </summary><remarks>
-/// Only you need is add criteria or object (with asked action) using Add
-/// routine and perform transaction by calling Process(). If transaction will
-/// not be succeded some error (from persistence storage) will be raised.
-/// </remarks>
-public ref class PersistentTransaction sealed : MarshalByRefObject,
-												IIPersistentTransaction
+/// This class encapsulates the behavior that is needed to use transactions.
+/// </summary><remarks><para>
+/// Only you need, this is add object or collection of objects with asked
+/// action to transaction instance (use "Add" method) and perform operation
+/// by calling Process().</para><para>
+/// If transaction will be not succeded, then some error (from persistence
+/// storage) will be raised and all changes will be rolled back.
+/// </para></remarks>
+public ref class PersistentTransaction sealed : MarshalByRefObject
 {
 public:
-	typedef enum class Actions { actNone, actRetrieve, actSave, actDelete };
+	typedef enum class ACTION { None, Retrieve, Upgrade, Save, Delete };
 
 private:
 	value class Task
 	{
-	public:
-		Object		^Obj;
-		Actions		Act;
-		
-		Task(Object^ obj, Actions act ): Obj(obj), Act(act) {};
+	private:
+		PersistentObject	^m_obj;
+		ACTION				m_act;
+
+	public:	
+		Task( PersistentObject ^obj, ACTION act );
+
+		ITransaction^ Perform( void );
 	};
 
-private:
-	List<Task>		m_tasks;
-
-// IIPersistentTransaction
-private:
-	virtual void on_process( void ) sealed =
-		IIPersistentTransaction::OnProcess;
+	Queue<Task>^	const _tasks;
 
 public:
+	// TODO: понять как будет работать даное решение при тонком клиенте
+	// (объект PersistentObjects находится на сервере + мы добавляем объект
+	// MarshalByRef, который находится на том-же сервере: вопрос, не будут-ли
+	// запросы от PersistentObjects на объект проходить через клиент)
 	PersistentTransaction( void );
+	PersistentTransaction( PersistentObject ^obj, ACTION action );
+	PersistentTransaction( IEnumerable<PersistentObject^> ^objs,
+						   ACTION action );
 
-	void Add( PersistentCriteria ^crit );
-	void Add( PersistentObject ^obj, Actions act );
+	void Add( PersistentObject ^obj, ACTION action );
+	void Add( IEnumerable<PersistentObject^> ^objs, ACTION action );
 
 	void Process( void );
 };
