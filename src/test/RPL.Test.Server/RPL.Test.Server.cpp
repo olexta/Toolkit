@@ -37,7 +37,7 @@ using namespace Toolkit::RPL::Storage;
 //
 // Define server port for comunication
 //
-#define SERVER_PORT			12345
+#define SERVER_PORT			8888
 
 //
 // Connection string to SQL database
