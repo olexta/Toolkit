@@ -5,7 +5,9 @@
 //*
 //*	Content		:	Public class witch gives information about specific object.
 //*	Author		:	Nikita Marunyak
-//*	Copyright	:	Copyright © 2007, 2008 Nikita Marunyak
+//*	Copyright	:	Copyright © 2007 - 2008 Nikita Marunyak
+//*
+//* SVN			:	$Id$	  
 //*
 //****************************************************************************
 

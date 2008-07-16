@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClassNode.cs" />
+    <Compile Include="EnumInfo.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="IClassInfo.cs" />
     <Compile Include="MetaData.cs" />

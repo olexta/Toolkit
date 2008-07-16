@@ -13,8 +13,11 @@
 //*	  2) DefaultValue - Default value of property
 //*	  3) DisplayOrder - Order of property according to it's state
 //*
+//* SVN			:	$Id$	  
+//*
 //****************************************************************************
 using System;
+using System.Globalization;
 
 namespace Toolkit.Workflow.Schema
 {
@@ -27,7 +30,7 @@ namespace Toolkit.Workflow.Schema
 		/// Stores property type.
 		/// Available types:
 		/// Byte, SByte, Int16, Int32, Int64, UInt16, UInt32, UInt64, Decimal
-		/// String, Char, Boolean, DateTime, Single, Double
+		/// String, Char, Boolean, DateTime, Single, Double, Stream and enums.
 		/// </summary>
 		private Type m_Type;
 
@@ -117,55 +120,73 @@ namespace Toolkit.Workflow.Schema
 				DefaultValue = null;
 				return;
 			}
-			switch( m_Type.ToString() ) {
-				case "System.Byte":
-					DefaultValue = Byte.Parse( strValue );
-					break;
-				case "System.SByte":
-					DefaultValue = SByte.Parse( strValue );
-					break;
-				case "System.Int16":
-					DefaultValue = Int16.Parse( strValue );
-					break;
-				case "System.Int32":
-					DefaultValue = Int32.Parse( strValue );
-					break;
-				case "System.Int64":
-					DefaultValue = Int64.Parse( strValue );
-					break;
-				case "System.UInt16":
-					DefaultValue = UInt16.Parse( strValue );
-					break;
-				case "System.UInt32":
-					DefaultValue = UInt32.Parse( strValue );
-					break;
-				case "System.UInt64":
-					DefaultValue = UInt64.Parse( strValue );
-					break;
-				case "System.Decimal":
-					DefaultValue = Decimal.Parse( strValue );
-					break;
-				case "System.Single":
-					DefaultValue = Single.Parse( strValue );
-					break;
-				case "System.Double":
-					DefaultValue = Double.Parse( strValue );
-					break;
-				case "System.Boolean":
-					DefaultValue = Boolean.Parse( strValue );
-					break;
-				case "System.String":
-					DefaultValue = strValue;
-					break;
-				case "System.Char":
-					DefaultValue = strValue[ 0 ];
-					break;
-				case "System.DateTime":
-					DefaultValue = DateTime.Parse( strValue );
-					break;
-				case "System.IO.Stream":
-					throw new InvalidOperationException(
-						"Object of System.IO.Stream type can't have default value!" );
+			if( m_Type.IsEnum ) {
+				DefaultValue = Enum.Parse( m_Type, strValue );
+			} else {
+				switch( m_Type.ToString() ) {
+					case "System.Byte":
+						if( strValue.Length > 0 )
+							DefaultValue = Byte.Parse( strValue, CultureInfo.InvariantCulture.NumberFormat );
+						break;
+					case "System.SByte":
+						if( strValue.Length > 0 )
+							DefaultValue = SByte.Parse( strValue, CultureInfo.InvariantCulture.NumberFormat );
+						break;
+					case "System.Int16":
+						if( strValue.Length > 0 )
+							DefaultValue = Int16.Parse( strValue, CultureInfo.InvariantCulture.NumberFormat );
+						break;
+					case "System.Int32":
+						if( strValue.Length > 0 )
+							DefaultValue = Int32.Parse( strValue, CultureInfo.InvariantCulture.NumberFormat );
+						break;
+					case "System.Int64":
+						if( strValue.Length > 0 )
+							DefaultValue = Int64.Parse( strValue, CultureInfo.InvariantCulture.NumberFormat );
+						break;
+					case "System.UInt16":
+						if( strValue.Length > 0 )
+							DefaultValue = UInt16.Parse( strValue, CultureInfo.InvariantCulture.NumberFormat );
+						break;
+					case "System.UInt32":
+						if( strValue.Length > 0 )
+							DefaultValue = UInt32.Parse( strValue, CultureInfo.InvariantCulture.NumberFormat );
+						break;
+					case "System.UInt64":
+						if( strValue.Length > 0 )
+							DefaultValue = UInt64.Parse( strValue, CultureInfo.InvariantCulture.NumberFormat );
+						break;
+					case "System.Decimal":
+						if( strValue.Length > 0 )
+							DefaultValue = Decimal.Parse( strValue, CultureInfo.InvariantCulture.NumberFormat );
+						break;
+					case "System.Single":
+						if( strValue.Length > 0 )
+							DefaultValue = Single.Parse( strValue, CultureInfo.InvariantCulture.NumberFormat );
+						break;
+					case "System.Double":
+						if( strValue.Length > 0 )
+							DefaultValue = Double.Parse( strValue, CultureInfo.InvariantCulture.NumberFormat );
+						break;
+					case "System.Boolean":
+						if( strValue.Length > 0 )
+							DefaultValue = Boolean.Parse( strValue );
+						break;
+					case "System.String":
+						DefaultValue = strValue;
+						break;
+					case "System.Char":
+						if( strValue.Length > 0 )
+							DefaultValue = strValue[0];
+						break;
+					case "System.DateTime":
+						if( strValue.Length > 0 )
+							DefaultValue = DateTime.Parse( strValue, CultureInfo.InvariantCulture.DateTimeFormat );
+						break;
+					default:
+						throw new ApplicationException(
+							"Property of " + m_Type.ToString() + " type cannot have default value." );
+				}
 			}
 		}
 

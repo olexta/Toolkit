@@ -7,6 +7,8 @@
 //*	Author		:	Alexander Kurbatov, Nikita Marunyak
 //*	Copyright	:	Copyright © 2006 - 2008 Alexander Kurbatov, Nikita Marunyak
 //*
+//* SVN			:	$Id$	  
+//*
 //****************************************************************************
 
 using System;
@@ -63,6 +65,11 @@ namespace Toolkit.Workflow.Schema
 		/// Saves a correspondence map: Class type -> Class description.
 		/// </summary>
 		private KeyedMap<string, ClassNode> m_Classes;
+
+		/// <summary>
+		/// Saves a correspondence map: Enum type name -> Enum description.
+		/// </summary>
+		private KeyedMap<string, EnumInfo> m_Enums;
 
 		/// <summary>
 		/// Memory copy of schema file.
@@ -149,6 +156,19 @@ namespace Toolkit.Workflow.Schema
 				else
 					throw new NoClassInformationException( instance );
 			}
+		}
+
+		/// <summary>
+		/// Returns description for specified enum type.
+		/// </summary>
+		/// <param name="enumTypeName">Full type name of enum type.</param>
+		/// <returns>Enum description class or null.</returns>
+		public EnumInfo GetEnumInfo( string enumTypeName )
+		{
+			if( m_Enums.Contains( enumTypeName ) )
+				return m_Enums[enumTypeName];
+			else
+				return null;
 		}
 
 		/// <summary>
@@ -243,6 +263,10 @@ namespace Toolkit.Workflow.Schema
 
 			foreach( XmlNode node in m_SchemaXML.DocumentElement.SelectNodes( "ws:class", m_NsMgr ) )
 				m_Classes.Add( new ClassNode( node ) );
+
+			m_Enums = new KeyedMap<string, EnumInfo>();
+			foreach( XmlNode node in m_SchemaXML.DocumentElement.SelectNodes( "ws:enum", m_NsMgr ) )
+				m_Enums.Add( new EnumInfo( node ) );
 		}
 	}
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <ws:schema
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://abbyy.ua/Toolkit/Workflow.Schema Workflow.Schema.xsd"
@@ -7,7 +7,8 @@
 
 	<ws:class ws:type="Toolkit.Workflow.Schema.Test.TestObject,Toolkit.Workflow.Schema.Test">
 		<ws:caption>Document</ws:caption>
-		<ws:localizedCaption ws:uiculture="uk-UA">Документ</ws:localizedCaption>	
+		<ws:localizedCaption ws:uiculture="uk-UA">Документ</ws:localizedCaption>
+		
 		<ws:properties>
 			<ws:property ws:name="locked">
 				<ws:caption>Locked</ws:caption>
@@ -32,6 +33,15 @@
 				<ws:isReadOnly>false</ws:isReadOnly>
 				<ws:isRequired>true</ws:isRequired>
 			</ws:property>
+			<ws:property ws:name="numeric">
+				<ws:caption>Numeric</ws:caption>
+				<ws:description>Numeric</ws:description>
+				<ws:type>NumericEnum,Toolkit.Workflow.Schema.Test</ws:type>
+				<ws:defaultValue>One,Two</ws:defaultValue>
+				<ws:displayOrder>10</ws:displayOrder>
+				<ws:isReadOnly>false</ws:isReadOnly>
+				<ws:isRequired>true</ws:isRequired>
+			</ws:property>			
 		</ws:properties>
 		<ws:methods>
 			<ws:method ws:name="delete">
@@ -52,7 +62,6 @@
 					<ws:property ws:name="author">
 						<ws:localizedCaption ws:uiculture="ru-RU">Имя последнего кто имел дело с документом</ws:localizedCaption>
 						<ws:localizedCaption ws:uiculture="uk-UA">Ім'я останньго хто користувався документом</ws:localizedCaption>
-						<ws:defaultValue>abrakadabra</ws:defaultValue>
 						<ws:isReadOnly>true</ws:isReadOnly>
 					</ws:property>
 				</ws:properties>
@@ -69,4 +78,20 @@
 			</ws:state>
 		</ws:states>
 	</ws:class>
+	<ws:enum ws:type="NumericEnum,Toolkit.Workflow.Schema.Test">
+		<ws:const>
+			<ws:value>1</ws:value>
+			<ws:caption>Один</ws:caption>
+			<ws:localizedCaption ws:uiculture="uk-UA">Один</ws:localizedCaption>
+		</ws:const>
+		<ws:const>
+			<ws:value>2</ws:value>
+			<ws:caption>Два</ws:caption>
+			<ws:localizedCaption ws:uiculture="uk-UA">Два</ws:localizedCaption>
+		</ws:const>
+		<ws:const>
+			<ws:value>4</ws:value>
+			<ws:caption>Четыре</ws:caption>
+		</ws:const>
+	</ws:enum>
 </ws:schema>

@@ -64,6 +64,11 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="TestObject.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Toolkit.Workflow.Schema.Test.TestSchema.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

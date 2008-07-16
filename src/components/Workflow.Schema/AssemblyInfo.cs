@@ -1,4 +1,17 @@
-﻿using System.Reflection;
+﻿//****************************************************************************
+//*	Project		:	Workflow.Schema
+//*
+//*	Module		:	AssemblyInfo.cs
+//*
+//*	Content		:	Information about current assembly
+//*	Author		:	Alexander Kurbatov, Nikita Marunyak
+//*	Copyright	:	Copyright © 2006 - 2008 Alexander Kurbatov, Nikita Marunyak
+//*
+//* SVN			:	$Id$	  
+//*
+//****************************************************************************
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 

@@ -5,7 +5,9 @@
 //*
 //*	Content		:	Custom library exceptions
 //*	Author		:	Nikita Marunyak
-//*	Copyright	:	Copyright © 2007 Nikita Marunyak
+//*	Copyright	:	Copyright © 2008 Nikita Marunyak
+//*
+//* SVN			:	$Id$	  
 //*
 //****************************************************************************
 
@@ -58,6 +60,30 @@ namespace Toolkit.Workflow.Schema
 		public SchemaIsntInitializedException()
 			: base( "Schema isn't initialized." )
 		{
+		}
+	}
+
+	public class EnumTypeIsNotFoundException: ApplicationException
+	{
+		private string m_TypeName;
+
+		/// <summary>
+		/// Creates instance.
+		/// </summary>
+		public EnumTypeIsNotFoundException( string typeName )
+			: base( string.Format( "Enum type {0} is not found.", typeName ) )
+		{
+			m_TypeName = typeName;
+		}
+		
+		/// <remarks>
+		/// Returns type name.
+		/// </remarks>
+		public string TypeName
+		{
+			get {
+				return m_TypeName;
+			}
 		}
 	}
 }

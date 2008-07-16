@@ -5,10 +5,12 @@
 //*
 //*	Content		:	Implementation of SMethod class
 //*	Author		:	Alexander Kurbatov, Nikita Marunyak
-//*	Copyright	:	Copyright © 2006, 2007 Alexander Kurbatov, Nikita Marunyak
+//*	Copyright	:	Copyright © 2006 - 2008 Alexander Kurbatov, Nikita Marunyak
 //*
 //*	This class is used to store following some class's method information:
 //*		1) isAvailable - Defines whether or not this method may be involved
+//*
+//* SVN			:	$Id$	  
 //*
 //****************************************************************************
 using System;

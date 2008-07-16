@@ -1,7 +1,16 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+
+[Flags]
+enum NumericEnum
+{
+	One = 1,
+	Two = 2,
+	Three = 4,
+	Four = 8
+}
 
 namespace Toolkit.Workflow.Schema.Test
 {
@@ -37,7 +46,13 @@ namespace Toolkit.Workflow.Schema.Test
 				Console.WriteLine( "\tDisplay order: {0}", method.DisplayOrder );
 				Console.WriteLine( "\tIs available: {0}", method.IsAvailable );
 			}
-	
+
+
+			EnumInfo enumInfo = MetaData.Instance.GetEnumInfo( "NumericEnum" );
+			Console.WriteLine( "{0}, Flags={1}:", enumInfo.EnumType.FullName, enumInfo.Flags );
+			foreach( int constValue in enumInfo.Constants )
+				Console.WriteLine( "{0}: {1}", constValue, enumInfo.GetCaption( constValue ) );
+
 			Console.WriteLine("Press <Enter> to exit...");
 			Console.ReadLine();
 		}

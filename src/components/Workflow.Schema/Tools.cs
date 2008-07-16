@@ -5,7 +5,9 @@
 //*
 //*	Content		:	Usefull code for internal purposes
 //*	Author		:	Nikita Marunyak
-//*	Copyright	:	Copyright © 2007 Nikita Marunyak
+//*	Copyright	:	Copyright © 2007 - 2008 Nikita Marunyak
+//*
+//* SVN			:	$Id$	  
 //*
 //****************************************************************************
 

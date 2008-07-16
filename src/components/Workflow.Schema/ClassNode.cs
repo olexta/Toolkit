@@ -5,7 +5,9 @@
 //*
 //*	Content		:	Internal class for caching purposes.
 //*	Author		:	Nikita Marunyak
-//*	Copyright	:	Copyright © 2007, 2008 Nikita Marunyak
+//*	Copyright	:	Copyright © 2007 - 2008 Nikita Marunyak
+//*
+//* SVN			:	$Id$	  
 //*
 //****************************************************************************
 
@@ -21,7 +23,7 @@ namespace Toolkit.Workflow.Schema
 	/// Class that stores information about class node in XML file.
 	/// It obtain information about all properties, method and states.
 	/// </summary>
-	class ClassNode: IKeyedObject<string>
+	class ClassNode : IKeyedObject<string>
 	{
 		/// <summary>
 		/// Stores class type for current instance.
@@ -57,7 +59,7 @@ namespace Toolkit.Workflow.Schema
 			m_Properties = new KeyedMap<string, SProperty>();
 			m_Methods = new KeyedMap<string, SMethod>();
 
-			m_Type = classNode.Attributes[ "ws:type" ].Value;
+			m_Type = classNode.Attributes["ws:type"].Value;
 
 			m_Caption = Tools.GetLocalizedString( classNode, "caption" );
 
@@ -68,23 +70,43 @@ namespace Toolkit.Workflow.Schema
 
 				// create instance of SProperty with 0 values
 				SProperty property = new SProperty(
-					null, null, null, -1, null, false, false, null);
-				
+					null, null, null, -1, null, false, false, null );
+
 				// gets property name from attribute
 				property.Name = propertyNode.Attributes.GetNamedItem( "ws:name" ).Value;
 
 				// finding all property values using XPath
 				property.Caption = Tools.GetLocalizedString( propertyNode, "caption" );
 
-				property.Description = Tools.GetLocalizedString( propertyNode, "description" );				
+				property.Description = Tools.GetLocalizedString( propertyNode, "description" );
 
 				string typeName = propertyNode.SelectSingleNode(
 					"ws:type", MetaData.Instance.XMLNsMgr ).InnerText;
-				property.Type = System.Type.GetType(
-					"System." + ( ( typeName == "Stream" ) ? "IO." : "" ) + typeName );
-
-				//property.Type = System.Type.GetType( "System." + propertyNode.SelectSingleNode(
-				//	"ws:type", MetaData.Instance.XMLNsMgr ).InnerText );
+				switch( typeName ) {
+					case "Byte":
+					case "SByte":
+					case "Int16":
+					case "Int32":
+					case "Int64":
+					case "UInt16":
+					case "UInt32":
+					case "UInt64":
+					case "Decimal":
+					case "String":
+					case "Char":
+					case "Boolean":
+					case "DateTime":
+					case "Single":
+					case "Double":
+						property.Type = System.Type.GetType( "System." + typeName );
+						break;
+					default:
+						if( System.Type.GetType( typeName ) != null ) {
+							property.Type = System.Type.GetType( typeName );
+							break;
+						} else
+							throw new ApplicationException( "Type not found " + typeName );
+				}
 
 				XmlNode node = propertyNode.SelectSingleNode(
 					"ws:defaultValue", MetaData.Instance.XMLNsMgr );
@@ -122,7 +144,7 @@ namespace Toolkit.Workflow.Schema
 				method.Description = Tools.GetLocalizedString( methodNode, "description" );
 
 				method.DisplayOrder = int.Parse( methodNode.SelectSingleNode(
-					"ws:displayOrder", MetaData.Instance.XMLNsMgr ).InnerText ); 
+					"ws:displayOrder", MetaData.Instance.XMLNsMgr ).InnerText );
 
 				method.IsAvailable = bool.Parse( methodNode.SelectSingleNode(
 					"ws:isAvailable", MetaData.Instance.XMLNsMgr ).InnerText );
@@ -135,7 +157,7 @@ namespace Toolkit.Workflow.Schema
 				"ws:states/ws:state", MetaData.Instance.XMLNsMgr ) )
 				m_StatesMap.Add(
 					stateNode.Attributes.GetNamedItem( "ws:mask" ).Value,
-					stateNode );			
+					stateNode );
 		}
 
 		/// <summary>
@@ -143,7 +165,7 @@ namespace Toolkit.Workflow.Schema
 		/// </summary>
 		public string Type
 		{
-			get	{ return m_Type; }
+			get { return m_Type; }
 		}
 
 		/// <summary>

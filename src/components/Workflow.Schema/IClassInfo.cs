@@ -5,7 +5,9 @@
 //*
 //*	Content		:	Definition of IClassInfo interface
 //*	Author		:	Alexander Kurbatov, Nikita Marunyak
-//*	Copyright	:	Copyright © 2006, 2007 Alexander Kurbatov, Nikita Marunyak
+//*	Copyright	:	Copyright © 2006 - 2008 Alexander Kurbatov, Nikita Marunyak
+//*
+//* SVN			:	$Id$	  
 //*
 //****************************************************************************
 using System;
