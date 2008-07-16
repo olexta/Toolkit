@@ -7,17 +7,16 @@
 /*	Content:	This is the main executable file.							*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
 
-#include "CrossDomainService.h"
-#include "CrossDomainMarshaller.h"
-
 #using "..\..\..\..\bin\Toolkit.RPL.dll"
 #using "..\..\..\..\bin\Toolkit.RPL.Storage.dll"
-#using "..\..\..\..\bin\Toolkit.RPL.Test.Objects.dll"
+
+#include "CrossDomainService.h"
+#include "CrossDomainMarshaller.h"
 
 using namespace System;
 using namespace System::Reflection;
@@ -25,7 +24,6 @@ using namespace System::Runtime::Remoting;
 using namespace System::Runtime::Remoting::Channels;
 using namespace Toolkit::RPL::Factories;
 using namespace Toolkit::RPL::Storage;
-using namespace Toolkit::RPL::Test;
 
 
 //----------------------------------------------------------------------------
