@@ -155,7 +155,6 @@ int main(array<System::String ^> ^args)
 		// routine to correctly dispose all client services)
 		CrossDomainMarshaller::Instance->Free();
 	} catch ( Exception ^e ) {
-		
 		// write error message
 		Console::WriteLine( e );
 		Console::ReadLine();
