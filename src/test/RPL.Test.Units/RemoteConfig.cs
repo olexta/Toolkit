@@ -118,7 +118,7 @@ namespace Toolkit.RPL.Test
 		{
 			ChannelServices.RegisterChannel( new TcpChannel(), false );
 
-			Factories factories = new Factories( "tcp://" + m_hostname + ":12345/Toolkit.RPL.Test.Server.rem" );
+			Factories factories = new Factories( "tcp://" + m_hostname + ":8888/Toolkit.RPL.Test.Server.rem" );
 
 			PersistenceBroker.BrokerFactory = factories;
 			PersistenceBroker.ObjectFactory = factories;
