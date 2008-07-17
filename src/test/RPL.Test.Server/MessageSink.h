@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		MessageSink.h												*/
 /*																			*/
-/*	Content:	Definition of MessageSink class							*/
+/*	Content:	Definition of MessageSink class								*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
@@ -30,8 +30,7 @@ public:
 	virtual IMessageCtrl^ AsyncProcessMessage( IMessage ^msg, 
 											   IMessageSink ^replySink );
 
-	virtual property IMessageSink^ NextSink
-	{
+	virtual property IMessageSink^ NextSink {
 		IMessageSink^ get( void );
 	}
 };

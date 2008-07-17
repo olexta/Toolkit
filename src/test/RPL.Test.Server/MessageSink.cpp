@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		MessageSink.cpp												*/
 /*																			*/
-/*	Content:	Implementation of MessageSink class						*/
+/*	Content:	Implementation of MessageSink class							*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
@@ -48,23 +48,24 @@ MessageSink::MessageSink( IMessageSink ^nextSink )
 //-------------------------------------------------------------------
 IMessage^ MessageSink::SyncProcessMessage( IMessage ^msg )
 {
-	if ( msg->Properties["__Uri"] == nullptr ) {
+	if( msg->Properties["__Uri"] == nullptr ) {
 
 		return m_nextSink->SyncProcessMessage( msg );
 	}
 
 	// get client ID from context data
-	LogicalCallContext ^callContext = dynamic_cast<LogicalCallContext^>( 
-									  msg->Properties["__CallContext"] );
-	String ^clientID = dynamic_cast<String^>( callContext->GetData("__ClientID") );
+	LogicalCallContext	^callContext = dynamic_cast<LogicalCallContext^>( 
+									   msg->Properties["__CallContext"] );
+	String				^clientID = dynamic_cast<String^>(
+									callContext->GetData( "__ClientID" ) );
 
-	if ( clientID != nullptr ) {
+	if( clientID != nullptr ) {
 		// get associated service interface
 		return CrossDomainMarshaller::Instance->Service[clientID]->Marshal( msg );
 	} else {
 		// no client ID in message, throw exception
-		return gcnew ReturnMessage( gcnew ApplicationException("No __ClientID"), 
-									dynamic_cast<IMethodCallMessage^>( msg ) );
+		return gcnew ReturnMessage(gcnew ApplicationException("No __ClientID"), 
+								   dynamic_cast<IMethodCallMessage^>( msg ));
 	}
 }
 
@@ -75,7 +76,7 @@ IMessage^ MessageSink::SyncProcessMessage( IMessage ^msg )
 //
 //-------------------------------------------------------------------
 IMessageCtrl^ MessageSink::AsyncProcessMessage( IMessage ^msg, 
-												 IMessageSink ^replySink )
+												IMessageSink ^replySink )
 {
 	return m_nextSink->AsyncProcessMessage( msg, replySink );
 }

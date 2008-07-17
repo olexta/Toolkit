@@ -30,17 +30,21 @@ using namespace System::Security::Permissions;
 
 
 // Define lock macroses
-#define ENTER(lock)		try { Monitor::Enter( lock );
-#define EXIT(lock)		} finally { Monitor::Exit( lock ); }
+#define ENTER_(lock)	try { Monitor::Enter(								\
+							static_cast<Collections::ICollection^>(			\
+							lock )->SyncRoot);
+#define EXIT_(lock)		} finally { Monitor::Exit(							\
+							static_cast<Collections::ICollection^>(			\
+							lock )->SyncRoot);}
 
 
 //----------------------------------------------------------------------------
-//					CrossDomainMarshaller::CServiceSponsor
+//					CrossDomainMarshaller::ServiceSponsor
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 //
-// Create instance of the CServiceSponsor class. This class is used
+// Create instance of the ServiceSponsor class. This class is used
 // as Sponsor to manage service lifetime. If service instance was
 // created in non default domain, then must be ability to unload this
 // domain and delete service slot after client disconnect. All client
@@ -49,7 +53,8 @@ using namespace System::Security::Permissions;
 // create sponsor object in same as CrossDomainMarshaller domain and
 // on Renew perform all cleaner actions.
 //-------------------------------------------------------------------
-CrossDomainMarshaller::CServiceSponsor::CServiceSponsor( String ^clientID ): \
+CrossDomainMarshaller::								\
+ServiceSponsor::ServiceSponsor( String ^clientID ): \
 	m_clientID(clientID)
 {
 	// do nothing
@@ -62,8 +67,10 @@ CrossDomainMarshaller::CServiceSponsor::CServiceSponsor( String ^clientID ): \
 // object.
 //
 //-------------------------------------------------------------------
-[SecurityPermissionAttribute(SecurityAction::LinkDemand,Flags=SecurityPermissionFlag::Infrastructure)]
-TimeSpan CrossDomainMarshaller::CServiceSponsor::Renewal( ILease ^lease )
+[SecurityPermission(SecurityAction::LinkDemand,
+					Flags=SecurityPermissionFlag::Infrastructure)]
+TimeSpan CrossDomainMarshaller:: \
+ServiceSponsor::Renewal( ILease ^lease )
 {
 	// unregister this instance from sponsorship
 	lease->Unregister( this );
@@ -72,7 +79,7 @@ TimeSpan CrossDomainMarshaller::CServiceSponsor::Renewal( ILease ^lease )
 	CrossDomainMarshaller::Instance->Free( m_clientID );
 
 	// return request to immediate destroy object
-	return TimeSpan::FromSeconds(0);
+	return TimeSpan::FromSeconds( 0 );
 };
 
 
@@ -86,7 +93,8 @@ TimeSpan CrossDomainMarshaller::CServiceSponsor::Renewal( ILease ^lease )
 // pattern.
 //
 //-------------------------------------------------------------------
-CrossDomainMarshaller::CrossDomainMarshaller( void ): m_factory(nullptr)
+CrossDomainMarshaller::CrossDomainMarshaller( void ) : \
+	m_factory(nullptr)
 {
 	// do nothing
 }
@@ -99,9 +107,12 @@ CrossDomainMarshaller::CrossDomainMarshaller( void ): m_factory(nullptr)
 //-------------------------------------------------------------------
 void CrossDomainMarshaller::init( String ^clientID, ServiceSlot ^slot )
 {
+	// check for initialized factory 
+	if( m_factory == nullptr ) throw gcnew InvalidOperationException(
+		"Object creation factory is not specified!" );
+
 	AppDomain			^domain = nullptr;
 	ICrossDomainService	^service = nullptr;
-
 
 	// create new service instance for client
 	m_factory( clientID, domain, service );
@@ -110,11 +121,12 @@ void CrossDomainMarshaller::init( String ^clientID, ServiceSlot ^slot )
 	slot->Domain = domain;
 	slot->Service = service;
 
-	if ( domain != nullptr ) {
+	if( domain != nullptr ) {
 		// create sponsor object
-		slot->Sponsor = gcnew CServiceSponsor(clientID);
+		slot->Sponsor = gcnew ServiceSponsor(clientID);
 		// register service object with the server's lease manager.
-		ILease ^lease = dynamic_cast<ILease^>( RemotingServices::GetLifetimeService(
+		ILease ^lease = dynamic_cast<ILease^>(
+						RemotingServices::GetLifetimeService(
 							dynamic_cast<MarshalByRefObject^>( service ) ) );
 		lease->Register( slot->Sponsor );
 	}
@@ -131,7 +143,7 @@ void CrossDomainMarshaller::free( String ^clientID, ServiceSlot ^slot )
 	// call service disposer to free resources
 	delete slot->Service;
 	// unload domain created for service
-	if ( slot->Domain != nullptr ) AppDomain::Unload( slot->Domain );
+	if( slot->Domain != nullptr ) AppDomain::Unload( slot->Domain );
 	// dispose sponsor object
 	delete slot->Sponsor;
 }
@@ -145,7 +157,7 @@ void CrossDomainMarshaller::free( String ^clientID, ServiceSlot ^slot )
 //-------------------------------------------------------------------
 CrossDomainMarshaller^ CrossDomainMarshaller::Instance::get( void )
 {
-	return m_instance;
+	return s_instance;
 }
 
 
@@ -156,7 +168,7 @@ CrossDomainMarshaller^ CrossDomainMarshaller::Instance::get( void )
 //-------------------------------------------------------------------
 void CrossDomainMarshaller::Factory::set( FACTORY ^factory )
 {
-	if ( factory == nullptr ) throw gcnew ArgumentNullException( "factory" );
+	if( factory == nullptr ) throw gcnew ArgumentNullException("factory");
 
 	m_factory = factory;
 }
@@ -169,11 +181,16 @@ void CrossDomainMarshaller::Factory::set( FACTORY ^factory )
 //
 //-------------------------------------------------------------------
 AppDomain^ CrossDomainMarshaller::Domain::get( String ^clientID )
-{
-	if ( !m_dict.ContainsKey( clientID ) ) return nullptr;
+{ENTER_(%m_dict)
 
-	return m_dict[clientID]->Domain;
-}
+	ServiceSlot		^slot = nullptr;
+	if( m_dict.TryGetValue( clientID, slot ) ) {
+		// return client's domain
+		return slot->Domain;
+	}
+	return nullptr;
+
+EXIT_(%m_dict)}
 
 
 //-------------------------------------------------------------------
@@ -183,34 +200,20 @@ AppDomain^ CrossDomainMarshaller::Domain::get( String ^clientID )
 //
 //-------------------------------------------------------------------
 ICrossDomainService^ CrossDomainMarshaller::Service::get( String ^clientID )
-{
-	// check for object state
-	if ( m_factory == nullptr ) throw gcnew InvalidOperationException(
-						"Object creation factory not specified!" );
+{ENTER_(%m_dict)
 
 	// create an service instance per client only once
-	if ( !m_dict.ContainsKey( clientID ) ) {
-		// this call must be thread-safe, so i use
-		// SyncRoot to lock dictionary
-		ENTER( ((Collections::ICollection^) %m_dict)->SyncRoot )
-			// create new slot for client 
-			m_dict[clientID] = gcnew ServiceSlot();
-			// prevent memory leaking
-			try {
-				// create new service instance for client
-				init( clientID, m_dict[clientID] );
-			} catch ( Exception^ ) {
-				// service was not created correctly,
-				// so i delete client's slot only
-				m_dict.Remove( clientID );
-				// and return exception
-				throw;
-			}
-		EXIT( ((Collections::ICollection^) %m_dict)->SyncRoot );
+	if( !m_dict.ContainsKey( clientID ) ) {
+		// create new slot for client 
+		ServiceSlot	^slot = gcnew ServiceSlot();
+		// create new service instance for client
+		init( clientID, slot );
+		// save new slot in the dictionary
+		m_dict[clientID] = slot;
 	}
-
 	return m_dict[clientID]->Service;
-}
+
+EXIT_(%m_dict) }
 
 
 //-------------------------------------------------------------------
@@ -219,15 +222,17 @@ ICrossDomainService^ CrossDomainMarshaller::Service::get( String ^clientID )
 //
 //-------------------------------------------------------------------
 void CrossDomainMarshaller::Free( void )
-{
-	ENTER( ((Collections::ICollection^) %m_dict)->SyncRoot )
-		// pass through all entries in dictionary
+{ENTER_(%m_dict)
+
+	// pass through all entries in dictionary
+	for each( KeyValuePair<String^, ServiceSlot^> pair in m_dict ) {
 		// and free services
-		for each ( String ^key in m_dict.Keys ) free( key, m_dict[key] );
-		// clear dictionary
-		m_dict.Clear();
-	EXIT( ((Collections::ICollection^) %m_dict)->SyncRoot )
-}
+		free( pair.Key, pair.Value );
+	}
+	// clear dictionary
+	m_dict.Clear();
+
+EXIT_(%m_dict)};
 
 
 //-------------------------------------------------------------------
@@ -239,17 +244,18 @@ void CrossDomainMarshaller::Free( void )
 //
 //-------------------------------------------------------------------
 void CrossDomainMarshaller::Free( String ^clientID )
-{
-	ENTER( ((Collections::ICollection^) %m_dict)->SyncRoot )
-		// check for client's slot exists
-		if ( m_dict.ContainsKey( clientID ) ) {
-			// free client's service
-			free( clientID, m_dict[clientID] );
-			// and delete slot
-			m_dict.Remove( clientID );
-		}
-	EXIT( ((Collections::ICollection^) %m_dict)->SyncRoot )
-}
+{ENTER_(%m_dict)
+
+	ServiceSlot		^slot = nullptr;
+	// check for client's slot exists
+	if( m_dict.TryGetValue( clientID, slot ) ) {
+		// free client's service
+		free( clientID, slot );
+		// and delete slot
+		m_dict.Remove( clientID );
+	}
+
+EXIT_(%m_dict)}
 
 
 //-------------------------------------------------------------------

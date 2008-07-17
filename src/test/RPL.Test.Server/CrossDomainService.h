@@ -44,14 +44,17 @@ private:
 	};
 
 private:
-	int			m_timeout;
 	Proxy		^m_proxy;
+
+// ICrossDomaainService
+private:
+	virtual IMessage^ Marshal( IMessage ^msg ) sealed =
+		ICrossDomainService::Marshal;
 
 public:
 	CrossDomainService( void );
 
-	virtual IMessage^	Marshal( IMessage ^msg ) = ICrossDomainService::Marshal;
-	virtual Object^		InitializeLifetimeService( void ) override;
+	virtual Object^ InitializeLifetimeService( void ) override;
 };
 
 
@@ -62,7 +65,7 @@ public:
 
 //-------------------------------------------------------------------
 //
-// Create instance of the CCrossDomainService::Proxy class.
+// Create instance of the CrossDomainService::Proxy class.
 //
 //-------------------------------------------------------------------
 template<class T, int t>
@@ -80,8 +83,8 @@ CrossDomainService<T, t>::Proxy::Proxy( MarshalByRefObject ^obj )
 //
 //-------------------------------------------------------------------
 template<class T, int t>
-[SecurityPermissionAttribute(SecurityAction::LinkDemand, \
-							 Flags = SecurityPermissionFlag::Infrastructure)]
+[SecurityPermissionAttribute(SecurityAction::LinkDemand,\
+							 Flags=SecurityPermissionFlag::Infrastructure)]
 IMessage^ CrossDomainService<T, t>::Proxy::Invoke( IMessage ^msg )
 {
 	msg->Properties["__Uri"] = m_uri;
@@ -102,8 +105,7 @@ IMessage^ CrossDomainService<T, t>::Proxy::Invoke( IMessage ^msg )
 template<class T, int t>
 CrossDomainService<T, t>::CrossDomainService( void )
 {
-	m_timeout = t;
-	m_proxy = gcnew Proxy( this );
+	m_proxy = gcnew Proxy(this);
 }
 
 
@@ -116,13 +118,13 @@ CrossDomainService<T, t>::CrossDomainService( void )
 template<class T, int t>
 Object^ CrossDomainService<T, t>::InitializeLifetimeService( void )
 {
-	ILease^ lease = dynamic_cast<ILease^>( 
+	ILease^	lease = dynamic_cast<ILease^>( 
 					MarshalByRefObject::InitializeLifetimeService() ) ;
 
-	if ( lease->CurrentState == LeaseState::Initial ) {
+	if( lease->CurrentState == LeaseState::Initial ) {
 		// initialize to specified timeout
-		lease->InitialLeaseTime = TimeSpan::FromSeconds( m_timeout );
-		lease->RenewOnCallTime = TimeSpan::FromSeconds( m_timeout );
+		lease->InitialLeaseTime = TimeSpan::FromSeconds( t );
+		lease->RenewOnCallTime = TimeSpan::FromSeconds( t );
 		// sponsor locate in this process, so left defult value
 	}
 	return lease;

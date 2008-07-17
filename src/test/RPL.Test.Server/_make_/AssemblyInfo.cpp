@@ -24,7 +24,7 @@ using namespace System::Reflection;
 [assembly:AssemblyTitleAttribute("Toolkit.RPL.Test.Server")];
 [assembly:AssemblyDescriptionAttribute("RPL server example")];
 [assembly:AssemblyProductAttribute("Robust Persistence Layer")];
-[assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2006-2007")];
+[assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2006-2008")];
 [assembly:AssemblyInformationalVersionAttribute("1.0")];
 
 //

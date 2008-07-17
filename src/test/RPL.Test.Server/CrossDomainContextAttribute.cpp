@@ -21,7 +21,7 @@
 
 
 //----------------------------------------------------------------------------
-//			CrossDomainContextAttribute::CCrossDomainContextProperty
+//			CrossDomainContextAttribute::CrossDomainContextProperty
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -30,8 +30,8 @@
 // compatible with the new context.
 //
 //-------------------------------------------------------------------
-bool CrossDomainContextAttribute::CCrossDomainContextProperty::IsNewContextOK( \
-		Context ^newContext )
+bool CrossDomainContextAttribute:: \
+CrossDomainContextProperty::IsNewContextOK( Context ^newContext )
 {
 	return true;
 }
@@ -42,8 +42,8 @@ bool CrossDomainContextAttribute::CCrossDomainContextProperty::IsNewContextOK( \
 // Called when the context is frozen.
 //
 //-------------------------------------------------------------------
-void CrossDomainContextAttribute::CCrossDomainContextProperty::Freeze(
-		Context ^newContext )
+void CrossDomainContextAttribute:: \
+CrossDomainContextProperty::Freeze( Context ^newContext )
 {
 	// nothing to do
 }
@@ -55,7 +55,8 @@ void CrossDomainContextAttribute::CCrossDomainContextProperty::Freeze(
 // context.
 //
 //-------------------------------------------------------------------
-String^ CrossDomainContextAttribute::CCrossDomainContextProperty::Name::get( void )
+String^ CrossDomainContextAttribute:: \
+CrossDomainContextProperty::Name::get( void )
 {
 	return "CrossDomain";
 }
@@ -67,15 +68,16 @@ String^ CrossDomainContextAttribute::CCrossDomainContextProperty::Name::get( voi
 // the given sink chain.
 //
 //-------------------------------------------------------------------
-IMessageSink^ CrossDomainContextAttribute::CCrossDomainContextProperty::GetObjectSink( \
-		MarshalByRefObject ^obj, IMessageSink ^nextSink )
+IMessageSink^ CrossDomainContextAttribute::							\
+CrossDomainContextProperty::GetObjectSink( MarshalByRefObject ^obj,	\
+										   IMessageSink ^nextSink )
 {
-	return gcnew MessageSink( nextSink );
+	return gcnew MessageSink(nextSink);
 }
 
 
 //----------------------------------------------------------------------------
-//							CrossDomainContextAttribute
+//						CrossDomainContextAttribute
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -84,11 +86,11 @@ IMessageSink^ CrossDomainContextAttribute::CCrossDomainContextProperty::GetObjec
 // name to "Interception".
 //
 //-------------------------------------------------------------------
-CrossDomainContextAttribute::CrossDomainContextAttribute(): \
+CrossDomainContextAttribute::CrossDomainContextAttribute( void ): \
 	ContextAttribute("Interception")
 {
 	// do nothing
-};
+}
         
 
 //-------------------------------------------------------------------
@@ -114,5 +116,5 @@ void CrossDomainContextAttribute::GetPropertiesForNewContext( \
 		IConstructionCallMessage ^ctor )
 {
 	// add the context property which will later create a sink
-	ctor->ContextProperties->Add( gcnew CCrossDomainContextProperty() );
+	ctor->ContextProperties->Add( gcnew CrossDomainContextProperty() );
 }

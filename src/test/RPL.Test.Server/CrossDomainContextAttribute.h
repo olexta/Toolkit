@@ -24,7 +24,8 @@ using namespace System::Runtime::Remoting::Activation;
 private ref class CrossDomainContextAttribute : ContextAttribute
 {
 private:
-	ref class CCrossDomainContextProperty : IContextProperty, IContributeObjectSink
+	ref class CrossDomainContextProperty : IContextProperty, 
+										   IContributeObjectSink
 	{
 	public:
 		virtual bool IsNewContextOK( Context ^newContext );
@@ -40,6 +41,8 @@ private:
 public:
 	CrossDomainContextAttribute( void );
 
-	virtual bool IsContextOK( Context ^context, IConstructionCallMessage ^ctor ) override;
-	virtual void GetPropertiesForNewContext( IConstructionCallMessage ^ctor ) override;
+	virtual bool IsContextOK( Context ^context, 
+							  IConstructionCallMessage ^ctor ) override;
+	virtual void GetPropertiesForNewContext( 
+					IConstructionCallMessage ^ctor ) override;
 };

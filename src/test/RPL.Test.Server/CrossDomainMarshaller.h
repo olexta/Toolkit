@@ -21,22 +21,25 @@ using namespace System::Runtime::Remoting::Lifetime;
 
 
 interface class ICrossDomainService;
-delegate void FACTORY( String ^clientID, \
-					   AppDomain^ %domain, ICrossDomainService^ %service );
+delegate void FACTORY( String ^clientID, AppDomain^ %domain,
+					   ICrossDomainService^ %service );
 
 [CrossDomainContext]
 private ref class CrossDomainMarshaller : ContextBoundObject
 {
 private:
-	ref class CServiceSponsor : MarshalByRefObject, ISponsor
+	ref class ServiceSponsor : MarshalByRefObject, ISponsor
 	{
 	private:
 		String	^m_clientID;
 
-	public:
-		CServiceSponsor( String ^clientID );
+	// ISponsor
+	private:
+		virtual TimeSpan Renewal( ILease ^lease ) sealed =
+			ISponsor::Renewal;
 
-		virtual TimeSpan Renewal( ILease ^lease );
+	public:
+		ServiceSponsor( String ^clientID );
 	};
 
 private:
@@ -49,12 +52,12 @@ private:
 	};
 	
 private:
-	static CrossDomainMarshaller^ m_instance = gcnew CrossDomainMarshaller();
+	static CrossDomainMarshaller^		const s_instance = 
+											gcnew CrossDomainMarshaller();
 
-	FACTORY		^m_factory;
-	Dictionary <String^, ServiceSlot^>	m_dict;
+	FACTORY								^m_factory;
+	Dictionary<String^, ServiceSlot^>	m_dict;
 
-protected:
 	CrossDomainMarshaller( void );
 
 	void init( String ^clientID, ServiceSlot ^slot );
