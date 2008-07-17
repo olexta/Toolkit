@@ -7,18 +7,10 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{41CDDCF9-1F85-4CBC-A824-52D7DC9FDF3E}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>ABBYY.Toolkit.RPL.Test</RootNamespace>
-    <AssemblyName>ABBYY.Toolkit.RPL.Test.Units</AssemblyName>
+    <RootNamespace>Toolkit.RPL.Test</RootNamespace>
+    <AssemblyName>Toolkit.RPL.Test.Units</AssemblyName>
     <WarningLevel>4</WarningLevel>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,29 +27,21 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABBYY.Toolkit.RPL, Version=1.0.2790.24635, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="ABBYY.Toolkit.RPL.Storage, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="ABBYY.Toolkit.RPL.Test.Objects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="adodb, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="Microsoft.VisualStudio.QualityTools.LoadTestFramework, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\WINDOWS\assembly\GAC_MSIL\Microsoft.VisualStudio.QualityTools.UnitTestFramework\8.0.0.0__b03f5f7f11d50a3a\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</HintPath>
-    </Reference>
+    <Reference Include="..\..\..\bin\Toolkit.RPL.dll" />
+    <Reference Include="..\..\..\bin\Toolkit.RPL.Storage.dll" />
+    <Reference Include="..\..\..\bin\Toolkit.RPL.Test.Objects.dll" />
+    <Reference Include="adodb" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.LoadTestFramework" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Remoting" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include=".\Sources\ODBLoadTest.cs" />
-    <Compile Include=".\Sources\ODBTest.cs" />
-    <Compile Include=".\Properties\AssemblyInfo.cs" />
+    <Compile Include=".\ODBLoadTest.cs" />
+    <Compile Include=".\ODBTest.cs" />
+    <Compile Include=".\RemoteConfig.cs" />
+    <Compile Include=".\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".\ODBTest.loadtest" />

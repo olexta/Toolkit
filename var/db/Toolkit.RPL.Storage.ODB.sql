@@ -1,51 +1,51 @@
 USE [master]
 GO
-/****** Object:  Database [Toolkit.RPL.Storage.ODB]    Script Date: 08/22/2007 15:43:16 ******/
-CREATE DATABASE [Toolkit.RPL.Storage.ODB] ON  PRIMARY 
-( NAME = N'Toolkit.RPL.Storage.ODB', FILENAME = N'C:\Toolkit.RPL.Storage.ODB.MDF' , SIZE = 5120KB , MAXSIZE = UNLIMITED, FILEGROWTH = 10%)
+/****** Object:  Database [%DB_NAME%]    Script Date: 08/22/2007 15:43:16 ******/
+CREATE DATABASE [%DB_NAME%] ON  PRIMARY 
+( NAME = N'%DB_NAME%', FILENAME = N'%DB_PATH%\%DB_NAME%.MDF' , SIZE = 5120KB , MAXSIZE = UNLIMITED, FILEGROWTH = 10%)
  LOG ON 
-( NAME = N'Toolkit.RPL.Storage.ODB_Log', FILENAME = N'c:\Toolkit.RPL.Storage.ODB.LDF' , SIZE = 1024KB , MAXSIZE = 10240KB , FILEGROWTH = 10%)
+( NAME = N'%DB_NAME%_Log', FILENAME = N'%DB_PATH%\%DB_NAME%.LDF' , SIZE = 1024KB , MAXSIZE = UNLIMITED , FILEGROWTH = 10%)
 GO
-EXEC dbo.sp_dbcmptlevel @dbname=N'Toolkit.RPL.Storage.ODB', @new_cmptlevel=80
+EXEC dbo.sp_dbcmptlevel @dbname=N'%DB_NAME%', @new_cmptlevel=80
 GO
 IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
 begin
-EXEC [Toolkit.RPL.Storage.ODB].[dbo].[sp_fulltext_database] @action = 'disable'
+EXEC [%DB_NAME%].[dbo].[sp_fulltext_database] @action = 'disable'
 end
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET ANSI_NULL_DEFAULT OFF 
+ALTER DATABASE [%DB_NAME%] SET ANSI_NULL_DEFAULT OFF 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET ANSI_NULLS OFF 
+ALTER DATABASE [%DB_NAME%] SET ANSI_NULLS OFF 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET ANSI_PADDING OFF 
+ALTER DATABASE [%DB_NAME%] SET ANSI_PADDING OFF 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET ANSI_WARNINGS OFF 
+ALTER DATABASE [%DB_NAME%] SET ANSI_WARNINGS OFF 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET ARITHABORT OFF 
+ALTER DATABASE [%DB_NAME%] SET ARITHABORT OFF 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET AUTO_CLOSE ON 
+ALTER DATABASE [%DB_NAME%] SET AUTO_CLOSE ON 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET AUTO_CREATE_STATISTICS ON 
+ALTER DATABASE [%DB_NAME%] SET AUTO_CREATE_STATISTICS ON 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET AUTO_SHRINK ON 
+ALTER DATABASE [%DB_NAME%] SET AUTO_SHRINK ON 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET AUTO_UPDATE_STATISTICS ON 
+ALTER DATABASE [%DB_NAME%] SET AUTO_UPDATE_STATISTICS ON 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET CURSOR_CLOSE_ON_COMMIT OFF 
+ALTER DATABASE [%DB_NAME%] SET CURSOR_CLOSE_ON_COMMIT OFF 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET CURSOR_DEFAULT  GLOBAL 
+ALTER DATABASE [%DB_NAME%] SET CURSOR_DEFAULT  GLOBAL 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET CONCAT_NULL_YIELDS_NULL OFF 
+ALTER DATABASE [%DB_NAME%] SET CONCAT_NULL_YIELDS_NULL OFF 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET NUMERIC_ROUNDABORT OFF 
+ALTER DATABASE [%DB_NAME%] SET NUMERIC_ROUNDABORT OFF 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET QUOTED_IDENTIFIER OFF 
+ALTER DATABASE [%DB_NAME%] SET QUOTED_IDENTIFIER OFF 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET RECOVERY SIMPLE 
+ALTER DATABASE [%DB_NAME%] SET RECOVERY SIMPLE 
 GO
-ALTER DATABASE [Toolkit.RPL.Storage.ODB] SET  MULTI_USER 
+ALTER DATABASE [%DB_NAME%] SET  MULTI_USER 
 
-USE [Toolkit.RPL.Storage.ODB]
+USE [%DB_NAME%]
 GO
 --
 -- Generate script from macros replacing macro-parameters by real values passed into.
@@ -69,7 +69,7 @@ AS  BEGIN
             SET @from = LEFT( @param, @position - 1 )
             SET @from = REPLACE( @from, ' ', '' )
             SET @to = RIGHT( @param, LEN( @param ) - @position )
-	
+
             SET @Script = REPLACE( @Script, @from, @to )
             SET @position = CHARINDEX( '|', @Parameters )
     END
@@ -95,11 +95,11 @@ AS
     END
     EXECUTE (  ' SELECT [Name]
                           FROM _properties
-		WHERE [ObjectID] =  ' + @objectID +
+                 WHERE [ObjectID] =  ' + @objectID +
                           '    UNION
                           SELECT [Name]
                           FROM _images 
-		WHERE [ObjectID] = ' + @objectID )
+                 WHERE [ObjectID] = ' + @objectID )
  
     RETURN
 err_:
@@ -150,12 +150,12 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[_links](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[ObjectID_1] [int] NOT NULL,
-	[ObjectID_2] [int] NOT NULL,
+	[Parent] [int] NOT NULL,
+	[Child] [int] NOT NULL,
  CONSTRAINT [PK__links] PRIMARY KEY CLUSTERED 
 (
-	[ObjectID_1] ASC,
-	[ObjectID_2] ASC
+	[Parent] ASC,
+	[Child] ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
@@ -277,7 +277,7 @@ AS
             DECLARE @resultID TABLE ([ids] int)
             -- Check for user rights and return requestet count of items
             DECLARE cursor_Found CURSOR SCROLL FOR 
-	         SELECT Source.[ID] FROM @c_View AS Source @c_Join WHERE @c_Request ORDER BY @c_OrderBy
+            SELECT Source.[ID] FROM @c_View AS Source @c_Join WHERE @c_Request ORDER BY @c_OrderBy
             OPEN cursor_Found
                     SET @counter = 0
                     FETCH ABSOLUTE @c_First FROM cursor_Found INTO @id
@@ -289,7 +289,7 @@ AS
             CLOSE cursor_Found
             DEALLOCATE cursor_Found
             -- Make SQL request
-            SELECT [ID], [ObjectName], [ObjectType], [TimeStamp] FROM @c_View  AS Source INNER JOIN @resultID as resultID ON Source.ID = resultID.ids'
+            SELECT [ID], [ObjectName], [ObjectType], [TimeStamp] FROM _objects INNER JOIN @resultID as resultID ON _objects.ID = resultID.ids'
     -- Set parameters to change in macros
     SET @params = '@c_Request=' + @Request +
                                '|@c_Join=' + @_join +
@@ -325,20 +325,19 @@ GO
 /* Template: Update object modification time */
 CREATE TRIGGER [dbo].[images_objects] ON [dbo].[_images] FOR INSERT, UPDATE, DELETE
 AS
-/*    -- check for unique property names
+    -- check for unique property names
     IF ( EXISTS(SELECT *
-                        FROM (
-                                        SELECT [ObjectID], [Name] FROM [_properties]
-                                        UNION
-                                        SELECT [ObjectID], [Name] FROM [_images]) p
-                        GROUP BY
-                                        [ObjectID], [Name]
-                        HAVING
-                                        COUNT(*) > 1) ) BEGIN
-            RAISERROR ('There is property unique naming conflict!', 11, 1)
-            ROLLBACK TRANSACTION
+        FROM (
+            SELECT [ObjectID], [Name] FROM [_properties]
+            UNION
+            SELECT [ObjectID], [Name] FROM [_images]) p
+            GROUP BY
+            [ObjectID], [Name]
+            HAVING
+            COUNT(*) > 1) ) BEGIN
+        RAISERROR ('There is property unique naming conflict!', 11, 1)
+        ROLLBACK TRANSACTION
     END
-*/
     -- update object timestamp
     UPDATE [_objects] SET [TimeStamp] = GETDATE()
     WHERE [ID] IN ((SELECT [ObjectID] FROM [deleted]) UNION (SELECT [ObjectID] FROM [inserted]))
@@ -361,7 +360,7 @@ AS
             GOTO err_
     END
     -- delete all properties of object and then object.
-    DELETE FROM _links WHERE (([ObjectID_1] =  @objectID ) OR ([ObjectID_2] =  @objectID  ))
+    DELETE FROM _links WHERE ([Parent] =  @objectID )
     DELETE FROM _properties WHERE [ObjectID] = @objectID
     DELETE FROM _images WHERE [ObjectID] = @objectID
     DELETE FROM _objects WHERE [ID] = @objectID
@@ -386,79 +385,20 @@ RETURN
              FROM _images
              WHERE ObjectID = @ObjectID)
 GO
-/****** Object:  UserDefinedFunction [dbo].[fn_GetLinks]    Script Date: 08/22/2007 15:25:27 ******/
-SET ANSI_NULLS OFF
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
---
--- Returns available linked object IDs from '_links' table.
--- Delimiter is '|'
---
-CREATE FUNCTION [dbo].[fn_GetLinks]
-		(@ObjectID int)
-RETURNS nvarchar(4000)
-AS BEGIN
-    DECLARE @ObjectID_1 as int
-    DECLARE @ObjectID_2 as int
-    DECLARE @Result as nvarchar(4000)
-    SET @Result = '|' -- output string must begin and end from this delimiter
-    DECLARE cursor_Links CURSOR LOCAL FAST_FORWARD FOR
-            SELECT [ObjectID_1],  [ObjectID_2]  FROM [_links] 
-            WHERE   ( [ObjectID_1] = @ObjectID ) OR ( [ObjectID_2] = @ObjectID ) 
-    OPEN cursor_Links
-            FETCH NEXT FROM cursor_Links INTO @ObjectID_1, @ObjectID_2
-            WHILE ( @@FETCH_STATUS = 0 ) BEGIN
-                IF (@ObjectID_1 <> @ObjectID)  
-                    BEGIN
-                        SET @Result = @Result + CAST(@ObjectID_1 AS nvarchar)
-                    END
-                ELSE 
-                    BEGIN
-                        SET @Result = @Result + CAST(@ObjectID_2 AS nvarchar)       
-                    END
-	   SET @Result = @Result + '|'
-                FETCH NEXT FROM cursor_Links INTO @ObjectID_1, @ObjectID_2
-            END
-    CLOSE cursor_Links
-    DEALLOCATE cursor_Links
-    -- If no  ID were found the return empty string
-    if (LEN(@Result) = 1) BEGIN
-        SET @Result = ''
-    END
-    -- and return result
-    RETURN @Result
-END
-GO
 /****** Object:  Trigger [links_objects]    Script Date: 08/22/2007 15:25:28 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 /* Template: Update object modification time */
---CREATE TRIGGER [dbo].[links_objects] ON [dbo].[_links] FOR INSERT, UPDATE, DELETE
---AS
-   
-/*
-    -- check for dublicate links and porimitive recurse
-    IF ( EXISTS(SELECT *
-                        FROM
-                                        _links l1 INNER JOIN
-                                        _links l2 ON (l1.ObjectID_1 = l2.ObjectID_2) AND (l1.ObjectID_2 = l2.ObjectID_1)) ) BEGIN
-            RAISERROR ('Dublicate link was founded!', 11, 1)
-            ROLLBACK TRANSACTION
-    END
-*/
-    -- update object timestamp
---  UPDATE [_objects] SET [TimeStamp] = GETDATE()
---  WHERE [ID] IN (SELECT [ObjectID_1] FROM [deleted]
---                             UNION
---                            SELECT [ObjectID_2] FROM [deleted]
---                             UNION
---                             SELECT [ObjectID_1] FROM [inserted]
---                             UNION
---                             SELECT [ObjectID_2] FROM [inserted])
---GO
+CREATE TRIGGER [dbo].[links_objects] ON [dbo].[_links] FOR INSERT, UPDATE, DELETE
+AS
+  -- update object timestamp
+  UPDATE [_objects] SET [TimeStamp] = GETDATE()
+  WHERE [ID] IN (SELECT [Parent] FROM [deleted]
+                 UNION
+                 SELECT [Parent] FROM [inserted])
+GO
 
 /****** Object:  Trigger [properties_objects]    Script Date: 08/22/2007 15:25:28 ******/
 SET ANSI_NULLS ON
@@ -468,20 +408,19 @@ GO
 /* Template: Update object modification time */
 CREATE TRIGGER [dbo].[properties_objects] ON [dbo].[_properties] FOR INSERT, UPDATE, DELETE
 AS
-/*    -- check for unique property names
+    -- check for unique property names
     IF ( EXISTS(SELECT *
-                        FROM (
-                                        SELECT [ObjectID], [Name] FROM [_properties]
-                                        UNION
-                                        SELECT [ObjectID], [Name] FROM [_images]) p
-                        GROUP BY
-                                        [ObjectID], [Name]
-                        HAVING
-                                        COUNT(*) > 1) ) BEGIN
-            RAISERROR ('There is property unique naming conflict!', 11, 1)
-            ROLLBACK TRANSACTION
+        FROM ( SELECT [ObjectID], [Name] FROM [_properties]
+            UNION
+            SELECT [ObjectID], [Name] FROM [_images]) p
+            GROUP BY
+            [ObjectID], [Name]
+            HAVING
+            COUNT(*) > 1) ) BEGIN
+        RAISERROR ('There is property unique naming conflict!', 11, 1)
+        ROLLBACK TRANSACTION
     END
-*/
+
     -- update object timestamp
     UPDATE [_objects] SET [TimeStamp] = GETDATE()
     WHERE [ID] IN ((SELECT [ObjectID] FROM [deleted]) UNION (SELECT [ObjectID] FROM [inserted]))
@@ -494,18 +433,18 @@ GO
 ALTER TABLE [dbo].[_images] CHECK CONSTRAINT [FK_images_objects]
 GO
 /****** Object:  ForeignKey [FK_links_objects_1]    Script Date: 08/22/2007 15:25:20 ******/
-ALTER TABLE [dbo].[_links]  WITH NOCHECK ADD  CONSTRAINT [FK_links_objects_1] FOREIGN KEY([ObjectID_1])
+ALTER TABLE [dbo].[_links]  WITH NOCHECK ADD  CONSTRAINT [FK_links_Parent] FOREIGN KEY([Parent])
 REFERENCES [dbo].[_objects] ([ID])
 NOT FOR REPLICATION
 GO
-ALTER TABLE [dbo].[_links] CHECK CONSTRAINT [FK_links_objects_1]
+ALTER TABLE [dbo].[_links] CHECK CONSTRAINT [FK_links_Parent]
 GO
 /****** Object:  ForeignKey [FK_links_objects_2]    Script Date: 08/22/2007 15:25:20 ******/
-ALTER TABLE [dbo].[_links]  WITH NOCHECK ADD  CONSTRAINT [FK_links_objects_2] FOREIGN KEY([ObjectID_2])
+ALTER TABLE [dbo].[_links]  WITH NOCHECK ADD  CONSTRAINT [FK_links_Child] FOREIGN KEY([Child])
 REFERENCES [dbo].[_objects] ([ID])
 NOT FOR REPLICATION
 GO
-ALTER TABLE [dbo].[_links] CHECK CONSTRAINT [FK_links_objects_2]
+ALTER TABLE [dbo].[_links] CHECK CONSTRAINT [FK_links_Child]
 GO
 /****** Object:  ForeignKey [FK_properties_objects]    Script Date: 08/22/2007 15:25:26 ******/
 ALTER TABLE [dbo].[_properties]  WITH NOCHECK ADD  CONSTRAINT [FK_properties_objects] FOREIGN KEY([ObjectID])

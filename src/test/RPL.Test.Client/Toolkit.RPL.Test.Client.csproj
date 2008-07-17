@@ -9,16 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Toolkit.RPL.Test</RootNamespace>
     <AssemblyName>Toolkit.RPL.Test.Client</AssemblyName>
-    <TargetZone>LocalIntranet</TargetZone>
     <GenerateManifests>false</GenerateManifests>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,26 +33,26 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="Toolkit.Collections">
-      <HintPath>..\..\..\bin\Toolkit.Collections.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Toolkit.RPL">
-      <HintPath>..\..\..\bin\Toolkit.RPL.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Toolkit.RPL.Storage">
-      <HintPath>..\..\..\bin\Toolkit.RPL.Storage.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Toolkit.RPL.Test.Objects">
-      <HintPath>..\..\..\bin\Toolkit.RPL.Test.Objects.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
+    <Reference Include="..\..\..\bin\Toolkit.Collections.dll" />
+    <Reference Include="..\..\..\bin\Toolkit.RPL.dll" />
+    <Reference Include="..\..\..\bin\Toolkit.RPL.Test.Objects.dll" />
+
+
+
+
+
+
+
+
+
+
+
+
+
   </ItemGroup>
   <ItemGroup>
-    <Compile Include=".\Sources\Program.cs" />
-    <Compile Include=".\Properties\AssemblyInfo.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

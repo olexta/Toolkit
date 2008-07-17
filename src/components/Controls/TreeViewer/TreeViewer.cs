@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace Toolkit.Controls.TreeViewer
 {
 	/// <summary>
-	/// Управляет нобором Tab'ов
+	/// Управляет набором Tab'ов
 	/// </summary>
 	[ CLSCompliantAttribute( true ) ]
 	public partial class TreeViewer : Control
@@ -19,7 +19,7 @@ namespace Toolkit.Controls.TreeViewer
 		// индекс текущего Tab'а
 		private int m_selectedIndex = 0;
 		// константа, которая описывает высоту Tab'ов
-		private readonly int BUTTON_HEIGHT = System.Windows.Forms.SystemInformation.CaptionHeight;
+		private readonly int BUTTON_HEIGHT = System.Windows.Forms.SystemInformation.MenuButtonSize.Height + 6;
 		#endregion
 
 		#region public declaration
@@ -216,8 +216,8 @@ namespace Toolkit.Controls.TreeViewer
 			}
 			
 			// изменяем отображение деактивированной кнопки 
-			m_tc[prev].m_button.Font = 
-				new Font( m_tc[prev].m_button.Font, new FontStyle() );
+			m_tc[prev].m_button.Font =
+				new Font( m_tc[prev].m_button.Font, new FontStyle());
 			
 			// проверка существования подписчиков на уведомление
 			// о активации Tab'a
@@ -231,7 +231,7 @@ namespace Toolkit.Controls.TreeViewer
 			}
 
 			// изменяем отображение активной кнопки
-			m_tc[m_selectedIndex].m_button.Font = 
+			m_tc[m_selectedIndex].m_button.Font =
 				new Font( m_tc[m_selectedIndex].m_button.Font, FontStyle.Bold );
 
 			// проверка существования подписчиков на событие
@@ -878,6 +878,12 @@ namespace Toolkit.Controls.TreeViewer
 				}
 			}
 
+			protected override void OnResize( EventArgs e )
+			{
+				m_button.Size = base.Size;
+				base.OnResize( e );
+			}
+
 			#region Designer
 			/// <summary> 
 			/// Required designer variable.
@@ -897,11 +903,11 @@ namespace Toolkit.Controls.TreeViewer
 				m_button.Text = m_caption;
 				m_button.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 				m_button.Dock = DockStyle.Fill;
-				m_button.FlatStyle = FlatStyle.Popup;
+				m_button.FlatStyle = FlatStyle.Flat;
 
 				this.Controls.Add( m_button );
 				this.Name = "TabControl";
-				this.Size = new System.Drawing.Size( 203, 315 );
+				this.Size = new System.Drawing.Size(0, 0);
 				this.ResumeLayout( false );
 				this.PerformLayout();
 			}
