@@ -77,8 +77,8 @@ namespace Factories {
 	{
 	private:
 		//
-		// This is cache of objects for some session
-		//	
+		// Cache of objects for some session.
+		//
 		ref class BrokerCache
 		{
 		private:
@@ -101,6 +101,8 @@ namespace Factories {
 		};
 
 	private:
+		static Object^				const _lock = gcnew Object();
+
 		static bool					s_disposed = false;
 		static IBrokerFactory		^s_brokerFactory = nullptr;
 		static IObjectFactory		^s_objectFactory = nullptr;
@@ -148,6 +150,7 @@ namespace Factories {
 
 	protected:
 		PersistenceBroker( void );
+		~PersistenceBroker( void );
 
 	public:
 		property IBrokerFactory^ BrokerFactory {

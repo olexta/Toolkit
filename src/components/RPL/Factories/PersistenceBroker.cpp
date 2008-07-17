@@ -1,4 +1,4 @@
-﻿		// TODO: сделать статический диспозе
+﻿/****************************************************************************/
 /*																			*/
 /*	Project:	Robust Persistence Layer									*/
 /*																			*/
@@ -380,21 +380,28 @@ process_sql( String ^sql )
 //-------------------------------------------------------------------
 IIRemoteStorage^ PersistenceBroker::Storage::get( void )
 {
-	// check for object disposed
-	if( s_disposed ) throw gcnew ObjectDisposedException(
-		PersistenceBroker::typeid->ToString());
+	// lock for one executable thread
+	Monitor::Enter( _lock );
+	try {
+		// check for object disposed
+		if( s_disposed ) throw gcnew ObjectDisposedException(
+			PersistenceBroker::typeid->ToString());
 
-	if( s_instance == nullptr ) {
-		// now we must create new object instance
-		if( s_brokerFactory != nullptr ) {
-			// use factory for custom creation
-			s_instance = s_brokerFactory->CreateInstance();
-		} else {
-			// use default constructor to create object
-			s_instance = gcnew PersistenceBroker();
+		if( s_instance == nullptr ) {
+			// now we must create new object instance
+			if( s_brokerFactory != nullptr ) {
+				// use factory for custom creation
+				s_instance = s_brokerFactory->CreateInstance();
+			} else {
+				// use default constructor to create object
+				s_instance = gcnew PersistenceBroker();
+			}
 		}
+		return s_instance;
+	} finally {
+		// unlock in any case
+		Monitor::Exit( _lock );
 	}
-	return s_instance;
 }
 
 
@@ -408,19 +415,20 @@ IIRemoteStorage^ PersistenceBroker::Storage::get( void )
 //-------------------------------------------------------------------
 PersistentObject^ PersistenceBroker::Cache::get( HEADER header )
 {
-	// create cache instance by first access
-	if( s_cache == nullptr ) s_cache = gcnew BrokerCache();
-
 	// check for right object header
 	if( (header.Type == nullptr) || (header.ID <= 0) ||
 		(header.Stamp == DateTime()) || (header.Name == nullptr) ) {
 		// throw argument exception
 		throw gcnew ArgumentException(ERR_OBJECT_HEADER, "header");
 	}
-	
+
 	// lock cache access
-	Monitor::Enter( s_cache );
+	Monitor::Enter( _lock );
 	try {
+		// chache is not needed on the server side, so
+		// create it by first access
+		if( s_cache == nullptr ) s_cache = gcnew BrokerCache();
+
 		// search for object already exists
 		PersistentObject	^obj = s_cache[header.Type, header.ID];
 		if( obj == nullptr ) {
@@ -443,15 +451,12 @@ PersistentObject^ PersistenceBroker::Cache::get( HEADER header )
 		return obj;
 	} finally {
 		// unlock cache access
-		Monitor::Exit( s_cache );
+		Monitor::Exit( _lock );
 	}
 }
 
 void PersistenceBroker::Cache::set( HEADER header, PersistentObject ^obj )
 {
-	// create cache instance by first access
-	if( s_cache == nullptr ) s_cache = gcnew BrokerCache();
-
 	// check for right object header
 	if( (header.Type == nullptr) || (header.ID <= 0) ||
 		(header.Stamp == DateTime()) || (header.Name == nullptr) ) {
@@ -460,13 +465,17 @@ void PersistenceBroker::Cache::set( HEADER header, PersistentObject ^obj )
 	}
 	
 	// lock cache access
-	Monitor::Enter( s_cache );
+	Monitor::Enter( _lock );
 	try {
+		// chache is not needed on the server side, so
+		// create it by first access
+		if( s_cache == nullptr ) s_cache = gcnew BrokerCache();
+
 		// and push new object to cache
 		s_cache[header.Type, header.ID] = obj;
 	} finally {
 		// unlock cache access
-		Monitor::Exit( s_cache );
+		Monitor::Exit( _lock );
 	}
 }
 
@@ -485,6 +494,30 @@ PersistenceBroker::PersistenceBroker( void )
 	// store instance in static variable (for correct
 	// creation of singleton object through reflection)
 	s_instance = this;
+
+	dbgprint( "<- [" + AppDomain::CurrentDomain->FriendlyName + "]" );
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
+/// PersistenceBroker disposer.
+/// </summary><remarks>
+/// This disposer is called on the server side of communication.
+/// </remarks>
+//-------------------------------------------------------------------
+PersistenceBroker::~PersistenceBroker( void )
+{
+	dbgprint( "-> [" + AppDomain::CurrentDomain->FriendlyName + "]" );
+
+	if( !s_disposed ) {
+		// dispose storage
+		delete s_storage;
+		s_storage = nullptr;
+
+		// prevent from future cals
+		s_disposed = true;
+	}
 
 	dbgprint( "<- [" + AppDomain::CurrentDomain->FriendlyName + "]" );
 }
@@ -557,6 +590,8 @@ void PersistenceBroker::Disconnect( void )
 
 	s_storage = nullptr;
 }
+
+
 //-------------------------------------------------------------------
 /// <summary>
 /// Close PersistenceBroker.
@@ -572,17 +607,22 @@ void PersistenceBroker::Close( void )
 	dbgprint( "-> [" + AppDomain::CurrentDomain->FriendlyName + "]" );
 
 	if( !s_disposed ) {
-		// prevent from future calls
-		s_disposed = true;
-		
-		// dispose storage if specified
-		delete s_storage;
 		// dispose cache of objects
 		delete s_cache;
-		
-		s_storage = nullptr;
+		// set factories to null
 		s_brokerFactory = nullptr;
 		s_objectFactory = nullptr;
+
+		// 'Close' acts as disposer, so prevent throwing exceptions
+		try {
+			// call instance disposer to clean up server resources
+			delete s_instance;
+		} catch( Exception ^e ) {
+			dbgprint( String::Format(
+			ERR_DISPOSE, PersistenceBroker::typeid, e->Message ) );
+		}
+		// prevent from future cals
+		s_disposed = true;
 	}
 
 	dbgprint( "<- [" + AppDomain::CurrentDomain->FriendlyName + "]" );

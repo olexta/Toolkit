@@ -212,7 +212,15 @@ void PersistentObject::trans_rollback( void )
 //-------------------------------------------------------------------
 DataSet^ PersistentObject::ProcessSQL( String ^sql )
 {
-	return PersistenceBroker::Storage->ProcessSQL( sql );
+	// lock storage for one executable thread
+	Monitor::Enter( PersistenceBroker::Storage );
+	try{
+		// retrieve DataSet from storage
+		return PersistenceBroker::Storage->ProcessSQL( sql );
+	} finally {
+		// unlock storage in any case
+		Monitor::Exit( PersistenceBroker::Storage );
+	}
 }
 
 

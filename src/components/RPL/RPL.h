@@ -51,6 +51,8 @@ using namespace System::Diagnostics;
 	"Instance of the Stream cann't be assigned to multiple properties."
 #define ERR_DELETE_FILE														\
 	"ERROR! Cann't delete file '{0}': {1}"
+#define ERR_DISPOSE															\
+	"ERROR! Object dispose failed '{0}': {1}"
 
 
 //

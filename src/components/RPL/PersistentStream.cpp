@@ -517,10 +517,14 @@ PersistentStream::~PersistentStream( void )
 PersistentStream::!PersistentStream( void )
 {
 	if( !m_disposed ) {
-		// if contains unfinished transactions
-		while( backup.Count > 0 ) {
-			// delete transaction files
-			DELETE_FILE( backup.Pop()._path );
+		// check for the null reference (finalizer 
+		// calls even object creation failed)
+		if( %backup != nullptr ){
+			// if contains unfinished transactions
+			while( backup.Count > 0 ) {
+				// delete transaction files
+				DELETE_FILE( backup.Pop()._path );
+			}
 		}
 		// prevent from future cals
 		m_disposed = true;
