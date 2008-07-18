@@ -140,12 +140,18 @@ void CrossDomainMarshaller::init( String ^clientID, ServiceSlot ^slot )
 //-------------------------------------------------------------------
 void CrossDomainMarshaller::free( String ^clientID, ServiceSlot ^slot )
 {
-	// call service disposer to free resources
-	delete slot->Service;
-	// unload domain created for service
-	if( slot->Domain != nullptr ) AppDomain::Unload( slot->Domain );
-	// dispose sponsor object
-	delete slot->Sponsor;
+	try {
+		// call service disposer to free resources
+		delete slot->Service;
+	} catch( Exception ^e ) {
+		// output exception info
+		Diagnostics::Debug::WriteLine( String::Format( 
+			"Object dispose failed '{0}': {1}",
+			slot->Service->GetType(), e->Message ) );
+	} finally {
+		// unload domain created for service
+		if( slot->Domain != nullptr ) AppDomain::Unload( slot->Domain );
+	}
 }
 
 
