@@ -628,7 +628,7 @@ public class ODB : IPersistenceStorage
 							   "FROM _properties " +
 							   "WHERE [ObjectID] = " + header.ID, m_con, m_trans);
 			SqlReader =
-					CmdSql.ExecuteReader( CommandBehavior.SingleRow );
+					CmdSql.ExecuteReader( CommandBehavior.SingleResult );
 			try {
 				Props = new List<PROPERTY>();
 				// read all simple properties of object
