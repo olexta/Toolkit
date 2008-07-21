@@ -36,19 +36,6 @@
     <Reference Include="..\..\..\bin\Toolkit.Collections.dll" />
     <Reference Include="..\..\..\bin\Toolkit.RPL.dll" />
     <Reference Include="..\..\..\bin\Toolkit.RPL.Test.Objects.dll" />
-
-
-
-
-
-
-
-
-
-
-
-
-
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />

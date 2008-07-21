@@ -6,11 +6,11 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{408D5906-CBD3-4E96-A8DA-ABDE5E2256BB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Toolkit.Controls.TreeViewer.Test</RootNamespace>
-    <AssemblyName>Toolkit.Controls.TreeViewer.Test</AssemblyName>
+    <RootNamespace>Toolkit.Controls.Test.TreeViewer</RootNamespace>
+    <AssemblyName>Toolkit.Controls.Test.TreeViewer</AssemblyName>
     <TargetZone>LocalIntranet</TargetZone>
     <GenerateManifests>false</GenerateManifests>
-    <BaseIntermediateOutputPath>..\..\..\tmp\Toolkit.Controls.TreeViewer.Test\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\..\tmp\Toolkit.Controls.Test.TreeViewer\</BaseIntermediateOutputPath>
     <StartupObject>
     </StartupObject>
   </PropertyGroup>
@@ -23,13 +23,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <IntermediateOutputPath>..\..\..\tmp\Toolkit.Controls.TreeViewer.Test\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\..\tmp\Toolkit.Controls.Test.TreeViewer\Debug\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugType>None</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\bin\</OutputPath>
-    <IntermediateOutputPath>..\..\..\tmp\Toolkit.Controls.TreeViewer.Test\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\..\tmp\Toolkit.Controls.Test.TreeViewer\Release\</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
