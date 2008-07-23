@@ -36,7 +36,7 @@ namespace Adapters {
 	/// than value will be restored as String.
 	/// ATTENTION: This class doesn't support transaction approach.
 	///	</remarks>
-	public ref class IniFile : IAdapter
+	public ref class IniFile sealed : IAdapter
 	{
 	private:
 		static String^			const _int_f = "0";

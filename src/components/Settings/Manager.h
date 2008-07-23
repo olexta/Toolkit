@@ -36,7 +36,7 @@ value class ValueBox;
 /// Manager from any other node you can use "/" path. Root is
 /// only one node that have empty name.
 /// </remarks>
-public ref class Manager : Node
+public ref class Manager sealed : Node
 {
 protected:
 	virtual void OnSetParent( Node ^parent ) override;

@@ -36,7 +36,7 @@ value class ValueBox;
 /// hierarhy of nodes it is placed just after root (for example
 /// "/ini" - the path to adapter with name "ini".
 /// </remarks>
-private ref class Adapter : Node
+private ref class Adapter sealed : Node
 {
 private:
 	IAdapter^	const _adp;		// interface to adapter instance

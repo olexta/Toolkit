@@ -15,6 +15,7 @@
 #pragma once
 #include "Settings.h"
 #include "Node.h"
+#include "ValueBox.h"
 
 using namespace System;
 using namespace System::Collections::Generic;

@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		Nodes.h														*/
 /*																			*/
-/*	Content:	Definition of Nodes class									*/
+/*	Content:	Definition of Node::Nodes class								*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright @ 2007-2008 Alexey Tkachuk						*/
@@ -31,7 +31,7 @@ _SETTINGS_BEGIN
 /// default indexer and Contains is overriden to accept relative
 /// pathes.
 /// </remarks>
-private ref class Nodes : KeyedMap<String^, Node^>
+ref class Node::Nodes sealed : KeyedMap<String^, Node^>
 {
 private:
 	Node^		const _parent;	// parent node

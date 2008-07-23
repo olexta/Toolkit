@@ -219,6 +219,10 @@
 				RelativePath="..\Nodes.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\ValueBox.cpp"
+				>
+			</File>
 			<Filter
 				Name="Adapters"
 				>
@@ -251,6 +255,10 @@
 			</File>
 			<File
 				RelativePath="..\Nodes.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ValueBox.h"
 				>
 			</File>
 			<Filter

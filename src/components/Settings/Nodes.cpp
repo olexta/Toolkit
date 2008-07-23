@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		Nodes.cpp													*/
 /*																			*/
-/*	Content:	Implementation of Nodes class								*/
+/*	Content:	Implementation of Node::Nodes class							*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright @ 2007-2008 Alexey Tkachuk						*/
@@ -18,18 +18,18 @@ using namespace _SETTINGS;
 
 
 //----------------------------------------------------------------------------
-//						Toolkit::Settings::Nodes
+//						Toolkit::Settings::Node::Nodes
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
-//
-// Performs additional custom processes before clearing the Nodes
-// instance.
-//
-// Each node must be notified about removing from collection.
-//
+/// <summary>
+/// Performs additional custom processes before clearing the Nodes
+/// instance.
+/// </summary><remarks>
+/// Each node must be notified about removing from collection.
+/// </remarks>
 //-------------------------------------------------------------------
-void Nodes::OnClear( void )
+void Node::Nodes::OnClear( void )
 {
 	// remove parent reference for all nodes
 	for each( Node ^node in this ) node->set_parent( nullptr );
@@ -37,15 +37,15 @@ void Nodes::OnClear( void )
 
 
 //-------------------------------------------------------------------
-//
-// Performs additional custom processes before inserting a node to
-// the Nodes instance.
-//
-// Notify node about adding to collection (this is equal to set
-// node's parent reference).
-//
+/// <summary>
+/// Performs additional custom processes before inserting a node to
+/// the Nodes instance.
+/// </summary><remarks>
+/// Notify node about adding to collection (this is equal to set
+/// node's parent reference).
+/// </remarks>
 //-------------------------------------------------------------------
-void Nodes::OnInsert( Node ^node )
+void Node::Nodes::OnInsert( Node ^node )
 {
 	// set parent reference
 	node->set_parent( _parent );
@@ -53,15 +53,15 @@ void Nodes::OnInsert( Node ^node )
 
 
 //-------------------------------------------------------------------
-//
-// Performs additional custom processes before removing a node from
-// the Nodes instance.
-//
-// Notify node about removing from collection (this is equal to
-// remove node's parent reference).
-//
+/// <summary>
+/// Performs additional custom processes before removing a node from
+/// the Nodes instance.
+/// </summary><remarks>
+/// Notify node about removing from collection (this is equal to
+/// remove node's parent reference).
+/// </remarks>
 //-------------------------------------------------------------------
-void Nodes::OnRemove( Node ^node )
+void Node::Nodes::OnRemove( Node ^node )
 {
 	// remove parent reference
 	node->set_parent( nullptr );
@@ -69,14 +69,14 @@ void Nodes::OnRemove( Node ^node )
 
 
 //-------------------------------------------------------------------
-//
-// Creates new instance of the Nodes class for specified parent.
-//
-// This collection is used as childs/subnodes for specified parent
-// node.
-//
+/// <summary>
+/// Creates new instance of the Nodes class for specified parent.
+/// </summary><remarks>
+/// This collection is used as childs/subnodes for specified parent
+/// node.
+/// </remarks>
 //-------------------------------------------------------------------
-Nodes::Nodes( Node ^parent ) : \
+Node::Nodes::Nodes( Node ^parent ) : \
 	_parent(parent)
 {
 	// check for the null reference
@@ -85,12 +85,12 @@ Nodes::Nodes( Node ^parent ) : \
 
 
 //-------------------------------------------------------------------
-//
-// Creates new instance of the Nodes class for specified parent and
-// init themself by one child.
-//
+/// <summary>
+/// Creates new instance of the Nodes class for specified parent and
+/// init themself by one child.
+/// </summary>
 //-------------------------------------------------------------------
-Nodes::Nodes( Node ^parent, Node ^child ) : \
+Node::Nodes::Nodes( Node ^parent, Node ^child ) : \
 	KeyedMap(child), _parent(parent)
 {
 	// check for the null reference
@@ -100,12 +100,12 @@ Nodes::Nodes( Node ^parent, Node ^child ) : \
 
 
 //-------------------------------------------------------------------
-//
-// Creates new instance of the Nodes class for specified parent and
-// init themself by collection of childs.
-//
+/// <summary>
+/// Creates new instance of the Nodes class for specified parent and
+/// init themself by collection of childs.
+/// </summary>
 //-------------------------------------------------------------------
-Nodes::Nodes( Node ^parent, IEnumerable<Node^> ^childs ) : \
+Node::Nodes::Nodes( Node ^parent, IEnumerable<Node^> ^childs ) : \
 	KeyedMap(childs), _parent(parent)
 {
 	// check for the null reference
@@ -115,21 +115,23 @@ Nodes::Nodes( Node ^parent, IEnumerable<Node^> ^childs ) : \
 
 
 //-------------------------------------------------------------------
-//
-// Find node that is located on specified relative path.
-//
-// This is overriden KeyedMap accessor. If specified path doesn't
-// contain node delimeter, then search in this collection instance.
-// In other case pass call to parent.
-//
+/// <summary>
+/// Find node that is located on specified relative path.
+/// </summary><remarks>
+/// This is overriden KeyedMap accessor. If specified path doesn't
+/// contain relative elements, then searchs in this collection items.
+/// In other case pass call to parent.
+/// </remarks>
 //-------------------------------------------------------------------
-Node^ Nodes::default::get( String ^path )
+Node^ Node::Nodes::default::get( String ^path )
 {
 	// check for the null reference
 	if( path == nullptr ) throw gcnew ArgumentNullException("path");
 
-	// if path contains node delimeter
-	if( path->Contains( Node::Delimeter ) ) {
+	// if path contains relative elements
+	if( (path == _parent->_cur_path) || 
+		(path == _parent->_par_path) ||
+		path->Contains( _parent->_delimeter ) ) {
 		// pass this call to parent
 		Node	^node = _parent->get_child( path );
 		// check for succeeded request
@@ -146,21 +148,23 @@ Node^ Nodes::default::get( String ^path )
 
 
 //-------------------------------------------------------------------
-//
-// Find node that is located on specified relative path.
-//
-// This is overriden KeyedMap accessor. If specified path doesn't
-// contain node delimeter, then search in this collection instance.
-// In other case pass call to parent.
-//
+/// <summary>
+/// Find node that is located on specified relative path.
+/// </summary><remarks>
+/// This is overriden KeyedMap accessor. If specified path doesn't
+/// contain relative elements, then searchs in this collection items.
+/// In other case pass call to parent.
+/// </remarks>
 //-------------------------------------------------------------------
-bool Nodes::Contains( String ^path )
+bool Node::Nodes::Contains( String ^path )
 {
 	// check for the null reference
 	if( path == nullptr ) throw gcnew ArgumentNullException("path");
 
-	// if path contains node delimeter
-	if( path->Contains( Node::Delimeter ) ) {
+	// if path contains relative elements
+	if( (path == _parent->_cur_path) || 
+		(path == _parent->_par_path) ||
+		path->Contains( _parent->_delimeter ) ) {
 		// pass search request to parent
 		return (_parent->get_child( path ) != nullptr);
 	} else {
@@ -171,15 +175,15 @@ bool Nodes::Contains( String ^path )
 
 
 //-------------------------------------------------------------------
-//
-// Adds a node into the collection.
-//
-// If force parameter is set to false then this function is similar
-// to parent Add, in other case no addition handlers will be called:
-// OnInsert and OnInsertComplete.
-//
+/// <summary>
+/// Adds a node into the collection.
+/// </summary><remarks>
+/// If force parameter is set to false then this function is similar
+/// to parent Add, in other case no addition handlers will be called:
+/// OnInsert and OnInsertComplete.
+/// </remarks>
 //-------------------------------------------------------------------
-void Nodes::Add( Node ^node, bool force )
+void Node::Nodes::Add( Node ^node, bool force )
 {
 	// validate node
 	if( node == nullptr ) throw gcnew ArgumentNullException("node");
@@ -200,15 +204,15 @@ void Nodes::Add( Node ^node, bool force )
 
 	
 //-------------------------------------------------------------------
-//
-// Clears the content of the Nodes instance.
-//
-// If force parameter is set to false then this function is similar
-// to parent Clear, in other case no addition handlers will be 
-// called: OnClear and OnClearComplete.
-//
+/// <summary>
+/// Clears the content of the Nodes instance.
+/// </summary><remarks>
+/// If force parameter is set to false then this function is similar
+/// to parent Clear, in other case no addition handlers will be 
+/// called: OnClear and OnClearComplete.
+/// </remarks>
 //-------------------------------------------------------------------
-void Nodes::Clear( bool force )
+void Node::Nodes::Clear( bool force )
 {
 	// if force parameter is false
 	if( !force ) {
@@ -223,15 +227,15 @@ void Nodes::Clear( bool force )
 
 
 //-------------------------------------------------------------------
-//
-// Removes node with the specified name from the collection.
-//
-// If force parameter is set to false then this function is similar
-// to parent Remove, in other case no addition handlers will be 
-// called: OnRemove and OnRemoveComplete.
-//
+/// <summary>
+/// Removes node with the specified name from the collection.
+/// </summary><remarks>
+/// If force parameter is set to false then this function is similar
+/// to parent Remove, in other case no addition handlers will be 
+/// called: OnRemove and OnRemoveComplete.
+/// </remarks>
 //-------------------------------------------------------------------
-bool Nodes::Remove( String ^name, bool force )
+bool Node::Nodes::Remove( String ^name, bool force )
 {
 	// validate name
 	if( name == nullptr ) throw gcnew ArgumentNullException("name"); 
@@ -257,13 +261,14 @@ bool Nodes::Remove( String ^name, bool force )
 
 
 //-------------------------------------------------------------------
-//
-// Cancel last operation and restore Nodes to previous state.
-//
-// I need this function to undo operations without 'set_parent' call.
-//
+/// <summary>
+/// Canceles last operation and restore Nodes to previous state.
+/// </summary><remarks>
+/// I need this function to undo operations without 'set_parent'
+/// call.
+/// </remarks>
 //-------------------------------------------------------------------
-void Nodes::Revert( void )
+void Node::Nodes::Revert( void )
 {
 	Undo();
 }
