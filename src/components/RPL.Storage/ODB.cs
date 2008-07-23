@@ -378,24 +378,27 @@ public class ODB : IPersistenceStorage
 			CmdSql.Parameters.Add( "Pointer", SqlDbType.VarBinary, 16 ).Value =
 				pointerParam.Value;
 
-			// current offset position
-			int offset = 0;
+			
 			// temp buffer for read/write purposes
 			Byte[] buffer = new Byte[BUFFER_LENGTH];
+			
+			// current offset position
+			SqlParameter offset = CmdSql.Parameters.Add( "@Offset", SqlDbType.Int );
+			offset.Value = 0;
+			SqlParameter size = CmdSql.Parameters.Add( "@Size", SqlDbType.Int );
+			size.Value = 0;
 
-			CmdSql.Parameters.Add( "@Offset", SqlDbType.Int ).Value = offset;
-			CmdSql.Parameters.Add( "@Size", SqlDbType.Int );
-
-			while( offset < Convert.ToInt32( lengthParam.Value ) ) {
+			while( Convert.ToInt32(offset.Value) < Convert.ToInt32( lengthParam.Value ) ) {
 				// calculate buffer size - may be less than BUFFER_LENGTH for last block.				
-				if( (offset + buffer.GetUpperBound( 0 )) 
+				if( (Convert.ToInt32( offset.Value ) + buffer.GetUpperBound( 0 )) 
 					>= 
 					Convert.ToInt32( lengthParam.Value ) )
 					// setting size parameter
-					CmdSql.Parameters["@Size"].Value =
-						Convert.ToInt32( lengthParam.Value ) - offset;
+					size.Value =
+						Convert.ToInt32( lengthParam.Value ) -
+						Convert.ToInt32( offset.Value );
 				else
-					CmdSql.Parameters["@Size"].Value = buffer.GetUpperBound( 0 );
+					size.Value = buffer.GetUpperBound( 0 );
 
 				// execute reader
 				SqlDataReader dr =
@@ -407,19 +410,11 @@ public class ODB : IPersistenceStorage
 					// put data to buffer
 					// and return size of read data
 					int count = Convert.ToInt32(
-						dr.GetBytes( 0,
-									 0,
-									 buffer,
-									 0,
-									 Convert.ToInt32( CmdSql
-										.Parameters["@Size"].Value ) ) );
+						dr.GetBytes( 0, 0, buffer, 0, Convert.ToInt32( size.Value ) ) );
 					// append buffer data to stream
-					stream.Write( buffer,
-								  Convert.ToInt32( CmdSql
-									.Parameters["@Offset"].Value ),
-								  count );
+					stream.Write( buffer, 0, count );
 					// increment offset
-					offset += count;
+					offset.Value = Convert.ToInt32( offset.Value ) + count;
 				} finally { dr.Dispose(); /*dispose DataReader*/}
 			}
 		} catch( Exception ex ) {
