@@ -117,7 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="FailToLoadImage" xml:space="preserve">
+  <data name="FailToLoadImage_msg" xml:space="preserve">
+    <value>There's an error while loading image. Maybe image has wrong format or reading error was occured.</value>
+  </data>
+  <data name="FailToLoadImage_title" xml:space="preserve">
     <value>Image loading fail.</value>
   </data>
 </root>

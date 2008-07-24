@@ -201,7 +201,6 @@ namespace Toolkit.Controls.ImagesViewer
 			if( m_PicBox.Image != null )
 				m_PicBox.Image.Dispose();
 
-
 			if( index == -1 ) {
 				m_PicBox.Image = null;
 				m_ToolLblCount.Text = "0/0";
@@ -219,11 +218,14 @@ namespace Toolkit.Controls.ImagesViewer
 					m_PicBox.Image.Height + "x" +
 					Bitmap.GetPixelFormatSize( m_PicBox.Image.PixelFormat );
 				check_buttons();
-			} catch ( ApplicationException e ) {
+			} catch ( Exception e ) {
 				System.Resources.ResourceManager rm = new System.Resources.ResourceManager(
 					"Toolkit.Controls.ImagesViewer.ImagesViewer_Msgs",
 					System.Reflection.Assembly.GetExecutingAssembly() );
-				MessageBox.Show( e.Message, rm.GetString( "FailToLoadImage" ),
+				// TODO: Еще необходимо показать InnerException и CallStack
+				MessageBox.Show(
+					rm.GetString( "FailToLoadImage_msg" ),
+					rm.GetString( "FailToLoadImage_title" ),
 					MessageBoxButtons.OK, MessageBoxIcon.Warning );
 			}
 		}
