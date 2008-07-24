@@ -453,3 +453,39 @@ NOT FOR REPLICATION
 GO
 ALTER TABLE [dbo].[_properties] CHECK CONSTRAINT [FK_properties_objects]
 GO
+/****** Object:  View [dbo].[Expedition]    Script Date: 07/24/2008 18:26:58 ******/
+CREATE VIEW [dbo].[Expedition]
+AS
+
+(SELECT		65535 as [RepositoryNumber],
+			CAST('01.01.2001' as datetime) as [RepositoryDate],
+			1 as [Position],
+			'doc1' as [Number],
+			CAST('01.08.2001' as datetime) as [Date],
+			'I00001' as [CorrCode],
+			'mr. Smith' as [CorrName],
+			1 as [PageCount],
+			'Neo' as [Addressee],
+			'i' as [Category]
+)UNION(
+SELECT		65535 as [RepositoryNumber],
+			CAST('01.01.2001' as datetime) as [RepositoryDate],
+			2 as [Position],
+			'doc2' as [Number],
+			CAST('02.08.2001' as datetime) as [Date],
+			NULL as [CorrCode],
+			'mr. Smith' as [CorrName],
+			NULL as [PageCount],
+			'Trinity' as [Addressee],
+			'i' as [Category]
+)UNION(
+SELECT		65535 as [RepositoryNumber],
+			CAST('01.01.2002' as datetime) as [RepositoryDate],
+			1 as [Position],
+			'wow' as [Number],
+			CAST('01.08.2002' as datetime) as [Date],
+			NULL as [CorrCode],
+			'Morpheus' as [CorrName],
+			NULL as [PageCount],
+			'tabletka' as [Addressee],
+			'o' as [Category])
