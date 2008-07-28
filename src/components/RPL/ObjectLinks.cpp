@@ -192,6 +192,12 @@ ObjectLinks::OnClear( void )
 {
 	// notify parent using following specific call
 	_owner->on_change( nullptr );
+
+	// look through all links
+	for( int i = 0; i < m_list.Count; i++ ) {
+		// write 'deleted' log record
+		log_record[m_list[i]] = STATE::Deleted;
+	}
 }
 
 
@@ -357,7 +363,7 @@ ObjectLinks::Accept( void )
 	for( int i = 0; i < m_list.Count; i++ ) {
 		// now, depend on object's ID performs:
 		if( m_list[i]->m_id > 0 ) {
-			// this is normal object, so reset log record
+			// this is normal object, so create log record
 			m_log[m_list[i]] = STATE::None;
 		} else {
 			// this is new/deleted object:
@@ -366,24 +372,6 @@ ObjectLinks::Accept( void )
 		}
 	}
 }
-
-
-//PersistentObjects^ PersistentObject::
-//ObjectLinks::Get( int state )
-//{
-//	// create empty object collection
-//	PersistentObjects	^objs = gcnew PersistentObjects();
-//
-//	// look through all pairs in log
-//	for each( KeyValuePair<PersistentObject^, STATE> pair in m_log ) {
-//		// and if states are equals
-//		if( (pair.Value & state != 0) && (pair.Key->m_id > 0) ) {
-//			// add link to result collection
-//			objs->Add( pair.Key );
-//		}
-//	}
-//	return objs;
-//}
 
 
 //-------------------------------------------------------------------
