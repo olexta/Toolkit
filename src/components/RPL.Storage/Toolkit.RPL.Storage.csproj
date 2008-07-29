@@ -8,6 +8,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Toolkit.RPL.Storage</RootNamespace>
     <AssemblyName>Toolkit.RPL.Storage</AssemblyName>
+    <BaseIntermediateOutputPath>..\..\..\tmp\Toolkit.RPL.Storage\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\..\..\tmp\Toolkit.RPL.Storage\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

@@ -71,7 +71,6 @@
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				TargetMachine="1"
-				KeyFile="..\..\..\..\etc\ABBYY_Ukraine.snk"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -153,7 +152,6 @@
 				ManifestFile="$(IntDir)$(TargetFileName).intermediate.manifest"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
-				KeyFile="..\..\..\..\etc\ABBYY_Ukraine.snk"
 			/>
 			<Tool
 				Name="VCALinkTool"
