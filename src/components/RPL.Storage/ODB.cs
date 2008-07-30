@@ -84,6 +84,11 @@ public class ODB : IPersistenceStorage
 		REGEXP_PREDS + @")(?:\s*)(?<modif>AND|OR)))*(?:\s*)(?<neg>NOT)?(?:\s*)(?:\s*)(" +
 		REGEXP_PREDS + @")(?:\s)*$";
 	#endregion
+	
+	#region error messages
+	private static string ERROR_CHANGED_OBJECT = "Newer object exist. Please retrive object first!";
+	private static string ERROR_IMAGE_IS_ABSENT = "Specified value is absent!";
+	#endregion
 
 	///////////////////////////////////////////////////////////////////////
 	//						Private Section
@@ -98,7 +103,7 @@ public class ODB : IPersistenceStorage
 		SqlCommand cmdSql =
 			new SqlCommand(
 				"SELECT @Name = [ObjectName], @Type = [ObjectType], @Stamp = [TimeStamp] " +
-				"FROM _objects " +
+				"FROM [dbo].[_objects] " +
 				"WHERE [ID] = " + id, m_con, m_trans);
 		cmdSql.Parameters.Add( "@Name", SqlDbType.NVarChar, 4000 )
 			.Direction = ParameterDirection.Output;
@@ -163,7 +168,7 @@ public class ODB : IPersistenceStorage
 			// modify query to match _properies table and it's structure
 			query += "(EXISTS " +
 						"(SELECT ID " +
-						" FROM _properties AS p " + // Image comparison is unsupported
+						" FROM [dbo].[_properties] AS p " + // Image comparison is unsupported
 						" WHERE " +
 							"(ObjectID = Source.ID) AND " + // declare object id property belongs
 				// avoid implicit type conversion by MS SQL
@@ -231,12 +236,12 @@ public class ODB : IPersistenceStorage
 
 		// command that creates new record or cleares existing
 		SqlCommand CmdSql = new SqlCommand(
-			@"IF (EXISTS(SELECT * FROM _images " +
+			@"IF (EXISTS(SELECT * FROM [dbo].[_images] " +
 						"WHERE [ObjectID] = " + objID + " " +
 						"AND " +
 						"Name ='" + propName + "' )) " +
 			"BEGIN " +
-				"UPDATE _images SET Value = " + ((stream.Length > 0) 
+				"UPDATE [dbo].[_images] SET Value = " + ((stream.Length > 0) 
 				? 
 				"0x0" 
 				: "NULL") + 
@@ -245,20 +250,20 @@ public class ODB : IPersistenceStorage
 						"AND " +
 						"Name ='" + propName + "'; " +
 				"SELECT @Pointer = TEXTPTR(Value) " +
-				"FROM _images " +
+				"FROM [dbo].[_images] " +
 				"WHERE [ObjectID] = " + objID + " " +
 						"AND " +
 						"Name ='" + propName + "'; " +
 			"END " +
 			"ELSE " +
 			"BEGIN " +
-				"INSERT INTO _images " +
+				"INSERT INTO [dbo].[_images] " +
 				"([ObjectID], [Name], [Value]) " +
 				"VALUES ( " + objID + ", '" +
 						  propName + "', " +
 						  ((stream.Length > 0) ? "0x0" : "NULL") + " ); " +
 				"SELECT @Pointer = TEXTPTR(Value) " +
-				"FROM _images " +
+				"FROM [dbo].[_images] " +
 				"WHERE [ID] = SCOPE_IDENTITY(); " +
 			"END", m_con, m_trans);
 
@@ -271,10 +276,10 @@ public class ODB : IPersistenceStorage
 			CmdSql.ExecuteNonQuery();
 			// check that pointer exists
 			if( pointerParam.Value == null )
-				throw new KeyNotFoundException("Can't save image!");
+				throw new KeyNotFoundException( "Can't save image!");
 			// set up UPDATETEXT command, parameters, and open BinaryReader.	
 			CmdSql = new SqlCommand(
-				"UPDATETEXT _images.Value @Pointer @Offset @Delete " +
+				"UPDATETEXT [dbo].[_images].Value @Pointer @Offset @Delete " +
 				"WITH LOG @Bytes", m_con, m_trans);
 			// assign value of pointer previously recieved
 			CmdSql.Parameters.Add( "@Pointer", SqlDbType.Binary, 16 ).Value =
@@ -345,7 +350,7 @@ public class ODB : IPersistenceStorage
 		SqlCommand CmdSql = new SqlCommand(
 			"SELECT @Pointer = TEXTPTR(Value), " +
 			"@Length = DataLength(Value) " +
-			"FROM _images " +
+			"FROM [dbo].[_images] " +
 			"WHERE [ObjectID] = " + objID + " " +
 						"AND " +
 						"Name ='" + propName + "'", m_con, m_trans);
@@ -364,7 +369,7 @@ public class ODB : IPersistenceStorage
 
 			//check that BLOB field exists
 			if( CmdSql.Parameters["@Pointer"].Value == null ) {
-				throw new KeyNotFoundException( "Specified value is absent!" );
+				throw new KeyNotFoundException( ERROR_IMAGE_IS_ABSENT );
 			}
 
 			// run the query.
@@ -372,7 +377,7 @@ public class ODB : IPersistenceStorage
 			// parameters: @Pointer – pointer to blob, @Offset – number of bytes to
 			// skip before starting the read, @Size – number of bytes to read.
 			CmdSql = new SqlCommand(
-				"READTEXT _images.Value " +
+				"READTEXT [dbo].[_images].Value " +
 				"@Pointer @Offset @Size HOLDLOCK", m_con, m_trans);
 			// set up the parameters for the command.
 			CmdSql.Parameters.Add( "Pointer", SqlDbType.VarBinary, 16 ).Value =
@@ -486,17 +491,22 @@ public class ODB : IPersistenceStorage
 
 		// open connection and start new transaction if required
 		TransactionBegin();
-
 		try {
-			SqlCommand cmdDelete = 
-				new SqlCommand( "[dbo].[sp_DeleteObject]", m_con, m_trans );
-			cmdDelete.Parameters.Add( "@objectID", SqlDbType.Int )
-				.Value = header.ID;
-			// Stored Procedure will be used
-			cmdDelete.CommandType = CommandType.StoredProcedure;
+			// check object stamp. If it is newer then current -> raise error
+			SqlCommand sqlCmd = new SqlCommand( "IF ((SELECT [TimeStamp] " +
+					"FROM [dbo].[_objects] WHERE [ID] = @objectID) > @Stamp) " +
+					"RAISERROR( '" + ERROR_CHANGED_OBJECT + "', 11, 1 );",
+					m_con,
+					m_trans );
+			// add proxy stamp parameter
+			sqlCmd.Parameters.Add( "@Stamp", SqlDbType.DateTime ).Value =
+				header.Stamp;
+			sqlCmd.Parameters.Add( "@objectID", SqlDbType.Int ).Value = header.ID;
+
+			sqlCmd.CommandText += "EXEC [dbo].[sp_DeleteObject] @objectID";
 
 			// proccess delete opearaton
-			cmdDelete.ExecuteNonQuery();
+			sqlCmd.ExecuteNonQuery();
 		} catch( Exception ex ) {
 			#region dubug info
 #if (DEBUG)
@@ -620,7 +630,7 @@ public class ODB : IPersistenceStorage
 			#region retrive props from _properties
 			CmdSql =
 				new SqlCommand("SELECT [Name], [Value] " +
-							   "FROM _properties " +
+							   "FROM [dbo].[_properties] " +
 							   "WHERE [ObjectID] = " + header.ID, m_con, m_trans);
 			SqlReader =
 					CmdSql.ExecuteReader( CommandBehavior.SingleResult );
@@ -646,7 +656,7 @@ public class ODB : IPersistenceStorage
 				new SqlDataAdapter( 
 					new SqlCommand(
 						"SELECT [Name] " +
-						"FROM _images " +
+						"FROM [dbo].[_images] " +
 						"WHERE [ObjectID] = " + header.ID, m_con, m_trans ) );
 			DataTable dt = new DataTable(); // table for object proxy properties
 			da.Fill( dt ); // fill table
@@ -673,9 +683,9 @@ public class ODB : IPersistenceStorage
 			CmdSql = 
 				new SqlCommand(
 						"SELECT [ID], [ObjectName], [ObjectType], [TimeStamp] " +
-						"FROM dbo._objects " +
+						"FROM [dbo].[_objects] " +
 						"WHERE [ID] IN ( " + 
-							"SELECT Child FROM dbo._links " + 
+							"SELECT Child FROM [dbo].[_links] " + 
 							"WHERE Parent = " + header.ID + ")", 
 						m_con, m_trans);
 
@@ -763,7 +773,7 @@ public class ODB : IPersistenceStorage
 				// this is new object. Creating script for insertion of object
 				CmdSql =
 					new SqlCommand( 
-						"INSERT INTO _objects ( [ObjectName], [ObjectType] ) " +
+						"INSERT INTO [dbo].[_objects] ( [ObjectName], [ObjectType] ) " +
 						"VALUES ( '" + header.Name.Replace( "'", "''" ) + "', " +
 						"'" + header.Type.Replace( "'", "''" ) + "');" +
 					/*save inserted object ID*/
@@ -772,9 +782,8 @@ public class ODB : IPersistenceStorage
 				// check object stamp. If it is newer then current -> raise error
 				CmdSql =
 					new SqlCommand( "IF ((SELECT [TimeStamp] " +
-						"FROM _objects WHERE [ID] = @ID) > @Stamp) " +
-						"RAISERROR( 'Newer object exist. " +
-						"Please retrive object first!', 11, 1 );",
+						"FROM [dbo].[_objects] WHERE [ID] = @ID) > @Stamp) " +
+						"RAISERROR( '" + ERROR_CHANGED_OBJECT + "', 11, 1 );",
 						m_con,
 						m_trans );
 				// add proxy stamp parameter
@@ -782,7 +791,7 @@ public class ODB : IPersistenceStorage
 					header.Stamp;
 				// proxy name is always updated
 				CmdSql.CommandText +=
-					"UPDATE _objects SET [ObjectName] = @Name WHERE [ID] = @ID";
+					"UPDATE [dbo].[_objects] SET [ObjectName] = @Name WHERE [ID] = @ID";
 				// add proxy name parameter
 				CmdSql.Parameters
 					.Add( "@Name", SqlDbType.NVarChar, header.Name.Length )
@@ -830,7 +839,7 @@ public class ODB : IPersistenceStorage
 					if( prop.State == PROPERTY.STATE.New ) {
 						// adding new row to DB
 						CmdSql.CommandText +=
-							"INSERT INTO _properties ([ObjectID], [Name], [Value]) " + 
+							"INSERT INTO [dbo].[_properties] ([ObjectID], [Name], [Value]) " + 
 							"VALUES " +
 								"(" + objID + ", '" +
 								prop.Name + "', " +
@@ -840,7 +849,7 @@ public class ODB : IPersistenceStorage
 					} else if( prop.State == PROPERTY.STATE.Changed ) {
 						// update row in DB
 						CmdSql.CommandText +=
-							"UPDATE _properties " +
+							"UPDATE [dbo].[_properties] " +
 							"SET [Value] = " + "@PropValue_" + prop.Name + " " +
 							"WHERE [ObjectID]=" + objID + " AND " +
 								  "[Name]='" + prop.Name + "'";
@@ -849,7 +858,7 @@ public class ODB : IPersistenceStorage
 					} else if( prop.State == PROPERTY.STATE.Deleted ) {
 						// delete row in DB
 						CmdSql.CommandText +=
-							"DELETE FROM _properties " +
+							"DELETE FROM [dbo].[_properties] " +
 							"WHERE [ObjectID]=" + objID + " AND " +
 								  "[Name]='" + prop.Name + "'";
 					}
@@ -862,12 +871,12 @@ public class ODB : IPersistenceStorage
 				if( link.State == LINK.STATE.New ) {
 					// add new link to DB
 					CmdSql.CommandText +=
-						"INSERT INTO _links ([Parent], [Child]) " +
+						"INSERT INTO [dbo].[_links] ([Parent], [Child]) " +
 						"VALUES (" + objID + ", " + link.Header.ID + ")";
 				} else if( link.State == LINK.STATE.Deleted ) {
 					// delete link from DB
 					CmdSql.CommandText +=
-						"DELETE FROM _links " +
+						"DELETE FROM [dbo].[_links] " +
 						"WHERE [Parent]=" + objID + " AND " + 
 							  "[Child]=" + link.Header.ID;
 				}
