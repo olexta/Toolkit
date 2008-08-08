@@ -27,15 +27,15 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="..\..\..\bin\Toolkit.RPL.dll" />
-    <Reference Include="..\..\..\bin\Toolkit.RPL.Storage.dll" />
-    <Reference Include="..\..\..\bin\Toolkit.RPL.Test.Objects.dll" />
-    <Reference Include="adodb" />
-    <Reference Include="Microsoft.VisualStudio.QualityTools.LoadTestFramework" />
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="adodb" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.LoadTestFramework" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+    <Reference Include="..\..\..\bin\Toolkit.RPL.dll" />
+    <Reference Include="..\..\..\bin\Toolkit.RPL.Storage.dll" />
+    <Reference Include="..\..\..\bin\Toolkit.RPL.Test.Objects.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include=".\ODBLoadTest.cs" />

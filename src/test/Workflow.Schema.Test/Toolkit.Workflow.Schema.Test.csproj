@@ -50,14 +50,8 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Toolkit.Collections">
-      <HintPath>..\..\..\bin\Toolkit.Collections.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Toolkit.Workflow.Schema">
-      <HintPath>..\..\..\bin\Toolkit.Workflow.Schema.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
+    <Reference Include="..\..\..\bin\Toolkit.Collections.dll" />
+    <Reference Include="..\..\..\bin\Toolkit.Workflow.Schema.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
