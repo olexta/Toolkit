@@ -13,7 +13,7 @@
 		<xsd:sequence>
 			<xsd:element name="class" type="target:Class" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="enum" type="target:Enum"  minOccurs="0" maxOccurs="unbounded" />
-			<!--<xsd:element name="dictionary" type="target:Dictionary"  minOccurs="0" maxOccurs="unbounded" />-->
+			<xsd:element name="propSet" type="target:PropSet" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 	</xsd:complexType>
@@ -175,22 +175,30 @@
 			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-<!--
-	<xsd:complexType name="Dictionary">
+	
+	<xsd:complexType name="PropSet">
 		<xsd:sequence>
-			<xsd:element name="key" type="target:DictionaryKey" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="caption" type="xsd:string" />
+			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />		
+			<xsd:element name="properties" type="target:PropSetProperties" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="keyType" type="xsd:string" use="required" />
-		<xsd:attribute name="valueType" type="xsd:string" use="required" />
 	</xsd:complexType>
-
-	<xsd:complexType name="DictionaryKey">
+	
+	<xsd:complexType name="PropSetProperties">
 		<xsd:sequence>
-			<xsd:element name="value" type="xsd:string" />
-			<xsd:element name="caption" type="xsd:string" />
-			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="property" type="target:PropSetProperty" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
--->
+	
+	<xsd:complexType name="PropSetProperty">
+		<xsd:sequence>
+			<xsd:element name="caption" type="xsd:string" />
+			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="description" type="xsd:string" minOccurs="0" />
+			<xsd:element name="localizedDescription" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
+	</xsd:complexType>
+
 </xsd:schema>

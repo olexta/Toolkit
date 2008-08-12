@@ -63,6 +63,7 @@
     <Compile Include="SClassMember.cs" />
     <Compile Include="SProperty.cs" />
     <Compile Include="SMethod.cs" />
+    <Compile Include="PropSetInfo.cs" />
     <Compile Include="Tools.cs" />
   </ItemGroup>
   <ItemGroup>

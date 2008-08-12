@@ -72,6 +72,11 @@ namespace Toolkit.Workflow.Schema
 		private KeyedMap<string, EnumInfo> m_Enums;
 
 		/// <summary>
+		/// Saves available PropSets;
+		/// </summary>
+		private Map<string, PropSetInfo> m_PropSets;
+
+		/// <summary>
 		/// Memory copy of schema file.
 		/// </summary>
 		private XmlDocument m_SchemaXML;
@@ -172,6 +177,32 @@ namespace Toolkit.Workflow.Schema
 		}
 
 		/// <summary>
+		/// Gets enumeration of all available PropSets.
+		/// </summary>
+		public IEnumerable<string> PropSetsNames
+		{
+			get {
+				return m_PropSets.Keys;
+			}
+		}
+
+		/// <summary>
+		/// Returns PropSet description by his name.
+		/// </summary>
+		/// <returns>
+		/// PropSetInfo instance - if schema contains description for specified name,
+		/// null - otherwise.
+		/// </returns>
+		public PropSetInfo GetPropSetInfo( string propSetName )
+		{
+			if( m_PropSets.ContainsKey( propSetName ) ) {
+				return m_PropSets[ propSetName ];
+			} else {
+				return null;
+			}
+		}
+
+		/// <summary>
 		/// Gets current loaded schema name.
 		/// </summary>
 		public string Name
@@ -267,6 +298,12 @@ namespace Toolkit.Workflow.Schema
 			m_Enums = new KeyedMap<string, EnumInfo>();
 			foreach( XmlNode node in m_SchemaXML.DocumentElement.SelectNodes( "ws:enum", m_NsMgr ) )
 				m_Enums.Add( new EnumInfo( node ) );
+
+			m_PropSets = new Map<string,PropSetInfo>();
+			foreach( XmlNode node in m_SchemaXML.DocumentElement.SelectNodes( "ws:propSet", m_NsMgr ) ) {
+				PropSetInfo psi = new PropSetInfo( node );
+				m_PropSets.Add( psi.Name, psi );
+			}
 		}
 	}
 }
