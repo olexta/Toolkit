@@ -66,6 +66,10 @@
 	"strings: '{0}'."
 #define ERR_INI_WRITE													\
 	"Write to INI '{0}' failed. Error code #{1}."
+#define ERR_REGISTRY_KEY												\
+	"'{0}' is not valid registry key."
+#define ERR_REGISTRY_ROOT												\
+	"'{0}' cann't be used as root for settings."
 
 
 //
@@ -94,3 +98,22 @@
 #define EXIT_READ(lock)			} finally { lock->ReleaseReaderLock(); }
 #define ENTER_WRITE(lock)		lock->AcquireWriterLock(TIMEOUT); try {
 #define EXIT_WRITE(lock)		} finally { lock->ReleaseWriterLock(); }
+
+
+//
+// Define integer, double and datetime formating.
+//
+#define INT_F		"0"
+#define DOUBLE_F	"0.0##############"
+#define DATETIME_F	"dd/MM/yyyy HH:mm:ss"
+//
+// Initialize custom CultureInfo for unambiguous converting to/from string.
+// Set specific number and datetime formatting settings.
+//
+#define INIT_CI(ci)																\
+	ci = dynamic_cast<CultureInfo^>( CultureInfo::CurrentCulture->Clone() );	\
+	ci->NumberFormat->PositiveSign = "+";										\
+	ci->NumberFormat->NegativeSign = "-";										\
+	ci->NumberFormat->NumberDecimalSeparator = ".";								\
+	ci->DateTimeFormat->DateSeparator = ".";									\
+	ci->DateTimeFormat->TimeSeparator = ":";

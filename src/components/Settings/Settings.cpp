@@ -14,7 +14,8 @@
 
 #include "Item.h"
 #include "Manager.h"
-#include "adapters\IniFile.h" 
+#include "adapters\IniFile.h"
+#include "adapters\Registry.h"
 
 using namespace System;
 using namespace _SETTINGS;
@@ -23,13 +24,17 @@ using namespace _SETTINGS;
 int main( array<System::String ^> ^args )
 {
 	try {
+		//
+		// put test code here
+		//
 
+		//-----------------------------------------------------------
 		Console::WriteLine( "\nOK" );
 	} catch( Exception ^e ) {
-
+		// print exception
 		Console::WriteLine( e );
 	} finally {
-		
+		// wait for user input in any case
 		Console::ReadLine();
 	}
 

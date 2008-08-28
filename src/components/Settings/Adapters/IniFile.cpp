@@ -19,19 +19,6 @@ using namespace System::Runtime::InteropServices;
 using namespace _SETTINGS::Adapters;
 
 
-//
-// Initialize custom CultureInfo for unambiguous converting to/from string.
-// Set specific number and datetime formatting settings.
-//
-#define INIT_CI(ci)																\
-	ci = dynamic_cast<CultureInfo^>( CultureInfo::CurrentCulture->Clone() );	\
-	ci->NumberFormat->PositiveSign = "+";										\
-	ci->NumberFormat->NegativeSign = "-";										\
-	ci->NumberFormat->NumberDecimalSeparator = ".";								\
-	ci->DateTimeFormat->DateSeparator = ".";									\
-	ci->DateTimeFormat->TimeSeparator = ":";
-
-
 //-----------------------------------------------------------------------------
 //					External functions declaration (Win32)
 //-----------------------------------------------------------------------------
@@ -228,7 +215,7 @@ void IniFile::check_path( String ^path )
 
 	// check for valid adapter's path (it must
 	// starts with adapter's delimeter)
-	if( !path->StartsWith( _del ) ) {
+	if( !path->StartsWith( _del.ToString() ) ) {
 		// throw argument exception
 		throw gcnew ArgumentException(String::Format(
 		ERR_PATH_STARTS, path, "adapter", _del ));
@@ -287,13 +274,13 @@ String^ IniFile::obj_to_str( Object ^value )
 		return static_cast<bool>( value ).ToString();
 	} else if( type == int::typeid ) {
 		// convert int to string by own format using modified culture info
-		return static_cast<int>( value ).ToString( _int_f, _ci );
+		return static_cast<int>( value ).ToString( INT_F, _ci );
 	} else if( type == double::typeid ) {
 		// convert double to string by own format using modified culture info
-		return static_cast<double>( value ).ToString( _double_f, _ci );
+		return static_cast<double>( value ).ToString( DOUBLE_F, _ci );
 	} else if( type == DateTime::typeid ) {
 		// convert DateTime to string by own format using modified culture info
-		return static_cast<DateTime>( value ).ToString( _DateTime_f, _ci );
+		return static_cast<DateTime>( value ).ToString( DATETIME_F, _ci );
 	} else if( type == String::typeid ) {
 		// just return specified string
 		return static_cast<String^>( value );
@@ -334,7 +321,7 @@ Object^ IniFile::str_to_obj( String ^value )
 						  _ci, d ) ) return d;
 	// try convert specified string to DateTime value
 	DateTime	dt;
-	if( DateTime::TryParseExact( value, _DateTime_f, _ci,
+	if( DateTime::TryParseExact( value, DATETIME_F, _ci,
 								 DateTimeStyles::AllowLeadingWhite |
 								 DateTimeStyles::AllowTrailingWhite,
 								 dt ) ) return dt;
@@ -360,7 +347,7 @@ bool IniFile::split_location( String ^loc, String^ %sec, String^ %key )
 		sec = loc->Substring( 0, pos );
 		key = loc->Substring( pos + 1 );
 		// normalize section if needed
-		if( sec == "" ) sec = _del;
+		if( sec == "" ) sec = _del.ToString();
 		// return succeded rezult
 		return true;
 	}
@@ -370,7 +357,10 @@ bool IniFile::split_location( String ^loc, String^ %sec, String^ %key )
 
 //-------------------------------------------------------------------
 //
-// Gets value that is located by specified path from cache.
+// Adapters::IAdapter::default implementation.
+//
+// Gets/puts setting's value that is located by specified path
+// from/to cache.
 //
 //-------------------------------------------------------------------
 Object^ IniFile::get_value( String ^loc )
@@ -384,12 +374,6 @@ Object^ IniFile::get_value( String ^loc )
 
 EXIT_READ(_lock)}
 
-
-//-------------------------------------------------------------------
-//
-// Puts given value that is located by specified path to cache.
-//
-//-------------------------------------------------------------------
 void IniFile::set_value( String ^loc, Object ^val )
 {ENTER_WRITE(_lock)
 
@@ -413,34 +397,36 @@ EXIT_WRITE(_lock)}
 
 //-------------------------------------------------------------------
 //
-// Gets adapter's name.
+// Adapters::IAdapter::Name implementation.
 //
-// This is not class name, but value that will be node's name in
-// settings tree structure for this instance of Adapter class.
+// Gets adapter's name.
 //
 //-------------------------------------------------------------------
 String^ IniFile::get_name( void )
 {
-	return m_name;
+	return _name;
 }
 
 
 //-------------------------------------------------------------------
+//
+// Adapters::IAdapter::Delimeter implementation.
 //
 // Get's string that is used in location pathes as delimiter.
 //
 //-------------------------------------------------------------------
 String^ IniFile::get_delimeter( void )
 {
-	return _del;
+	return _del.ToString();
 }
 
 
 //-------------------------------------------------------------------
 //
-// Removes value that is located by specified path from cache.
+// Adapters::IAdapter::Remove implementation.
 //
-// Also, removes all subpathes to passed location.
+// Removes setting value that is located by specified path from
+// cache.
 //
 //-------------------------------------------------------------------
 bool IniFile::remove( String ^loc )
@@ -448,8 +434,6 @@ bool IniFile::remove( String ^loc )
 
 	// check for correct path
 	check_path( loc );
-	// modify root location
-	if( loc == _del ) loc = "";
 	
 	// create new list of locations
 	List<String^>	^locs = gcnew List<String^>;
@@ -472,11 +456,9 @@ EXIT_WRITE(_lock)}
 
 //-------------------------------------------------------------------
 //
-// Retrieve data that are located by specified path from source to
-// internal cache.
+// Adapters::IAdapter::Reload implementation.
 //
-// This function loads all settings that are subpathes to specified
-// location from INI file to cache and returns list of this subitems.
+// Retrieves settings from source to internal cache.
 //
 //-------------------------------------------------------------------
 IEnumerable<String^>^ IniFile::reload( String ^loc )
@@ -490,7 +472,7 @@ IEnumerable<String^>^ IniFile::reload( String ^loc )
 	// check for correct path
 	check_path( loc );
 	// modify root location
-	if( loc == _del ) loc = "";
+	if( loc == _del.ToString() ) loc = "";
 
 	// look through all items in cache
 	for each( String ^s in m_cache->Keys ) {
@@ -512,7 +494,7 @@ IEnumerable<String^>^ IniFile::reload( String ^loc )
 	// look through all valid sections in back order
 	for( int i = secs->Count - 1; i >= 0; i-- ) {
 		// modify section name, if needed
-		String	^sec = (secs[i] == _del ? "" : secs[i]);
+		String	^sec = (secs[i] == _del.ToString() ? "" : secs[i]);
 
 		// expose section to cache
 		for( String ^s = sec; (s != "") && !m_cache->ContainsKey( s );
@@ -527,7 +509,7 @@ IEnumerable<String^>^ IniFile::reload( String ^loc )
 		// load all keys
 		for each( String ^key in get_ini_string( secs[i], nullptr ) ) {
 			// check key for valid symbols
-			if( key->Contains( _del ) )
+			if( key->Contains( _del.ToString() ) )
 				throw gcnew IO::InvalidDataException(String::Format(
 				ERR_INI_FILE, _del ));
 
@@ -557,11 +539,9 @@ EXIT_WRITE(_lock)}
 
 //-------------------------------------------------------------------
 //
-// Flash data that are located by specified path from internal cache
-// to source.
+// Adapters::IAdapter::Flush implementation.
 //
-// This function also flush all settings that are subpathes to
-// specified location.
+// Flashes settings from internal cache to source.
 //
 //-------------------------------------------------------------------
 void IniFile::flush( String ^loc )
@@ -570,7 +550,7 @@ void IniFile::flush( String ^loc )
 	// check for correct path
 	check_path( loc );
 	// modify root location
-	if( loc == _del ) loc = "";
+	if( loc == _del.ToString() ) loc = "";
 
 	// empty those sections and keys, that doesn't exists in cache
 	// so, look through all sections in file
@@ -578,14 +558,15 @@ void IniFile::flush( String ^loc )
 		// and if section starts with specified location
 		if( (sec + _del)->StartsWith( loc + _del ) ) {
 			// and not contains in cache and not root section, then
-			if(	!m_cache->ContainsKey( sec ) && (sec != _del) ) {
+			if(	!m_cache->ContainsKey( sec ) && (sec != _del.ToString()) ) {
 				// delete it
 				set_ini_string( sec, nullptr, nullptr );
 			}
 			// look for it keys
 			for each( String ^key in get_ini_string( sec, nullptr ) ) {
 				// and if key doesn't exist in the chache
-				if( !m_cache->ContainsKey( (sec == _del ? "" : sec) + _del + key ) ) {
+				if( !m_cache->ContainsKey( (sec == _del.ToString() ? "" : sec) +
+										   _del + key ) ) {
 					// delete it
 					set_ini_string( sec, key, nullptr );
 				}
@@ -652,7 +633,7 @@ void IniFile::flush( String ^loc )
 				((m_cache[secs[i]] != nullptr) ||
 				 (((i + 1) < secs->Count) &&
 				  secs[i + 1]->Contains(
-				  	(secs[i] == _del ? "" : secs[i]) + _del ))) ) {
+				  	(secs[i] == _del.ToString() ? "" : secs[i]) + _del ))) ) {
 				// this is unneeded section: remove it
 				set_ini_string( secs[i], nullptr, nullptr );
 			}
@@ -676,7 +657,7 @@ IniFile::IniFile( String ^filename ) :			  \
 	_lock(gcnew ReaderWriterLock)
 {
 	// build adapter's name based on filename
-	m_name = System::IO::Path::GetFileNameWithoutExtension( _filename );
+	_name = System::IO::Path::GetFileNameWithoutExtension( _filename );
 
 	INIT_CI(_ci)
 
@@ -691,9 +672,9 @@ IniFile::IniFile( String ^filename ) :			  \
 /// specified name and path to file.
 /// </summary>
 //-------------------------------------------------------------------
-IniFile::IniFile(String ^filename, String ^name) : \
-	_filename(IO::Path::GetFullPath( filename )),  \
-	_lock(gcnew ReaderWriterLock), m_name(name)
+IniFile::IniFile( String ^filename, String ^name ) : \
+	_filename(IO::Path::GetFullPath( filename )),	 \
+	_lock(gcnew ReaderWriterLock), _name(name)
 {
 	// check for name to be initialized
 	if( name == nullptr ) throw gcnew ArgumentNullException("name");

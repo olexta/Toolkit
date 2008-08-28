@@ -221,11 +221,23 @@
 				RelativePath="..\ValueBox.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\ValueBox.h"
+				>
+			</File>
 			<Filter
 				Name="Adapters"
 				>
 				<File
+					RelativePath="..\Adapter.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Adapters\IniFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Adapters\Registry.cpp"
 					>
 				</File>
 			</Filter>
@@ -235,10 +247,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="..\Adapter.h"
-				>
-			</File>
 			<File
 				RelativePath="..\Item.h"
 				>
@@ -255,10 +263,6 @@
 				RelativePath="..\Nodes.h"
 				>
 			</File>
-			<File
-				RelativePath="..\ValueBox.h"
-				>
-			</File>
 			<Filter
 				Name="Adapters"
 				>
@@ -268,6 +272,10 @@
 				</File>
 				<File
 					RelativePath="..\Adapters\IniFile.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Adapters\Registry.h"
 					>
 				</File>
 			</Filter>
