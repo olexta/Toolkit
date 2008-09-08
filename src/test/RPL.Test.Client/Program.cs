@@ -306,46 +306,38 @@ namespace Toolkit.RPL.Test
 			}
 		}
 
+		private PersistenceBroker broker_factory()
+		{
+			// create a unique identifier
+			return new CrossDomainProxy<PersistenceBroker>(
+							"tcp://" + m_hostname + ":8888/Toolkit.RPL.Test.Server.rem",
+							"/310001/" + Guid.NewGuid().ToString());
+		}
+		
+		private PersistentObject object_factory( string type,
+									int id, DateTime stamp, string name )
+		{
+			Debug.Print( type + "\n" + id.ToString() + "\n" + name );
+			
+			// Get type of Object by it's string type.
+			Type t = Type.GetType( type );
+
+			// Create array of parametrs to path to constructor:
+			// int id, DateTime stamp, String ^name
+			object[] args = new object[] { id, stamp, name };
+
+			// Creates an instance of the specified type using the
+			// constructor that best matches the specified parameters. 
+			return (PersistentObject) Activator.CreateInstance( t, args );
+		}
+
 		private void remotingActivation()
 		{
 			// RemotingConfiguration.CustomErrorsMode = CustomErrorsModes.Off;
 			ChannelServices.RegisterChannel( new TcpChannel(), false );
 			
-			Factories	factories = new Factories("tcp://" + m_hostname + ":8888/Toolkit.RPL.Test.Server.rem");
-				
-			PersistenceBroker.BrokerFactory = factories;
-			PersistenceBroker.ObjectFactory = factories;
-		}
-
-		private class Factories : IBrokerFactory, IObjectFactory
-		{
-			private string m_url;
-			
-			PersistenceBroker IBrokerFactory.CreateInstance()
-			{					
-				// create a unique identifier
-				return new CrossDomainProxy<PersistenceBroker>(
-								m_url, "/310001/" + Guid.NewGuid().ToString());
-			}
-
-			PersistentObject IObjectFactory.CreateInstance(
-				string type, int id, DateTime stamp, string name )
-			{
-				Debug.Print( type + "\n" + id.ToString() + "\n" + name );
-				
-				// Get type of Object by it's string type.
-				Type t = Type.GetType( type );
-
-				// Create array of parametrs to path to constructor:
-				// int id, DateTime stamp, String ^name
-				object[] args = new object[] { id, stamp, name };
-
-				// Creates an instance of the specified type using the
-				// constructor that best matches the specified parameters. 
-				return (PersistentObject) Activator.CreateInstance( t, args );
-			}
-			
-			public Factories( string uri ) { m_url = uri; }
+			PersistenceBroker.BrokerFactory = new BROKER_FACTORY(broker_factory);
+			PersistenceBroker.ObjectFactory = new OBJECT_FACTORY(object_factory);
 		}
 	}
 }

@@ -23,8 +23,7 @@ using namespace System::Runtime::InteropServices;
 // associated with an assembly.
 //
 [assembly:AssemblyTitleAttribute("Toolkit.Remoting")];
-[assembly:AssemblyDescriptionAttribute("Toolkit.Remoting provides additional \
-										communication features")];
+[assembly:AssemblyDescriptionAttribute("Toolkit.Remoting provides additional communication features")];
 [assembly:AssemblyProductAttribute("Toolkit Remoting")];
 [assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2007-2008")];
 [assembly:AssemblyInformationalVersionAttribute("1.0")];

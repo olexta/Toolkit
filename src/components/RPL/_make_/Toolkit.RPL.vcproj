@@ -126,10 +126,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\Factories\PersistenceBroker.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\DeleteCriteria.cpp"
 				>
 			</File>
@@ -173,6 +169,14 @@
 				RelativePath="..\ValueBox.cpp"
 				>
 			</File>
+			<Filter
+				Name="Factories"
+				>
+				<File
+					RelativePath="..\Factories\PersistenceBroker.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -230,14 +234,6 @@
 			<Filter
 				Name="Factories"
 				>
-				<File
-					RelativePath="..\Factories\IBrokerFactory.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Factories\IObjectFactory.h"
-					>
-				</File>
 				<File
 					RelativePath="..\Factories\PersistenceBroker.h"
 					>

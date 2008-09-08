@@ -23,8 +23,7 @@ using namespace System::Runtime::InteropServices;
 // associated with an assembly.
 //
 [assembly:AssemblyTitleAttribute("Toolkit.Settings")];
-[assembly:AssemblyDescriptionAttribute("Toolkit.Settings provide classes to \
-										manage application settings")];
+[assembly:AssemblyDescriptionAttribute("Toolkit.Settings provides classes to manage application settings")];
 [assembly:AssemblyProductAttribute("Toolkit Settings")];
 [assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2007-2008")];
 [assembly:AssemblyInformationalVersionAttribute("1.0")];

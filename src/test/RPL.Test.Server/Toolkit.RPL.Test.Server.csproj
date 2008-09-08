@@ -36,7 +36,6 @@
     <Reference Include="..\..\..\bin\Toolkit.Remoting.dll" />
     <Reference Include="..\..\..\bin\Toolkit.RPL.dll" />
     <Reference Include="..\..\..\bin\Toolkit.RPL.Storage.dll" />
-    <Reference Include="..\..\..\bin\Toolkit.RPL.Test.Objects.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />

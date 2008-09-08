@@ -23,8 +23,7 @@ using namespace System::Runtime::InteropServices;
 // associated with an assembly.
 //
 [assembly:AssemblyTitleAttribute("Toolkit.RPL")];
-[assembly:AssemblyDescriptionAttribute("Toolkit.RPL module provide persistence \
-										objects management")];
+[assembly:AssemblyDescriptionAttribute("Toolkit.RPL module provides persistence objects management")];
 [assembly:AssemblyProductAttribute("Robust Persistence Layer")];
 [assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2006-2008")];
 [assembly:AssemblyInformationalVersionAttribute("1.0")];

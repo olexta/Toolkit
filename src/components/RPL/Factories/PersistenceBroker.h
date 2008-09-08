@@ -27,8 +27,28 @@ _RPL_BEGIN
 ref class PersistentObject;
 
 namespace Factories {
-	interface class IBrokerFactory;
-	interface class IObjectFactory;
+	ref class PersistenceBroker;
+
+	/// <summary>
+	/// Encapsulates the behavior needed for broker creation.
+	/// </summary><remarks>
+	/// It can be usefull to define custom creation algorithm for
+	/// broker. For example, you want create all instances of
+	/// PersistenceBroker in separated domains.
+	/// </remarks>
+	public delegate PersistenceBroker^ BROKER_FACTORY( void );
+
+
+	/// <summary>
+	/// Returns new instance of the specified type of object.
+	/// </summary><remarks>
+	/// That function calls every time new object retrieved from
+	/// storage.
+	/// </remarks>
+	public delegate PersistentObject^ OBJECT_FACTORY( String ^type, int id,	\
+													  DateTime stamp,		\
+													  String ^name );
+
 
 	/// <summary>
 	/// Interface that provides internal access to the storage.
@@ -104,8 +124,8 @@ namespace Factories {
 		static Object^				const _lock = gcnew Object();
 
 		static bool					s_disposed = false;
-		static IBrokerFactory		^s_brokerFactory = nullptr;
-		static IObjectFactory		^s_objectFactory = nullptr;
+		static BROKER_FACTORY		^s_brokerFactory = nullptr;
+		static OBJECT_FACTORY		^s_objectFactory = nullptr;
 		static PersistenceBroker	^s_instance = nullptr;
 		static BrokerCache			^s_cache = nullptr;
 		static IPersistenceStorage	^s_storage = nullptr;
@@ -153,11 +173,11 @@ namespace Factories {
 		~PersistenceBroker( void );
 
 	public:
-		property IBrokerFactory^ BrokerFactory {
-			static void set( IBrokerFactory ^factory );
+		property BROKER_FACTORY^ BrokerFactory {
+			static void set( BROKER_FACTORY ^factory );
 		}
-		property IObjectFactory^ ObjectFactory {
-			static void set( IObjectFactory ^factory );
+		property OBJECT_FACTORY^ ObjectFactory {
+			static void set( OBJECT_FACTORY ^factory );
 		}
 
 		static void Connect( IPersistenceStorage ^storage );

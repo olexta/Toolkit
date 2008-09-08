@@ -13,8 +13,6 @@
 /****************************************************************************/
 
 #include "..\PersistentObject.h"
-#include "IBrokerFactory.h"
-#include "IObjectFactory.h"
 #include "PersistenceBroker.h"
 
 using namespace _RPL;
@@ -391,7 +389,7 @@ IIRemoteStorage^ PersistenceBroker::Storage::get( void )
 			// now we must create new object instance
 			if( s_brokerFactory != nullptr ) {
 				// use factory for custom creation
-				s_instance = s_brokerFactory->CreateInstance();
+				s_instance = s_brokerFactory();
 			} else {
 				// use default constructor to create object
 				s_instance = gcnew PersistenceBroker();
@@ -438,8 +436,8 @@ PersistentObject^ PersistenceBroker::Cache::get( HEADER header )
 				throw gcnew InvalidOperationException(ERR_OBJECT_FACTORY);
 			}
 			// create object through factory
-			obj = s_objectFactory->CreateInstance( header.Type, header.ID,
-												   header.Stamp, header.Name );
+			obj = s_objectFactory( header.Type,
+								   header.ID, header.Stamp, header.Name );
 			// check for succeded object creation
 			if( obj == nullptr) {
 				throw gcnew InvalidOperationException(String::Format(
@@ -525,11 +523,11 @@ PersistenceBroker::~PersistenceBroker( void )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Sets interface that provide custom broker creation. Null means
+/// Sets delegate that provide custom broker creation. Null means
 /// using of default creation algorithm.
 /// </summary>
 //-------------------------------------------------------------------
-void PersistenceBroker::BrokerFactory::set( IBrokerFactory ^factory )
+void PersistenceBroker::BrokerFactory::set( BROKER_FACTORY ^factory )
 {
 	s_brokerFactory = factory;
 }
@@ -537,13 +535,13 @@ void PersistenceBroker::BrokerFactory::set( IBrokerFactory ^factory )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Sets interface that provide persistent object creation.
+/// Sets delegate that provide persistent object creation.
 /// </summary><remarks>
 /// This interface must be set on the client but is not needed on the
 /// server side.
 /// </remarks>
 //-------------------------------------------------------------------
-void PersistenceBroker::ObjectFactory::set( IObjectFactory ^factory )
+void PersistenceBroker::ObjectFactory::set( OBJECT_FACTORY ^factory )
 {
 	// check for null reference
 	if( factory == nullptr ) throw gcnew ArgumentNullException( "factory" );
