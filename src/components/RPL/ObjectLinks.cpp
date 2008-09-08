@@ -74,8 +74,8 @@ ObjectLinks::log_record::set( PersistentObject ^obj, STATE action )
 	}
 	// all other states of object are incompatible with
 	// requested action: notify this, but don't raise exception
-	dbgprint( String::Format(
-			  ERR_LOG_STATES, state.ToString(), action.ToString() )) ;
+	System::Diagnostics::Trace::WriteLine( String::Format(
+	ERR_LOG_STATES, state.ToString(), action.ToString() ));
 }
 
 

@@ -4,11 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{408D5906-CBD3-4E96-A8DA-ABDE5E2256BB}</ProjectGuid>
+    <ProjectGuid>{177CBAF0-87CB-4282-9612-28AD60566D97}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Toolkit.RPL.Test</RootNamespace>
-    <AssemblyName>Toolkit.RPL.Test.Client</AssemblyName>
+    <RootNamespace>Toolkit.RPL.Test.Server</RootNamespace>
+    <AssemblyName>Toolkit.RPL.Test.Server</AssemblyName>
     <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -31,11 +31,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="..\..\..\bin\Toolkit.Collections.dll" />
-	<Reference Include="..\..\..\bin\Toolkit.Remoting.dll" />
+    <Reference Include="..\..\..\bin\Toolkit.Remoting.dll" />
     <Reference Include="..\..\..\bin\Toolkit.RPL.dll" />
+    <Reference Include="..\..\..\bin\Toolkit.RPL.Storage.dll" />
     <Reference Include="..\..\..\bin\Toolkit.RPL.Test.Objects.dll" />
   </ItemGroup>
   <ItemGroup>

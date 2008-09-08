@@ -1,28 +1,31 @@
 ﻿/****************************************************************************/
 /*																			*/
-/*	Project:	Robust Persistence Layer									*/
+/*	Project:	Toolkit Remoting											*/
 /*																			*/
-/*	Module:		ICrossDomainService.h										*/
+/*	Module:		IService.h													*/
 /*																			*/
-/*	Content:	Definition of ICrossDomainService interface					*/
+/*	Content:	Definition of CrossDomain::IService interface				*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2007-2008 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
-/*																			*/
-/*																			*/
-/*	This interface encapsulates	the behavior needed for cross domain		*/
-/*	communication. Of course, object must be derived from MBR also.			*/
 /*																			*/
 /****************************************************************************/
 
 #pragma once
+#include "..\Remoting.h"
 
 using namespace System;
 using namespace System::Runtime::Remoting::Messaging;
 
 
-public interface class ICrossDomainService
+_CROSS_DOMAIN_BEGIN
+/// <summary>
+/// This interface encapsulates	the behavior needed for cross domain
+/// communication.
+/// </summary>
+private interface class IService
 {
 	IMessage^ Marshal( IMessage ^msg );
 };
+_CROSS_DOMAIN_END

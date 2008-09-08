@@ -25,8 +25,6 @@ using namespace System::Diagnostics;
 	"Type '{0}' is not supported."
 #define ERR_CAST_FROM_TO													\
 	"Specified cast is not valid: from '{0}' to '{1}'."
-#define ERR_LOG_STATES														\
-	"ERROR! Incompatible log record states: from '{0}' to '{1}'."
 #define ERR_SUPPORTED_OPERATION												\
 	"Operation isn't supported for this type of object '{0}'."
 #define ERR_OBJECT_EXISTS													\
@@ -49,6 +47,8 @@ using namespace System::Diagnostics;
 	"Stream is to big for serialization."
 #define ERR_STREAM_ASSIGN													\
 	"Instance of the Stream cann't be assigned to multiple properties."
+#define ERR_LOG_STATES														\
+	"ERROR! Incompatible log record states: from '{0}' to '{1}'."
 #define ERR_DELETE_FILE														\
 	"ERROR! Cann't delete file '{0}': {1}"
 #define ERR_DISPOSE															\

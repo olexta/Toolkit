@@ -2,13 +2,15 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="Toolkit.RPL.Test.Server"
-	ProjectGUID="{177CBAF0-87CB-4282-9612-28AD60566D97}"
-	RootNamespace="server"
+	Name="Toolkit.Remoting"
+	ProjectGUID="{7D6A9B64-6381-4023-B410-025480718AE7}"
+	RootNamespace="Toolkit.Remoting"
 	Keyword="ManagedCProj"
 	>
 	<Platforms>
-		<Platform Name="Win32" />
+		<Platform
+			Name="Win32"
+		/>
 	</Platforms>
 	<ToolFiles>
 	</ToolFiles>
@@ -17,9 +19,10 @@
 			Name="Debug|Win32"
 			OutputDirectory="..\..\..\..\bin\"
 			IntermediateDirectory="..\..\..\..\tmp\$(ProjectName)\"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="1"
 			ManagedExtensions="1"
+			BuildLogFile="$(IntDir)BuildLog.htm"
 			>
 			<Tool Name="VCPreBuildEventTool" />
 			<Tool Name="VCCustomBuildTool" />
@@ -36,11 +39,17 @@
 			<Tool Name="VCFxCopTool" />
 			<Tool Name="VCAppVerifierTool" />
 			<Tool Name="VCWebDeploymentTool" />
-			<Tool Name="VCPostBuildEventTool" />
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(NoInherit)"
+				OutputFile="$(OutDir)$(ProjectName).dll"
 				LinkIncremental="2"
+				GenerateManifest="true"
+				ManifestFile="$(IntDir)$(TargetFileName).intermediate.manifest"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				TargetMachine="1"
@@ -51,18 +60,23 @@
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
+				ObjectFile="$(IntDir)"
+				ProgramDataBaseFileName="$(IntDir)vc80.pdb"
+				GenerateXMLDocumentationFiles="true"
+				XMLDocumentationFileName="$(IntDir)"
 				WarningLevel="3"
-				DebugInformationFormat="1"
+				DebugInformationFormat="3"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="..\..\..\..\bin\"
 			IntermediateDirectory="..\..\..\..\tmp\$(ProjectName)\"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="1"
 			ManagedExtensions="1"
 			WholeProgramOptimization="1"
+			BuildLogFile="$(IntDir)BuildLog.htm"
 			>
 			<Tool Name="VCPreBuildEventTool" />
 			<Tool Name="VCCustomBuildTool" />
@@ -79,11 +93,16 @@
 			<Tool Name="VCFxCopTool" />
 			<Tool Name="VCAppVerifierTool" />
 			<Tool Name="VCWebDeploymentTool" />
-			<Tool Name="VCPostBuildEventTool" />
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(NoInherit)"
+				OutputFile="$(OutDir)$(ProjectName).dll"
 				LinkIncremental="1"
+				ManifestFile="$(IntDir)$(TargetFileName).intermediate.manifest"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -92,8 +111,12 @@
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
+				ObjectFile="$(IntDir)"
+				ProgramDataBaseFileName="$(IntDir)vc80.pdb"
+				GenerateXMLDocumentationFiles="true"
+				XMLDocumentationFileName="$(IntDir)"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 			/>
 		</Configuration>
 	</Configurations>
@@ -108,25 +131,29 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AssemblyInfo.cpp"
+				RelativePath="..\CrossDomainMarshaler.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\CrossDomainContextAttribute.cpp"
+				RelativePath="..\CrossDomainProxy.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\CrossDomainMarshaller.cpp"
+			<Filter
+				Name="CrossDomain"
 				>
-			</File>
-			<File
-				RelativePath="..\MessageSink.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\RPL.Test.Server.cpp"
-				>
-			</File>
+				<File
+					RelativePath="..\CrossDomain\ContextAttribute.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\CrossDomain\MessageSink.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\CrossDomain\Service.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -134,30 +161,46 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\CrossDomainContextAttribute.h"
+				RelativePath="..\CrossDomainMarshaler.h"
 				>
 			</File>
 			<File
-				RelativePath="..\CrossDomainMarshaller.h"
-				>
-			</File>
-			<File
-				RelativePath="..\CrossDomainService.h"
-				>
-			</File>
-			<File
-				RelativePath="..\MessageSink.h"
+				RelativePath="..\CrossDomainProxy.h"
 				>
 			</File>
 			<Filter
-				Name="interfaces"
+				Name="CrossDomain"
 				>
 				<File
-					RelativePath="..\ICrossDomainService.h"
+					RelativePath="..\CrossDomain\ContextAttribute.h"
+					>
+				</File>
+				<File
+					RelativePath="..\CrossDomain\IService.h"
+					>
+				</File>
+				<File
+					RelativePath="..\CrossDomain\MessageSink.h"
+					>
+				</File>
+				<File
+					RelativePath="..\CrossDomain\Service.h"
 					>
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath=".\AssemblyInfo.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\Remoting.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\Remoting.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

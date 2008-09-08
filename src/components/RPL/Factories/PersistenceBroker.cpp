@@ -4,7 +4,7 @@
 /*																			*/
 /*	Module:		PersistenceBroker.cpp										*/
 /*																			*/
-/*	Content:	Implementation of PersistenceBroker class					*/
+/*	Content:	Implementation of Factories::PersistenceBroker class		*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
 /*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
@@ -38,7 +38,7 @@ using namespace _RPL::Factories;
 
 
 //----------------------------------------------------------------------------
-//						PersistenceBroker::BrokerCache
+//			Toolkit::RPL::Factories::PersistenceBroker::BrokerCache
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -75,7 +75,7 @@ BrokerCache::thread_clean( void )
 		}
 	} catch( Exception ^e ) {
 		// output error message
-		dbgprint( "[ERROR]: " + e->Message );
+		System::Diagnostics::Debug::WriteLine( "ERROR! " + e->Message );
 	}
 }
 
@@ -183,7 +183,7 @@ EXIT_WRITE(_lock)}
 
 
 //-----------------------------------------------------------------------------
-//								PersistenceBroker
+//					Toolkit::RPL::Factories::PersistenceBroker
 //-----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
@@ -618,7 +618,7 @@ void PersistenceBroker::Close( void )
 			// call instance disposer to clean up server resources
 			delete s_instance;
 		} catch( Exception ^e ) {
-			dbgprint( String::Format(
+			System::Diagnostics::Trace::WriteLine( String::Format(
 			ERR_DISPOSE, PersistenceBroker::typeid, e->Message ) );
 		}
 		// prevent from future cals

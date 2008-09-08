@@ -26,23 +26,19 @@
 			<Tool Name="VCXMLDataGeneratorTool" />
 			<Tool Name="VCWebServiceProxyGeneratorTool" />
 			<Tool Name="VCMIDLTool" />
-			<Tool Name="VCBscMakeTool" />
-			<Tool Name="VCFxCopTool" />
-			<Tool Name="VCAppVerifierTool" />
-			<Tool Name="VCWebDeploymentTool" />
 			<Tool Name="VCManagedResourceCompilerTool" />
 			<Tool Name="VCResourceCompilerTool" />
 			<Tool Name="VCPreLinkEventTool" />
 			<Tool Name="VCALinkTool" />
 			<Tool Name="VCManifestTool" />
+			<Tool Name="VCXDCMakeTool" />
+			<Tool Name="VCBscMakeTool" />
+			<Tool Name="VCFxCopTool" />
+			<Tool Name="VCAppVerifierTool" />
+			<Tool Name="VCWebDeploymentTool" />
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-				SuppressStartupBanner="true"
-				ValidateIntelliSense="false"
 			/>
 			<Tool
 				Name="VCLinkerTool"
@@ -83,6 +79,9 @@
 			<Tool Name="VCXMLDataGeneratorTool" />
 			<Tool Name="VCWebServiceProxyGeneratorTool" />
 			<Tool Name="VCMIDLTool" />
+			<Tool Name="VCManagedResourceCompilerTool" />
+			<Tool Name="VCResourceCompilerTool" />
+			<Tool Name="VCPreLinkEventTool" />
 			<Tool Name="VCALinkTool" />
 			<Tool Name="VCManifestTool" />
 			<Tool Name="VCXDCMakeTool" />
@@ -90,9 +89,6 @@
 			<Tool Name="VCFxCopTool" />
 			<Tool Name="VCAppVerifierTool" />
 			<Tool Name="VCWebDeploymentTool" />
-			<Tool Name="VCManagedResourceCompilerTool" />
-			<Tool Name="VCResourceCompilerTool" />
-			<Tool Name="VCPreLinkEventTool" />
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"

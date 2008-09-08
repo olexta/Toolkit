@@ -27,6 +27,9 @@ _COLLECTIONS_BEGIN
 generic<typename TKey>
 public interface class IKeyedObject
 {
+	/// <summary>
+	/// Gets the key in the object.
+	/// </summary> 
 	property TKey Key {
 		virtual TKey get( void );
 	}

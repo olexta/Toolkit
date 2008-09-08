@@ -8,6 +8,7 @@ using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Diagnostics;
+using Toolkit.Remoting;
 using Toolkit.RPL.Factories;
 
 
@@ -318,60 +319,13 @@ namespace Toolkit.RPL.Test
 
 		private class Factories : IBrokerFactory, IObjectFactory
 		{
-			private string m_uri;
-
-			private class CustomProxy : RealProxy
-			{
-				private String m_uri;
-				private String m_clientID;
-				private IMessageSink m_messageSink;
-
-				public override IMessage Invoke( IMessage msg )
-				{
-					msg.Properties["__Uri"] = m_uri;
-
-					// pass the client's unique identifier as part of the call context
-					LogicalCallContext callContext = (LogicalCallContext)
-												(msg.Properties["__CallContext"]);
-					callContext.SetData( "__ClientID", m_clientID );
-
-					return m_messageSink.SyncProcessMessage( msg );
-				}
-				public CustomProxy( String uri, Type type )
-					: base( type )
-				{
-					// store uri of remote service
-					m_uri = uri;
-
-					// pass through registered chanels
-					foreach ( IChannel channel in ChannelServices.RegisteredChannels ) {
-						// and try to find chanel, that can be used to
-						// create message sink for given uri
-						IChannelSender sender = (IChannelSender)channel;
-						if ( sender != null ) {
-							// check for messaging protocol
-							if ( sender.ChannelName == "tcp" ) {
-								// try to create message sink for specified uri
-								string objectUri = string.Empty;
-								m_messageSink = sender.CreateMessageSink( m_uri, null, out objectUri );
-								// all right, can return
-								if ( m_messageSink != null )
-									break;
-							}
-						}
-					}
-					if ( m_messageSink == null )
-						throw new Exception( "No channel found for " + m_uri );
-
-					// create a unique identifier
-					m_clientID = "/310001/" + Guid.NewGuid().ToString();
-				}
-			}
+			private string m_url;
 			
 			PersistenceBroker IBrokerFactory.CreateInstance()
-			{
-				return (PersistenceBroker)(new CustomProxy(
-						m_uri, typeof( PersistenceBroker ))).GetTransparentProxy();
+			{					
+				// create a unique identifier
+				return new CrossDomainProxy<PersistenceBroker>(
+								m_url, "/310001/" + Guid.NewGuid().ToString());
 			}
 
 			PersistentObject IObjectFactory.CreateInstance(
@@ -391,7 +345,7 @@ namespace Toolkit.RPL.Test
 				return (PersistentObject) Activator.CreateInstance( t, args );
 			}
 			
-			public Factories( string uri ) { m_uri = uri; }
+			public Factories( string uri ) { m_url = uri; }
 		}
 	}
 }

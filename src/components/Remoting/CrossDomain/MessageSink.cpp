@@ -1,70 +1,58 @@
 ﻿/****************************************************************************/
 /*																			*/
-/*	Project:	Robust Persistence Layer									*/
+/*	Project:	Toolkit Remoting											*/
 /*																			*/
 /*	Module:		MessageSink.cpp												*/
 /*																			*/
-/*	Content:	Implementation of MessageSink class							*/
+/*	Content:	Implementation of CrossDomain::MessageSink class			*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2007-2008 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
-/*																			*/
-/*																			*/
-/*	Implementing a CCrossDomainMarshaller as a ContextBoundObject requires	*/
-/*	me also to implement a MessageSink object. That offers me the			*/
-/*	opportunity to intercept the Message before it enters the point of		*/
-/*	reconstruction to the ultimate method call.	This class implements		*/
-/*	IMessageSink interface.													*/
 /*																			*/
 /****************************************************************************/
 
-#include "ICrossDomainService.h"
-#include "CrossDomainMarshaller.h"
+#include "..\CrossDomainMarshaler.h"
+#include "IService.h"
 #include "MessageSink.h"
 
+using namespace _CROSS_DOMAIN;
+
 
 //----------------------------------------------------------------------------
-//								MessageSink
+//				Toolkit::Remoting::CrossDomain::MessageSink
 //----------------------------------------------------------------------------
 
 //-------------------------------------------------------------------
 //
-// Create instance of the MessageSink class. I store next message
-// sink in the sink chain here.
-//
-//-------------------------------------------------------------------
-MessageSink::MessageSink( IMessageSink ^nextSink )
-{
-	m_nextSink = nextSink;
-}
-
-
-//-------------------------------------------------------------------
+// IMessageSink::SyncProcessMessage implementation.
 //
 // Synchronously processes the given message. Here is where we must
 // intercept redirect the client's method call.
 // 
 //-------------------------------------------------------------------
-IMessage^ MessageSink::SyncProcessMessage( IMessage ^msg )
+IMessage^ MessageSink::sync_process( IMessage ^msg )
 {
 	if( msg->Properties["__Uri"] == nullptr ) {
-
-		return m_nextSink->SyncProcessMessage( msg );
+		// redirect message to next sink in the chain
+		return _nextSink->SyncProcessMessage( msg );
 	}
 
 	// get client ID from context data
 	LogicalCallContext	^callContext = dynamic_cast<LogicalCallContext^>( 
 									   msg->Properties["__CallContext"] );
 	String				^clientID = dynamic_cast<String^>(
-									callContext->GetData( "__ClientID" ) );
+									callContext->GetData( CLIENT_ID ) );
 
 	if( clientID != nullptr ) {
-		// get associated service interface
-		return CrossDomainMarshaller::Instance->Service[clientID]->Marshal( msg );
+		// get marshaler instance
+		CrossDomainMarshaler	^cdm = dynamic_cast<CrossDomainMarshaler^>(
+									   _object );
+		// and process message with associated service interface
+		return cdm[clientID]->Marshal( msg );
 	} else {
 		// no client ID in message, throw exception
-		return gcnew ReturnMessage(gcnew ApplicationException("No __ClientID"), 
+		return gcnew ReturnMessage(gcnew ArgumentException(ERR_CLIENT_ID, "msg"), 
 								   dynamic_cast<IMethodCallMessage^>( msg ));
 	}
 }
@@ -72,22 +60,40 @@ IMessage^ MessageSink::SyncProcessMessage( IMessage ^msg )
 
 //-------------------------------------------------------------------
 //
+// IMessageSink::AsyncProcessMessage implementation.
+//
 // Asynchronously processes the given message.
 //
 //-------------------------------------------------------------------
-IMessageCtrl^ MessageSink::AsyncProcessMessage( IMessage ^msg, 
-												IMessageSink ^replySink )
+IMessageCtrl^ MessageSink::async_process( IMessage ^msg, 
+										  IMessageSink ^replySink )
 {
-	return m_nextSink->AsyncProcessMessage( msg, replySink );
+	return _nextSink->AsyncProcessMessage( msg, replySink );
 }
 
 
 //-------------------------------------------------------------------
 //
+// IMessageSink::NextSink::get implementation.
+//
 // Gets the next message sink in the sink chain. 
 //
 //-------------------------------------------------------------------
-IMessageSink^ MessageSink::NextSink::get( void )
+IMessageSink^ MessageSink::get_next_sink( void )
 {
-	return m_nextSink;
+	return _nextSink;
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
+/// Creates new instance of the MessageSink class.
+/// </summary><remarks>
+/// I store next message sink in the sink chain here.
+/// </remarks>
+//-------------------------------------------------------------------
+MessageSink::MessageSink( MarshalByRefObject ^obj, IMessageSink ^nextSink ) : \
+	_object(obj), _nextSink(nextSink)
+{
+	// nothing to do
 }

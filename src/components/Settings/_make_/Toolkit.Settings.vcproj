@@ -4,7 +4,7 @@
 	Version="8.00"
 	Name="Toolkit.Settings"
 	ProjectGUID="{29C3CB10-5221-48C5-AEDF-25730B3B030A}"
-	RootNamespace="ToolkitSettings"
+	RootNamespace="Toolkit.Settings"
 	Keyword="ManagedCProj"
 	>
 	<Platforms>
@@ -24,20 +24,34 @@
 			ManagedExtensions="1"
 			BuildLogFile="$(IntDir)BuildLog.htm"
 			>
+			<Tool Name="VCPreBuildEventTool" />
+			<Tool Name="VCCustomBuildTool" />
+			<Tool Name="VCXMLDataGeneratorTool" />
+			<Tool Name="VCWebServiceProxyGeneratorTool" />
+			<Tool Name="VCMIDLTool" />
+			<Tool Name="VCManagedResourceCompilerTool" />
+			<Tool Name="VCResourceCompilerTool" />
+			<Tool Name="VCPreLinkEventTool" />
+			<Tool Name="VCALinkTool" />
+			<Tool Name="VCManifestTool" />
+			<Tool Name="VCXDCMakeTool" />
+			<Tool Name="VCBscMakeTool" />
+			<Tool Name="VCFxCopTool" />
+			<Tool Name="VCAppVerifierTool" />
+			<Tool Name="VCWebDeploymentTool" />
 			<Tool
-				Name="VCPreBuildEventTool"
+				Name="VCPostBuildEventTool"
+				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
 			/>
 			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
+				Name="VCLinkerTool"
+				AdditionalDependencies="$(NOINHERIT)"
+				OutputFile="$(OutDir)$(ProjectName).dll"
+				LinkIncremental="2"
+				ManifestFile="$(IntDir)$(TargetFileName).intermediate.manifest"
+				GenerateDebugInformation="true"
+				AssemblyDebug="1"
+				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -52,54 +66,6 @@
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="$(NOINHERIT)"
-				OutputFile="$(OutDir)$(ProjectName).dll"
-				LinkIncremental="2"
-				ManifestFile="$(IntDir)$(TargetFileName).intermediate.manifest"
-				GenerateDebugInformation="true"
-				AssemblyDebug="1"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-				OutputManifestFile="$(IntDir)$(TargetFileName).embed.manifest"
-				ManifestResourceFile="$(IntDir)$(TargetFileName).embed.manifest.res"
-				DependencyInformationFile="$(IntDir)mt.dep"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-				OutputFile="$(OutDir)$(ProjectName).bsc"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
-			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -111,20 +77,33 @@
 			WholeProgramOptimization="1"
 			BuildLogFile="$(IntDir)BuildLog.htm"
 			>
+			<Tool Name="VCPreBuildEventTool" />
+			<Tool Name="VCCustomBuildTool" />
+			<Tool Name="VCXMLDataGeneratorTool" />
+			<Tool Name="VCWebServiceProxyGeneratorTool" />
+			<Tool Name="VCMIDLTool" />
+			<Tool Name="VCManagedResourceCompilerTool" />
+			<Tool Name="VCResourceCompilerTool" />
+			<Tool Name="VCPreLinkEventTool" />
+			<Tool Name="VCALinkTool" />
+			<Tool Name="VCManifestTool" />
+			<Tool Name="VCXDCMakeTool" />
+			<Tool Name="VCBscMakeTool" />
+			<Tool Name="VCFxCopTool" />
+			<Tool Name="VCAppVerifierTool" />
+			<Tool Name="VCWebDeploymentTool" />
 			<Tool
-				Name="VCPreBuildEventTool"
+				Name="VCPostBuildEventTool"
+				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
 			/>
 			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
+				Name="VCLinkerTool"
+				AdditionalDependencies="$(NoInherit)"
+				OutputFile="$(OutDir)$(ProjectName).dll"
+				LinkIncremental="1"
+				ManifestFile="$(IntDir)$(TargetFileName).intermediate.manifest"
+				GenerateDebugInformation="false"
+				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -137,53 +116,6 @@
 				XMLDocumentationFileName="$(IntDir)"
 				WarningLevel="3"
 				DebugInformationFormat="0"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="$(NoInherit)"
-				OutputFile="$(OutDir)$(ProjectName).dll"
-				LinkIncremental="1"
-				ManifestFile="$(IntDir)$(TargetFileName).intermediate.manifest"
-				GenerateDebugInformation="false"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-				OutputManifestFile="$(IntDir)$(TargetFileName).embed.manifest"
-				ManifestResourceFile="$(IntDir)$(TargetFileName).embed.manifest.res"
-				DependencyInformationFile="$(IntDir)mt.dep"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-				OutputFile="$(OutDir)$(ProjectName).bsc"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
 			/>
 		</Configuration>
 	</Configurations>

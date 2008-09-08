@@ -24,7 +24,8 @@ using namespace _RPL;
 try {																		\
 	File::Delete( path );													\
 } catch( IOException ^e ) {													\
-	dbgprint( String::Format( ERR_DELETE_FILE, path, e->Message ) );		\
+	System::Diagnostics::Trace::WriteLine( String::Format(					\
+	ERR_DELETE_FILE, path, e->Message ) );									\
 }
 
 

@@ -86,8 +86,8 @@ ObjectProperties::log_record::set( String ^key, STATE action )
 	}
 	// all other states of property are incompatible with
 	// requested action: notify this, but don't raise exception
-	dbgprint( String::Format(
-			  ERR_LOG_STATES, state.ToString(), action.ToString() )) ;
+	System::Diagnostics::Trace::WriteLine( String::Format(
+	ERR_LOG_STATES, state.ToString(), action.ToString() ));
 }
 
 

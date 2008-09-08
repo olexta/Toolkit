@@ -1,19 +1,20 @@
 ﻿/****************************************************************************/
 /*																			*/
-/*	Project:	Robust Persistence Layer									*/
+/*	Project:	Toolkit Remoting											*/
 /*																			*/
 /*	Module:		AssemblyInfo.cpp											*/
 /*																			*/
 /*	Content:	Module provide assembly information and properties.			*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
 
 using namespace System;
 using namespace System::Reflection;
+using namespace System::Runtime::InteropServices;
 
 
 //
@@ -21,11 +22,15 @@ using namespace System::Reflection;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("Toolkit.RPL.Test.Server")];
-[assembly:AssemblyDescriptionAttribute("RPL server example")];
-[assembly:AssemblyProductAttribute("Robust Persistence Layer")];
-[assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2006-2008")];
+[assembly:AssemblyTitleAttribute("Toolkit.Remoting")];
+[assembly:AssemblyDescriptionAttribute("Toolkit.Remoting provides additional \
+										communication features")];
+[assembly:AssemblyProductAttribute("Toolkit Remoting")];
+[assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2007-2008")];
 [assembly:AssemblyInformationalVersionAttribute("1.0")];
+
+[assembly:ComVisible(false)];
+[assembly:CLSCompliantAttribute(true)];
 
 //
 // Version information for an assembly consists of the following four values:
