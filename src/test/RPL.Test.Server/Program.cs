@@ -30,7 +30,7 @@ namespace Toolkit.RPL.Test
 		static ushort SERVER_PORT = 8888;
 		// connection string to SQL database
 		static string CNN_STR = "Data Source=.;" +
-								"Initial Catalog=Toolkit.RPL.Starage.ODB;" +
+								"Initial Catalog=Toolkit.RPL.Storage.ODB;" +
 								"Persist Security Info=False;" +
 								"Integrated Security=SSPI";
 
