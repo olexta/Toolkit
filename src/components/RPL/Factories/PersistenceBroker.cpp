@@ -625,3 +625,15 @@ void PersistenceBroker::Close( void )
 
 	dbgprint( "<- [" + AppDomain::CurrentDomain->FriendlyName + "]" );
 }
+
+
+//-------------------------------------------------------------------
+/// <summary>
+/// Gives the instance an infinite lifetime by preventing a lease
+/// from being created.
+/// </summary>
+//-------------------------------------------------------------------
+Object^ PersistenceBroker::InitializeLifetimeService( void )
+{
+	return nullptr;
+}

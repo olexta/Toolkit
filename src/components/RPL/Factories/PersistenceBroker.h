@@ -183,5 +183,7 @@ namespace Factories {
 		static void Connect( IPersistenceStorage ^storage );
 		static void Disconnect( void );
 		static void Close( void );
+
+		virtual Object^ InitializeLifetimeService( void ) override;
 	};
 }_RPL_END
