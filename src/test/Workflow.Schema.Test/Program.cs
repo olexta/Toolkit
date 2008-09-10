@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using System.IO;
 
 [Flags]
 enum NumericEnum
@@ -18,9 +19,15 @@ namespace Toolkit.Workflow.Schema.Test
 	{
 		static void Main( string[] args )
 		{
-			MetaData.InitSchema("uk-UA",
+			Stream xml = new FileStream(
 				@"Toolkit.Workflow.Schema.Test.TestSchema.xml",
-				@"..\etc\Toolkit.Workflow.Schema.xsd");
+				FileMode.Open );
+			Stream xsd = new FileStream(
+				@"..\etc\Toolkit.Workflow.Schema.xsd",
+				FileMode.Open );
+			MetaData.InitSchema("uk-UA", xml, xsd );
+			xml.Close();
+			xsd.Close();
 			Console.WriteLine( MetaData.Instance.Name );
 			TestObject to = new TestObject();
 			Console.WriteLine( "Class caption: {0}", MetaData.Instance[ to ].Caption );

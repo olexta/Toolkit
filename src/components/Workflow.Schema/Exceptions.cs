@@ -15,9 +15,9 @@ using System;
 
 namespace Toolkit.Workflow.Schema
 {
-	public class SchemaIsAlreadyInitializedException : ApplicationException
+	public class SchemaAlreadyInitException : ApplicationException
 	{
-		public SchemaIsAlreadyInitializedException()
+		public SchemaAlreadyInitException()
 			: base( "Schema is already inited." )
 		{
 		}

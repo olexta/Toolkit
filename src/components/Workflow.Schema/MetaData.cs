@@ -18,6 +18,7 @@ using System.Xml.Schema;
 using System.Globalization;
 
 using Toolkit.Collections;
+using System.IO;
 
 namespace Toolkit.Workflow.Schema
 {
@@ -35,16 +36,6 @@ namespace Toolkit.Workflow.Schema
 		/// Indicates that schema was already loaded.
 		/// </summary>
 		private static bool m_IsInitialized = false;
-
-		/// <summary>
-		/// Path to schema instance (.xml file).
-		/// </summary>
-		private string m_SchemaPath;
-
-		/// <summary>
-		/// Path to schema definition (.xsd file).
-		/// </summary>
-		private string m_SchemaDescrPath;
 
 		/// <summary>
 		/// Stores locale for l10n.
@@ -116,19 +107,19 @@ namespace Toolkit.Workflow.Schema
 		/// This method creates singleton instance of MetaData class.
 		/// You must call this method before using MetaData instance.
 		/// <param name="UICulture">Culture identifier.</param>
-		/// <param name="schemaPath">Path to schema file (.xml).</param>
-		/// <param name="schemaDescrPath">Path to schema description path (.xsd).</param>
+		/// <param name="xml">Schema file (.xml).</param>
+		/// <param name="xsd">Schema description file (.xsd).</param>
 		/// </summary>
-		public static void InitSchema( string UICulture, string schemaPath, string schemaDescrPath )
+		public static void InitSchema( string UICulture, Stream xml, Stream xsd )
 		{
 			if( m_IsInitialized )
-			    throw new SchemaIsAlreadyInitializedException();
+			    throw new SchemaAlreadyInitException();
 
 			// creating singleton instance of MetaData class
 			m_Instance = new MetaData();
 			
 			// loading schema etc.
-			m_Instance.initialize( UICulture, schemaPath, schemaDescrPath );
+			m_Instance.initialize( UICulture, xml, xsd );
 
 			m_IsInitialized = true;
 		}
@@ -225,23 +216,7 @@ namespace Toolkit.Workflow.Schema
 		{
 			get { return m_CurrentUICulture; }
 		}
-
-		/// <summary>
-		/// Path to schema instance (.xml file).
-		/// </summary>
-		public string SchemaPath
-		{
-			get { return m_SchemaPath; }
-		}
-
-		/// <summary>
-		/// Gets, sets path to schema description (.xsd file).
-		/// </summary>
-		public string SchemaDescriptionPath
-		{
-			get { return m_SchemaDescrPath; }
-		}		
-		
+	
 		/// <summary>
 		/// Gets instance of Namespace manager for internal XPath purposes.
 		/// </summary>
@@ -260,20 +235,18 @@ namespace Toolkit.Workflow.Schema
 		/// <summary>
 		/// This method perform schema loading and building program structures.
 		/// </summary>
-		private void initialize( string UICulture, string schemaPath, string schemaDescrPath )
+		private void initialize( string UICulture, Stream xml, Stream xsd )
 		{
 			// initializing values
 			m_CurrentUICulture = UICulture;
-			m_SchemaPath = schemaPath;
-			m_SchemaDescrPath = schemaDescrPath;
 
 			// loading .xml
 			m_SchemaXML = new XmlDocument();
 
-			m_SchemaXML.Load( m_SchemaPath );
+			m_SchemaXML.Load( xml );
 
 			// loading .xsd to XmlDocument
-			XmlReader schemareader = XmlReader.Create( m_SchemaDescrPath );
+			XmlReader schemareader = XmlReader.Create( xsd );
 			m_SchemaXML.Schemas.Add( null, schemareader );
 			schemareader.Close();
 
