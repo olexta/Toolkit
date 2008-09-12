@@ -228,34 +228,31 @@
   <data name="&gt;&gt;pbError.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="label1.Font" type="System.Drawing.Font, System.Drawing">
+  <data name="lblCaption.Font" type="System.Drawing.Font, System.Drawing">
     <value>Microsoft Sans Serif, 8.25pt, style=Bold</value>
   </data>
-  <data name="label1.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="lblCaption.Location" type="System.Drawing.Point, System.Drawing">
     <value>70, 2</value>
   </data>
-  <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="lblCaption.Size" type="System.Drawing.Size, System.Drawing">
     <value>295, 48</value>
   </data>
-  <data name="label1.TabIndex" type="System.Int32, mscorlib">
+  <data name="lblCaption.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
   </data>
-  <data name="label1.Text" xml:space="preserve">
-    <value>Program has encountered a problem and will be closed. Please report to administrator:</value>
-  </data>
-  <data name="label1.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+  <data name="lblCaption.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
   </data>
-  <data name="&gt;&gt;label1.Name" xml:space="preserve">
-    <value>label1</value>
+  <data name="&gt;&gt;lblCaption.Name" xml:space="preserve">
+    <value>lblCaption</value>
   </data>
-  <data name="&gt;&gt;label1.Type" xml:space="preserve">
+  <data name="&gt;&gt;lblCaption.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;label1.Parent" xml:space="preserve">
+  <data name="&gt;&gt;lblCaption.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="&gt;&gt;label1.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;lblCaption.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
   <data name="tbMessage.Location" type="System.Drawing.Point, System.Drawing">
@@ -304,7 +301,7 @@
     <value>369, 255</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
-    <value>ExceptionForm</value>
+    <value>NotificationForm</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
     <value>System.Windows.Forms.Form, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

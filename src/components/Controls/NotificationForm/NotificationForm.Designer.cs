@@ -6,7 +6,7 @@
 
 namespace Toolkit.Controls.ExceptionForm
 {
-	partial class ExceptionForm
+	partial class NotificationForm
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -33,12 +33,12 @@ namespace Toolkit.Controls.ExceptionForm
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( ExceptionForm ) );
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( NotificationForm ) );
 			this.tbDetails = new System.Windows.Forms.TextBox();
 			this.btnDetails = new System.Windows.Forms.Button();
 			this.btnQuit = new System.Windows.Forms.Button();
 			this.pbError = new System.Windows.Forms.PictureBox();
-			this.label1 = new System.Windows.Forms.Label();
+			this.lblCaption = new System.Windows.Forms.Label();
 			this.tbMessage = new System.Windows.Forms.TextBox();
 			( (System.ComponentModel.ISupportInitialize)( this.pbError ) ).BeginInit();
 			this.SuspendLayout();
@@ -70,10 +70,10 @@ namespace Toolkit.Controls.ExceptionForm
 			this.pbError.Name = "pbError";
 			this.pbError.TabStop = false;
 			// 
-			// label1
+			// lblCaption
 			// 
-			resources.ApplyResources( this.label1, "label1" );
-			this.label1.Name = "label1";
+			resources.ApplyResources( this.lblCaption, "lblCaption" );
+			this.lblCaption.Name = "lblCaption";
 			// 
 			// tbMessage
 			// 
@@ -81,21 +81,21 @@ namespace Toolkit.Controls.ExceptionForm
 			this.tbMessage.Name = "tbMessage";
 			this.tbMessage.ReadOnly = true;
 			// 
-			// ExceptionForm
+			// NotificationForm
 			// 
 			this.AcceptButton = this.btnQuit;
 			resources.ApplyResources( this, "$this" );
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnQuit;
 			this.Controls.Add( this.tbMessage );
-			this.Controls.Add( this.label1 );
+			this.Controls.Add( this.lblCaption );
 			this.Controls.Add( this.pbError );
 			this.Controls.Add( this.btnQuit );
 			this.Controls.Add( this.btnDetails );
 			this.Controls.Add( this.tbDetails );
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "ExceptionForm";
+			this.Name = "NotificationForm";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			( (System.ComponentModel.ISupportInitialize)( this.pbError ) ).EndInit();
 			this.ResumeLayout( false );
@@ -109,7 +109,7 @@ namespace Toolkit.Controls.ExceptionForm
 		private System.Windows.Forms.Button btnDetails;
 		private System.Windows.Forms.Button btnQuit;
 		private System.Windows.Forms.PictureBox pbError;
-		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label lblCaption;
 		private System.Windows.Forms.TextBox tbMessage;
 	}
 }
