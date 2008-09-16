@@ -204,28 +204,28 @@
   <data name="&gt;&gt;btnQuit.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
-  <data name="pbError.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+  <data name="pbNotification.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <data name="pbError.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="pbNotification.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 2</value>
   </data>
-  <data name="pbError.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="pbNotification.Size" type="System.Drawing.Size, System.Drawing">
     <value>48, 48</value>
   </data>
-  <data name="pbError.TabIndex" type="System.Int32, mscorlib">
+  <data name="pbNotification.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
   </data>
-  <data name="&gt;&gt;pbError.Name" xml:space="preserve">
-    <value>pbError</value>
+  <data name="&gt;&gt;pbNotification.Name" xml:space="preserve">
+    <value>pbNotification</value>
   </data>
-  <data name="&gt;&gt;pbError.Type" xml:space="preserve">
+  <data name="&gt;&gt;pbNotification.Type" xml:space="preserve">
     <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;pbError.Parent" xml:space="preserve">
+  <data name="&gt;&gt;pbNotification.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="&gt;&gt;pbError.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;pbNotification.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
   <data name="lblCaption.Font" type="System.Drawing.Font, System.Drawing">

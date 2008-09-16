@@ -4,7 +4,7 @@
 //
 //----------------------------------------------------------------------
 
-namespace Toolkit.Controls.ExceptionForm
+namespace Toolkit.Controls.NotificationForm
 {
 	partial class NotificationForm
 	{
@@ -37,10 +37,10 @@ namespace Toolkit.Controls.ExceptionForm
 			this.tbDetails = new System.Windows.Forms.TextBox();
 			this.btnDetails = new System.Windows.Forms.Button();
 			this.btnQuit = new System.Windows.Forms.Button();
-			this.pbError = new System.Windows.Forms.PictureBox();
+			this.pbNotification = new System.Windows.Forms.PictureBox();
 			this.lblCaption = new System.Windows.Forms.Label();
 			this.tbMessage = new System.Windows.Forms.TextBox();
-			( (System.ComponentModel.ISupportInitialize)( this.pbError ) ).BeginInit();
+			( (System.ComponentModel.ISupportInitialize)( this.pbNotification ) ).BeginInit();
 			this.SuspendLayout();
 			// 
 			// tbDetails
@@ -64,11 +64,11 @@ namespace Toolkit.Controls.ExceptionForm
 			this.btnQuit.UseVisualStyleBackColor = true;
 			this.btnQuit.Click += new System.EventHandler( this.btnQuit_Click );
 			// 
-			// pbError
+			// pbNotification
 			// 
-			resources.ApplyResources( this.pbError, "pbError" );
-			this.pbError.Name = "pbError";
-			this.pbError.TabStop = false;
+			resources.ApplyResources( this.pbNotification, "pbNotification" );
+			this.pbNotification.Name = "pbNotification";
+			this.pbNotification.TabStop = false;
 			// 
 			// lblCaption
 			// 
@@ -89,7 +89,7 @@ namespace Toolkit.Controls.ExceptionForm
 			this.CancelButton = this.btnQuit;
 			this.Controls.Add( this.tbMessage );
 			this.Controls.Add( this.lblCaption );
-			this.Controls.Add( this.pbError );
+			this.Controls.Add( this.pbNotification );
 			this.Controls.Add( this.btnQuit );
 			this.Controls.Add( this.btnDetails );
 			this.Controls.Add( this.tbDetails );
@@ -97,7 +97,7 @@ namespace Toolkit.Controls.ExceptionForm
 			this.MinimizeBox = false;
 			this.Name = "NotificationForm";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-			( (System.ComponentModel.ISupportInitialize)( this.pbError ) ).EndInit();
+			( (System.ComponentModel.ISupportInitialize)( this.pbNotification ) ).EndInit();
 			this.ResumeLayout( false );
 			this.PerformLayout();
 
@@ -108,7 +108,7 @@ namespace Toolkit.Controls.ExceptionForm
 		private System.Windows.Forms.TextBox tbDetails;
 		private System.Windows.Forms.Button btnDetails;
 		private System.Windows.Forms.Button btnQuit;
-		private System.Windows.Forms.PictureBox pbError;
+		private System.Windows.Forms.PictureBox pbNotification;
 		private System.Windows.Forms.Label lblCaption;
 		private System.Windows.Forms.TextBox tbMessage;
 	}
