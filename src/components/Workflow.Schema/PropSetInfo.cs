@@ -101,7 +101,7 @@ namespace Toolkit.Workflow.Schema
 			}
 		}
 
-		public PropSetPropertyInfo GetPropertynfo( string propertyName )
+		public PropSetPropertyInfo GetPropertyInfo( string propertyName )
 		{
 			if( m_Properties.ContainsKey( propertyName ) ) {
 				return m_Properties[ propertyName ];
