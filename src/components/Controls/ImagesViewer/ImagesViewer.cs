@@ -222,11 +222,9 @@ namespace Toolkit.Controls.ImagesViewer
 				System.Resources.ResourceManager rm = new System.Resources.ResourceManager(
 					"Toolkit.Controls.ImagesViewer.ImagesViewer_Msgs",
 					System.Reflection.Assembly.GetExecutingAssembly() );
-				// TODO: Еще необходимо показать InnerException и CallStack
-				MessageBox.Show(
+				Toolkit.Controls.NotificationForm.NotificationForm.Show(
 					rm.GetString( "FailToLoadImage_msg" ),
-					rm.GetString( "FailToLoadImage_title" ),
-					MessageBoxButtons.OK, MessageBoxIcon.Warning );
+					e.ToString() );
 			}
 		}
 		//

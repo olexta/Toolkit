@@ -120,7 +120,4 @@
   <data name="FailToLoadImage_msg" xml:space="preserve">
     <value>Виникла помилка під час завантаження зображення. Можливо зображення має невірний формат або виникла помилка читання.</value>
   </data>
-  <data name="FailToLoadImage_title" xml:space="preserve">
-    <value>Неможливо завантажити зображення.</value>
-  </data>
 </root>

@@ -120,7 +120,4 @@
   <data name="FailToLoadImage_msg" xml:space="preserve">
     <value>There's an error while loading image. Maybe image has wrong format or reading error was occured.</value>
   </data>
-  <data name="FailToLoadImage_title" xml:space="preserve">
-    <value>Image loading fail.</value>
-  </data>
 </root>
