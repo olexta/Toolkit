@@ -86,6 +86,7 @@ namespace Toolkit.Controls.NotificationForm
 			this.AcceptButton = this.btnQuit;
 			resources.ApplyResources( this, "$this" );
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.CancelButton = this.btnQuit;
 			this.Controls.Add( this.tbMessage );
 			this.Controls.Add( this.lblCaption );
