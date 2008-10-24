@@ -638,11 +638,17 @@ public class ODB : IPersistenceStorage
 				Props = new List<PROPERTY>();
 				// read all simple properties of object
 				while( SqlReader.Read() ) {
+					// read properties from row
+					string name = (string) SqlReader["Name"];
+					object val	= SqlReader["Value"];
+
+					// convert byte array to memory stream
+					if( val.GetType() == typeof(Byte[] ) ) {
+						val = new MemoryStream( (Byte[])val );
+					}
 					// build PersistentProperty upon recieved name and value and
 					// save property in collection
-					Props.Add( new PROPERTY((string) SqlReader["Name"],
-									  new ValueBox( SqlReader["Value"] ),
-									  PROPERTY.STATE.New ));
+					Props.Add( new PROPERTY( name, new ValueBox( val ), PROPERTY.STATE.New ));
 				}
 			} finally {
 				// Dispose SqlDataReader
@@ -661,7 +667,6 @@ public class ODB : IPersistenceStorage
 			DataTable dt = new DataTable(); // table for object proxy properties
 			da.Fill( dt ); // fill table
 			DataTableReader dtr = new DataTableReader(dt);
-			//SqlReader = CmdSql.ExecuteReader( CommandBehavior.SingleRow );
 			try {
 				while( dtr.Read() ) {
 					// save data from SqlDataReader because we need non SequentialAccess in datarow
@@ -813,54 +818,103 @@ public class ODB : IPersistenceStorage
 
 			// iterate through recieved properties
 			foreach( PROPERTY prop in props ) {
-				// check propery type
-				if( prop.Value.ToObject() is PersistentStream ) {
-					imageSave( objID, prop.Name, (PersistentStream) prop.Value );
-				} else {
-					// to store property value
+				// saving large stream property. 8000 is maximum length of sql_variant
+				if( (prop.Value.ToObject() is PersistentStream ) 
+					&& 
+					(((PersistentStream)prop.Value.ToObject()).Length > 8000) ) {
+					
+					// different actions based on property state
+					switch( prop.State ) {
+						case PROPERTY.STATE.Changed:
+							// add query for delete property from _properties table (property may be there before)
+							CmdSql.CommandText += 
+								"DELETE FROM [dbo].[_properties] " +
+								"WHERE [ObjectID]=" + objID + " AND " +
+								"[Name]='" + prop.Name + "';";
+							goto case PROPERTY.STATE.New;
+						case PROPERTY.STATE.New:
+							// saving stream property to _images table
+							imageSave(objID, prop.Name, (PersistentStream)prop.Value);
+							break;
+						case PROPERTY.STATE.Deleted:
+							// add query to delete property from both tables
+							CmdSql.CommandText += 
+								"DELETE FROM [dbo].[_properties] " +
+								"WHERE [ObjectID]=" + objID + " AND " +
+								"[Name]='" + prop.Name + "';" +
+								"DELETE FROM [dbo].[_images] " +
+								"WHERE [ObjectID]=" + objID + " AND " +
+								"[Name]='" + prop.Name + "';";
+							break;
+					}
+				} else { // saving simple property
+					// strore propery value suitable for saving as sql_variant
 					object value;
-					// DateTime Property must be converted before save
-					if( prop.Value.ToObject().GetType() == typeof( DateTime ) &&
-					   ( prop.State == PROPERTY.STATE.Changed ||
-					     prop.State == PROPERTY.STATE.New )) {
-						// converting DateTime Value
-						value = dateTime2Sql( (DateTime) prop.Value );
+					// converting value to sql_variant capable type
+					if( prop.Value.ToObject() is PersistentStream ) {
+						// reading stream value to byte array
+						PersistentStream ps = ((PersistentStream)prop.Value.ToObject());
+						byte[] buffer = new byte[ps.Length];
+						ps.Read(buffer, 0, (int)ps.Length);
+						value = buffer;
+					} else if( (prop.Value.ToObject().GetType() == typeof(DateTime)) &&
+					   (prop.State == PROPERTY.STATE.Changed || prop.State == PROPERTY.STATE.New) ) {
+
+						// DateTime Property must be converted to precision of sql server before sav
+						value = dateTime2Sql( (DateTime)prop.Value );
 						// add to changed properies List
-						Props.Add(
-							new PROPERTY(prop.Name,
-										 new ValueBox( value ),
-										 PROPERTY.STATE.Changed) );
+						Props.Add( new PROPERTY(prop.Name, new ValueBox(value), PROPERTY.STATE.Changed) );
 					} else {
 						// no convertion is needed
 						value = prop.Value.ToObject();
 					}
 
 					// check property action
-					if( prop.State == PROPERTY.STATE.New ) {
-						// adding new row to DB
-						CmdSql.CommandText +=
-							"INSERT INTO [dbo].[_properties] ([ObjectID], [Name], [Value]) " + 
-							"VALUES " +
-								"(" + objID + ", '" +
-								prop.Name + "', " +
-								"@PropValue_" + prop.Name + ")";
-						CmdSql.Parameters.Add( "@PropValue_" + prop.Name,
-												SqlDbType.Variant ).Value = value;
-					} else if( prop.State == PROPERTY.STATE.Changed ) {
-						// update row in DB
-						CmdSql.CommandText +=
-							"UPDATE [dbo].[_properties] " +
-							"SET [Value] = " + "@PropValue_" + prop.Name + " " +
-							"WHERE [ObjectID]=" + objID + " AND " +
-								  "[Name]='" + prop.Name + "'";
-						CmdSql.Parameters.Add( "@PropValue_" + prop.Name,
-												SqlDbType.Variant ).Value = value;
-					} else if( prop.State == PROPERTY.STATE.Deleted ) {
-						// delete row in DB
-						CmdSql.CommandText +=
-							"DELETE FROM [dbo].[_properties] " +
-							"WHERE [ObjectID]=" + objID + " AND " +
-								  "[Name]='" + prop.Name + "'";
+					switch( prop.State ) {
+						case PROPERTY.STATE.New:
+							// adding new row to DB
+							CmdSql.CommandText +=
+								"INSERT INTO [dbo].[_properties] ([ObjectID], [Name], [Value]) " + 
+								"VALUES " +
+									"(" + objID + ", '" +
+									prop.Name + "', " +
+									"@PropValue_" + prop.Name + ");";
+							CmdSql.Parameters.Add( "@PropValue_" + prop.Name,
+													SqlDbType.Variant ).Value = value;
+							break;
+						case PROPERTY.STATE.Changed:
+							// update row in DB
+							CmdSql.CommandText +=
+								"UPDATE [dbo].[_properties] " +
+								"SET [Value] = " + "@PropValue_" + prop.Name + " " +
+								"WHERE [ObjectID]=" + objID + " AND " +
+									  "[Name]='" + prop.Name + "';";
+							CmdSql.Parameters.Add( "@PropValue_" + prop.Name,
+													SqlDbType.Variant ).Value = value;
+
+							// try to delete property from _images table if it is PersistentStream
+							if( prop.Value.ToObject() is PersistentStream ) {
+								CmdSql.CommandText += 
+									"DELETE FROM [dbo].[_images] " +
+									"WHERE [ObjectID]=" + objID + " AND " +
+									"[Name]='" + prop.Name + "';";
+							}
+							break;
+						case PROPERTY.STATE.Deleted:
+							// delete property from _properties table
+							CmdSql.CommandText +=
+								"DELETE FROM [dbo].[_properties] " +
+								"WHERE [ObjectID]=" + objID + " AND " +
+									  "[Name]='" + prop.Name + "';";
+
+							// if it is PersistentStream property then delete property from _images table
+							if( prop.Value.ToObject() is PersistentStream ) {
+								CmdSql.CommandText +=
+									"DELETE FROM [dbo].[_images] " +
+									"WHERE [ObjectID]=" + objID + " AND " +
+									"[Name]='" + prop.Name + "';";
+							}
+							break;
 					}
 				}
 			}
@@ -872,13 +926,13 @@ public class ODB : IPersistenceStorage
 					// add new link to DB
 					CmdSql.CommandText +=
 						"INSERT INTO [dbo].[_links] ([Parent], [Child]) " +
-						"VALUES (" + objID + ", " + link.Header.ID + ")";
+						"VALUES (" + objID + ", " + link.Header.ID + ");";
 				} else if( link.State == LINK.STATE.Deleted ) {
 					// delete link from DB
 					CmdSql.CommandText +=
 						"DELETE FROM [dbo].[_links] " +
 						"WHERE [Parent]=" + objID + " AND " + 
-							  "[Child]=" + link.Header.ID;
+							  "[Child]=" + link.Header.ID + ";";
 				}
 			}
 
