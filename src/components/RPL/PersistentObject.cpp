@@ -13,8 +13,8 @@
 /****************************************************************************/
 
 #include ".\Factories\PersistenceBroker.h"
-#include "ObjectLinks.h"
-#include "ObjectProperties.h"
+#include "PersistentObject.ObjectLinks.h"
+#include "PersistentObject.ObjectProperties.h"
 #include "PersistentObject.h"
 
 using namespace _RPL;

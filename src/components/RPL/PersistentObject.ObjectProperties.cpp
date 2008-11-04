@@ -2,7 +2,7 @@
 /*																			*/
 /*	Project:	Robust Persistence Layer									*/
 /*																			*/
-/*	Module:		ObjectProperties.cpp										*/
+/*	Module:		PersistenObject.ObjectProperties.cpp						*/
 /*																			*/
 /*	Content:	Implementation of PersistenObject::ObjectProperties class	*/
 /*																			*/
@@ -13,7 +13,7 @@
 /****************************************************************************/
 
 #include "PersistentStream.h"
-#include "ObjectProperties.h"
+#include "PersistentObject.ObjectProperties.h"
 
 using namespace _RPL;
 

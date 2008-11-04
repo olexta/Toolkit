@@ -103,13 +103,13 @@ RetrieveCriteria::RetrieveCriteria( String ^type ): \
 /// objects of given type that satisfy spicified WHERE clause.
 /// </summary>
 //-------------------------------------------------------------------
-RetrieveCriteria::RetrieveCriteria( String ^type, String ^sWhere ): \
+RetrieveCriteria::RetrieveCriteria( String ^type, ::Where ^where ): \
 	PersistentCriteria(type), m_asProxies(false), m_pos(-1)
 {
 	// check for initialized reference
-	if( sWhere == nullptr ) throw gcnew ArgumentNullException("sWhere");
+	if( where == nullptr ) throw gcnew ArgumentNullException("where");
 	
-	m_where = sWhere;
+	m_where = where;
 }
 
 
@@ -120,16 +120,16 @@ RetrieveCriteria::RetrieveCriteria( String ^type, String ^sWhere ): \
 /// clauses.
 /// </summary>
 //-------------------------------------------------------------------
-RetrieveCriteria::RetrieveCriteria( String ^type, String ^sWhere, \
-									String ^orderBy ):			  \
+RetrieveCriteria::RetrieveCriteria( String ^type,						\
+									::Where ^where, ::OrderBy ^order ):	\
 	PersistentCriteria(type), m_asProxies(false), m_pos(-1)
 {
 	// check for initialized references
-	if( sWhere == nullptr ) throw gcnew ArgumentNullException("sWhere");
-	if( orderBy == nullptr ) throw gcnew ArgumentNullException("orderBy");
+	if( where == nullptr ) throw gcnew ArgumentNullException("where");
+	if( order == nullptr ) throw gcnew ArgumentNullException("order");
 
-	m_where = sWhere;
-	m_orderBy = orderBy;
+	m_where = where;
+	m_orderBy = order;
 }
 
 

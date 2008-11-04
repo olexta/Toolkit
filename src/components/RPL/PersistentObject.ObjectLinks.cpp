@@ -2,7 +2,7 @@
 /*																			*/
 /*	Project:	Robust Persistence Layer									*/
 /*																			*/
-/*	Module:		ObjectLinks.cpp												*/
+/*	Module:		PersistenObject.ObjectLinks.cpp								*/
 /*																			*/
 /*	Content:	Implementation of PersistentObject::ObjectLinks class		*/
 /*																			*/
@@ -12,7 +12,7 @@
 /*																			*/
 /****************************************************************************/
 
-#include "ObjectLinks.h"
+#include "PersistentObject.ObjectLinks.h"
 
 using namespace _RPL;
 

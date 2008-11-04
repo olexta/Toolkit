@@ -260,9 +260,9 @@ void PersistenceBroker::trans_rollback( void )
 // conditions.
 //
 //-------------------------------------------------------------------
-int PersistenceBroker::
-search( String ^type, String ^query, String ^where,
-		String ^order, int bottom, int count,
+int PersistenceBroker::										 \
+search( String ^type,										 \
+		Where ^where, OrderBy ^order, int bottom, int count, \
 		[Out] array<HEADER>^ %headers )
 {
 	// check current state
@@ -270,7 +270,7 @@ search( String ^type, String ^query, String ^where,
 
 	// call to real storage
 	return s_storage->Search( type,
-							  query, where, order, bottom, count,
+							  where, order, bottom, count,
 							  headers );
 }
 
@@ -282,7 +282,7 @@ search( String ^type, String ^query, String ^where,
 // Retrieve object header from storage.
 //
 //-------------------------------------------------------------------
-void PersistenceBroker::
+void PersistenceBroker::   \
 retrieve( HEADER %header )
 {
 	// check current state
@@ -300,8 +300,8 @@ retrieve( HEADER %header )
 // Retrieve object header, links and properties from storage.
 //
 //-------------------------------------------------------------------
-void PersistenceBroker::
-retrieve( HEADER %header, 
+void PersistenceBroker::											 \
+retrieve( HEADER %header,											 \
 		  [Out] array<LINK>^ %links, [Out] array<PROPERTY>^ %props )
 {
 	// check current state
@@ -319,9 +319,9 @@ retrieve( HEADER %header,
 // Save object header, links and properties to storage.
 //
 //-------------------------------------------------------------------
-void PersistenceBroker::
-save( HEADER %header, 
-	  [In] array<LINK> ^links, [In] array<PROPERTY> ^props,
+void PersistenceBroker::										   \
+save( HEADER %header,											   \
+	  [In] array<LINK> ^links, [In] array<PROPERTY> ^props,		   \
 	  [Out] array<LINK>^ %mlinks, [Out] array<PROPERTY>^ %mprops )
 {
 	// check current state
@@ -339,7 +339,7 @@ save( HEADER %header,
 // Delete object with specified header from storage.
 //
 //-------------------------------------------------------------------
-void PersistenceBroker::
+void PersistenceBroker:: \
 remove( HEADER header )
 {
 	// check current state
@@ -357,7 +357,7 @@ remove( HEADER header )
 // Submit hardcoded SQL statements to the persistence.
 //
 //-------------------------------------------------------------------
-DataSet^ PersistenceBroker::
+DataSet^ PersistenceBroker:: \
 process_sql( String ^sql )
 {
 	// check current state

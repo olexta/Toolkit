@@ -141,7 +141,7 @@ namespace Factories {
 		virtual void trans_rollback( void ) sealed =
 			IIRemoteStorage::TransactionRollback;
 		
-		virtual int search( String^, String^, String^, String^, int, int,
+		virtual int search( String^, Where^, OrderBy^, int, int,
 							[Out] array<HEADER>^% ) sealed =
 			IIRemoteStorage::Search;
 

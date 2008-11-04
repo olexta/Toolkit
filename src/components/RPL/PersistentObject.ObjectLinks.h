@@ -2,7 +2,7 @@
 /*																			*/
 /*	Project:	Robust Persistence Layer									*/
 /*																			*/
-/*	Module:		ObjectLinks.h												*/
+/*	Module:		PersistenObject.ObjectLinks.h								*/
 /*																			*/
 /*	Content:	Definition of PersistenObject::ObjectLinks class			*/
 /*																			*/

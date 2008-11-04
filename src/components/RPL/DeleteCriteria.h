@@ -36,7 +36,7 @@ protected:
 
 public:
 	DeleteCriteria( String ^type );
-	DeleteCriteria( String ^type, String ^sWhere );
-	DeleteCriteria( String ^type, String ^sWhere, String ^orderBy );
+	DeleteCriteria( String ^type, RPL::Where ^where );
+	DeleteCriteria( String ^type, RPL::Where ^where, RPL::OrderBy ^order );
 };
 _RPL_END

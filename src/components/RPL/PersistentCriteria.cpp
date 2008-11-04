@@ -29,9 +29,8 @@ using namespace _RPL::Factories;
 /// object type.
 /// </summary>
 //-------------------------------------------------------------------
-PersistentCriteria::PersistentCriteria( String ^type ):		   \
-	_type(type), m_innerQuery(""), m_where(""), m_orderBy(""), \
-	m_bottom(0), m_count(Int32::MaxValue), m_countFound(0)
+PersistentCriteria::PersistentCriteria( String ^type ):					\
+	_type(type), m_bottom(0), m_count(Int32::MaxValue), m_countFound(0)
 {
 	dbgprint( String::Format( "-> {0}\n{1}", 
 							  this->GetType(), type ) );
@@ -119,46 +118,19 @@ String^ PersistentCriteria::Type::get( void )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Gets or sets additional SQL request.
-/// </summary><remarks>
-/// This is SQL request to which WHERE and ORDER BY clauses will be
-/// applied. You have to avoid using of this approach, because in
-/// this case you use internal DB structure that can be modified.
-/// </remarks>
-//-------------------------------------------------------------------
-String^ PersistentCriteria::InnerQuery::get( void )
-{
-	return m_innerQuery;
-}
-
-void PersistentCriteria::InnerQuery::set( String ^value )
-{
-	// check for initialized reference
-	if( value == nullptr ) throw gcnew ArgumentNullException("value");
-	// clear content to prevent request-result collisions
-	Reset();
-
-	m_innerQuery = value;
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
 /// Gets or sets SQL WHERE clause.
 /// </summary>
 //-------------------------------------------------------------------
-String^ PersistentCriteria::Where::get( void )
+::Where^ PersistentCriteria::Where::get( void )
 {
 	return m_where;
 }
 
-void PersistentCriteria::Where::set( String ^value )
+void PersistentCriteria::Where::set( ::Where ^value )
 {	
-	// check for initialized reference
-	if( value == nullptr ) throw gcnew ArgumentNullException("value");
 	// clear content to prevent request-result collisions
 	Reset();
-
+	// store WHERE clause
 	m_where = value;
 }
 
@@ -168,18 +140,16 @@ void PersistentCriteria::Where::set( String ^value )
 /// Gets or sets SQL ORDER BY clause.
 /// </summary>
 //-------------------------------------------------------------------
-String^ PersistentCriteria::OrderBy::get( void )
+::OrderBy ^ PersistentCriteria::OrderBy::get( void )
 {	
 	return m_orderBy;
 }
 
-void PersistentCriteria::OrderBy::set( String ^value )
+void PersistentCriteria::OrderBy::set( ::OrderBy ^value )
 {
-	// check for initialized reference
-	if( value == nullptr ) throw gcnew ArgumentNullException("value");
 	// clear content to prevent request-result collisions
 	Reset();
-	
+	// store ORDER BY clause
 	m_orderBy = value;
 }
 
@@ -288,7 +258,7 @@ void PersistentCriteria::Perform( void )
 		// perform storage search request and set CountFound property
 		m_countFound = PersistenceBroker::Storage->Search(
 							_type,
-							m_innerQuery, m_where, m_orderBy, m_bottom, m_count,
+							m_where, m_orderBy, m_bottom, m_count,
 							headers );
 
 		// first of all clear objects list

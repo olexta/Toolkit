@@ -86,13 +86,13 @@ DeleteCriteria::DeleteCriteria( String ^type ): \
 /// type that contains specified WHERE clause.
 /// </summary>
 //-------------------------------------------------------------------
-DeleteCriteria::DeleteCriteria( String ^type, String ^sWhere ): \
+DeleteCriteria::DeleteCriteria( String ^type, ::Where ^where ): \
 	PersistentCriteria( type )
 {
 	// check for initialized reference
-	if( sWhere == nullptr ) throw gcnew ArgumentNullException("sWhere");
+	if( where == nullptr ) throw gcnew ArgumentNullException("where");
 
-	m_where = sWhere;
+	m_where = where;
 }
 
 
@@ -102,14 +102,14 @@ DeleteCriteria::DeleteCriteria( String ^type, String ^sWhere ): \
 /// contains spicified WHERE and ORDER BY clauses.
 /// </summary>
 //-------------------------------------------------------------------
-DeleteCriteria::DeleteCriteria( String ^type, String ^sWhere, \
-							    String ^orderBy ):			  \
+DeleteCriteria::DeleteCriteria( String ^type,					    \
+								::Where ^where, ::OrderBy ^order ):	\
 	PersistentCriteria(type)
 {
 	// check for initialized references
-	if( sWhere == nullptr ) throw gcnew ArgumentNullException("sWhere");
-	if( orderBy == nullptr ) throw gcnew ArgumentNullException("orderBy");
+	if( where == nullptr ) throw gcnew ArgumentNullException("where");
+	if( order == nullptr ) throw gcnew ArgumentNullException("order");
 
-	m_where = sWhere;
-	m_orderBy = orderBy;
+	m_where = where;
+	m_orderBy = order;
 }

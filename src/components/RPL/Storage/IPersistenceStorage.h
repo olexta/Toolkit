@@ -17,6 +17,7 @@
 
 #include "..\RPL.h"
 #include "..\ValueBox.h"
+#include "..\Query.h"
 
 using namespace System;
 using namespace System::Data;
@@ -33,38 +34,38 @@ namespace Storage {
 	public value class HEADER
 	{
 	private:
-		String		^m_type;
-		int			m_id;
-		DateTime	m_stamp;
-		String		^m_name;
+		String^		const _type;
+		int			const _id;
+		DateTime	const _stamp;
+		String^		const _name;
 
 	public:
 		HEADER( String ^type, int id, DateTime stamp, String ^name ): \
-			m_type(type), m_id(id), m_stamp(stamp), m_name(name) {}
+			_type(type), _id(id), _stamp(stamp), _name(name) {}
 		
 		/// <summary>
 		/// Gets type of the object.
 		/// </summary>
 		property String^ Type {
-			String^ get( void ) {return m_type;}
+			String^ get( void ) {return _type;}
 		}
 		/// <summary>
 		/// Gets identifier that represent object in persistence storage.
 		/// </summary>
 		property int ID {
-			int get( void ) {return m_id;}
+			int get( void ) {return _id;}
 		}
 		/// <summary>
 		/// Gets a time of the last object's modification.
 		/// </summary>
 		property DateTime Stamp {
-			DateTime get( void ) {return m_stamp;}
+			DateTime get( void ) {return _stamp;}
 		}
 		/// <summary>
 		/// Gets object's short name.
 		/// </summary>
 		property String^ Name {
-			String^ get( void ) {return m_name;}
+			String^ get( void ) {return _name;}
 		}
 	};
 
@@ -83,24 +84,24 @@ namespace Storage {
 		enum class STATE {None, New, Deleted};
 
 	private:
-		HEADER	m_header;
-		STATE	m_state;
+		HEADER	const _header;
+		STATE	const _state;
 
 	public:
 		LINK( HEADER header, STATE state ): \
-			m_header(header), m_state(state) {}
+			_header(header), _state(state) {}
 
 		/// <summary>
 		/// Gets header of the object this link is pointed to.
 		/// </summary>
 		property HEADER Header {
-			HEADER get( void ) {return m_header;}
+			HEADER get( void ) {return _header;}
 		}
 		/// <summary>
 		/// Gets action this link is performed.
 		/// </summary>
 		property STATE State {
-			STATE get( void ) {return m_state;}
+			STATE get( void ) {return _state;}
 		}
 	};
 
@@ -119,31 +120,31 @@ namespace Storage {
 		enum class STATE {None, New, Changed, Deleted};
 
 	private:
-		String		^m_name;
-		ValueBox	m_value;
-		STATE		m_state;
+		String^		const _name;
+		ValueBox	const _value;
+		STATE		const _state;
 
 	public:
 		PROPERTY( String ^name, ValueBox value, STATE state ): \
-			m_name(name), m_value(value), m_state(state) {}
+			_name(name), _value(value), _state(state) {}
 
 		/// <summary>
 		/// Gets property name.
 		/// </summary>
 		property String^ Name {
-			String^ get( void ) {return m_name;}
+			String^ get( void ) {return _name;}
 		}
 		/// <summary>
 		/// Gets property value.
 		/// </summary>
 		property ValueBox Value {
-			ValueBox get( void ) {return m_value;}
+			ValueBox get( void ) {return _value;}
 		}
 		/// <summary>
 		/// Gets action this property is performed.
 		/// </summary>
 		property STATE State {
-			STATE get( void ) {return m_state;}
+			STATE get( void ) {return _state;}
 		}
 	};
 
@@ -180,7 +181,6 @@ namespace Storage {
 		/// Search storage for persistent objects that satisfy specified conditions.
 		/// </summary>
 		/// <param name="type">Objects type.</param>
-		/// <param name="query">Additional SQL request.</param>
 		/// <param name="where">SQL WHERE clause.</param>
 		/// <param name="order">SQL ORDER BY clause.</param>
 		/// <param name="bottom">Bottom limit in the request.</param>
@@ -189,8 +189,8 @@ namespace Storage {
 		/// <returns>
 		/// Number of objects found
 		/// </returns>
-		int Search( String ^type, String ^query, String ^where,
-					String ^order, int bottom, int count,
+		int Search( String ^type, Where ^where, OrderBy ^order,
+					int bottom, int count,
 					[Out] array<HEADER>^ %headers );
 
 		/// <summary>

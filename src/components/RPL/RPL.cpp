@@ -13,3 +13,26 @@
 /****************************************************************************/
 
 #include "RPL.h"
+
+using namespace System;
+
+
+int main( array<System::String ^> ^args )
+{
+	try {
+		//
+		// put test code here
+		//
+
+		//-----------------------------------------------------------
+		Console::WriteLine( "\nOK" );
+	} catch( Exception ^e ) {
+		// print exception
+		Console::WriteLine( e );
+	} finally {
+		// wait for user input in any case
+		Console::ReadLine();
+	}
+
+	return 0;
+}

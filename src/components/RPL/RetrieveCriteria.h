@@ -30,8 +30,8 @@ _RPL_BEGIN
 public ref class RetrieveCriteria sealed : PersistentCriteria
 {
 private:
-	bool					m_asProxies;
-	int						m_pos;
+	bool	m_asProxies;
+	int		m_pos;
 
 protected:
 	virtual void Reset( void ) override;
@@ -39,8 +39,8 @@ protected:
 
 public:
 	RetrieveCriteria( String ^type );
-	RetrieveCriteria( String ^type, String ^sWhere );
-	RetrieveCriteria( String ^type, String ^sWhere, String ^orderBy );
+	RetrieveCriteria( String ^type, RPL::Where ^where );
+	RetrieveCriteria( String ^type, RPL::Where ^where, RPL::OrderBy ^order );
 
 	property bool AsProxies {
 		bool get( void );

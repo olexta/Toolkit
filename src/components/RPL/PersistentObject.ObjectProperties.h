@@ -2,7 +2,7 @@
 /*																			*/
 /*	Project:	Robust Persistence Layer									*/
 /*																			*/
-/*	Module:		ObjectProperties.h											*/
+/*	Module:		PersistenObject.ObjectProperties.h							*/
 /*																			*/
 /*	Content:	Definition of PersistenObject::ObjectProperties class		*/
 /*																			*/

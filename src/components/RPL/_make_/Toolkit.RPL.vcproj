@@ -130,19 +130,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ObjectLinks.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\ObjectProperties.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\PersistentCriteria.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\PersistentObject.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentObject.ObjectLinks.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentObject.ObjectProperties.cpp"
 				>
 			</File>
 			<File
@@ -159,6 +159,10 @@
 			</File>
 			<File
 				RelativePath="..\PersistentTransaction.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Query.cpp"
 				>
 			</File>
 			<File
@@ -192,19 +196,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ObjectLinks.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ObjectProperties.h"
-				>
-			</File>
-			<File
 				RelativePath="..\PersistentCriteria.h"
 				>
 			</File>
 			<File
 				RelativePath="..\PersistentObject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentObject.ObjectLinks.h"
+				>
+			</File>
+			<File
+				RelativePath="..\PersistentObject.ObjectProperties.h"
 				>
 			</File>
 			<File

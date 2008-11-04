@@ -14,6 +14,7 @@
 
 #pragma once
 #include "RPL.h"
+#include "Query.h"
 #include "PersistentObjects.h"
 
 using namespace System;
@@ -27,19 +28,16 @@ _RPL_BEGIN
 /// </summary><remarks>
 /// This is class from which all search classes inherit from. Class derived
 /// from PersistentObjects. You can set WHERE and ORDER BY clauses to limit
-/// count of objects to	retrieve. Also, you can use InnerQuery property to set
-/// additional SQL request for which WHERE and ORDER BY clause will be applied
-/// (note, that not all classes maps implement this feature). BottomLimit and
-/// CountLimit provide limits for scope of objects represented by recordset.
+/// count of objects to retrieve. BottomLimit and CountLimit provide limits for
+/// scope of objects represented by recordset.
 /// </remarks>
 public ref class PersistentCriteria abstract : PersistentObjects
 {
 protected:
 	String^		const _type;
 
-	String		^m_innerQuery;
-	String		^m_where;
-	String		^m_orderBy;
+	Where		^m_where;
+	OrderBy		^m_orderBy;
 	int			m_countFound;
 	int			m_bottom;
 	int			m_count;
@@ -56,17 +54,13 @@ public:
 	property String^ Type {
 		String^ get( void );
 	}
-	property String^ InnerQuery {
-		String^ get( void );
-		void set( String ^value );
+	property RPL::Where^ Where {
+		RPL::Where^ get( void );
+		void set( RPL::Where ^value );
 	}
-	property String^ Where {
-		String^ get( void );
-		void set( String ^value );
-	}
-	property String^ OrderBy {
-		String^ get( void );
-		void set( String ^value );
+	property RPL::OrderBy^ OrderBy {
+		RPL::OrderBy^ get( void );
+		void set( RPL::OrderBy ^value );
 	}
 	property int BottomLimit {
 		int get( void );
