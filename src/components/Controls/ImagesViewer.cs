@@ -220,7 +220,7 @@ namespace Toolkit.Controls
 				check_buttons();
 			} catch ( Exception e ) {
 				System.Resources.ResourceManager rm = new System.Resources.ResourceManager(
-					"Toolkit.Controls.ImagesViewer.ImagesViewer_Msgs",
+					"Toolkit.Controls.ImagesViewer_Msgs",
 					System.Reflection.Assembly.GetExecutingAssembly() );
 				Toolkit.Controls.NotificationForm.Show(
 					rm.GetString( "FailToLoadImage_msg" ),
