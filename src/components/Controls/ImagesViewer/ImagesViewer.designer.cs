@@ -4,7 +4,7 @@
 //
 //----------------------------------------------------------------------
 
-namespace Toolkit.Controls.ImagesViewer
+namespace Toolkit.Controls
 {
 	partial class ImagesViewer
 	{

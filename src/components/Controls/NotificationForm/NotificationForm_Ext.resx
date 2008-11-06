@@ -125,6 +125,9 @@
         wzEEWJhY/uPDRPkZlwFEaYYpQjeEJM3ohpCleVQT8SEAAFWhFLX8dtyVAAAAAElFTkSuQmCC
 </value>
   </data>
+  <data name="Error_btnClose_text" xml:space="preserve">
+    <value>Quit</value>
+  </data>
   <data name="Error_ico" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -228,6 +231,9 @@
         gzwEWJhY/oMwWc6EaSbLEHTNJBmCSzNJhpDl51FN5IcAAFWhFLVt3UoHAAAAAElFTkSuQmCC
 </value>
   </data>
+  <data name="Warning_btnClose_text" xml:space="preserve">
+    <value>Close</value>
+  </data>
   <data name="Warning_ico" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -315,6 +321,6 @@
 </value>
   </data>
   <data name="Warning_msg" xml:space="preserve">
-    <value>Error:</value>
+    <value>Program has encountered a problem:</value>
   </data>
 </root>

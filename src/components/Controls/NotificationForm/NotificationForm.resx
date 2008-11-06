@@ -118,169 +118,208 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="tbDetails.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 147</value>
+  <data name="btnDetails.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 23</value>
+  </data>
+  <data name="&gt;&gt;btnQuit.ZOrder" xml:space="preserve">
+    <value>3</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="tbDetails.Multiline" type="System.Boolean, mscorlib">
+  <data name="$this.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
+  </data>
+  <data name="btnQuit.Text" xml:space="preserve">
+    <value>&amp;Quit</value>
+  </data>
+  <data name="lblCaption.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;btnClose.Name" xml:space="preserve">
+    <value>btnClose</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="tbDetails.ScrollBars" type="System.Windows.Forms.ScrollBars, System.Windows.Forms">
     <value>Both</value>
   </data>
-  <data name="tbDetails.Size" type="System.Drawing.Size, System.Drawing">
-    <value>362, 103</value>
-  </data>
-  <data name="tbDetails.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="tbDetails.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="tbDetails.WordWrap" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
   <data name="&gt;&gt;tbDetails.Name" xml:space="preserve">
     <value>tbDetails</value>
   </data>
-  <data name="&gt;&gt;tbDetails.Type" xml:space="preserve">
+  <data name="tbMessage.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 56</value>
+  </data>
+  <data name="&gt;&gt;lblCaption.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;tbMessage.Type" xml:space="preserve">
     <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;tbDetails.Parent" xml:space="preserve">
-    <value>$this</value>
+  <data name="lblCaption.Size" type="System.Drawing.Size, System.Drawing">
+    <value>295, 48</value>
   </data>
-  <data name="&gt;&gt;tbDetails.ZOrder" xml:space="preserve">
-    <value>5</value>
-  </data>
-  <data name="btnDetails.ImageAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleLeft</value>
-  </data>
-  <data name="btnDetails.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 118</value>
-  </data>
-  <data name="btnDetails.Size" type="System.Drawing.Size, System.Drawing">
-    <value>75, 23</value>
-  </data>
-  <data name="btnDetails.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="btnDetails.Text" xml:space="preserve">
-    <value>&amp;Details</value>
-  </data>
-  <data name="&gt;&gt;btnDetails.Name" xml:space="preserve">
-    <value>btnDetails</value>
-  </data>
-  <data name="&gt;&gt;btnDetails.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;btnDetails.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;btnDetails.ZOrder" xml:space="preserve">
+  <data name="btnQuit.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
   </data>
-  <data name="btnQuit.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="lblCaption.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 8.25pt, style=Bold</value>
+  </data>
+  <data name="btnClose.Location" type="System.Drawing.Point, System.Drawing">
     <value>290, 118</value>
   </data>
   <data name="btnQuit.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 23</value>
   </data>
-  <data name="btnQuit.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
-  </data>
-  <data name="btnQuit.Text" xml:space="preserve">
-    <value>&amp;Quit</value>
-  </data>
-  <data name="&gt;&gt;btnQuit.Name" xml:space="preserve">
-    <value>btnQuit</value>
-  </data>
-  <data name="&gt;&gt;btnQuit.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;btnQuit.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;btnQuit.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="pbNotification.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="pbNotification.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 2</value>
-  </data>
-  <data name="pbNotification.Size" type="System.Drawing.Size, System.Drawing">
-    <value>48, 48</value>
-  </data>
-  <data name="pbNotification.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
-  </data>
-  <data name="&gt;&gt;pbNotification.Name" xml:space="preserve">
-    <value>pbNotification</value>
-  </data>
-  <data name="&gt;&gt;pbNotification.Type" xml:space="preserve">
-    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;pbNotification.Parent" xml:space="preserve">
-    <value>$this</value>
+  <data name="$this.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
   </data>
   <data name="&gt;&gt;pbNotification.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="lblCaption.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Microsoft Sans Serif, 8.25pt, style=Bold</value>
+  <data name="tbDetails.WordWrap" type="System.Boolean, mscorlib">
+    <value>False</value>
   </data>
-  <data name="lblCaption.Location" type="System.Drawing.Point, System.Drawing">
-    <value>70, 2</value>
+  <data name="pbNotification.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
   </data>
-  <data name="lblCaption.Size" type="System.Drawing.Size, System.Drawing">
-    <value>295, 48</value>
-  </data>
-  <data name="lblCaption.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
-  <data name="lblCaption.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleLeft</value>
+  <data name="&gt;&gt;btnDetails.Parent" xml:space="preserve">
+    <value>$this</value>
   </data>
   <data name="&gt;&gt;lblCaption.Name" xml:space="preserve">
     <value>lblCaption</value>
   </data>
+  <data name="&gt;&gt;tbMessage.Name" xml:space="preserve">
+    <value>tbMessage</value>
+  </data>
+  <data name="&gt;&gt;pbNotification.Name" xml:space="preserve">
+    <value>pbNotification</value>
+  </data>
+  <data name="&gt;&gt;tbDetails.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnQuit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblCaption.Location" type="System.Drawing.Point, System.Drawing">
+    <value>70, 2</value>
+  </data>
   <data name="&gt;&gt;lblCaption.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lblCaption.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;lblCaption.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="tbMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 56</value>
-  </data>
-  <data name="tbMessage.Multiline" type="System.Boolean, mscorlib">
-    <value>True</value>
   </data>
   <data name="tbMessage.ScrollBars" type="System.Windows.Forms.ScrollBars, System.Windows.Forms">
     <value>Vertical</value>
   </data>
-  <data name="tbMessage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>362, 56</value>
+  <data name="&gt;&gt;tbMessage.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
-  <data name="tbMessage.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
+  <data name="&gt;&gt;btnQuit.Name" xml:space="preserve">
+    <value>btnQuit</value>
   </data>
-  <data name="&gt;&gt;tbMessage.Name" xml:space="preserve">
-    <value>tbMessage</value>
+  <data name="pbNotification.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 2</value>
   </data>
-  <data name="&gt;&gt;tbMessage.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnDetails.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;btnQuit.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="tbDetails.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="tbDetails.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 147</value>
+  </data>
+  <data name="pbNotification.Size" type="System.Drawing.Size, System.Drawing">
+    <value>48, 48</value>
+  </data>
+  <data name="btnQuit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>290, 118</value>
+  </data>
+  <data name="&gt;&gt;pbNotification.Parent" xml:space="preserve">
+    <value>$this</value>
   </data>
   <data name="&gt;&gt;tbMessage.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="&gt;&gt;tbMessage.ZOrder" xml:space="preserve">
-    <value>0</value>
+  <data name="&gt;&gt;pbNotification.Type" xml:space="preserve">
+    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>369, 255</value>
+  </data>
+  <data name="tbMessage.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="pbNotification.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;btnDetails.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnDetails.Name" xml:space="preserve">
+    <value>btnDetails</value>
+  </data>
+  <data name="btnDetails.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;lblCaption.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;tbDetails.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="tbMessage.Multiline" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="btnClose.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="btnClose.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 23</value>
+  </data>
+  <data name="btnDetails.Text" xml:space="preserve">
+    <value>&amp;Details</value>
+  </data>
+  <data name="&gt;&gt;btnClose.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>6, 13</value>
+  </data>
+  <data name="btnDetails.ImageAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleLeft</value>
+  </data>
+  <data name="tbDetails.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="btnDetails.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 118</value>
+  </data>
+  <data name="tbDetails.Size" type="System.Drawing.Size, System.Drawing">
+    <value>362, 103</value>
+  </data>
+  <data name="lblCaption.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleLeft</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>NotificationForm</value>
+  </data>
+  <data name="&gt;&gt;btnClose.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnClose.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;tbDetails.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="tbMessage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>362, 56</value>
+  </data>
+  <data name="tbDetails.Multiline" type="System.Boolean, mscorlib">
+    <value>True</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -288,22 +327,4 @@
   <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Ukrainian (Ukraine)</value>
   </metadata>
-  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>6, 13</value>
-  </data>
-  <data name="$this.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="$this.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
-    <value>GrowAndShrink</value>
-  </data>
-  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>369, 255</value>
-  </data>
-  <data name="&gt;&gt;$this.Name" xml:space="preserve">
-    <value>NotificationForm</value>
-  </data>
-  <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
 </root>

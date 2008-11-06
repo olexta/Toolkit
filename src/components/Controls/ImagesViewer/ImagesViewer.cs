@@ -11,7 +11,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 
-namespace Toolkit.Controls.ImagesViewer
+namespace Toolkit.Controls
 {
 	/// <summary>
 	/// Компонент почергового огляду сукупності зображень,
@@ -222,7 +222,7 @@ namespace Toolkit.Controls.ImagesViewer
 				System.Resources.ResourceManager rm = new System.Resources.ResourceManager(
 					"Toolkit.Controls.ImagesViewer.ImagesViewer_Msgs",
 					System.Reflection.Assembly.GetExecutingAssembly() );
-				Toolkit.Controls.NotificationForm.NotificationForm.Show(
+				Toolkit.Controls.NotificationForm.Show(
 					rm.GetString( "FailToLoadImage_msg" ),
 					e.ToString() );
 			}

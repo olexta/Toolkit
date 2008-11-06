@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 
 
-namespace Toolkit.Controls.TreeViewer
+namespace Toolkit.Controls
 {
 	/// <summary>
 	/// Управляет набором Tab'ов
