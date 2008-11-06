@@ -228,6 +228,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Query.h"
+				>
+			</File>
+			<File
 				RelativePath="..\RetrieveCriteria.h"
 				>
 			</File>

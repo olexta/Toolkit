@@ -13,8 +13,10 @@
 /****************************************************************************/
 
 #include "RPL.h"
+#include "RetrieveCriteria.h"
 
 using namespace System;
+using namespace _RPL;
 
 
 int main( array<System::String ^> ^args )
@@ -23,6 +25,9 @@ int main( array<System::String ^> ^args )
 		//
 		// put test code here
 		//
+		RetrieveCriteria	^rc = gcnew RetrieveCriteria(
+			"", gcnew Where::Clause("oops", 1),
+			gcnew OrderBy::Clause("oops"));
 
 		//-----------------------------------------------------------
 		Console::WriteLine( "\nOK" );

@@ -108,6 +108,17 @@ OrderBy::OrderBy( ... array<Clause^> ^args )
 }
 
 
+//-------------------------------------------------------------------
+/// <summary>
+/// Implicit cast operator from OrderBy.Clause value to OrderBy. 
+/// </summary>
+//-------------------------------------------------------------------
+OrderBy::operator OrderBy^( OrderBy::Clause ^clause )
+{
+	return gcnew OrderBy( clause );
+}
+
+
 //-----------------------------------------------------------------------------
 //							Toolkit::RPL::Where::Clause
 //-----------------------------------------------------------------------------

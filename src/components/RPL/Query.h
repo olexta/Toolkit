@@ -76,6 +76,8 @@ private:
 
 public:
 	OrderBy( ... array<Clause^> ^args );
+
+	static operator OrderBy^( Clause ^clause );
 };
 
 
