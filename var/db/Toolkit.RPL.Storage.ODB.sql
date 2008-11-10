@@ -179,7 +179,6 @@ GO
 /****** Object:  ForeignKey [FK_links_Parent]    Script Date: 08/22/2007 15:25:20 ******/
 ALTER TABLE [dbo].[_links]  WITH NOCHECK ADD  CONSTRAINT [FK_links_Parent] FOREIGN KEY([Parent])
 REFERENCES [dbo].[_objects] ([ID])
-ON DELETE CASCADE
 NOT FOR REPLICATION
 GO
 ALTER TABLE [dbo].[_links] CHECK CONSTRAINT [FK_links_Parent]
