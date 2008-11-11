@@ -36,54 +36,6 @@ public class ODB : IPersistenceStorage
 	// number of currently opened transactions
 	private int m_TransactionCount = 0;
 	private const int BUFFER_LENGTH = 1024 * 1024;
-
-	#region regexps for search query translation
-	private const string REGEXP_BEGIN = @"(?i)(?:\((?:\s*)";
-	private const string REGEXP_END = @"(?:\s*))\)";
-
-	// pattern specifies following SQL predicate:
-	// expression { = | < > | ! = | > | > = | ! > | < | < = | ! < } expression
-	private const string REGEXP_PRED_COMPARE = REGEXP_BEGIN +
-		@"(?<prop>\w+)(?:\s*)" +
-		@"(?<cond>(?<op>(?:=|<>|!=|>|>=|!>|<|<=|!<))(?:\s*)" +
-		@"(?<exp>(?<char_exp>\'.*?\')" +
-				"|" +
-				@"(?<digit_exp>\-?\d+((\.|\,)\d+)?)" +
-				"|" +
-				@"(?<sub_exp>CAST\s*\(.+?\))" + // catch CAST construction
-				"|" +
-				@"(?<sub_exp>CONVERT\s*\(.+?\))" + // catch CONVERT construction
-		"))" +
-		REGEXP_END;
-	// pattern specifies following SQL predicate:
-	// string_expression [ NOT ] LIKE string_expression
-	private const string REGEXP_PRED_LIKE = REGEXP_BEGIN +
-		@"(?<prop>\w+)(?:\s+)" +
-		@"(?<cond>(?<op>(?:NOT)?(?:\s+)?(?:LIKE))(?:\s+)" +
-		@"(?<exp>(?<char_exp>\'.*?\')" +
-				"|" +
-				@"(?<digit_exp>\-?\d+((\.|\,)\d+)?)" +
-				"|" +
-				@"(?<sub_exp>CAST\s*\(.+?\))" + // catch CAST construction
-				"|" +
-				@"(?<sub_exp>CONVERT\s*\(.+?\))" + // catch CONVERT construction
-		"))" +
-		REGEXP_END;
-	// pattern specifies following SQL predicate: 
-	// expression IS [ NOT ] NULL 
-	private const string REGEXP_PRED_ISNULL = REGEXP_BEGIN +
-		@"(?<prop>\w+)(?:\s+)(?<cond>(?<op>(?:(?:IS)(?:\s+)(?:NOT(?:\s+))?))(?<exp>(?:NULL)))" +
-		REGEXP_END;
-	// pattern specifies combination of all previous pattern
-	private const string REGEXP_PREDS = REGEXP_PRED_COMPARE + "|" +
-										REGEXP_PRED_LIKE + "|" +
-										REGEXP_PRED_ISNULL;
-
-	private const string REGEXP_CHECK =
-		@"^(((?:\s*)(?<neg>NOT)?(?:\s*)(" +
-		REGEXP_PREDS + @")(?:\s*)(?<modif>AND|OR)))*(?:\s*)(?<neg>NOT)?(?:\s*)(?:\s*)(" +
-		REGEXP_PREDS + @")(?:\s)*$";
-	#endregion
 	
 	#region error messages
 	private static string ERROR_CHANGED_OBJECT = "Newer object exist. Please retrive object first!";
@@ -98,12 +50,12 @@ public class ODB : IPersistenceStorage
 	/// </summary>
 	/// <param name="id">ID of object</param>
 	/// <returns>HEADER of requested object</returns>
-	private HEADER getHeader( int id )
+	private HEADER get_header( int id )
 	{
 		SqlCommand cmdSql =
 			new SqlCommand(
 				"SELECT @Name = [ObjectName], @Type = [ObjectType], @Stamp = [TimeStamp] " +
-				"FROM [dbo].[_objects] " +
+				"FROM [_objects] " +
 				"WHERE [ID] = " + id, m_con, m_trans);
 		cmdSql.Parameters.Add( "@Name", SqlDbType.NVarChar, 4000 )
 			.Direction = ParameterDirection.Output;
@@ -126,66 +78,111 @@ public class ODB : IPersistenceStorage
 		}
 	}
 
-	/// <param name="Predicate">EX. (Prop1 != value ) OR (Prop1 [NOT] IS NULL) ...</param>
-	/// <returns>SQL predicate that tuned to DB structure</returns>
-	private string tunePridicate( string Predicate )
+	// create SqlCommand text from Where.Clause
+	private string clause_to_cmd(Where.Clause clause, IDictionary<string, object> parms)
 	{
-		string prop = "";
-		string query = "";
-
-
-		// decompile input string using RegExp.
-		Match match = 
-			Regex.Match( Predicate,
-				Regex.IsMatch( Predicate, REGEXP_PRED_COMPARE ) 
-					?
-					REGEXP_PRED_COMPARE 
-					: 
-					(Regex.IsMatch( Predicate, REGEXP_PRED_ISNULL ) 
-						? 
-						REGEXP_PRED_ISNULL 
-						:
-						REGEXP_PRED_LIKE) 
-					);
-
-		// check for proxy object properties
-		if( match.Groups["prop"].Value.Equals( "ID", 
-			StringComparison.CurrentCultureIgnoreCase ) ) {
-			// doesn't need changing
-			return Predicate;
-		} else if( match.Groups["prop"].Value.Equals( "NAME",
-			StringComparison.CurrentCultureIgnoreCase ) ) {
-			// change column name
-			return "( ObjectName " + match.Groups["cond"].Value + ")";
-		} else {
-			prop = (string.IsNullOrEmpty( 
-					match.Groups["char_exp"].Value ) 
-					? 
-					"Value" 
-					: 
-					"CAST(Value as nvarchar(4000))");
-
-			// modify query to match _properies table and it's structure
-			query += "(EXISTS " +
-						"(SELECT ID " +
-						" FROM [dbo].[_properties] AS p " + // Image comparison is unsupported
-						" WHERE " +
-							"(ObjectID = Source.ID) AND " + // declare object id property belongs
-				// avoid implicit type conversion by MS SQL
-				// if non digit or string value is compareted
-								(string.IsNullOrEmpty( match.Groups["sub_exp"].Value ) ?
-									""
-									:
-									"(SQL_VARIANT_PROPERTY( " + 
-									match.Groups["sub_exp"].Value + 
-									", 'BaseType') = " +
-									"SQL_VARIANT_PROPERTY( Value, 'BaseType')) AND " ) +
-							"(Name = '" + match.Groups["prop"] + "') AND (" +// name of Property
-				// workaround for comparison of string type property values
-							prop +
-							" " + match.Groups["cond"] + ")))"; // Value and comparison of property value
+		string op;
+		// operator definition
+		switch( clause.Operator ) {
+			case Where.Clause.OP.GE:
+				op = ">=";
+				break;
+			case Where.Clause.OP.GT:
+				op = ">";
+				break;
+			case Where.Clause.OP.LE:
+				op = "<=";
+				break;
+			case Where.Clause.OP.LT:
+				op = "<";
+				break;
+			case Where.Clause.OP.NE:
+				op = "<>";
+				break;
+			case Where.Clause.OP.EQ:
+			default:
+				op = "=";
+				break;
 		}
-		return query;
+		string opd = "@" + clause.OPD;
+		int counter = 0;
+		
+		while( parms.ContainsKey( opd ) ) {
+			opd = "@" + clause.OPD + "_" + counter;
+			counter++;
+		}
+		
+		// property value definition
+		parms.Add( opd, clause.Value.ToObject());
+		string result = "";
+
+		if( (clause.OPD == "ID") || (clause.OPD == "Name") || (clause.OPD == "Stamp") ) {
+			// skiping base object properties: ID, Name, Stamp
+			string propName = "";
+			// changing property name
+			switch( clause.OPD ) {
+				case "Stamp":
+					propName = "TimeStamp";
+					break;
+				case "Name":
+					propName = "ObjectName";
+					break;
+				default:
+					propName = "ID";
+					break;
+			}
+			result = "( Source.[" + propName + "] " + op + " " + opd + ") ";
+		} else {
+
+			// query for non base properties
+			result = "(EXISTS(SELECT ID FROM [_properties] AS p WHERE (ObjectID = Source.ID) " +
+								"AND " +
+								"(Name = '" + clause.OPD + "') " + // define property name
+								"AND " +
+								"(Value " + op + " " + opd + "))) "; // define property value
+		}
+		return result;
+	}
+
+	// return query OrderBy part from OrderBy.Clause
+	private void orderby_to_cmd(OrderBy.Clause orderClause, out string join, out string orderby)
+	{
+		// part that is responsible for joining Source table
+		// with specified property values from _properties table
+		join = "LEFT JOIN _properties AS " + orderClause.OPD + " on Source.[ID] = " + orderClause.OPD + ".ObjectID AND " + orderClause.OPD + ".Name = '" + orderClause.OPD + "' ";
+		// part resposible for OrderBy definition
+		orderby = orderClause.OPD + ".Value " + (orderClause.Sort == OrderBy.Clause.SORT.ASC ? "ASC" : "DESC");
+	}
+
+
+	// create SqlCommand text from Where
+	private string where_to_cmd(Where where, IDictionary<string, object> parms)
+	{
+		if( where is Where.Clause ) {
+			return clause_to_cmd((Where.Clause)where, parms);
+		} else {
+			string leftCmd = "";
+			string rightCmd = "";
+			string resultCmd = "";
+			if( (where is Where.Operation.And) || (where is Where.Operation.Or) ) {
+				if( where is Where.Operation.And ) {
+					leftCmd = where_to_cmd(((Where.Operation.And)where).LeftWhere, parms);
+					rightCmd = where_to_cmd(((Where.Operation.And)where).RightWhere, parms);
+				} else {
+					leftCmd = where_to_cmd(((Where.Operation.Or)where).LeftWhere, parms);
+					rightCmd = where_to_cmd(((Where.Operation.Or)where).RightWhere, parms);
+				}
+
+				resultCmd = "(" + leftCmd + 
+					" " + ((where is Where.Operation.And)? "AND" : "OR") + " " +
+					rightCmd + ")";
+			} else if( where is Where.Operation.Not ) {
+				Where.Operation.Not opNot = (Where.Operation.Not)where;
+				string cmd = where_to_cmd(opNot.SubWhere, parms);
+				resultCmd = " NOT(" + cmd + ")";
+			}
+			return resultCmd;
+		}
 	}
 
 	/// <summary>
@@ -193,7 +190,7 @@ public class ODB : IPersistenceStorage
 	/// </summary>
 	/// <param name="dt">DateTime to be converted</param>
 	/// <returns>DateTime rounded to .**0, .**3, .**7 milliseconds</returns>
-	private DateTime dateTime2Sql( DateTime dt )
+	private DateTime datetime_to_sql( DateTime dt )
 	{
 		int remainder = dt.Millisecond % 10; // need to know last digit
 		int add; // stores delta
@@ -224,7 +221,7 @@ public class ODB : IPersistenceStorage
 	/// <param name="objID">Stream owner object ID</param>
 	/// <param name="propName">Name of stream property</param>
 	/// <param name="stream">Stream property</param>
-	private void imageSave( int objID, string propName, PersistentStream stream )
+	private void save_image( int objID, string propName, PersistentStream stream )
 	{
 		#region debug info
 #if (DEBUG)
@@ -236,12 +233,12 @@ public class ODB : IPersistenceStorage
 
 		// command that creates new record or cleares existing
 		SqlCommand CmdSql = new SqlCommand(
-			@"IF (EXISTS(SELECT * FROM [dbo].[_images] " +
+			@"IF (EXISTS(SELECT * FROM [_images] " +
 						"WHERE [ObjectID] = " + objID + " " +
 						"AND " +
 						"Name ='" + propName + "' )) " +
 			"BEGIN " +
-				"UPDATE [dbo].[_images] SET Value = " + ((stream.Length > 0) 
+				"UPDATE [_images] SET Value = " + ((stream.Length > 0) 
 				? 
 				"0x0" 
 				: "NULL") + 
@@ -250,20 +247,20 @@ public class ODB : IPersistenceStorage
 						"AND " +
 						"Name ='" + propName + "'; " +
 				"SELECT @Pointer = TEXTPTR(Value) " +
-				"FROM [dbo].[_images] " +
+				"FROM [_images] " +
 				"WHERE [ObjectID] = " + objID + " " +
 						"AND " +
 						"Name ='" + propName + "'; " +
 			"END " +
 			"ELSE " +
 			"BEGIN " +
-				"INSERT INTO [dbo].[_images] " +
+				"INSERT INTO [_images] " +
 				"([ObjectID], [Name], [Value]) " +
 				"VALUES ( " + objID + ", '" +
 						  propName + "', " +
 						  ((stream.Length > 0) ? "0x0" : "NULL") + " ); " +
 				"SELECT @Pointer = TEXTPTR(Value) " +
-				"FROM [dbo].[_images] " +
+				"FROM [_images] " +
 				"WHERE [ID] = SCOPE_IDENTITY(); " +
 			"END", m_con, m_trans);
 
@@ -279,7 +276,7 @@ public class ODB : IPersistenceStorage
 				throw new KeyNotFoundException( "Can't save image!");
 			// set up UPDATETEXT command, parameters, and open BinaryReader.	
 			CmdSql = new SqlCommand(
-				"UPDATETEXT [dbo].[_images].Value @Pointer @Offset @Delete " +
+				"UPDATETEXT [_images].Value @Pointer @Offset @Delete " +
 				"WITH LOG @Bytes", m_con, m_trans);
 			// assign value of pointer previously recieved
 			CmdSql.Parameters.Add( "@Pointer", SqlDbType.Binary, 16 ).Value =
@@ -338,7 +335,7 @@ public class ODB : IPersistenceStorage
 	/// <param name="objID">Stream owner object ID</param>
 	/// <param name="propName">Name of stream property</param>
 	/// <param name="stream">Stream property</param>
-	private void imageRead( int objID, string propName, ref PersistentStream stream )
+	private void read_image( int objID, string propName, ref PersistentStream stream )
 	{
 		#region debug info
 #if (DEBUG)
@@ -350,7 +347,7 @@ public class ODB : IPersistenceStorage
 		SqlCommand CmdSql = new SqlCommand(
 			"SELECT @Pointer = TEXTPTR(Value), " +
 			"@Length = DataLength(Value) " +
-			"FROM [dbo].[_images] " +
+			"FROM [_images] " +
 			"WHERE [ObjectID] = " + objID + " " +
 						"AND " +
 						"Name ='" + propName + "'", m_con, m_trans);
@@ -377,7 +374,7 @@ public class ODB : IPersistenceStorage
 			// parameters: @Pointer – pointer to blob, @Offset – number of bytes to
 			// skip before starting the read, @Size – number of bytes to read.
 			CmdSql = new SqlCommand(
-				"READTEXT [dbo].[_images].Value " +
+				"READTEXT [_images].Value " +
 				"@Pointer @Offset @Size HOLDLOCK", m_con, m_trans);
 			// set up the parameters for the command.
 			CmdSql.Parameters.Add( "Pointer", SqlDbType.VarBinary, 16 ).Value =
@@ -494,7 +491,7 @@ public class ODB : IPersistenceStorage
 		try {
 			// check object stamp. If it is newer then current -> raise error
 			SqlCommand sqlCmd = new SqlCommand( "IF ((SELECT [TimeStamp] " +
-					"FROM [dbo].[_objects] WHERE [ID] = @objectID) > @Stamp) " +
+					"FROM [_objects] WHERE [ID] = @objectID) > @Stamp) " +
 					"RAISERROR( '" + ERROR_CHANGED_OBJECT + "', 11, 1 );",
 					m_con,
 					m_trans );
@@ -503,7 +500,7 @@ public class ODB : IPersistenceStorage
 				header.Stamp;
 			sqlCmd.Parameters.Add( "@objectID", SqlDbType.Int ).Value = header.ID;
 
-			sqlCmd.CommandText += "EXEC [dbo].[sp_DeleteObject] @objectID";
+			sqlCmd.CommandText += "DELETE FROM _objects WHERE [ID] = @objectID";
 
 			// proccess delete opearaton
 			sqlCmd.ExecuteNonQuery();
@@ -571,7 +568,7 @@ public class ODB : IPersistenceStorage
 		TransactionBegin();
 
 		try {
-			header = getHeader( header.ID );
+			header = get_header( header.ID );
 		} catch( Exception ex ) {
 			#region debug info
 #if (DEBUG)
@@ -618,7 +615,7 @@ public class ODB : IPersistenceStorage
 		TransactionBegin();
 		try {
 			// get object header
-			HEADER newHeader = getHeader( header.ID );
+			HEADER newHeader = get_header( header.ID );
 
 			if( header.Stamp == newHeader.Stamp ) {
 				header = newHeader;
@@ -630,7 +627,7 @@ public class ODB : IPersistenceStorage
 			#region retrive props from _properties
 			CmdSql =
 				new SqlCommand("SELECT [Name], [Value] " +
-							   "FROM [dbo].[_properties] " +
+							   "FROM [_properties] " +
 							   "WHERE [ObjectID] = " + header.ID, m_con, m_trans);
 			SqlReader =
 					CmdSql.ExecuteReader( CommandBehavior.SingleResult );
@@ -644,11 +641,11 @@ public class ODB : IPersistenceStorage
 
 					// convert byte array to memory stream
 					if( val.GetType() == typeof(Byte[] ) ) {
-						val = new MemoryStream( (Byte[])val );
+						val = new PersistentStream((Byte[])val );
 					}
 					// build PersistentProperty upon recieved name and value and
 					// save property in collection
-					Props.Add( new PROPERTY( name, new ValueBox( val ), PROPERTY.STATE.New ));
+					Props.Add( new PROPERTY( name, new ValueBox(val), PROPERTY.STATE.New ));
 				}
 			} finally {
 				// Dispose SqlDataReader
@@ -662,7 +659,7 @@ public class ODB : IPersistenceStorage
 				new SqlDataAdapter( 
 					new SqlCommand(
 						"SELECT [Name] " +
-						"FROM [dbo].[_images] " +
+						"FROM [_images] " +
 						"WHERE [ObjectID] = " + header.ID, m_con, m_trans ) );
 			DataTable dt = new DataTable(); // table for object proxy properties
 			da.Fill( dt ); // fill table
@@ -672,7 +669,7 @@ public class ODB : IPersistenceStorage
 					// save data from SqlDataReader because we need non SequentialAccess in datarow
 					string name = (string) dtr["Name"];
 					PersistentStream stream = new PersistentStream();
-					imageRead( header.ID, name, ref stream );
+					read_image( header.ID, name, ref stream );
 					// save property in collection
 					Props.Add( 
 						new PROPERTY(
@@ -688,9 +685,9 @@ public class ODB : IPersistenceStorage
 			CmdSql = 
 				new SqlCommand(
 						"SELECT [ID], [ObjectName], [ObjectType], [TimeStamp] " +
-						"FROM [dbo].[_objects] " +
+						"FROM [_objects] " +
 						"WHERE [ID] IN ( " + 
-							"SELECT Child FROM [dbo].[_links] " + 
+							"SELECT Child FROM [_links] " + 
 							"WHERE Parent = " + header.ID + ")", 
 						m_con, m_trans);
 
@@ -778,7 +775,7 @@ public class ODB : IPersistenceStorage
 				// this is new object. Creating script for insertion of object
 				CmdSql =
 					new SqlCommand( 
-						"INSERT INTO [dbo].[_objects] ( [ObjectName], [ObjectType] ) " +
+						"INSERT INTO [_objects] ( [ObjectName], [ObjectType] ) " +
 						"VALUES ( '" + header.Name.Replace( "'", "''" ) + "', " +
 						"'" + header.Type.Replace( "'", "''" ) + "');" +
 					/*save inserted object ID*/
@@ -787,7 +784,7 @@ public class ODB : IPersistenceStorage
 				// check object stamp. If it is newer then current -> raise error
 				CmdSql =
 					new SqlCommand( "IF ((SELECT [TimeStamp] " +
-						"FROM [dbo].[_objects] WHERE [ID] = @ID) > @Stamp) " +
+						"FROM [_objects] WHERE [ID] = @ID) > @Stamp) " +
 						"RAISERROR( '" + ERROR_CHANGED_OBJECT + "', 11, 1 );",
 						m_con,
 						m_trans );
@@ -796,7 +793,7 @@ public class ODB : IPersistenceStorage
 					header.Stamp;
 				// proxy name is always updated
 				CmdSql.CommandText +=
-					"UPDATE [dbo].[_objects] SET [ObjectName] = @Name WHERE [ID] = @ID";
+					"UPDATE [_objects] SET [ObjectName] = @Name WHERE [ID] = @ID";
 				// add proxy name parameter
 				CmdSql.Parameters
 					.Add( "@Name", SqlDbType.NVarChar, header.Name.Length )
@@ -828,21 +825,21 @@ public class ODB : IPersistenceStorage
 						case PROPERTY.STATE.Changed:
 							// add query for delete property from _properties table (property may be there before)
 							CmdSql.CommandText += 
-								"DELETE FROM [dbo].[_properties] " +
+								"DELETE FROM [_properties] " +
 								"WHERE [ObjectID]=" + objID + " AND " +
 								"[Name]='" + prop.Name + "';";
 							goto case PROPERTY.STATE.New;
 						case PROPERTY.STATE.New:
 							// saving stream property to _images table
-							imageSave(objID, prop.Name, (PersistentStream)prop.Value);
+							save_image(objID, prop.Name, (PersistentStream)prop.Value);
 							break;
 						case PROPERTY.STATE.Deleted:
 							// add query to delete property from both tables
 							CmdSql.CommandText += 
-								"DELETE FROM [dbo].[_properties] " +
+								"DELETE FROM [_properties] " +
 								"WHERE [ObjectID]=" + objID + " AND " +
 								"[Name]='" + prop.Name + "';" +
-								"DELETE FROM [dbo].[_images] " +
+								"DELETE FROM [_images] " +
 								"WHERE [ObjectID]=" + objID + " AND " +
 								"[Name]='" + prop.Name + "';";
 							break;
@@ -861,7 +858,7 @@ public class ODB : IPersistenceStorage
 					   (prop.State == PROPERTY.STATE.Changed || prop.State == PROPERTY.STATE.New) ) {
 
 						// DateTime Property must be converted to precision of sql server before sav
-						value = dateTime2Sql( (DateTime)prop.Value );
+						value = datetime_to_sql( (DateTime)prop.Value );
 						// add to changed properies List
 						Props.Add( new PROPERTY(prop.Name, new ValueBox(value), PROPERTY.STATE.Changed) );
 					} else {
@@ -874,7 +871,7 @@ public class ODB : IPersistenceStorage
 						case PROPERTY.STATE.New:
 							// adding new row to DB
 							CmdSql.CommandText +=
-								"INSERT INTO [dbo].[_properties] ([ObjectID], [Name], [Value]) " + 
+								"INSERT INTO [_properties] ([ObjectID], [Name], [Value]) " + 
 								"VALUES " +
 									"(" + objID + ", '" +
 									prop.Name + "', " +
@@ -885,7 +882,7 @@ public class ODB : IPersistenceStorage
 						case PROPERTY.STATE.Changed:
 							// update row in DB
 							CmdSql.CommandText +=
-								"UPDATE [dbo].[_properties] " +
+								"UPDATE [_properties] " +
 								"SET [Value] = " + "@PropValue_" + prop.Name + " " +
 								"WHERE [ObjectID]=" + objID + " AND " +
 									  "[Name]='" + prop.Name + "';";
@@ -895,7 +892,7 @@ public class ODB : IPersistenceStorage
 							// try to delete property from _images table if it is PersistentStream
 							if( prop.Value.ToObject() is PersistentStream ) {
 								CmdSql.CommandText += 
-									"DELETE FROM [dbo].[_images] " +
+									"DELETE FROM [_images] " +
 									"WHERE [ObjectID]=" + objID + " AND " +
 									"[Name]='" + prop.Name + "';";
 							}
@@ -903,14 +900,14 @@ public class ODB : IPersistenceStorage
 						case PROPERTY.STATE.Deleted:
 							// delete property from _properties table
 							CmdSql.CommandText +=
-								"DELETE FROM [dbo].[_properties] " +
+								"DELETE FROM [_properties] " +
 								"WHERE [ObjectID]=" + objID + " AND " +
 									  "[Name]='" + prop.Name + "';";
 
 							// if it is PersistentStream property then delete property from _images table
 							if( prop.Value.ToObject() is PersistentStream ) {
 								CmdSql.CommandText +=
-									"DELETE FROM [dbo].[_images] " +
+									"DELETE FROM [_images] " +
 									"WHERE [ObjectID]=" + objID + " AND " +
 									"[Name]='" + prop.Name + "';";
 							}
@@ -925,12 +922,12 @@ public class ODB : IPersistenceStorage
 				if( link.State == LINK.STATE.New ) {
 					// add new link to DB
 					CmdSql.CommandText +=
-						"INSERT INTO [dbo].[_links] ([Parent], [Child]) " +
+						"INSERT INTO [_links] ([Parent], [Child]) " +
 						"VALUES (" + objID + ", " + link.Header.ID + ");";
 				} else if( link.State == LINK.STATE.Deleted ) {
 					// delete link from DB
 					CmdSql.CommandText +=
-						"DELETE FROM [dbo].[_links] " +
+						"DELETE FROM [_links] " +
 						"WHERE [Parent]=" + objID + " AND " + 
 							  "[Child]=" + link.Header.ID + ";";
 				}
@@ -942,7 +939,7 @@ public class ODB : IPersistenceStorage
 			}
 
 			// return proxy properties
-			header = getHeader( objID );
+			header = get_header( objID );
 			// and changed properies if exists
 			if( Props.Count > 0 )
 				mprops = Props.ToArray();
@@ -971,133 +968,110 @@ public class ODB : IPersistenceStorage
 	/// Search objects that sutisfies search criteria.
 	/// </summary>
 	/// <param name="type">Objects type.</param>
-	/// <param name="query">Additional SQL request.</param>
-	/// <param name="where">SQL WHERE clause.</param>
-	/// <param name="order">>SQL ORDER BY clause.</param>
+	/// <param name="where">Where object</param>
+	/// <param name="order">>OrderBy object</param>
 	/// <param name="bottom">Bottom limit in the request.</param>
 	/// <param name="count">Count limit in the request.</param>
 	/// <param name="headers">Array of found object headers.</param>
 	/// <returns>Count of found objects</returns>
-	/// <remarks>Search criteria in where criteria must meet following requirements:
-	/// { [ NOT ] &#60;predicate&#62; | ( &#60;search_condition&#62; ) } 
-	/// [ { AND | OR } [ NOT ] { &#60;predicate&#62; | ( &#60;search_condition&#62; ) }
-	/// Where:
-	///  &#60;predicate&#62; ::= 
-	/// { expression { = | &#60; &#62; | ! = | &#62; | &#62; = | ! &#62; | &#60; | &#60; = | ! &#60; } expression 
-	/// | string_expression [ NOT ] LIKE string_expression 
-	/// | expression IS [ NOT ] NULL
-	/// }
-	/// Left expression:
-	/// For all date types except int CAST or CONVERT must be declared.
-	/// For example: 
-	/// <list type="bullet">
-	///  <item><term>( Prop_1 = CAST( dt.ToString( "yyyy-MM-dd HH:mm:ss.fff" ) as datetime )</term>
-	///	   <description>for (DateTime dt)</description></item>
-	///  <item><term>( Prop_1 = CAST( (bl ? 1 : 0) as bit )</term>
-	///   <description>for (Boolean bl)</description></item>
-	///  <item><term>( Prop_1 = 123123 )</term>
-	///   <description>for int </description></item>
-	///  <item><term>( Prop_1 = CONVERT( dbl.ToString( "R" ) + " as float ) as float )</term>
-	///   <description>for (Double dbl)</description></item>
-	/// </list>
-	/// </remarks>
-	public int Search( string type, string query, string where,
-					   string order, int bottom, int count,
-					   out HEADER[] headers )
+	public int Search(string type, Where where, OrderBy order, int bottom, int count, out HEADER[] headers)
 	{
-
 		#region debug info
 #if (DEBUG)
-		Debug.Print( "-> ODB.Search( '{0}', '{1}')", type, where );
+		Debug.Print("-> ODB.Search( '{0}')", type );
 #endif
 		#endregion
-
-		if( !string.IsNullOrEmpty( where ) ) {
-			if( !Regex.IsMatch( where, REGEXP_CHECK ) ) {
-#if (DEBUG)
-				Debug.Print( 
-					"[ERROR] @ ODB.Search: 'Invalid search condition format!'" + 
-						"\n\t" + where +
-						"\n\t Regexp = '" + REGEXP_CHECK );
-#endif
-				throw new ArgumentException( "Invalid search condition format!" );
-			}
-		}
-
-		MatchCollection mc;
+		// init search command
+		SqlCommand cmd = new SqlCommand();
+		// list for HEADERs return purpose
 		List<HEADER> objects = null;
 
-		#region adopt search condition according to DB structure
-		// get collection of predicates which will be replaced
-		mc = Regex.Matches( where, REGEXP_PREDS );
-		#region debug info
+		// for SqlParameter names and values
+		Dictionary<string, object> parms = new Dictionary<string, object>();
+		// create sql command text
+		string whereQuery = "";
+		if( where != null ) {
+			whereQuery = where_to_cmd(where, parms);
+		}
+
+		#region prepare OrderBy part
+		string orderJoin = "";
+		string orderBy = "";
+
+		if( order != null ) {
+			foreach( OrderBy.Clause clause in order ) {
+				string orderJoinOut;
+				string orderByOut;
+				orderby_to_cmd(clause, out orderJoinOut, out orderByOut);
+				orderJoin += orderJoinOut;
+				orderBy += orderByOut + ", ";
+			}
+			orderBy = orderBy.Trim().TrimEnd(',');
+		}
+		#endregion
+
+		// template for search query:
+		// - gets ids of object that meets $QUERY$,
+		// - skips $BOOTOM$ rows
+		// - return only $COUNT$ object HEADERs
+		cmd.CommandText="DECLARE @_counter as int \n" + 
+						"DECLARE @_id as int \n" +
+						"DECLARE @_resultID TABLE ([ids] int) \n" +
+						"--Check for user rights and return requested count of items\n" +
+						"DECLARE cursor_Found CURSOR SCROLL FOR \n" + 
+						"$QUERY$\n" +
+						"OPEN cursor_Found \n\t" +
+							"SET @_counter = 0 \n\t" +
+							"FETCH ABSOLUTE $BOTTOM$ FROM cursor_Found INTO @_id \n\t" +
+							"WHILE( (@@FETCH_STATUS = 0) AND (@_counter < $COUNT$) ) BEGIN \n\t\t" +
+								"INSERT INTO @_resultID ([ids]) VALUES (@_id) \n\t\t" +
+								"FETCH NEXT FROM cursor_Found INTO @_id \n\t\t" +
+								"SET @_counter = @_counter + 1 \n\t" +
+							"END \n" +
+						"CLOSE cursor_Found \n" +
+						"DEALLOCATE cursor_Found \n" +
+						"--Make SQL request \n" +
+						"SELECT [ID], [ObjectName], [ObjectType], [TimeStamp] FROM _objects INNER JOIN @_resultID as resultID ON _objects.ID = resultID.ids";
+
+		// search query part with ordering
+		string query = "SELECT Source.[ID] FROM _objects AS Source " + 
+						orderJoin +
+						"WHERE (ObjectType = '" + type + "') " +
+						(string.IsNullOrEmpty(whereQuery) ? "" : " AND " + whereQuery) +
+						(orderBy == "" ? "" : "ORDER BY " + orderBy);
+
+		// creating SqlParameters for passed values
+		foreach( string parm in parms.Keys ) {
+			cmd.Parameters.AddWithValue(parm, parms[parm]);
+		}
+		// replacing parts in search query template
+		cmd.CommandText = cmd.CommandText.Replace("$QUERY$", query);
+		// if bottom is not set then set it to return from first row
+		if( bottom == 0 ) { bottom = 1; }
+		// replacing limit parts in search query template
+		cmd.CommandText = cmd.CommandText.Replace("$BOTTOM$", bottom.ToString());
+		cmd.CommandText = cmd.CommandText.Replace("$COUNT$", count.ToString());
+
 #if (DEBUG)
-		Debug.Print( "ODB.Search: \n\tpattern = '" + REGEXP_PREDS + "'\n\t" +
-					"Parse string = '" + where + "'" );
+		Debug.Print("ODB.Search: sql search query = '{0}'", cmd.CommandText );
 #endif
-		#endregion
 
-		// replace each predicate in search condition with one that fits DB
-		for( int i = mc.Count - 1; i >= 0; i-- ) {
-			where =
-				where.Replace( mc[i].Value,
-									tunePridicate( mc[i].Value ) );
-		}
-
-		#region debug info
-#if (DEBUG)
-		Debug.Print( "ODB.Search: search script = '" + where + "'" );
-#endif
-		#endregion
-		#endregion
-
-		// surround expression with brackets
-		where = "(" + (where == "" ? "1=1" : where) + ")";
-
-		// add Object Type definition if exist to search condition
-		if( !string.IsNullOrEmpty( type ) ) {
-			where = "(ObjectType = '" + type + "') AND " + where;
-		}
-		
-		// modify query
-		if( string.IsNullOrEmpty(query) ) {
-			// default query table
-			query = "_objects";
-		} else {
-			// surround expression with brackets
-			query = "(" + query + ")";
-		}
-		
 		// open connection and start new transaction if required
 		TransactionBegin();
 		try {
-			// sp_GetObjectsByCriteria will return table with the following columns:
+			//m_trans.IsolationLevel = IsolationLevel.ReadCommitted;
+			cmd.Connection = m_con;
+			cmd.Transaction = m_trans;
+			// search query will return table with the following columns:
 			// ID, ObjectName, ObjectType, TimeStamp
-			SqlCommand cmdSelect = 
-				new SqlCommand( "[dbo].[sp_GetObjectsByCriteria]", 
-								m_con, m_trans );
-			cmdSelect.CommandType = CommandType.StoredProcedure;
-			cmdSelect.Parameters.Add( 
-				"@Request", SqlDbType.NVarChar, where.Length )
-					.Value = where;
-			// TODO: Подставлять query, если не пустой.
-			cmdSelect.Parameters.Add( "@View", SqlDbType.NVarChar, query.Length )
-					.Value = query;
-			cmdSelect.Parameters.Add( "@First", SqlDbType.Int )
-				.Value = bottom;
-			cmdSelect.Parameters.Add( "@Count", SqlDbType.Int )
-				.Value = count;
-			cmdSelect.Parameters.Add( "@OrderBy", SqlDbType.NVarChar, order.Length )
-				.Value = order;
-
 			#region get DateTable with results
-			SqlDataAdapter da = new SqlDataAdapter( cmdSelect );
+			SqlDataAdapter da = new SqlDataAdapter(cmd);
 			DataTable dt = new DataTable(); // table for object proxy properties
-			da.Fill( dt ); // fill table
+			da.Fill(dt); // fill table
 			#endregion
 
 			#region retrive proxies that meets criteria
-			DataTableReader dtr = new DataTableReader( dt );
+			DataTableReader dtr = new DataTableReader(dt);
 			// create List for storing found objects
 			objects = new List<HEADER>();
 
@@ -1105,17 +1079,17 @@ public class ODB : IPersistenceStorage
 			try {
 				while( dtr.Read() ) {
 					// save found proxy object
-					objects.Add( new HEADER((string) dtr["ObjectType"],
-											Convert.ToInt32( dtr["ID"] ),
-											Convert.ToDateTime( dtr["TimeStamp"] ),
-											(string) dtr["ObjectName"]) );
+					objects.Add(new HEADER((string)dtr["ObjectType"],
+											Convert.ToInt32(dtr["ID"]),
+											Convert.ToDateTime(dtr["TimeStamp"]),
+											(string)dtr["ObjectName"]));
 				}
 			} finally { dtr.Close(); }
 			#endregion
 		} catch( Exception ex ) {
 			#region debug info
 #if (DEBUG)
-			Debug.Print( "[ERROR] @ ODB.Search: " + ex.ToString() );
+			Debug.Print("[ERROR] @ ODB.Search: " + ex.ToString());
 #endif
 			#endregion
 			// rollback failed transaction
@@ -1129,7 +1103,7 @@ public class ODB : IPersistenceStorage
 		headers = objects.ToArray();
 		#region debug info
 #if (DEBUG)
-		Debug.Print( "<- ODB.Search( '{0}', '{1}') = {2}", type, where, objects.Count );
+		Debug.Print("<- ODB.Search( '{0}', '{1}') = {2}", type, where, objects.Count);
 #endif
 		#endregion
 		// return count objects found
