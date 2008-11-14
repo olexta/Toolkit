@@ -14,6 +14,7 @@
 using System;
 using System.IO;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -31,8 +32,8 @@ namespace Toolkit.RPL.Storage
 public class ODB : IPersistenceStorage
 {
 	// connection on which all commands are executed
-	readonly SqlConnection m_con;
-	private SqlTransaction m_trans = null;
+	readonly DbConnection m_con;
+	private DbTransaction m_trans = null;
 	// number of currently opened transactions
 	private int m_TransactionCount = 0;
 	private const int BUFFER_LENGTH = 1024 * 1024;
@@ -52,29 +53,25 @@ public class ODB : IPersistenceStorage
 	/// <returns>HEADER of requested object</returns>
 	private HEADER get_header( int id )
 	{
-		SqlCommand cmdSql =
-			new SqlCommand(
-				"SELECT @Name = [ObjectName], @Type = [ObjectType], @Stamp = [TimeStamp] " +
-				"FROM [_objects] " +
-				"WHERE [ID] = " + id, m_con, m_trans);
-		cmdSql.Parameters.Add( "@Name", SqlDbType.NVarChar, 4000 )
-			.Direction = ParameterDirection.Output;
-		cmdSql.Parameters.Add( "@Type", SqlDbType.NVarChar, 4000 )
-			.Direction = ParameterDirection.Output;
-		cmdSql.Parameters.Add( "@Stamp", SqlDbType.DateTime )
-			.Direction = ParameterDirection.Output;
+		DbCommand cmd = new SqlCommand(
+			"SELECT [ObjectName], [ObjectType], [TimeStamp] " +
+				"FROM [_objects] WHERE [ID] = " + id);
+		cmd.Connection = m_con;
+		cmd.Transaction = m_trans;
+		DbDataReader dr = cmd.ExecuteReader();
 		try {
-			cmdSql.ExecuteNonQuery();
+			dr.Read();
 
 			// return new header
 			return new HEADER(
-						(string) cmdSql.Parameters["@Type"].Value,
+						(string)dr["ObjectType"],
 						id,
-						(DateTime) cmdSql.Parameters["@Stamp"].Value,
-						(string) cmdSql.Parameters["@Name"].Value);
+						(DateTime) dr["TimeStamp"],
+						(string) dr["ObjectName"]);
 		} catch {
-			throw new ArgumentException("Object with id = " + id + 
-				" doesn't exist in DB!");
+			throw new ArgumentException("Object with id = " + id + " doesn't exist in DB!");
+		} finally {
+			dr.Dispose();
 		}
 	}
 
@@ -232,12 +229,12 @@ public class ODB : IPersistenceStorage
 		TransactionBegin();
 
 		// command that creates new record or cleares existing
-		SqlCommand CmdSql = new SqlCommand(
-			@"IF (EXISTS(SELECT * FROM [_images] " +
+		DbCommand cmd = new SqlCommand(
+			"DECLARE @_id AS int; " +
+			"IF (EXISTS(SELECT ID FROM [_images] " +
 						"WHERE [ObjectID] = " + objID + " " +
 						"AND " +
-						"Name ='" + propName + "' )) " +
-			"BEGIN " +
+						"[Name] ='" + propName + "' )) BEGIN " +
 				"UPDATE [_images] SET Value = " + ((stream.Length > 0) 
 				? 
 				"0x0" 
@@ -245,52 +242,52 @@ public class ODB : IPersistenceStorage
 				" " +
 				"WHERE [ObjectID] = " + objID + " " +
 						"AND " +
-						"Name ='" + propName + "'; " +
-				"SELECT @Pointer = TEXTPTR(Value) " +
-				"FROM [_images] " +
+						"[Name] ='" + propName + "'; " +
+				"SELECT @_id = [ID] FROM [_images] " +
 				"WHERE [ObjectID] = " + objID + " " +
 						"AND " +
-						"Name ='" + propName + "'; " +
-			"END " +
-			"ELSE " +
-			"BEGIN " +
+						"[Name] ='" + propName + "'; " +
+			"END ELSE BEGIN " +
 				"INSERT INTO [_images] " +
 				"([ObjectID], [Name], [Value]) " +
 				"VALUES ( " + objID + ", '" +
 						  propName + "', " +
 						  ((stream.Length > 0) ? "0x0" : "NULL") + " ); " +
-				"SELECT @Pointer = TEXTPTR(Value) " +
-				"FROM [_images] " +
-				"WHERE [ID] = SCOPE_IDENTITY(); " +
-			"END", m_con, m_trans);
+				"SET @_id = SCOPE_IDENTITY() " +
+			"END;" +
+			"SELECT @Pointer = TEXTPTR(Value) FROM [_images] WHERE [ID] = @_id");
+		cmd.Connection = m_con;
+		cmd.Transaction = m_trans;
 
-		SqlParameter pointerParam =
-			CmdSql.Parameters.Add( "@Pointer", SqlDbType.VarBinary, 16 );
+		DbParameter pointerParam  = new SqlParameter( "@Pointer", SqlDbType.Binary, 16 );
 		pointerParam.Direction = ParameterDirection.Output;
-
+		cmd.Parameters.Add( pointerParam );
+		
 		try {
 			// get pointer to image data
-			CmdSql.ExecuteNonQuery();
-			// check that pointer exists
-			if( pointerParam.Value == null )
-				throw new KeyNotFoundException( "Can't save image!");
+			cmd.ExecuteNonQuery();
 			// set up UPDATETEXT command, parameters, and open BinaryReader.	
-			CmdSql = new SqlCommand(
+			cmd = new SqlCommand(
 				"UPDATETEXT [_images].Value @Pointer @Offset @Delete " +
-				"WITH LOG @Bytes", m_con, m_trans);
+				"WITH LOG @Bytes");
+			cmd.Connection = m_con;
+			cmd.Transaction = m_trans;
 			// assign value of pointer previously recieved
-			CmdSql.Parameters.Add( "@Pointer", SqlDbType.Binary, 16 ).Value =
-				pointerParam.Value;
-			SqlParameter OffsetParam =
-				CmdSql.Parameters.Add( "@Offset", SqlDbType.Int );
-			SqlParameter DeleteParam =
-				CmdSql.Parameters.Add( "@Delete", SqlDbType.Int );
-			DeleteParam.Value = 1; //delete 0x0 character
-			SqlParameter BytesParam =
-				CmdSql.Parameters.Add( "@Bytes", SqlDbType.Binary );
+			cmd.Parameters.Add( new SqlParameter("@Pointer", SqlDbType.Binary, 16) );
+			cmd.Parameters["@Pointer"].Value = pointerParam.Value;
+			// start insertion from begin
+			DbParameter offsetParam = new SqlParameter( "@Offset", SqlDbType.Int );
+			offsetParam.Value = 0;
+			cmd.Parameters.Add( offsetParam );
+			//delete 0x0 character
+			DbParameter deleteParam = new SqlParameter("@Delete", SqlDbType.Int);
+			deleteParam.Value  = 1;
+			cmd.Parameters.Add( deleteParam );
+			DbParameter bytesParam = new SqlParameter( "@Bytes", SqlDbType.Binary );
+			cmd.Parameters.Add( bytesParam );
+
 			stream.Seek( 0, SeekOrigin.Begin );
 
-			OffsetParam.Value = 0; // start insertion from begin
 			// read buffer full of data and execute UPDATETEXT statement.
 			Byte[] Buffer = new Byte[BUFFER_LENGTH];
 			// make first read from stream
@@ -299,14 +296,14 @@ public class ODB : IPersistenceStorage
 			// while something is read from stream, write to apend to BLOB field
 			while( ret > 0 ) {
 				// initing parameters for write
-				BytesParam.Value = Buffer;
-				BytesParam.Size = ret;
+				bytesParam.Value = Buffer;
+				bytesParam.Size = ret;
 				// write to BLOB field
-				CmdSql.ExecuteNonQuery(); // execute iteration
-				DeleteParam.Value = 0; // don't delete any other data
+				cmd.ExecuteNonQuery(); // execute iteration
+				deleteParam.Value = 0; // don't delete any other data
 				// prepare to next iteration
-				OffsetParam.Value =
-					Convert.ToInt32( OffsetParam.Value ) + ret;
+				offsetParam.Value =
+					Convert.ToInt32( offsetParam.Value ) + ret;
 				// read from stream for next iteration
 				ret = stream.Read( Buffer, 0, BUFFER_LENGTH );
 			}
@@ -344,28 +341,30 @@ public class ODB : IPersistenceStorage
 		#endregion
 
 		// get pointer to BLOB field using TEXTPTR.
-		SqlCommand CmdSql = new SqlCommand(
+		DbCommand cmd = new SqlCommand(
 			"SELECT @Pointer = TEXTPTR(Value), " +
 			"@Length = DataLength(Value) " +
 			"FROM [_images] " +
 			"WHERE [ObjectID] = " + objID + " " +
-						"AND " +
-						"Name ='" + propName + "'", m_con, m_trans);
+				"AND " +
+				"[Name] ='" + propName + "'" );
+		cmd.Connection = m_con;
+		cmd.Transaction = m_trans;
 		// setup parameters
-		SqlParameter pointerParam = new SqlParameter("@Pointer", SqlDbType.VarBinary, 16);
-		CmdSql.Parameters.Add( pointerParam ).Direction =
-			ParameterDirection.Output;
-		SqlParameter lengthParam = new SqlParameter("@Length", SqlDbType.Int);
-		CmdSql.Parameters.Add( lengthParam ).Direction =
-			ParameterDirection.Output;
+		DbParameter pointerParam = new SqlParameter("@Pointer", SqlDbType.VarBinary, 16);
+		pointerParam.Direction = ParameterDirection.Output;
+		cmd.Parameters.Add( pointerParam );
+		DbParameter lengthParam = new SqlParameter("@Length", SqlDbType.Int);
+		lengthParam.Direction = ParameterDirection.Output;
+		cmd.Parameters.Add( lengthParam );
 		// open connection and start new transaction if required
 		TransactionBegin();
 		try {
 			// get pointer and length of BLOB field
-			CmdSql.ExecuteNonQuery();
+			cmd.ExecuteNonQuery();
 
 			//check that BLOB field exists
-			if( CmdSql.Parameters["@Pointer"].Value == null ) {
+			if( pointerParam.Value == null ) {
 				throw new KeyNotFoundException( ERROR_IMAGE_IS_ABSENT );
 			}
 
@@ -373,22 +372,23 @@ public class ODB : IPersistenceStorage
 			// set up the READTEXT command to read the BLOB by passing the following
 			// parameters: @Pointer – pointer to blob, @Offset – number of bytes to
 			// skip before starting the read, @Size – number of bytes to read.
-			CmdSql = new SqlCommand(
+			cmd = new SqlCommand(
 				"READTEXT [_images].Value " +
-				"@Pointer @Offset @Size HOLDLOCK", m_con, m_trans);
-			// set up the parameters for the command.
-			CmdSql.Parameters.Add( "Pointer", SqlDbType.VarBinary, 16 ).Value =
-				pointerParam.Value;
-
-			
+				"@Pointer @Offset @Size HOLDLOCK");
+			cmd.Connection = m_con;
+			cmd.Transaction = m_trans;
 			// temp buffer for read/write purposes
 			Byte[] buffer = new Byte[BUFFER_LENGTH];
-			
+
+			// set up the parameters for the command.
+			cmd.Parameters.Add( new SqlParameter("@Pointer", pointerParam.Value) );
 			// current offset position
-			SqlParameter offset = CmdSql.Parameters.Add( "@Offset", SqlDbType.Int );
+			DbParameter offset = new SqlParameter("@Offset", SqlDbType.Int);
 			offset.Value = 0;
-			SqlParameter size = CmdSql.Parameters.Add( "@Size", SqlDbType.Int );
+			cmd.Parameters.Add( offset );
+			DbParameter size =  new SqlParameter("@Size", SqlDbType.Int);
 			size.Value = 0;
+			cmd.Parameters.Add( size );
 
 			while( Convert.ToInt32(offset.Value) < Convert.ToInt32( lengthParam.Value ) ) {
 				// calculate buffer size - may be less than BUFFER_LENGTH for last block.				
@@ -403,8 +403,8 @@ public class ODB : IPersistenceStorage
 					size.Value = buffer.GetUpperBound( 0 );
 
 				// execute reader
-				SqlDataReader dr =
-					CmdSql.ExecuteReader( CommandBehavior.SingleRow );
+				DbDataReader dr =
+					cmd.ExecuteReader( CommandBehavior.SingleRow );
 
 				try {
 					// read data from SqlDataReader
@@ -490,20 +490,20 @@ public class ODB : IPersistenceStorage
 		TransactionBegin();
 		try {
 			// check object stamp. If it is newer then current -> raise error
-			SqlCommand sqlCmd = new SqlCommand( "IF ((SELECT [TimeStamp] " +
-					"FROM [_objects] WHERE [ID] = @objectID) > @Stamp) " +
-					"RAISERROR( '" + ERROR_CHANGED_OBJECT + "', 11, 1 );",
-					m_con,
-					m_trans );
+			DbCommand cmd = new SqlCommand( "DECLARE @_id AS int; SET @_id = @ID;" +
+				"IF ((SELECT [TimeStamp] " +
+				"FROM [_objects] WHERE [ID] = @_id) > @Stamp) " +
+					"RAISERROR( '" + ERROR_CHANGED_OBJECT + "', 11, 1 );" );
+			cmd.Connection = m_con;
+			cmd.Transaction = m_trans;
 			// add proxy stamp parameter
-			sqlCmd.Parameters.Add( "@Stamp", SqlDbType.DateTime ).Value =
-				header.Stamp;
-			sqlCmd.Parameters.Add( "@objectID", SqlDbType.Int ).Value = header.ID;
+			cmd.Parameters.Add(new SqlParameter("@ID", header.ID));
+			cmd.Parameters.Add(new SqlParameter("@Stamp", header.Stamp));
 
-			sqlCmd.CommandText += "DELETE FROM _objects WHERE [ID] = @objectID";
+			cmd.CommandText += "DELETE FROM [_objects] WHERE [ID] = @_id";
 
 			// proccess delete opearaton
-			sqlCmd.ExecuteNonQuery();
+			cmd.ExecuteNonQuery();
 		} catch( Exception ex ) {
 			#region dubug info
 #if (DEBUG)
@@ -527,25 +527,37 @@ public class ODB : IPersistenceStorage
 	/// Execute specified SQL request on the storage.
 	/// </summary>
 	/// <param name="sql">SQL request to be executed.</param>
+	/// <param name="params"></param>
 	/// <returns>Disconnected table of in-memory data.</returns>
-	public DataSet ProcessSQL( string sql )
+	public DataSet ProcessSQL(string sql, object[] @params)
 	{
 		#region debug info
 #if (DEBUG)
-		Debug.Print( "-> ODB.ProcessSQL( '{0}' )", sql );
+		Debug.Print("-> ODB.ProcessSQL( '{0}' )", sql);
 #endif
 		#endregion
-
 		// creating command
-		SqlCommand CmdSql = new SqlCommand(sql, m_con, m_trans);
-		SqlDataAdapter da = new SqlDataAdapter(CmdSql);
+		DbCommand cmd = new SqlCommand();
+		cmd.Connection = m_con;
+		cmd.Transaction = m_trans;
+
+		string[] names = new string[@params.Length];
+		for( int i = 0; i < @params.Length; i++ )
+		{
+			names[i] = "P" + i;
+			cmd.Parameters.Add( new SqlParameter(names[i], @params[i]) );
+		}
+
+		sql = string.Format( sql, names );
+		cmd.CommandText = sql;
+		DataAdapter da = new SqlDataAdapter((SqlCommand)cmd);
 		// table for result
 		DataSet ds = new DataSet();
-		da.Fill( ds ); // fill table
+		da.Fill(ds); // fill table
 
 		#region debug info
 #if (DEBUG)
-		Debug.Print( "-> ODB.ProcessSQL( '{0}' ) = {1}", sql, ds.Tables.Count );
+		Debug.Print("-> ODB.ProcessSQL( '{0}' ) = {1}", sql, ds.Tables.Count);
 #endif
 		#endregion
 
@@ -603,10 +615,10 @@ public class ODB : IPersistenceStorage
 #endif
 		#endregion
 
-		List<PROPERTY> Props;	// list to store properties of object
-		List<LINK> Links;	// list to store child proxy objects
-		SqlDataReader SqlReader = null;
-		SqlCommand CmdSql = null;
+		List<PROPERTY> _props;	// list to store properties of object
+		List<LINK> _links;	// list to store child proxy objects
+		DbDataReader dr = null;
+		DbCommand cmd = null;
 		// init out parameters
 		links = null;
 		props = null;
@@ -625,19 +637,20 @@ public class ODB : IPersistenceStorage
 			}
 
 			#region retrive props from _properties
-			CmdSql =
-				new SqlCommand("SELECT [Name], [Value] " +
-							   "FROM [_properties] " +
-							   "WHERE [ObjectID] = " + header.ID, m_con, m_trans);
-			SqlReader =
-					CmdSql.ExecuteReader( CommandBehavior.SingleResult );
+			cmd = new SqlCommand(
+					"SELECT [Name], [Value] FROM [_properties] " +
+					"WHERE [ObjectID] = " + header.ID);
+			cmd.Connection = m_con;
+			cmd.Transaction = m_trans;
+
+			dr = cmd.ExecuteReader( CommandBehavior.SingleResult );
 			try {
-				Props = new List<PROPERTY>();
+				_props = new List<PROPERTY>();
 				// read all simple properties of object
-				while( SqlReader.Read() ) {
+				while( dr.Read() ) {
 					// read properties from row
-					string name = (string) SqlReader["Name"];
-					object val	= SqlReader["Value"];
+					string name = (string) dr["Name"];
+					object val	= dr["Value"];
 
 					// convert byte array to memory stream
 					if( val.GetType() == typeof(Byte[] ) ) {
@@ -645,23 +658,24 @@ public class ODB : IPersistenceStorage
 					}
 					// build PersistentProperty upon recieved name and value and
 					// save property in collection
-					Props.Add( new PROPERTY( name, new ValueBox(val), PROPERTY.STATE.New ));
+					_props.Add( new PROPERTY( name, new ValueBox(val), PROPERTY.STATE.New ));
 				}
 			} finally {
 				// Dispose SqlDataReader
-				SqlReader.Close();
-				SqlReader = null;
+				dr.Dispose();
 			}
 			#endregion
 
 			#region retrive props from _images
-			SqlDataAdapter da = 
-				new SqlDataAdapter( 
-					new SqlCommand(
-						"SELECT [Name] " +
-						"FROM [_images] " +
-						"WHERE [ObjectID] = " + header.ID, m_con, m_trans ) );
+			cmd = new SqlCommand(
+				"SELECT [Name] FROM [_images] " +
+				"WHERE [ObjectID] = " + header.ID);
+			cmd.Connection = m_con;
+			cmd.Transaction = m_trans;
+
+			SqlDataAdapter da = new SqlDataAdapter( (SqlCommand)cmd );
 			DataTable dt = new DataTable(); // table for object proxy properties
+
 			da.Fill( dt ); // fill table
 			DataTableReader dtr = new DataTableReader(dt);
 			try {
@@ -671,52 +685,42 @@ public class ODB : IPersistenceStorage
 					PersistentStream stream = new PersistentStream();
 					read_image( header.ID, name, ref stream );
 					// save property in collection
-					Props.Add( 
+					_props.Add( 
 						new PROPERTY(
 							name,
 							new ValueBox((Object) stream ), PROPERTY.STATE.New ));
 				}
 			} finally {
-				dtr.Close();
+				dtr.Dispose();
 			}
 			#endregion
 
 			#region retrive links
-			CmdSql = 
-				new SqlCommand(
-						"SELECT [ID], [ObjectName], [ObjectType], [TimeStamp] " +
-						"FROM [_objects] " +
-						"WHERE [ID] IN ( " + 
-							"SELECT Child FROM [_links] " + 
-							"WHERE Parent = " + header.ID + ")", 
-						m_con, m_trans);
+			cmd = new SqlCommand(
+				"SELECT [ID], [ObjectName], [ObjectType], [TimeStamp] FROM [_objects] " +
+				"WHERE [ID] IN ( " + 
+				"SELECT Child FROM [_links] " + 
+				"WHERE Parent = " + header.ID + ")");
+			cmd.Connection = m_con;
+			cmd.Transaction = m_trans;
 
-			#region get DateTable with results
-			da = new SqlDataAdapter(CmdSql);
-			dt = new DataTable(); // table for object proxy properties
-			da.Fill( dt ); // fill table
-			#endregion
-
-			#region create reader over table we got
-			dtr = new DataTableReader( dt );
-
+			dr = cmd.ExecuteReader( CommandBehavior.SingleResult );
 			try {
-				Links = new List<LINK>();
-				while( dtr.Read() ) {
+				_links = new List<LINK>();
+				while( dr.Read() ) {
 					// save child header
-					Links.Add( new LINK(
-							new HEADER((string) dtr["ObjectType"],
-									   Convert.ToInt32( dtr["ID"] ),
-									   Convert.ToDateTime( dtr["TimeStamp"] ),
-									   (string) dtr["ObjectName"] ),
-									   LINK.STATE.New));
+					_links.Add( new LINK(
+						new HEADER((string) dr["ObjectType"],
+							Convert.ToInt32( dr["ID"] ),
+							Convert.ToDateTime( dr["TimeStamp"] ),
+							(string) dr["ObjectName"] ),
+							LINK.STATE.New));
 				}
-			} finally { dtr.Close(); }
-			#endregion
+			} finally { dr.Dispose(); }
 			#endregion
 
-			if( Props.Count > 0 ) { props = Props.ToArray(); }
-			if( Links.Count > 0 ) { links = Links.ToArray(); }
+			if( _props.Count > 0 ) { props = _props.ToArray(); }
+			if( _links.Count > 0 ) { links = _links.ToArray(); }
 			header = newHeader;
 		} catch( Exception ex ) {
 			#region debug info
@@ -758,8 +762,8 @@ public class ODB : IPersistenceStorage
 #endif
 		#endregion
 
-		SqlCommand CmdSql = null;	// other puroses
-		List<PROPERTY> Props = null;	// list for collecting current object properties
+		DbCommand cmd = null;	// other puroses
+		List<PROPERTY> _props = null;	// list for collecting current object properties
 		int objID; // object ID
 
 		// initialize out parameters
@@ -773,45 +777,51 @@ public class ODB : IPersistenceStorage
 			// assign command which will insert or (check, update) object record in DB
 			if( header.ID == 0 ) {
 				// this is new object. Creating script for insertion of object
-				CmdSql =
+				cmd =
 					new SqlCommand( 
 						"INSERT INTO [_objects] ( [ObjectName], [ObjectType] ) " +
-						"VALUES ( '" + header.Name.Replace( "'", "''" ) + "', " +
-						"'" + header.Type.Replace( "'", "''" ) + "');" +
+						"VALUES ( @Name, @Type );" +
 					/*save inserted object ID*/
-						"SET @ID = SCOPE_IDENTITY();", m_con, m_trans);
+						"SET @ID = SCOPE_IDENTITY();");
+				cmd.Connection = m_con;
+				cmd.Transaction = m_trans;
+				// add proxy name parameter
+				cmd.Parameters.Add(new SqlParameter("@Name", header.Name));
+				// add proxy name parameter
+				cmd.Parameters.Add(new SqlParameter("@Type", header.Type));
+				// add proxy ID parameter
+				cmd.Parameters.Add(new SqlParameter("@ID", SqlDbType.Int));
+				cmd.Parameters["@ID"].Direction = ParameterDirection.Output;
 			} else {
 				// check object stamp. If it is newer then current -> raise error
-				CmdSql =
-					new SqlCommand( "IF ((SELECT [TimeStamp] " +
-						"FROM [_objects] WHERE [ID] = @ID) > @Stamp) " +
-						"RAISERROR( '" + ERROR_CHANGED_OBJECT + "', 11, 1 );",
-						m_con,
-						m_trans );
+				cmd = new SqlCommand( 
+					"DECLARE @_id AS Int; SET @_id = @ID;\n" +
+					"IF ((SELECT [TimeStamp] FROM [_objects] WHERE [ID] = @_id) > @Stamp) " +
+					"\n\tRAISERROR( '" + ERROR_CHANGED_OBJECT + "', 11, 1 );" );
+				cmd.Connection = m_con;
+				cmd.Transaction = m_trans;
+				// add proxy ID parameter
+				cmd.Parameters.Add(new SqlParameter("@ID", header.ID));
 				// add proxy stamp parameter
-				CmdSql.Parameters.Add( "@Stamp", SqlDbType.DateTime ).Value =
-					header.Stamp;
+				cmd.Parameters.Add( new SqlParameter("@Stamp", header.Stamp));
 				// proxy name is always updated
-				CmdSql.CommandText +=
-					"UPDATE [_objects] SET [ObjectName] = @Name WHERE [ID] = @ID";
+				cmd.CommandText += "UPDATE [_objects] SET [ObjectName] = @Name WHERE [ID] = @_id";
+
 				// add proxy name parameter
-				CmdSql.Parameters
-					.Add( "@Name", SqlDbType.NVarChar, header.Name.Length )
-						.Value = header.Name;
+				cmd.Parameters.Add( new SqlParameter( "@Name", header.Name) );
 			}
-			// add proxy ID parameter that is always used
-			CmdSql.Parameters.Add( "@ID", SqlDbType.Int ).Value = header.ID;
-			CmdSql.Parameters["@ID"].Direction = ParameterDirection.InputOutput;
 
 			// execute batch
-			CmdSql.ExecuteNonQuery();
+			cmd.ExecuteNonQuery();
 			// get proxy ID returned by batch execution
-			objID = Convert.ToInt32( CmdSql.Parameters["@ID"].Value );
+			objID = Convert.ToInt32( cmd.Parameters["@ID"].Value );
 			#endregion
 
 			// create new command
-			CmdSql = new SqlCommand( "", m_con, m_trans );
-			Props = new List<PROPERTY>();
+			cmd = new SqlCommand( "" );
+			cmd.Connection = m_con;
+			cmd.Transaction = m_trans;
+			_props = new List<PROPERTY>();
 
 			// iterate through recieved properties
 			foreach( PROPERTY prop in props ) {
@@ -824,7 +834,7 @@ public class ODB : IPersistenceStorage
 					switch( prop.State ) {
 						case PROPERTY.STATE.Changed:
 							// add query for delete property from _properties table (property may be there before)
-							CmdSql.CommandText += 
+							cmd.CommandText += 
 								"DELETE FROM [_properties] " +
 								"WHERE [ObjectID]=" + objID + " AND " +
 								"[Name]='" + prop.Name + "';";
@@ -835,12 +845,10 @@ public class ODB : IPersistenceStorage
 							break;
 						case PROPERTY.STATE.Deleted:
 							// add query to delete property from both tables
-							CmdSql.CommandText += 
-								"DELETE FROM [_properties] " +
-								"WHERE [ObjectID]=" + objID + " AND " +
+							cmd.CommandText += 
+								"DELETE FROM [_properties] WHERE [ObjectID]=" + objID + " AND " +
 								"[Name]='" + prop.Name + "';" +
-								"DELETE FROM [_images] " +
-								"WHERE [ObjectID]=" + objID + " AND " +
+								"DELETE FROM [_images] WHERE [ObjectID]=" + objID + " AND " +
 								"[Name]='" + prop.Name + "';";
 							break;
 					}
@@ -860,7 +868,7 @@ public class ODB : IPersistenceStorage
 						// DateTime Property must be converted to precision of sql server before sav
 						value = datetime_to_sql( (DateTime)prop.Value );
 						// add to changed properies List
-						Props.Add( new PROPERTY(prop.Name, new ValueBox(value), PROPERTY.STATE.Changed) );
+						_props.Add( new PROPERTY(prop.Name, new ValueBox(value), PROPERTY.STATE.Changed) );
 					} else {
 						// no convertion is needed
 						value = prop.Value.ToObject();
@@ -870,28 +878,26 @@ public class ODB : IPersistenceStorage
 					switch( prop.State ) {
 						case PROPERTY.STATE.New:
 							// adding new row to DB
-							CmdSql.CommandText +=
+							cmd.CommandText +=
 								"INSERT INTO [_properties] ([ObjectID], [Name], [Value]) " + 
 								"VALUES " +
 									"(" + objID + ", '" +
 									prop.Name + "', " +
-									"@PropValue_" + prop.Name + ");";
-							CmdSql.Parameters.Add( "@PropValue_" + prop.Name,
-													SqlDbType.Variant ).Value = value;
+									"@PropValue_" + prop.Name + " );";
+							cmd.Parameters.Add( new SqlParameter("@PropValue_" + prop.Name, value) );
 							break;
 						case PROPERTY.STATE.Changed:
 							// update row in DB
-							CmdSql.CommandText +=
+							cmd.CommandText +=
 								"UPDATE [_properties] " +
-								"SET [Value] = " + "@PropValue_" + prop.Name + " " +
+								"SET [Value] = @PropValue_" + prop.Name + " " +
 								"WHERE [ObjectID]=" + objID + " AND " +
 									  "[Name]='" + prop.Name + "';";
-							CmdSql.Parameters.Add( "@PropValue_" + prop.Name,
-													SqlDbType.Variant ).Value = value;
+							cmd.Parameters.Add( new SqlParameter("@PropValue_" + prop.Name, value) );
 
 							// try to delete property from _images table if it is PersistentStream
 							if( prop.Value.ToObject() is PersistentStream ) {
-								CmdSql.CommandText += 
+								cmd.CommandText += 
 									"DELETE FROM [_images] " +
 									"WHERE [ObjectID]=" + objID + " AND " +
 									"[Name]='" + prop.Name + "';";
@@ -899,14 +905,14 @@ public class ODB : IPersistenceStorage
 							break;
 						case PROPERTY.STATE.Deleted:
 							// delete property from _properties table
-							CmdSql.CommandText +=
+							cmd.CommandText +=
 								"DELETE FROM [_properties] " +
 								"WHERE [ObjectID]=" + objID + " AND " +
 									  "[Name]='" + prop.Name + "';";
 
 							// if it is PersistentStream property then delete property from _images table
 							if( prop.Value.ToObject() is PersistentStream ) {
-								CmdSql.CommandText +=
+								cmd.CommandText +=
 									"DELETE FROM [_images] " +
 									"WHERE [ObjectID]=" + objID + " AND " +
 									"[Name]='" + prop.Name + "';";
@@ -921,12 +927,12 @@ public class ODB : IPersistenceStorage
 				// check link action
 				if( link.State == LINK.STATE.New ) {
 					// add new link to DB
-					CmdSql.CommandText +=
+					cmd.CommandText +=
 						"INSERT INTO [_links] ([Parent], [Child]) " +
 						"VALUES (" + objID + ", " + link.Header.ID + ");";
 				} else if( link.State == LINK.STATE.Deleted ) {
 					// delete link from DB
-					CmdSql.CommandText +=
+					cmd.CommandText +=
 						"DELETE FROM [_links] " +
 						"WHERE [Parent]=" + objID + " AND " + 
 							  "[Child]=" + link.Header.ID + ";";
@@ -934,15 +940,15 @@ public class ODB : IPersistenceStorage
 			}
 
 			// executing batch
-			if( CmdSql.CommandText != "" ) {
-				CmdSql.ExecuteNonQuery();
+			if( cmd.CommandText != "" ) {
+				cmd.ExecuteNonQuery();
 			}
 
 			// return proxy properties
 			header = get_header( objID );
 			// and changed properies if exists
-			if( Props.Count > 0 )
-				mprops = Props.ToArray();
+			if( _props.Count > 0 )
+				mprops = _props.ToArray();
 		} catch( Exception ex ) {
 			#region debug info
 #if (DEBUG)
@@ -982,7 +988,7 @@ public class ODB : IPersistenceStorage
 #endif
 		#endregion
 		// init search command
-		SqlCommand cmd = new SqlCommand();
+		DbCommand cmd = new SqlCommand();
 		// list for HEADERs return purpose
 		List<HEADER> objects = null;
 
@@ -1034,15 +1040,14 @@ public class ODB : IPersistenceStorage
 						"SELECT [ID], [ObjectName], [ObjectType], [TimeStamp] FROM _objects INNER JOIN @_resultID as resultID ON _objects.ID = resultID.ids";
 
 		// search query part with ordering
-		string query = "SELECT Source.[ID] FROM _objects AS Source " + 
+		string query = "SELECT Source.[ID] FROM (Select ID FROM _objects WHERE ObjectType = '" + type +"') AS Source " + 
 						orderJoin +
-						"WHERE (ObjectType = '" + type + "') " +
-						(string.IsNullOrEmpty(whereQuery) ? "" : " AND " + whereQuery) +
+						(string.IsNullOrEmpty(whereQuery) ? "" : "WHERE " + whereQuery) +
 						(orderBy == "" ? "" : "ORDER BY " + orderBy);
 
 		// creating SqlParameters for passed values
 		foreach( string parm in parms.Keys ) {
-			cmd.Parameters.AddWithValue(parm, parms[parm]);
+			cmd.Parameters.Add( new SqlParameter(parm, parms[parm]));
 		}
 		// replacing parts in search query template
 		cmd.CommandText = cmd.CommandText.Replace("$QUERY$", query);
@@ -1059,32 +1064,24 @@ public class ODB : IPersistenceStorage
 		// open connection and start new transaction if required
 		TransactionBegin();
 		try {
-			//m_trans.IsolationLevel = IsolationLevel.ReadCommitted;
 			cmd.Connection = m_con;
 			cmd.Transaction = m_trans;
 			// search query will return table with the following columns:
 			// ID, ObjectName, ObjectType, TimeStamp
-			#region get DateTable with results
-			SqlDataAdapter da = new SqlDataAdapter(cmd);
-			DataTable dt = new DataTable(); // table for object proxy properties
-			da.Fill(dt); // fill table
-			#endregion
-
-			#region retrive proxies that meets criteria
-			DataTableReader dtr = new DataTableReader(dt);
+			#region retrive data and create proxies
+			DbDataReader dr = cmd.ExecuteReader();
+			
 			// create List for storing found objects
 			objects = new List<HEADER>();
-
-			// read all proxy props found
 			try {
-				while( dtr.Read() ) {
+				while( dr.Read() ) {
 					// save found proxy object
-					objects.Add(new HEADER((string)dtr["ObjectType"],
-											Convert.ToInt32(dtr["ID"]),
-											Convert.ToDateTime(dtr["TimeStamp"]),
-											(string)dtr["ObjectName"]));
+					objects.Add(new HEADER((string)dr["ObjectType"],
+											Convert.ToInt32(dr["ID"]),
+											Convert.ToDateTime(dr["TimeStamp"]),
+											(string)dr["ObjectName"]));
 				}
-			} finally { dtr.Close(); }
+			} finally { dr.Dispose(); }
 			#endregion
 		} catch( Exception ex ) {
 			#region debug info
