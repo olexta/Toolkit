@@ -358,13 +358,13 @@ remove( HEADER header )
 //
 //-------------------------------------------------------------------
 DataSet^ PersistenceBroker:: \
-process_sql( String ^sql )
+process_sql( String ^sql, array<Object^> ^params )
 {
 	// check current state
 	check_state();
 
 	// call to real storage
-	return s_storage->ProcessSQL( sql );
+	return s_storage->ProcessSQL( sql, params );
 }
 
 

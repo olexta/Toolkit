@@ -83,7 +83,7 @@ private:
 	virtual void trans_rollback( void ) sealed = ITransaction::Rollback;
 
 protected:
-	static DataSet^ ProcessSQL( String ^sql );
+	static DataSet^ ProcessSQL( String ^sql, ... array<Object^> ^params );
 
 	PersistentObject( void );
 	PersistentObject( int id, DateTime stamp, String ^name );

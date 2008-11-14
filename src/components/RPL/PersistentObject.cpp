@@ -205,18 +205,20 @@ void PersistentObject::trans_rollback( void )
 //-------------------------------------------------------------------
 /// <summary>
 /// Submit hardcoded SQL statements to the persistence.
-/// </summary><remarks>
+/// </summary><remarks><para>
 /// This is critical feature that allows you to embed SQL in your
-/// application code.
-/// </remarks>
+/// application code.</para><para>
+/// To compose parametrized SQL request use standard String.Format
+/// naming style (place '{n}' instead of parameter).
+/// </para></remarks>
 //-------------------------------------------------------------------
-DataSet^ PersistentObject::ProcessSQL( String ^sql )
+DataSet^ PersistentObject::ProcessSQL( String ^sql, ... array<Object^> ^params )
 {
 	// lock storage for one executable thread
 	Monitor::Enter( PersistenceBroker::Storage );
 	try{
 		// retrieve DataSet from storage
-		return PersistenceBroker::Storage->ProcessSQL( sql );
+		return PersistenceBroker::Storage->ProcessSQL( sql, params );
 	} finally {
 		// unlock storage in any case
 		Monitor::Exit( PersistenceBroker::Storage );

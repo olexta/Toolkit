@@ -156,7 +156,7 @@ namespace Factories {
 		virtual void remove( HEADER ) sealed =
 			IIRemoteStorage::Delete;
 		
-		virtual DataSet^ process_sql( String^ ) sealed =
+		virtual DataSet^ process_sql( String^, array<Object^>^ ) sealed =
 			IIRemoteStorage::ProcessSQL;
 
 	internal:

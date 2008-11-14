@@ -250,9 +250,13 @@ namespace Storage {
 		/// Submit hardcoded SQL statements to the persistence.
 		/// </summary>
 		/// <param name="sql">SQL request to be processed.</param>
-		/// <returns>
+		/// <param name="params">Represents a list of parameters are passed to
+		/// SQL request.</param>
+		/// <remarks>
+		/// Parametrized request uses standard String.Format naming style.
+		/// </remarks><returns>
 		/// Disconnected an in-memory cache of data.
 		/// </returns>
-		DataSet^ ProcessSQL( String ^sql );
+		DataSet^ ProcessSQL( String ^sql, array<Object^> ^params );
 	};
 }_RPL_END
