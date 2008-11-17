@@ -544,7 +544,7 @@ public class ODB : IPersistenceStorage
 		string[] names = new string[@params.Length];
 		for( int i = 0; i < @params.Length; i++ )
 		{
-			names[i] = "P" + i;
+			names[i] = "@P" + i;
 			cmd.Parameters.Add( new SqlParameter(names[i], @params[i]) );
 		}
 
