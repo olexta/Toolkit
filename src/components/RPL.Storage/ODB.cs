@@ -98,7 +98,11 @@ public class ODB : IPersistenceStorage
 				break;
 			case Where.Clause.OP.EQ:
 			default:
-				op = "=";
+				if( clause.Value.ToObject().GetType() == typeof(string)) {
+					op = "LIKE";
+				} else {
+					op = "=";
+				}
 				break;
 		}
 		string opd = "@" + clause.OPD;
@@ -1040,7 +1044,7 @@ public class ODB : IPersistenceStorage
 						"SELECT [ID], [ObjectName], [ObjectType], [TimeStamp] FROM _objects INNER JOIN @_resultID as resultID ON _objects.ID = resultID.ids";
 
 		// search query part with ordering
-		string query = "SELECT Source.[ID] FROM (Select ID FROM _objects WHERE ObjectType = '" + type +"') AS Source " + 
+		string query = "SELECT Source.[ID] FROM (Select * FROM _objects WHERE ObjectType = '" + type +"') AS Source " + 
 						orderJoin +
 						(string.IsNullOrEmpty(whereQuery) ? "" : "WHERE " + whereQuery) +
 						(orderBy == "" ? "" : "ORDER BY " + orderBy);
