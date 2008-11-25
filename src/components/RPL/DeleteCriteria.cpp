@@ -89,9 +89,6 @@ DeleteCriteria::DeleteCriteria( String ^type ): \
 DeleteCriteria::DeleteCriteria( String ^type, ::Where ^where ): \
 	PersistentCriteria( type )
 {
-	// check for initialized reference
-	if( where == nullptr ) throw gcnew ArgumentNullException("where");
-
 	m_where = where;
 }
 
@@ -103,13 +100,9 @@ DeleteCriteria::DeleteCriteria( String ^type, ::Where ^where ): \
 /// </summary>
 //-------------------------------------------------------------------
 DeleteCriteria::DeleteCriteria( String ^type,					    \
-								::Where ^where, ::OrderBy ^order ):	\
+								::Where ^where, ::OrderBy ^order ): \
 	PersistentCriteria(type)
 {
-	// check for initialized references
-	if( where == nullptr ) throw gcnew ArgumentNullException("where");
-	if( order == nullptr ) throw gcnew ArgumentNullException("order");
-
 	m_where = where;
 	m_orderBy = order;
 }

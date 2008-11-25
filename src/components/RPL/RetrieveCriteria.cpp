@@ -106,9 +106,6 @@ RetrieveCriteria::RetrieveCriteria( String ^type ): \
 RetrieveCriteria::RetrieveCriteria( String ^type, ::Where ^where ): \
 	PersistentCriteria(type), m_asProxies(false), m_pos(-1)
 {
-	// check for initialized reference
-	if( where == nullptr ) throw gcnew ArgumentNullException("where");
-	
 	m_where = where;
 }
 
@@ -124,10 +121,6 @@ RetrieveCriteria::RetrieveCriteria( String ^type,						\
 									::Where ^where, ::OrderBy ^order ):	\
 	PersistentCriteria(type), m_asProxies(false), m_pos(-1)
 {
-	// check for initialized references
-	if( where == nullptr ) throw gcnew ArgumentNullException("where");
-	if( order == nullptr ) throw gcnew ArgumentNullException("order");
-
 	m_where = where;
 	m_orderBy = order;
 }
