@@ -79,6 +79,7 @@ public class ODB : IPersistenceStorage
 	private string clause_to_cmd(Where.Clause clause, IDictionary<string, object> parms)
 	{
 		string op;
+		string column = "Value";
 		// operator definition
 		switch( clause.Operator ) {
 			case Where.Clause.OP.GE:
@@ -100,6 +101,7 @@ public class ODB : IPersistenceStorage
 			default:
 				if( clause.Value.ToObject().GetType() == typeof(string)) {
 					op = "LIKE";
+					column = "CAST(Value as nvarchar)";
 				} else {
 					op = "=";
 				}
@@ -134,13 +136,12 @@ public class ODB : IPersistenceStorage
 			}
 			result = "( Source.[" + propName + "] " + op + " " + opd + ") ";
 		} else {
-
 			// query for non base properties
 			result = "(EXISTS(SELECT ID FROM [_properties] AS p WHERE (ObjectID = Source.ID) " +
 								"AND " +
 								"(Name = '" + clause.OPD + "') " + // define property name
 								"AND " +
-								"(Value " + op + " " + opd + "))) "; // define property value
+								"(" + column + " " + op + " " + opd + "))) "; // define property value
 		}
 		return result;
 	}
@@ -723,8 +724,18 @@ public class ODB : IPersistenceStorage
 			} finally { dr.Dispose(); }
 			#endregion
 
-			if( _props.Count > 0 ) { props = _props.ToArray(); }
-			if( _links.Count > 0 ) { links = _links.ToArray(); }
+			if( _props.Count > 0 ) {
+				props = _props.ToArray(); 
+			} else {
+				// create empty array to specify that object is not up-to-date
+				props = new PROPERTY[0];
+			}
+			if( _links.Count > 0 ) {
+				links = _links.ToArray(); 
+			} else {
+				// create empty array to specify that object is not up-to-date
+				links = new LINK[0];
+			}
 			header = newHeader;
 		} catch( Exception ex ) {
 			#region debug info
@@ -829,10 +840,11 @@ public class ODB : IPersistenceStorage
 
 			// iterate through recieved properties
 			foreach( PROPERTY prop in props ) {
-				// saving large stream property. 8000 is maximum length of sql_variant
+				// saving large stream property. 7900 is maximum length of sql_variant field in _properties table because
+				// SQL Server 2000 limits maximum row size to 8060 bytes.
 				if( (prop.Value.ToObject() is PersistentStream ) 
 					&& 
-					(((PersistentStream)prop.Value.ToObject()).Length > 8000) ) {
+					(((PersistentStream)prop.Value.ToObject()).Length > 7900) ) {
 					
 					// different actions based on property state
 					switch( prop.State ) {
@@ -864,6 +876,7 @@ public class ODB : IPersistenceStorage
 						// reading stream value to byte array
 						PersistentStream ps = ((PersistentStream)prop.Value.ToObject());
 						byte[] buffer = new byte[ps.Length];
+						ps.Seek(0, SeekOrigin.Begin);
 						ps.Read(buffer, 0, (int)ps.Length);
 						value = buffer;
 					} else if( (prop.Value.ToObject().GetType() == typeof(DateTime)) &&
