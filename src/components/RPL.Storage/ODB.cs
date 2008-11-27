@@ -620,8 +620,8 @@ public class ODB : IPersistenceStorage
 #endif
 		#endregion
 
-		List<PROPERTY> _props;	// list to store properties of object
-		List<LINK> _links;	// list to store child proxy objects
+		List<PROPERTY> _props = new List<PROPERTY>();	// list to store properties of object
+		List<LINK> _links = new List<LINK>();	// list to store child proxy objects
 		DbDataReader dr = null;
 		DbCommand cmd = null;
 		// init out parameters
@@ -650,7 +650,6 @@ public class ODB : IPersistenceStorage
 
 			dr = cmd.ExecuteReader( CommandBehavior.SingleResult );
 			try {
-				_props = new List<PROPERTY>();
 				// read all simple properties of object
 				while( dr.Read() ) {
 					// read properties from row
@@ -711,7 +710,6 @@ public class ODB : IPersistenceStorage
 
 			dr = cmd.ExecuteReader( CommandBehavior.SingleResult );
 			try {
-				_links = new List<LINK>();
 				while( dr.Read() ) {
 					// save child header
 					_links.Add( new LINK(
@@ -724,18 +722,8 @@ public class ODB : IPersistenceStorage
 			} finally { dr.Dispose(); }
 			#endregion
 
-			if( _props.Count > 0 ) {
-				props = _props.ToArray(); 
-			} else {
-				// create empty array to specify that object is not up-to-date
-				props = new PROPERTY[0];
-			}
-			if( _links.Count > 0 ) {
-				links = _links.ToArray(); 
-			} else {
-				// create empty array to specify that object is not up-to-date
-				links = new LINK[0];
-			}
+			props = _props.ToArray();
+			links = _links.ToArray();
 			header = newHeader;
 		} catch( Exception ex ) {
 			#region debug info
