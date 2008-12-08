@@ -103,7 +103,7 @@
 				OutputFile="$(OutDir)$(ProjectName).dll"
 				LinkIncremental="1"
 				ManifestFile="$(IntDir)$(TargetFileName).intermediate.manifest"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				TargetMachine="1"
 			/>
 			<Tool
