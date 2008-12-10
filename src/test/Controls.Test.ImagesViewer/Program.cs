@@ -2,7 +2,7 @@ using System;
 using System.Windows.Forms;
 using System.Threading;
 
-namespace Toolkit.Controls.ImagesViewer.Test
+namespace Toolkit.Controls.Test
 {
 	class Program
 	{

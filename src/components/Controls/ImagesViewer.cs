@@ -14,137 +14,120 @@ using System.IO;
 namespace Toolkit.Controls
 {
 	/// <summary>
-	/// Компонент почергового огляду сукупності зображень,
-	/// що можуть бути задані трьома способами:
-	/// 1: шлях до директорії з файлами зображень;
-	/// 2: перелік шляхів до файлів зображень;
-	/// 3: сукупність об'єктів Stream, що містять в собі зображення.
+	/// Елемент керування для перегляду послідовності зображень.
 	/// </summary>
 	public partial class ImagesViewer : UserControl
 	{
-		private bool			m_Scale			= true;
-		private string			m_Path			= null;
-		private IList<string>	m_Files			= null;
-		private IList<Stream>	m_Streams		= null;
-		private int				m_Index			= -1;
+		/// <summary>
+		/// Структура для виклику та отримання запиту на отримання нового зображення.
+		/// </summary>
+		public class ShowImageEventArgs: EventArgs
+		{
+			private int m_ImageIndex;
+			private Image m_Image;
 
-		private bool			m_Drag			= false;
-		private Point			m_DragStart		= Point.Empty;
+			/// <summary>
+			/// Створює новий екземпляр класу.
+			/// </summary>
+			/// <param name="imageIndex">Індекс необхідного зображення.</param>
+			public ShowImageEventArgs( int imageIndex )
+			{
+				m_ImageIndex = imageIndex;
+			}
+
+			/// <summary>
+			/// Повертає індекс запрошеного зображення.
+			/// </summary>
+			public int ImageIndex
+			{
+				get { return m_ImageIndex; }
+			}
+
+			/// <summary>
+			/// Повертає/встановлює запрошене зображення.
+			/// </summary>
+			public Image Image
+			{
+				get { return m_Image; }
+				set { m_Image = value; }
+			}
+		}
 
 		/// <summary>
-		/// Конструктор.
+		/// Делегат події отримання нового зображення для відображення.
+		/// </summary>
+		/// <param name="sender">Кореспондент запиту.</param>
+		/// <param name="e">Структура з параметрами запиту.</param>
+		public delegate void ShowImageEventHandler( object sender, ShowImageEventArgs e );
+
+		private bool  m_Scale     = true;
+		private int   m_Index     = -1;
+		private int   m_Count     = 0;
+		private Image m_Image     = null;
+
+		private bool  m_Drag      = false;
+		private Point m_DragStart = Point.Empty;
+
+		private event ShowImageEventHandler show_image;
+
+		/// <summary>
+		/// Створює новий екземпляр класу.
 		/// </summary>
 		public ImagesViewer()
 		{
 			InitializeComponent();
-
-			m_ToolScale.Checked = m_Scale;
-
+			
 			m_Panel.HorizontalScroll.SmallChange = 50;
 			m_Panel.VerticalScroll.SmallChange = 50;
 
-			check_buttons();
+			ImageScaling = true;
+
+			Count = 0;
 		}
 
 		/// <summary>
-		/// Встановлює/повертає шлях до дерикторії з файлами зображень.
+		/// Подія отримання нового зображення для показу.
 		/// </summary>
-		[Category( "Images" )]
-		[DisplayName( "DirectoryPath" )]
-		[Description( "Path to directory wich you want to explore." )]
-		public string DirectoryPath
+		/// <remarks>
+		/// У цієї події може бути лише один обробник.
+		/// </remarks>
+		public event ShowImageEventHandler ShowImage
 		{
-			get {
-				return m_Path;
+			add {
+				if( show_image != null
+					&& show_image.GetInvocationList().Length == 1 ) {
+					throw new ApplicationException( "This event can't have more than one handlers." );
+				}
+				show_image += value;
 			}
-			set {
-				m_Path = value;
-
-				if( Directory.Exists( value ) )
-					FileList = Directory.GetFiles( value );
-				else
-					FileList = null;
-
-				display_image( m_Index );
-			}
-		}
-
-		/// <summary>
-		/// Повертає/встановлює сукупніть шляхів до файлів зображень.
-		/// </summary>
-		[Category( "Images" )]
-		[DisplayName( "FilesList" )]
-		[Description( "List of files wich you want to view." )]
-		public IEnumerable<string> FileList
-		{
-			get {
-				return m_Files;
-			}
-			set {
-				m_Files = new List<string>();
-				m_Streams = null;
-				m_Path = null;
-
-				if( value != null )
-					foreach( string file in value ) {
-						switch ( Path.GetExtension( file ) ) {
-							case ".bmp":
-							case ".jpg":
-							case ".tiff":
-								m_Files.Add( file );
-								break;
-						}
-					}
-
-				if( m_Files.Count > 0 )
-					m_Index = 0;
-				else
-					m_Index = -1;				
-
-				display_image( m_Index );
+			remove {
+				show_image -= value;
 			}
 		}
 
 		/// <summary>
-		/// Повертає/встановлює сукупність об'єктів Stream,
-		/// що містять в собі зображення.
+		/// Повертає/встановлює кількість зображень.
 		/// </summary>
-		[Category( "Images" )]
-		[DisplayName( "StreamsList" )]
-		[Description( "List of streams wich you want to view." )]
-		public IEnumerable<Stream> StreamsList
+		/// <remarks>
+		/// Кількість має бути не меньше нуля і встановлення значення
+		/// більше нуля призводить до показу першого зображення.
+		/// </remarks>
+		public int Count
 		{
 			get {
-				return m_Streams;
+				return m_Count;
 			}
 			set {
-				m_Streams  = new List<Stream>();
-				m_Files = null;
-				m_Path = null;
-
-				if( value != null )
-					foreach( Stream stream in value )
-						m_Streams.Add( stream );
+				if( value < 0 ) {
+					throw new ArgumentException( "Value must be greater or equal to zero", "value" );
+				}
+				m_Count = value;
 				
-				if( m_Streams.Count > 0 )
-					m_Index = 0;
-				else
-					m_Index = -1;
-
-				display_image( m_Index );
-			}
-		}
-
-		/// <summary>
-		/// Повертає порядковий номер поточного зображення.
-		/// </summary>
-		[Category( "Images" )]
-		[DisplayName( "ImageIndex" )]
-		[Description( "Index of image that is currently displayed." )]
-		public int ImageIndex
-		{
-			get {
-				return m_Index;
+				if( value > 0 ) {
+					display_image( 0 );
+				} else {
+					display_image( -1 );
+				}
 			}
 		}
 		
@@ -152,9 +135,6 @@ namespace Toolkit.Controls
 		/// Повертає/встановлює значення флагу масштабування зображення
 		/// під розміри вікна.
 		/// </summary>
-		[Category( "Images" )]
-		[DisplayName( "ImageScaling" )]
-		[Description( "Indicates to provide image scaling to fit window or not." )]
 		public bool ImageScaling
 		{
 			get {
@@ -163,72 +143,58 @@ namespace Toolkit.Controls
 			set {
 				m_Scale = value;
 				m_ToolScale.Checked = m_Scale;
-				if( m_Index != -1 )
+				if( m_Index != -1 ) {
 					rescale();
+				}
 			}
 		}
 
 		//
-		// Ф-я завантаження зображення
-		//
-		private Image get_image( int index )
-		{
-			if( m_Files != null )
-				return Image.FromFile( m_Files[ index ] );
-			if( m_Streams != null )
-				return Image.FromStream( m_Streams[ index ] );
-
-			return null;
-		}
-
-		//
-		// Повертає кількість зображень
-		//
-		private int images_count()
-		{
-			if( m_Files != null )
-				return m_Files.Count;
-			if( m_Streams != null )
-				return m_Streams.Count;
-			return 0;
-		}
-
-		//
-		// Ф-я відображення зображення
+		// Ф-я відображення зображення.
 		//
 		private void display_image( int index )
 		{
-			if( m_PicBox.Image != null )
-				m_PicBox.Image.Dispose();
-
-			if( index == -1 ) {
-				m_PicBox.Image = null;
-				m_ToolLblCount.Text = "0/0";
-				m_ToolLblInfo.Text = "";
-				return;
+			if( index >= 0 ) {
+				if( show_image == null ) {
+					return;
+				}
+				ShowImageEventArgs args = new ShowImageEventArgs( index );
+				try {
+					show_image( this, args );
+				} catch( Exception e ) {
+					System.Resources.ResourceManager rm = new System.Resources.ResourceManager(
+						"Toolkit.Controls.ImagesViewer_Msgs",
+						System.Reflection.Assembly.GetExecutingAssembly() );
+					Toolkit.Controls.NotificationForm.Show(
+						rm.GetString( "FailToLoadImage_msg" ),
+						e.ToString() );
+					return;
+				}
+				m_Image = args.Image;
+			} else {
+				m_Image = null;
 			}
 
-			try {
-				m_PicBox.Image = get_image( index );
-				m_Index = index;
-				rescale();
-				m_ToolLblCount.Text = index + 1 + "/" + images_count();
+			m_PicBox.Image = m_Image;
+			m_Index = index;
+			
+			rescale();
+			
+			m_ToolLblCount.Text = m_Index + 1 + "/" + m_Count;
+			if( m_Image != null ) {
 				m_ToolLblInfo.Text =
-					m_PicBox.Image.Width + "x" +
-					m_PicBox.Image.Height + "x" +
-					Bitmap.GetPixelFormatSize( m_PicBox.Image.PixelFormat );
-				check_buttons();
-			} catch ( Exception e ) {
-				System.Resources.ResourceManager rm = new System.Resources.ResourceManager(
-					"Toolkit.Controls.ImagesViewer_Msgs",
-					System.Reflection.Assembly.GetExecutingAssembly() );
-				Toolkit.Controls.NotificationForm.Show(
-					rm.GetString( "FailToLoadImage_msg" ),
-					e.ToString() );
+					m_Image.Width + "x" +
+					m_Image.Height + "x" +
+					Bitmap.GetPixelFormatSize( m_Image.PixelFormat );
+			} else {
+				m_ToolLblInfo.Text = "";
 			}
+
+			check_buttons();
 		}
+
 		//
-		// Ф-я масшабування та позиціювання зображення
+		// Ф-я масшабування та позиціювання зображення.
 		//
 		private void rescale()
 		{
@@ -262,33 +228,38 @@ namespace Toolkit.Controls
 				y = m_Panel.Height / 2 - m_PicBox.Height / 2 ;
 			m_PicBox.Location = new Point( x, y );
 		}
+
 		// 
 		// Здійснює вмикання/вимикання кнопок "Попереднє"/"Наступне"
-		// в залежності від поточного стану перегляду
+		// в залежності від поточного стану перегляду.
 		//
 		private void check_buttons()
 		{
-			if( images_count() == 0 ) {
+			if( m_Count == 0 ) {
 				m_ToolNext.Enabled = m_ToolPrev.Enabled = false;
 				return;
 			}
 			
 			m_ToolPrev.Enabled = m_Index != 0;
-			m_ToolNext.Enabled = m_Index != images_count() - 1;
+			m_ToolNext.Enabled = m_Index != m_Count - 1;
 		}
-		// ***
-		// Обробник події зміни розміру вікна
-		// ***
+
+		// 
+		// Обробник події зміни розміру вікна.
+		// 
+		/// <summary />
 		protected override void OnSizeChanged( EventArgs e )
 		{
 			base.OnSizeChanged( e );
 
-			if( m_Index != -1 )
+			if( m_Index != -1 ) {
 				rescale();
+			}
 		}
-		// ***
-		// Обробники подій елементу ToolBar
-		// ***
+
+		// ====================================================================
+		//                  Обробники подій елементу ToolBar
+		// ====================================================================
 		private void ToolPrev_Click( object sender, EventArgs e )
 		{
 			show_prev();
@@ -306,71 +277,83 @@ namespace Toolkit.Controls
 			ImageScaling = m_ToolScale.Checked;
 			this.Focus();
 		}
-		// ***
-		// Функції управління процесом перегляду
-		// ***
+
+		// ====================================================================
+		//                Функції управління процесом перегляду
+		// ====================================================================
 		private void show_first()
 		{
-			if( m_Index > 0 )
+			if( m_Index > 0 ) {
 				display_image( 0 );
+			}
 		}
 
 		private void show_last()
 		{
-			if( m_Index != -1 && m_Index != images_count() - 1 )
-				display_image( images_count() - 1 );
+			if( m_Index != -1 && m_Index != m_Count - 1 ) {
+				display_image( m_Count - 1 );
+			}
 		}
 
 		private void show_prev()
 		{
-			if( m_Index > 0 )
-				display_image( --m_Index );
+			if( m_Index > 0 ) {
+				display_image( m_Index - 1);
+			}
 		}
 
 		private void show_next()
 		{
-			if( m_Index != -1 && m_Index < images_count() - 1 )
-				display_image( ++m_Index );
+			if( m_Index != -1 && m_Index < m_Count - 1 ) {
+				display_image( m_Index + 1);
+			}
 		}
 
 		private void scroll_up()
 		{
-			if( m_PicBox.Image != null && !m_Scale )
+			if( m_PicBox.Image != null && !m_Scale ) {
 				m_Panel.AutoScrollPosition = new Point(
 					- m_Panel.AutoScrollPosition.X,
 					- m_Panel.AutoScrollPosition.Y - 
 						m_Panel.VerticalScroll.SmallChange );
+			}
 		}
 
 		private void scroll_down()
 		{
-			if( m_PicBox.Image != null && !m_Scale )
+			if( m_PicBox.Image != null && !m_Scale ) {
 				m_Panel.AutoScrollPosition = new Point(
 					- m_Panel.AutoScrollPosition.X,
-					 - m_Panel.AutoScrollPosition.Y + 
+					- m_Panel.AutoScrollPosition.Y + 
 						m_Panel.VerticalScroll.SmallChange );
+			}
 		}
 
 		private void scroll_left()
 		{
-			if( m_PicBox.Image != null && !m_Scale )
+			if( m_PicBox.Image != null && !m_Scale ) {
 				m_Panel.AutoScrollPosition = new Point(
 					- m_Panel.AutoScrollPosition.X  - 
 						m_Panel.HorizontalScroll.SmallChange,
 					- m_Panel.AutoScrollPosition.Y );
+			}
 		}
 
 		private void scroll_right()
 		{
-			if( m_PicBox.Image != null && !m_Scale )
+			if( m_PicBox.Image != null && !m_Scale ) {
 				m_Panel.AutoScrollPosition = new Point(
 					- m_Panel.AutoScrollPosition.X  + 
 						m_Panel.HorizontalScroll.SmallChange,
 					- m_Panel.AutoScrollPosition.Y );
+			}
 		}
-		// ***
-		// Обробники подій управління процесом переглядання за допомогою клавіатури
-		// ***
+
+		// ====================================================================
+		//         Обробники подій управління процесом переглядання
+		//                    за допомогою клавіатури
+		// ====================================================================
+		/// <summary />
 		protected override bool IsInputKey( Keys keyData )
 		{
 			switch( keyData )
@@ -385,6 +368,7 @@ namespace Toolkit.Controls
 			}
 		}
 
+		/// <summary />
 		protected override void OnKeyDown( KeyEventArgs e )
 		{
 			switch( e.KeyCode ) {
@@ -410,6 +394,7 @@ namespace Toolkit.Controls
 			base.OnKeyDown( e );
 		}
 
+		/// <summary />
 		protected override void OnKeyUp( KeyEventArgs e )
 		{
 			switch( e.KeyCode ) {
@@ -431,9 +416,11 @@ namespace Toolkit.Controls
 			}
 			base.OnKeyUp( e );
 		}
-		// ***
-		// Обробники подій для "насильного" надання фокусу введення елементу управління
-		// ***
+
+		// ====================================================================
+		//              Обробники подій для "насильного" надання
+		//                фокусу введення елементу управління
+		// ====================================================================
 		private void Panel_Click( object sender, EventArgs e )
 		{
 			this.Focus();
@@ -443,9 +430,10 @@ namespace Toolkit.Controls
 		{
 			this.Focus();
 		}
-		// ***
-		// Обробники подій для прокрутки зображення рухом миші
-		// ***
+
+		// ====================================================================
+		//          Обробники подій для прокрутки зображення рухом миші
+		// ====================================================================
 		private void PicBox_MouseDown( object sender, MouseEventArgs e )
 		{	
 			if( m_Index != -1 && !m_Scale ) {
