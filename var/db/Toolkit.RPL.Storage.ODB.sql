@@ -76,7 +76,7 @@ CREATE TRIGGER [dbo].[objects] ON [dbo].[_objects]
        FOR UPDATE
 AS
     UPDATE [_objects] SET [TimeStamp] = GETDATE()
-    WHERE [ID] IN (SELECT [ID] FROM [inserted])
+    WHERE [ID] IN( SELECT [ID] FROM [inserted] )
 GO
 
 /***** Object:  Table [dbo].[_links]    Script Date: 08/22/2007 15:25:20 ******/
@@ -111,9 +111,9 @@ CREATE TRIGGER [dbo].[links_objects] ON [dbo].[_links]
 AS
     -- update object timestamp
     UPDATE [_objects] SET [TimeStamp] = GETDATE()
-    WHERE [ID] IN (SELECT [Parent] FROM [deleted]
+    WHERE [ID] IN( SELECT [Parent] FROM [deleted]
                    UNION
-                   SELECT [Parent] FROM [inserted])
+                   SELECT [Parent] FROM [inserted] )
 GO
 
 /***** Object:  Table [dbo].[_properties]    Script Date: 08/22/2007 15:25:26 */
@@ -142,26 +142,24 @@ CREATE TRIGGER [dbo].[properties_objects] ON [dbo].[_properties]
        FOR INSERT, UPDATE, DELETE
 AS
     -- check for unique property names
-    IF( EXISTS(SELECT *
-        FROM (SELECT [ObjectID], [Name] FROM [_properties]
-              UNION
-              SELECT [ObjectID], [Name] FROM [_images]) p
-              GROUP BY
-              [ObjectID], [Name]
-              HAVING
-              COUNT(*) > 1))
+    IF( EXISTS( SELECT *
+                FROM (SELECT [ObjectID], [Name] FROM [_properties]
+                      UNION
+                      SELECT [ObjectID], [Name] FROM [_images]) p
+                GROUP BY [ObjectID], [Name]
+                HAVING COUNT(*) > 1 ) )
     BEGIN
-        RAISERROR ('There is property unique naming conflict!', 11, 1)
+        RAISERROR( 'There is property unique naming conflict!', 11, 1 )
         ROLLBACK TRANSACTION
     END
     -- update object timestamp
     UPDATE [_objects] SET [TimeStamp] = GETDATE()
-    WHERE [ID] IN (SELECT [ObjectID] FROM [deleted]
+    WHERE [ID] IN( SELECT [ObjectID] FROM [deleted]
                    UNION
-                   SELECT [ObjectID] FROM [inserted])
+                   SELECT [ObjectID] FROM [inserted] )
 GO
 
-/****** Object:  Table [dbo].[_images]    Script Date: 08/22/2007 15:25:17 ****/
+/***** Object:  Table [dbo].[_images]    Script Date: 08/22/2007 15:25:17 *****/
 CREATE TABLE [dbo].[_images](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[ObjectID] [int] NOT NULL,
@@ -187,21 +185,19 @@ CREATE TRIGGER [dbo].[images_objects] ON [dbo].[_images]
        FOR INSERT, UPDATE, DELETE
 AS
     -- check for unique property names
-    IF( EXISTS(SELECT *
-        FROM (SELECT [ObjectID], [Name] FROM [_properties]
-              UNION
-              SELECT [ObjectID], [Name] FROM [_images]) p
-              GROUP BY
-              [ObjectID], [Name]
-              HAVING
-              COUNT(*) > 1))
+    IF( EXISTS( SELECT *
+                FROM (SELECT [ObjectID], [Name] FROM [_properties]
+                      UNION
+                      SELECT [ObjectID], [Name] FROM [_images]) p
+                GROUP BY [ObjectID], [Name]
+                HAVING COUNT(*) > 1 ) )
     BEGIN
-        RAISERROR ('There is property unique naming conflict!', 11, 1)
+        RAISERROR( 'There is property unique naming conflict!', 11, 1 )
         ROLLBACK TRANSACTION
     END
     -- update object timestamp
     UPDATE [_objects] SET [TimeStamp] = GETDATE()
-    WHERE [ID] IN (SELECT [ObjectID] FROM [deleted]
+    WHERE [ID] IN( SELECT [ObjectID] FROM [deleted]
                    UNION
-                   SELECT [ObjectID] FROM [inserted])
+                   SELECT [ObjectID] FROM [inserted] )
 GO
