@@ -109,11 +109,11 @@ GO
 CREATE TRIGGER [dbo].[links_objects] ON [dbo].[_links]
        FOR INSERT, UPDATE, DELETE
 AS
-  -- update object timestamp
-  UPDATE [_objects] SET [TimeStamp] = GETDATE()
-  WHERE [ID] IN (SELECT [Parent] FROM [deleted]
-                 UNION
-                 SELECT [Parent] FROM [inserted])
+    -- update object timestamp
+    UPDATE [_objects] SET [TimeStamp] = GETDATE()
+    WHERE [ID] IN (SELECT [Parent] FROM [deleted]
+                   UNION
+                   SELECT [Parent] FROM [inserted])
 GO
 
 /***** Object:  Table [dbo].[_properties]    Script Date: 08/22/2007 15:25:26 */
@@ -142,14 +142,15 @@ CREATE TRIGGER [dbo].[properties_objects] ON [dbo].[_properties]
        FOR INSERT, UPDATE, DELETE
 AS
     -- check for unique property names
-    IF ( EXISTS(SELECT *
-        FROM ( SELECT [ObjectID], [Name] FROM [_properties]
-            UNION
-            SELECT [ObjectID], [Name] FROM [_images]) p
-            GROUP BY
-            [ObjectID], [Name]
-            HAVING
-            COUNT(*) > 1) ) BEGIN
+    IF( EXISTS(SELECT *
+        FROM (SELECT [ObjectID], [Name] FROM [_properties]
+              UNION
+              SELECT [ObjectID], [Name] FROM [_images]) p
+              GROUP BY
+              [ObjectID], [Name]
+              HAVING
+              COUNT(*) > 1))
+    BEGIN
         RAISERROR ('There is property unique naming conflict!', 11, 1)
         ROLLBACK TRANSACTION
     END
@@ -186,15 +187,15 @@ CREATE TRIGGER [dbo].[images_objects] ON [dbo].[_images]
        FOR INSERT, UPDATE, DELETE
 AS
     -- check for unique property names
-    IF ( EXISTS(SELECT *
-        FROM (
-            SELECT [ObjectID], [Name] FROM [_properties]
-            UNION
-            SELECT [ObjectID], [Name] FROM [_images]) p
-            GROUP BY
-            [ObjectID], [Name]
-            HAVING
-            COUNT(*) > 1) ) BEGIN
+    IF( EXISTS(SELECT *
+        FROM (SELECT [ObjectID], [Name] FROM [_properties]
+              UNION
+              SELECT [ObjectID], [Name] FROM [_images]) p
+              GROUP BY
+              [ObjectID], [Name]
+              HAVING
+              COUNT(*) > 1))
+    BEGIN
         RAISERROR ('There is property unique naming conflict!', 11, 1)
         ROLLBACK TRANSACTION
     END
