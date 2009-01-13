@@ -5,9 +5,9 @@
 //*
 //*	Content		:	Custom library exceptions
 //*	Author		:	Nikita Marunyak
-//*	Copyright	:	Copyright © 2008 Nikita Marunyak
+//*	Copyright	:	Copyright © 2008 - 2009 Nikita Marunyak
 //*
-//* SVN			:	$Id$	  
+//* SVN			:	$Id$
 //*
 //****************************************************************************
 
@@ -15,14 +15,6 @@ using System;
 
 namespace Toolkit.Workflow.Schema
 {
-	public class SchemaAlreadyInitException : ApplicationException
-	{
-		public SchemaAlreadyInitException()
-			: base( "Schema is already inited." )
-		{
-		}
-	}
-
 	public class NoClassInformationException : ApplicationException
 	{
 		private IClassInfo m_Obj;
@@ -52,14 +44,6 @@ namespace Toolkit.Workflow.Schema
 		public string MemberName
 		{
 			get { return m_MemberName; }
-		}
-	}
-
-	public class SchemaIsntInitializedException : ApplicationException
-	{
-		public SchemaIsntInitializedException()
-			: base( "Schema isn't initialized." )
-		{
 		}
 	}
 

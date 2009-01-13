@@ -5,9 +5,9 @@
 //*
 //*	Content		:	Main library class.
 //*	Author		:	Alexander Kurbatov, Nikita Marunyak
-//*	Copyright	:	Copyright © 2006 - 2008 Alexander Kurbatov, Nikita Marunyak
+//*	Copyright	:	Copyright © 2006 - 2009 Alexander Kurbatov, Nikita Marunyak
 //*
-//* SVN			:	$Id$	  
+//* SVN			:	$Id$
 //*
 //****************************************************************************
 
@@ -78,10 +78,11 @@ namespace Toolkit.Workflow.Schema
 		public static MetaData Instance
 		{
 			get {
-				if( m_Instance != null )
+				if( m_IsInitialized ) {
 					return m_Instance;
-				else
-					throw new SchemaIsntInitializedException();
+				} else {
+					throw new ApplicationException( "Schema isn't yet initialized. Call InitSchema() first." );
+				}
 			}
 		}
 
@@ -112,16 +113,32 @@ namespace Toolkit.Workflow.Schema
 		/// </summary>
 		public static void InitSchema( string UICulture, Stream xml, Stream xsd )
 		{
-			if( m_IsInitialized )
-			    throw new SchemaAlreadyInitException();
+			if( m_IsInitialized ) {
+				throw new ApplicationException( "Schema is already initialized." );
+			}
 
 			// creating singleton instance of MetaData class
 			m_Instance = new MetaData();
-			
+
 			// loading schema etc.
 			m_Instance.initialize( UICulture, xml, xsd );
 
 			m_IsInitialized = true;
+		}
+
+		/// <summary>
+		/// Deinitialize schema.
+		/// </summary><remarks>
+		/// You must use this function to reinitialize schema.
+		/// </remarks>
+		public static void DeinitSchema()
+		{
+			if( !m_IsInitialized ) {
+				throw new ApplicationException( "Schema isn't yet initialized." );
+			}
+
+			m_Instance = null;
+			m_IsInitialized = false;
 		}
 
 		/// <summary>
