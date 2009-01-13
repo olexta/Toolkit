@@ -78,11 +78,10 @@ namespace Toolkit.Workflow.Schema
 		public static MetaData Instance
 		{
 			get {
-				if( m_IsInitialized ) {
-					return m_Instance;
-				} else {
+				if( m_Instance == null ) {
 					throw new ApplicationException( "Schema isn't yet initialized. Call InitSchema() first." );
 				}
+				return m_Instance;
 			}
 		}
 
@@ -101,7 +100,7 @@ namespace Toolkit.Workflow.Schema
 		/// </summary>
 		public static bool IsInitialized
 		{
-			get { return m_IsInitialized; }
+			get { return m_Instance != null; }
 		}
 
 		/// <summary>
@@ -113,17 +112,18 @@ namespace Toolkit.Workflow.Schema
 		/// </summary>
 		public static void InitSchema( string UICulture, Stream xml, Stream xsd )
 		{
-			if( m_IsInitialized ) {
+			if( m_Instance != null ) {
 				throw new ApplicationException( "Schema is already initialized." );
 			}
-
 			// creating singleton instance of MetaData class
 			m_Instance = new MetaData();
-
-			// loading schema etc.
-			m_Instance.initialize( UICulture, xml, xsd );
-
-			m_IsInitialized = true;
+			// trying to initialize singleton instance
+			try {
+				m_Instance.initialize( UICulture, xml, xsd );
+			} catch( Exception e ) {
+				m_Instance = null;
+				throw e;
+			}
 		}
 
 		/// <summary>
@@ -133,12 +133,10 @@ namespace Toolkit.Workflow.Schema
 		/// </remarks>
 		public static void DeinitSchema()
 		{
-			if( !m_IsInitialized ) {
+			if( m_Instance == null ) {
 				throw new ApplicationException( "Schema isn't yet initialized." );
 			}
-
 			m_Instance = null;
-			m_IsInitialized = false;
 		}
 
 		/// <summary>
