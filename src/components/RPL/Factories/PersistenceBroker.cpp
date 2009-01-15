@@ -184,23 +184,6 @@ EXIT_WRITE(_lock)}
 //					Toolkit::RPL::Factories::PersistenceBroker
 //-----------------------------------------------------------------------------
 
-//-------------------------------------------------------------------
-//
-// Check for curent state and raise exception if it is invalid.
-//
-//-------------------------------------------------------------------
-void PersistenceBroker::check_state( void )
-{
-	// check for object disposed
-	if( s_disposed ) throw gcnew ObjectDisposedException(
-		this->GetType()->ToString());
-
-	// check for disconnected state
-	if( s_storage == nullptr ) throw gcnew InvalidOperationException( 
-		ERR_DISCONNECTED);
-}
-
-
 //-------------------------------------------------------------------		
 //
 // IIRemoteStorage::TransactionBegin implementation.
@@ -210,8 +193,9 @@ void PersistenceBroker::check_state( void )
 //-------------------------------------------------------------------
 void PersistenceBroker::trans_begin( void )
 {
-	// check current state
-	check_state();
+	// check for disconnected state
+	if( s_storage == nullptr ) throw gcnew InvalidOperationException( 
+		ERR_BROKER_DISCONNECTED);
 
 	// call to real storage
 	s_storage->TransactionBegin();
@@ -227,8 +211,9 @@ void PersistenceBroker::trans_begin( void )
 //-------------------------------------------------------------------
 void PersistenceBroker::trans_commit( void )
 {
-	// check current state
-	check_state();
+	// check for disconnected state
+	if( s_storage == nullptr ) throw gcnew InvalidOperationException( 
+		ERR_BROKER_DISCONNECTED);
 
 	// call to real storage
 	s_storage->TransactionCommit();
@@ -244,8 +229,9 @@ void PersistenceBroker::trans_commit( void )
 //-------------------------------------------------------------------
 void PersistenceBroker::trans_rollback( void )
 {
-	// check current state
-	check_state();
+	// check for disconnected state
+	if( s_storage == nullptr ) throw gcnew InvalidOperationException( 
+		ERR_BROKER_DISCONNECTED);
 
 	// call to real storage
 	s_storage->TransactionRollback();
@@ -265,8 +251,9 @@ search( String ^type,										 \
 		Where ^where, OrderBy ^order, int bottom, int count, \
 		[Out] array<HEADER>^ %headers )
 {
-	// check current state
-	check_state();
+	// check for disconnected state
+	if( s_storage == nullptr ) throw gcnew InvalidOperationException( 
+		ERR_BROKER_DISCONNECTED);
 
 	// call to real storage
 	return s_storage->Search( type,
@@ -285,8 +272,9 @@ search( String ^type,										 \
 void PersistenceBroker::   \
 retrieve( HEADER %header )
 {
-	// check current state
-	check_state();
+	// check for disconnected state
+	if( s_storage == nullptr ) throw gcnew InvalidOperationException( 
+		ERR_BROKER_DISCONNECTED);
 
 	// call to real storage
 	s_storage->Retrieve( header );
@@ -304,8 +292,9 @@ void PersistenceBroker::											 \
 retrieve( HEADER %header,											 \
 		  [Out] array<LINK>^ %links, [Out] array<PROPERTY>^ %props )
 {
-	// check current state
-	check_state();
+	// check for disconnected state
+	if( s_storage == nullptr ) throw gcnew InvalidOperationException( 
+		ERR_BROKER_DISCONNECTED);
 
 	// call to real storage
 	s_storage->Retrieve( header, links, props );
@@ -324,8 +313,9 @@ save( HEADER %header,											   \
 	  [In] array<LINK> ^links, [In] array<PROPERTY> ^props,		   \
 	  [Out] array<LINK>^ %mlinks, [Out] array<PROPERTY>^ %mprops )
 {
-	// check current state
-	check_state();
+	// check for disconnected state
+	if( s_storage == nullptr ) throw gcnew InvalidOperationException( 
+		ERR_BROKER_DISCONNECTED);
 
 	// call to real storage
 	s_storage->Save( header, links, props, mlinks, mprops );
@@ -342,8 +332,9 @@ save( HEADER %header,											   \
 void PersistenceBroker:: \
 remove( HEADER header )
 {
-	// check current state
-	check_state();
+	// check for disconnected state
+	if( s_storage == nullptr ) throw gcnew InvalidOperationException( 
+		ERR_BROKER_DISCONNECTED);
 
 	// call to real storage
 	s_storage->Delete( header );
@@ -360,8 +351,9 @@ remove( HEADER header )
 DataSet^ PersistenceBroker:: \
 process_sql( String ^sql, array<Object^> ^params )
 {
-	// check current state
-	check_state();
+	// check for disconnected state
+	if( s_storage == nullptr ) throw gcnew InvalidOperationException( 
+		ERR_BROKER_DISCONNECTED);
 
 	// call to real storage
 	return s_storage->ProcessSQL( sql, params );
@@ -378,28 +370,11 @@ process_sql( String ^sql, array<Object^> ^params )
 //-------------------------------------------------------------------
 IIRemoteStorage^ PersistenceBroker::Storage::get( void )
 {
-	// lock for one executable thread
-	Monitor::Enter( _lock );
-	try {
-		// check for object disposed
-		if( s_disposed ) throw gcnew ObjectDisposedException(
-			PersistenceBroker::typeid->ToString());
+	// check for the broker is opened
+	if( s_instance == nullptr ) throw gcnew InvalidOperationException(
+		ERR_BROKER_CLOSED);
 
-		if( s_instance == nullptr ) {
-			// now we must create new object instance
-			if( s_brokerFactory != nullptr ) {
-				// use factory for custom creation
-				s_instance = s_brokerFactory();
-			} else {
-				// use default constructor to create object
-				s_instance = gcnew PersistenceBroker();
-			}
-		}
-		return s_instance;
-	} finally {
-		// unlock in any case
-		Monitor::Exit( _lock );
-	}
+	return s_instance;
 }
 
 
@@ -413,6 +388,9 @@ IIRemoteStorage^ PersistenceBroker::Storage::get( void )
 //-------------------------------------------------------------------
 PersistentObject^ PersistenceBroker::Cache::get( HEADER header )
 {
+	// check for the broker is opened
+	if( s_instance == nullptr ) throw gcnew InvalidOperationException(
+		ERR_BROKER_CLOSED);
 	// check for right object header
 	if( (header.Type == nullptr) || (header.ID <= 0) ||
 		(header.Stamp == DateTime()) || (header.Name == nullptr) ) {
@@ -421,12 +399,8 @@ PersistentObject^ PersistenceBroker::Cache::get( HEADER header )
 	}
 
 	// lock cache access
-	Monitor::Enter( _lock );
+	Monitor::Enter( s_cache );
 	try {
-		// chache is not needed on the server side, so
-		// create it by first access
-		if( s_cache == nullptr ) s_cache = gcnew BrokerCache();
-
 		// search for object already exists
 		PersistentObject	^obj = s_cache[header.Type, header.ID];
 		if( obj == nullptr ) {
@@ -449,12 +423,15 @@ PersistentObject^ PersistenceBroker::Cache::get( HEADER header )
 		return obj;
 	} finally {
 		// unlock cache access
-		Monitor::Exit( _lock );
+		Monitor::Exit( s_cache );
 	}
 }
 
 void PersistenceBroker::Cache::set( HEADER header, PersistentObject ^obj )
 {
+	// check for the broker is opened
+	if( s_instance == nullptr ) throw gcnew InvalidOperationException(
+		ERR_BROKER_CLOSED);
 	// check for right object header
 	if( (header.Type == nullptr) || (header.ID <= 0) ||
 		(header.Stamp == DateTime()) || (header.Name == nullptr) ) {
@@ -463,17 +440,13 @@ void PersistenceBroker::Cache::set( HEADER header, PersistentObject ^obj )
 	}
 	
 	// lock cache access
-	Monitor::Enter( _lock );
+	Monitor::Enter( s_cache );
 	try {
-		// chache is not needed on the server side, so
-		// create it by first access
-		if( s_cache == nullptr ) s_cache = gcnew BrokerCache();
-
 		// and push new object to cache
 		s_cache[header.Type, header.ID] = obj;
 	} finally {
 		// unlock cache access
-		Monitor::Exit( _lock );
+		Monitor::Exit( s_cache );
 	}
 }
 
@@ -501,21 +474,17 @@ PersistenceBroker::PersistenceBroker( void )
 /// <summary>
 /// PersistenceBroker disposer.
 /// </summary><remarks>
-/// This disposer is called on the server side of communication.
+/// This disposer is called on the server side of communication and
+/// acts as Disconnect function.
 /// </remarks>
 //-------------------------------------------------------------------
 PersistenceBroker::~PersistenceBroker( void )
 {
 	dbgprint( "-> [" + AppDomain::CurrentDomain->FriendlyName + "]" );
 
-	if( !s_disposed ) {
-		// dispose storage
-		delete s_storage;
-		s_storage = nullptr;
-
-		// prevent from future cals
-		s_disposed = true;
-	}
+	// dispose storage
+	delete s_storage;
+	s_storage = nullptr;
 
 	dbgprint( "<- [" + AppDomain::CurrentDomain->FriendlyName + "]" );
 }
@@ -553,10 +522,21 @@ void PersistenceBroker::ObjectFactory::set( OBJECT_FACTORY ^factory )
 
 //-------------------------------------------------------------------
 /// <summary>
+/// Gets value indicating state of persistence mechanism.
+/// </summary>
+//-------------------------------------------------------------------
+bool PersistenceBroker::IsOpened::get( void )
+{
+	return (s_instance != nullptr);
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
 /// Connects to persistent storage using specified interface.
 /// </summary><remarks><para>
 /// Use on the server side to connect to storage.</para><para>
-/// This function define as static that prevent access to server
+/// This function defined as static that prevent access to server
 /// real routine through .NET Remoting.
 /// </para></remarks>
 //-------------------------------------------------------------------
@@ -564,6 +544,9 @@ void PersistenceBroker::Connect( IPersistenceStorage ^storage )
 {
 	// check for null reference
 	if( storage == nullptr ) throw gcnew ArgumentNullException("storage");
+	// check for the broker is opened
+	if( s_instance == nullptr ) throw gcnew InvalidOperationException(
+		ERR_BROKER_CLOSED);
 	
 	// save storage interface
 	s_storage = storage;
@@ -574,25 +557,60 @@ void PersistenceBroker::Connect( IPersistenceStorage ^storage )
 /// <summary>
 /// Disconnects from persistent storage.
 /// </summary><remarks><para>
+/// Use on the server side to disconnect from storage.</para><para>
 /// After this function call all operations with objects will be
 /// failed, but objects instances will not be destroyed. So you will
 /// be able use it after reconnect.</para><para>
-/// This function define as static that prevent access to server
+/// This function defined as static that prevent access to server
 /// real routine through .NET Remoting.
 /// </para></remarks>
 //-------------------------------------------------------------------
 void PersistenceBroker::Disconnect( void )
 {
+	// check for the broker is opened
+	if( s_instance == nullptr ) throw gcnew InvalidOperationException(
+		ERR_BROKER_CLOSED);
+
 	// dispose storage interface
 	delete s_storage;
-
 	s_storage = nullptr;
 }
 
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Close PersistenceBroker.
+/// Opens persistent mechanism.
+/// </summary><remarks>
+/// If BrokerFactory is set, it is used for PersistenceBroker object
+/// creation. 
+/// </remarks>
+//-------------------------------------------------------------------
+void PersistenceBroker::Open( void )
+{
+	dbgprint( "-> [" + AppDomain::CurrentDomain->FriendlyName + "]" );
+
+	// check for the broker is closed
+	if( s_instance != nullptr ) throw gcnew InvalidOperationException(
+		ERR_BROKER_OPENED);
+
+	// create PersistenceBroker object instance
+	if( s_brokerFactory != nullptr ) {
+		// use factory for custom creation
+		s_instance = s_brokerFactory();
+	} else {
+		// use default constructor to create object
+		s_instance = gcnew PersistenceBroker();
+	}
+	// create object's cache
+	s_cache = gcnew BrokerCache();
+
+	dbgprint( "<- [" + AppDomain::CurrentDomain->FriendlyName + "]" );
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
+/// Closes persistent mechanism.
 /// </summary><remarks>
 /// YOU MUST CALL THIS FUNCTION BEFORE END OF WORK. This routine free
 /// all allocated resources and stop all running threads (if you'll
@@ -604,12 +622,10 @@ void PersistenceBroker::Close( void )
 {	
 	dbgprint( "-> [" + AppDomain::CurrentDomain->FriendlyName + "]" );
 
-	if( !s_disposed ) {
+	if( s_instance != nullptr ) {
 		// dispose cache of objects
 		delete s_cache;
-		// set factories to null
-		s_brokerFactory = nullptr;
-		s_objectFactory = nullptr;
+		s_cache = nullptr;
 
 		// 'Close' acts as disposer, so prevent throwing exceptions
 		try {
@@ -620,7 +636,7 @@ void PersistenceBroker::Close( void )
 			ERR_DISPOSE, PersistenceBroker::typeid, e->Message ) );
 		}
 		// prevent from future cals
-		s_disposed = true;
+		s_instance = nullptr;
 	}
 
 	dbgprint( "<- [" + AppDomain::CurrentDomain->FriendlyName + "]" );

@@ -121,17 +121,12 @@ namespace Factories {
 		};
 
 	private:
-		static Object^				const _lock = gcnew Object();
-
-		static bool					s_disposed = false;
 		static BROKER_FACTORY		^s_brokerFactory = nullptr;
 		static OBJECT_FACTORY		^s_objectFactory = nullptr;
 		static PersistenceBroker	^s_instance = nullptr;
 		static BrokerCache			^s_cache = nullptr;
 		static IPersistenceStorage	^s_storage = nullptr;
 		
-		void check_state( void );
-
 	// IIRemoteStorage
 	private:
 		virtual void trans_begin( void ) sealed =
@@ -179,9 +174,13 @@ namespace Factories {
 		property OBJECT_FACTORY^ ObjectFactory {
 			static void set( OBJECT_FACTORY ^factory );
 		}
+		property bool IsOpened {
+			static bool get( void );
+		}
 
 		static void Connect( IPersistenceStorage ^storage );
 		static void Disconnect( void );
+		static void Open( void );
 		static void Close( void );
 
 		virtual Object^ InitializeLifetimeService( void ) override;

@@ -39,8 +39,12 @@ using namespace System::Diagnostics;
 	"ObjectFactory has not been initialized."
 #define ERR_OBJECT_CREATION													\
 	"ObjectFactory returned null reference while creating '{0}'."
-#define ERR_DISCONNECTED													\
-	"Operation is not allowed while in disconnected state!"
+#define ERR_BROKER_OPENED													\
+	"Persistent mechanism has been already opened."
+#define ERR_BROKER_CLOSED													\
+	"Persistent mechanism is closed."
+#define ERR_BROKER_DISCONNECTED												\
+	"Operation is not allowed while in disconnected state."
 #define ERR_STREAM_CLOSED													\
 	"Cannot access a closed stream."
 #define ERR_STREAM_LENGTH													\
