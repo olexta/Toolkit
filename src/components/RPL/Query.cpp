@@ -154,6 +154,13 @@ Where::Clause::Clause( String ^opd, OP op, ValueBox value ) : \
 		// throw exception
 		throw gcnew ArgumentOutOfRangeException("op");
 	}
+	if( (value == DBNull::Value) && !((op == OP::EQ) || (op ==OP::NE))) {
+		// only "Equal" or "Not equal" comparison
+		// for value of type DBNull is allowed
+		throw gcnew ArgumentException(String::Format(
+		ERR_COMPARISON_TYPE, String::Format( "{0} or {1}", OP::EQ, OP::NE ),
+							 DBNull::typeid ), "op" );
+	};
 }
 
 

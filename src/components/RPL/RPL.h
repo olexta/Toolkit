@@ -22,11 +22,13 @@ using namespace System::Diagnostics;
 // Define error strings
 //
 #define ERR_INVALID_TYPE													\
-	"Type '{0}' is not supported."
+	"Type {0} is not supported."
 #define ERR_CAST_FROM_TO													\
-	"Specified cast is not valid: from '{0}' to '{1}'."
+	"Specified cast is not valid: from {0} to {1}."
+#define ERR_COMPARISON_TYPE													\
+	"Only {0} comparison for value of type {1} is allowed."
 #define ERR_SUPPORTED_OPERATION												\
-	"Operation isn't supported for this type of object '{0}'."
+	"Operation isn't supported by {0}."
 #define ERR_OBJECT_EXISTS													\
 	"An object already exists in the collection."
 #define ERR_PERFORM_OPERATION												\
@@ -38,7 +40,7 @@ using namespace System::Diagnostics;
 #define ERR_OBJECT_FACTORY													\
 	"ObjectFactory has not been initialized."
 #define ERR_OBJECT_CREATION													\
-	"ObjectFactory returned null reference while creating '{0}'."
+	"ObjectFactory returned null reference while creating {0}."
 #define ERR_BROKER_OPENED													\
 	"Persistent mechanism has been already opened."
 #define ERR_BROKER_CLOSED													\
@@ -52,11 +54,11 @@ using namespace System::Diagnostics;
 #define ERR_STREAM_ASSIGN													\
 	"Instance of the Stream cann't be assigned to multiple properties."
 #define ERR_LOG_STATES														\
-	"ERROR! Incompatible log record states: from '{0}' to '{1}'."
+	"ERROR! Incompatible log record states: from {0} to {1}."
 #define ERR_DELETE_FILE														\
 	"ERROR! Cann't delete file '{0}': {1}"
 #define ERR_DISPOSE															\
-	"ERROR! Object dispose failed '{0}': {1}"
+	"ERROR! Object {0} dispose failed: {1}"
 
 
 //
