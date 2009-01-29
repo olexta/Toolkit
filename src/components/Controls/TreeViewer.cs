@@ -78,29 +78,22 @@ namespace Toolkit.Controls
 			
 			// инициализация визуальных компонент
 			InitializeComponent();
-			
+			tsMain.ItemAdded += new ToolStripItemEventHandler(tsMain_ItemsChanged);
+			tsMain.ItemRemoved += new ToolStripItemEventHandler(tsMain_ItemsChanged);
 			// обновление расположения компонент на контроле
 			update_layout( false );
 		}
-		
-		/// <summary>
-		/// Включает/выключает показ Toolbar'а
-		/// </summary>
-		public bool ShowToolbar
+
+		void tsMain_ItemsChanged(object sender, ToolStripItemEventArgs e)
 		{
-			get {
-				return !(tsMain.Height == 0);
-			} set {
-				if( value ) {
-					tsMain.Size = new Size(tsMain.Width, DEFAULT_HEIGHT);
-					tsMain.Enabled = true;
-				} else {
-					tsMain.Size = new Size(tsMain.Width, 0);
-					tsMain.Enabled = false;
-				}
-				update_layout(false);
+			if( tsMain.Items.Count > 0 ) {
+				tsMain.Size = new Size(tsMain.Width, DEFAULT_HEIGHT);
+				tsMain.Enabled = true;
+			} else {
+				tsMain.Size = new Size(tsMain.Width, 0);
+				tsMain.Enabled = false;
 			}
-			
+			update_layout(false);
 		}
 		#endregion
 		

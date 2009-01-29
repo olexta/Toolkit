@@ -39,7 +39,7 @@
 			this.tsMain.Location = new System.Drawing.Point( 0, 0 );
 			this.tsMain.AutoSize = false;
 			this.tsMain.Name = "tsMain";
-			this.tsMain.Size = new System.Drawing.Size( 203, DEFAULT_HEIGHT );
+			this.tsMain.Size = new System.Drawing.Size( 203, 0 );
 			this.tsMain.TabIndex = 0;
 			// 
 			// BrowserControl
