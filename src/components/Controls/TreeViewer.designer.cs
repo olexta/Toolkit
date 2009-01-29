@@ -5,7 +5,9 @@
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		System.ComponentModel.IContainer components = null;
+		System.Windows.Forms.ToolStrip tsMain;
+
 
 		/// <summary> 
 		/// Clean up any resources being used.
@@ -25,25 +27,26 @@
 		/// Required method for Designer support - do not modify 
 		/// the contents of this method with the code editor.
 		/// </summary>
-		private void InitializeComponent()
+		void InitializeComponent()
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( TreeViewer ) );
 			this.tsMain = new System.Windows.Forms.ToolStrip();
 			this.tsMain.SuspendLayout();
 			this.SuspendLayout();
-			// 
+			//
 			// tsMain
-			// 
+			//
 			this.tsMain.Location = new System.Drawing.Point( 0, 0 );
+			this.tsMain.AutoSize = false;
 			this.tsMain.Name = "tsMain";
-			this.tsMain.Size = new System.Drawing.Size( 203, 25 );
+			this.tsMain.Size = new System.Drawing.Size( 203, DEFAULT_HEIGHT );
 			this.tsMain.TabIndex = 0;
 			// 
 			// BrowserControl
 			// 
 			this.Controls.Add( this.tsMain );
 			this.Name = "BrowserControl";
-			this.Size = new System.Drawing.Size( 203, 315 );
+			this.Size = new System.Drawing.Size( 203, DEFAULT_HEIGHT );
 			this.tsMain.ResumeLayout( false );
 			this.tsMain.PerformLayout();
 			this.ResumeLayout( false );
@@ -52,7 +55,5 @@
 		}
 
 		#endregion
-
-		private System.Windows.Forms.ToolStrip tsMain;
 	}
 }

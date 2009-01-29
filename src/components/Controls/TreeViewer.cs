@@ -15,11 +15,12 @@ namespace Toolkit.Controls
 	{
 		#region private declarations
 		// коллекция хранящихся в контроле Tab'ов
-		private TabCollection m_tc;
+		TabCollection m_tc;
 		// индекс текущего Tab'а
-		private int m_selectedIndex = 0;
+		int m_selectedIndex = 0;
 		// константа, которая описывает высоту Tab'ов
-		private readonly int BUTTON_HEIGHT = System.Windows.Forms.SystemInformation.MenuButtonSize.Height + 6;
+		readonly int BUTTON_HEIGHT = System.Windows.Forms.SystemInformation.MenuButtonSize.Height + 6;
+		static int DEFAULT_HEIGHT = 25;
 		#endregion
 
 		#region public declaration
@@ -82,6 +83,25 @@ namespace Toolkit.Controls
 			update_layout( false );
 		}
 		
+		/// <summary>
+		/// Включает/выключает показ Toolbar'а
+		/// </summary>
+		public bool ShowToolbar
+		{
+			get {
+				return !(tsMain.Height == 0);
+			} set {
+				if( value ) {
+					tsMain.Size = new Size(tsMain.Width, DEFAULT_HEIGHT);
+					tsMain.Enabled = true;
+				} else {
+					tsMain.Size = new Size(tsMain.Width, 0);
+					tsMain.Enabled = false;
+				}
+				update_layout(false);
+			}
+			
+		}
 		#endregion
 		
 		#region public properties
