@@ -51,6 +51,9 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnimationBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="NotificationForm.cs">
       <SubType>Form</SubType>
