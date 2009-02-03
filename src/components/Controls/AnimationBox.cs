@@ -45,6 +45,7 @@ namespace Toolkit.Controls
 		[Browsable( true )]
 		[Category( "Animation" )]
 		[Description( "Animation speed in ms." )]
+		[DefaultValue( 100 )]
 		public int Speed
 		{
 			get { return m_Timer.Interval; }
@@ -65,16 +66,20 @@ namespace Toolkit.Controls
 		/// </summary>
 		public void Start()
 		{
-			if( this.Image != null ) {
-				m_BigImage = new Bitmap( this.Image );
-				m_TilesInRow = this.Image.Width / this.Size.Width;
-				m_TilesInColumn = this.Image.Height / this.Size.Height;
-				m_TilesCount = m_TilesInRow * m_TilesInColumn;
-				m_CurrentTile = 0;
-				show_curr_tile();
-				this.Visible = true;
-				m_Timer.Enabled = true;
+			if( this.Image == null ) {
+				throw new ApplicationException( "Image is required." );
 			}
+			if( m_Timer.Enabled ) {
+				throw new ApplicationException( "Animation is already running." );
+			}
+			m_BigImage = new Bitmap( this.Image );
+			m_TilesInRow = this.Image.Width / this.Size.Width;
+			m_TilesInColumn = this.Image.Height / this.Size.Height;
+			m_TilesCount = m_TilesInRow * m_TilesInColumn;
+			m_CurrentTile = 0;
+			show_curr_tile();
+			this.Visible = true;
+			m_Timer.Enabled = true;
 		}
 
 		/// <summary>
