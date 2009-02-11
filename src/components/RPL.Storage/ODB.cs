@@ -80,6 +80,23 @@ public class ODB : IPersistenceStorage
 	{
 		string op;
 		string column = "Value";
+
+		if( clause.Value.ToObject().GetType() == typeof(DBNull) ) {
+			if ((clause.OPD == "ID") || (clause.OPD == "Name") || (clause.OPD == "Stamp")) 
+				// exclude proxy properties
+				return "";
+			
+			switch( clause.Operator ) {
+				case Where.Clause.OP.NE:
+					return "EXISTS( SELECT ID FROM _properties WHERE (ObjectID = Source.ID) " +
+								"AND Name = '" + clause.OPD + "') ";
+				case Where.Clause.OP.EQ:
+					return "NOT EXISTS(SELECT ID FROM _properties WHERE (ObjectID = Source.ID) " +
+								"AND Name = '" + clause.OPD + "') ";
+
+			}
+			return "";
+		}
 		// operator definition
 		switch( clause.Operator ) {
 			case Where.Clause.OP.GE:
