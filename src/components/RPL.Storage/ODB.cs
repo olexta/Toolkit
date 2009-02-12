@@ -81,21 +81,29 @@ public class ODB : IPersistenceStorage
 		string op;
 		string column = "Value";
 
-		if( clause.Value.ToObject().GetType() == typeof(DBNull) ) {
-			if ((clause.OPD == "ID") || (clause.OPD == "Name") || (clause.OPD == "Stamp")) 
-				// exclude proxy properties
-				return "";
+		if( clause.Value.ToObject() == DBNull.Value ) {
+			bool isProxyProperty = ((clause.OPD == "ID") || (clause.OPD == "Name") || (clause.OPD == "Stamp"));
 			
 			switch( clause.Operator ) {
 				case Where.Clause.OP.NE:
-					return "EXISTS( SELECT ID FROM _properties WHERE (ObjectID = Source.ID) " +
+					if( isProxyProperty ) {
+						// return query that always return true
+						return ("(0=0)");
+					} else {
+						return "EXISTS( SELECT ID FROM _properties WHERE (ObjectID = Source.ID) " +
 								"AND Name = '" + clause.OPD + "') ";
+					}
 				case Where.Clause.OP.EQ:
-					return "NOT EXISTS(SELECT ID FROM _properties WHERE (ObjectID = Source.ID) " +
+					if( isProxyProperty ) {
+						// return query that always return false
+						return ("(0=1)");
+					} else {
+						return "NOT EXISTS(SELECT ID FROM _properties WHERE (ObjectID = Source.ID) " +
 								"AND Name = '" + clause.OPD + "') ";
-
+					}
+				default:
+					throw new ArgumentException("Invalid operator for requested propery value.\nDBNull may coexist only with:\n\t '!=' or '='");
 			}
-			return "";
 		}
 		// operator definition
 		switch( clause.Operator ) {
