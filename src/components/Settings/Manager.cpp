@@ -41,47 +41,11 @@ void Manager::OnSetParent( Node ^parent )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Creates new, empty instance of the Manager class.
+/// Creates new instance of the Manager class that is empty or is
+/// initialized with specified list of adapter interfaces.
 /// </summary>
 //-------------------------------------------------------------------
-Manager::Manager( void ) : \
-	Node("")
-{
-	// check name of node (name must be empty string)
-	// parent constructor was already called, so check
-	// initialized const name
-	if( _name != "" ) throw gcnew ArgumentException(ERR_ROOT_NAME);
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Creates new instance of the Manager class that is initialized with
-/// specified adapter interface.
-/// </summary>
-//-------------------------------------------------------------------
-Manager::Manager( IAdapter ^adapter ) : \
-	Node("")
-{
-	// check name of node (name must be empty string)
-	// parent constructor was already called, so check
-	// initialized const name
-	if( _name != "" ) throw gcnew ArgumentException(ERR_ROOT_NAME);
-
-	// reinitialize _childs member by creating collection
-	// using another constructor (this prevent unneeded
-	// 'set_parent' calls)
-	_childs = gcnew Nodes(this, gcnew Adapter(this, adapter));
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Creates new instance of the Manager class that is initialized with
-/// specified list of adapter interfaces.
-/// </summary>
-//-------------------------------------------------------------------
-Manager::Manager( IEnumerable<IAdapter^> ^adapters ) : \
+Manager::Manager( ... array<IAdapter^> ^adapters ) : \
 	Node("")
 {
 	// check name of node (name must be empty string)
@@ -100,7 +64,7 @@ Manager::Manager( IEnumerable<IAdapter^> ^adapters ) : \
 	// 'set_parent' calls)
 	_childs = gcnew Nodes(this, childs);
 }
-	
+
 
 //-------------------------------------------------------------------
 /// <summary>
@@ -157,20 +121,25 @@ void Manager::Value::set( ValueBox value )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Add new adapter with specified interface.
+/// Add new adapter with specified interface to root and returns node
+/// that contains it.
 /// </summary><remarks>
 /// It is only one way to add new adapter interface to root node:
 /// using standard way ('Add' method of Childs) will raise exception.
 /// So, root and adapters means as a single whole.
 /// </remarks>
 //-------------------------------------------------------------------
-void Manager::Add( IAdapter ^adapter )
+Node^ Manager::Add( IAdapter ^adapter )
 {ENTER_WRITE(_lock)
 
 	// create new adapter node by specified interface
+	Node	^node = gcnew Adapter(this, adapter);
+
 	// and add it to collection of childs (use force
 	// method to add adapter: prevent 'set_parent' call)
-	_childs->Add( gcnew Adapter(this, adapter), true );
+	_childs->Add( node, true );
+
+	return node;
 
 EXIT_WRITE(_lock)}
 

@@ -42,10 +42,8 @@ protected:
 	virtual void OnSetParent( Node ^parent ) override;
 
 public:
-	Manager( void );
-	Manager( IAdapter ^adapter );
-	Manager( IEnumerable<IAdapter^> ^adapters );
-	
+	Manager( ... array<IAdapter^> ^adapters );
+
 	property ValueBox default[String^] {
 		virtual void set( String ^path, ValueBox value ) override;
 	}
@@ -54,7 +52,7 @@ public:
 		virtual void set( ValueBox value ) override;
 	}
 
-	void Add( IAdapter ^adapter );
+	Node^ Add( IAdapter ^adapter );
 	void Remove( String ^adapter );
 	
 	virtual void Load( void ) override;
