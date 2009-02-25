@@ -1,4 +1,4 @@
-/****************************************************************************/
+﻿/****************************************************************************/
 /*																			*/
 /*	Project:	Robust Persistence Layer									*/
 /*																			*/
@@ -7,7 +7,7 @@
 /*	Content:	Implementation of Where and OrderBy classes					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright � 2006-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
