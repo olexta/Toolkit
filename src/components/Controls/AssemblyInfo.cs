@@ -6,13 +6,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly:AssemblyTitleAttribute("Toolkit.Controls")]
-[assembly:AssemblyDescriptionAttribute("Toolkit.Controls module provide GUI controls")]
-[assembly:AssemblyProductAttribute("Toolkit Custom Controls")]
-[assembly:AssemblyCopyrightAttribute("Copyright © 2007-2008")]
-[assembly:AssemblyInformationalVersionAttribute("1.0")]
+[assembly: AssemblyTitleAttribute( "Toolkit.Controls" )]
+[assembly: AssemblyDescriptionAttribute( "Toolkit.Controls module provide GUI controls" )]
+[assembly: AssemblyProductAttribute( "Toolkit Custom Controls" )]
+[assembly: AssemblyCopyrightAttribute( "Copyright © Nikita Marunyak, Alexander Kurbatov 2007-2009" )]
+[assembly: AssemblyInformationalVersionAttribute( "1.0" )]
 
-[assembly:CLSCompliantAttribute(true)]
+[assembly: CLSCompliantAttribute( true )]
 
 
 // Setting ComVisible to false makes the types in this assembly not visible 

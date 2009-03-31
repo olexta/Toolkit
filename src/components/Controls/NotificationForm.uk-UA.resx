@@ -120,10 +120,10 @@
   <data name="btnDetails.Text" xml:space="preserve">
     <value>Деталі</value>
   </data>
-  <data name="btnClose.Text" xml:space="preserve">
-    <value>Вийти</value>
-  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>Inherit</value>
+  </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterScreen</value>
   </data>

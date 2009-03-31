@@ -18,10 +18,10 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle( "Workflow Schema" )]
-[assembly: AssemblyDescription( "" )]
-[assembly: AssemblyProduct( "Toolkit.Workflow.Schema" )]
-[assembly: AssemblyCopyright( "Copyright © 2006, 2007 Alexander Kurbatov, Nikita Marunyak" )]
+[assembly: AssemblyTitle( "Toolkit.Workflow.Schema" )]
+[assembly: AssemblyDescription( "Toolkit.Workflow.Schema" )]
+[assembly: AssemblyProduct( "Toolkit Workflow.Schema" )]
+[assembly: AssemblyCopyright( "Copyright © 2006-2008 Alexander Kurbatov, Nikita Marunyak" )]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

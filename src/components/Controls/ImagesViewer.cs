@@ -16,7 +16,7 @@ namespace Toolkit.Controls
 	/// <summary>
 	/// Елемент керування для перегляду послідовності зображень.
 	/// </summary>
-	public partial class ImagesViewer : UserControl
+	public partial class ImagesViewer: UserControl
 	{
 		/// <summary>
 		/// Структура для виклику та отримання запиту на отримання нового зображення.
@@ -60,12 +60,12 @@ namespace Toolkit.Controls
 		/// <param name="e">Структура з параметрами запиту.</param>
 		public delegate void ShowImageEventHandler( object sender, ShowImageEventArgs e );
 
-		private bool  m_Scale     = true;
-		private int   m_Index     = -1;
-		private int   m_Count     = 0;
-		private Image m_Image     = null;
+		private bool m_Scale = true;
+		private int m_Index = -1;
+		private int m_Count = 0;
+		private Image m_Image = null;
 
-		private bool  m_Drag      = false;
+		private bool m_Drag = false;
 		private Point m_DragStart = Point.Empty;
 
 		private event ShowImageEventHandler show_image;
@@ -76,7 +76,7 @@ namespace Toolkit.Controls
 		public ImagesViewer()
 		{
 			InitializeComponent();
-			
+
 			m_Panel.HorizontalScroll.SmallChange = 50;
 			m_Panel.VerticalScroll.SmallChange = 50;
 
@@ -93,14 +93,16 @@ namespace Toolkit.Controls
 		/// </remarks>
 		public event ShowImageEventHandler ShowImage
 		{
-			add {
+			add
+			{
 				if( show_image != null
 					&& show_image.GetInvocationList().Length == 1 ) {
-					throw new ApplicationException( "This event can't have more than one handlers." );
+					throw new InvalidOperationException( "This event can't have more than one handler." );
 				}
 				show_image += value;
 			}
-			remove {
+			remove
+			{
 				show_image -= value;
 			}
 		}
@@ -114,15 +116,17 @@ namespace Toolkit.Controls
 		/// </remarks>
 		public int Count
 		{
-			get {
+			get
+			{
 				return m_Count;
 			}
-			set {
+			set
+			{
 				if( value < 0 ) {
 					throw new ArgumentException( "Value must be greater or equal to zero", "value" );
 				}
 				m_Count = value;
-				
+
 				if( value > 0 ) {
 					display_image( 0 );
 				} else {
@@ -130,17 +134,19 @@ namespace Toolkit.Controls
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// Повертає/встановлює значення флагу масштабування зображення
 		/// під розміри вікна.
 		/// </summary>
 		public bool ImageScaling
 		{
-			get {
+			get
+			{
 				return m_Scale;
 			}
-			set {
+			set
+			{
 				m_Scale = value;
 				m_ToolScale.Checked = m_Scale;
 				if( m_Index != -1 ) {
@@ -154,22 +160,9 @@ namespace Toolkit.Controls
 		//
 		private void display_image( int index )
 		{
-			if( index >= 0 ) {
-				if( show_image == null ) {
-					return;
-				}
+			if( index >= 0 && show_image != null ) {
 				ShowImageEventArgs args = new ShowImageEventArgs( index );
-				try {
-					show_image( this, args );
-				} catch( Exception e ) {
-					System.Resources.ResourceManager rm = new System.Resources.ResourceManager(
-						"Toolkit.Controls.ImagesViewer_Msgs",
-						System.Reflection.Assembly.GetExecutingAssembly() );
-					Toolkit.Controls.NotificationForm.Show(
-						rm.GetString( "FailToLoadImage_msg" ),
-						e.ToString() );
-					return;
-				}
+				show_image( this, args );
 				m_Image = args.Image;
 			} else {
 				m_Image = null;
@@ -177,9 +170,9 @@ namespace Toolkit.Controls
 
 			m_PicBox.Image = m_Image;
 			m_Index = index;
-			
+
 			rescale();
-			
+
 			m_ToolLblCount.Text = m_Index + 1 + "/" + m_Count;
 			if( m_Image != null ) {
 				m_ToolLblInfo.Text =
@@ -198,20 +191,19 @@ namespace Toolkit.Controls
 		//
 		private void rescale()
 		{
-			if( m_Index == -1 )
+			if( m_Index == -1 || m_Image == null )
 				return;
 
-			if( m_Scale ) {		
+			if( m_Scale ) {
 				float hpercent = (float)m_Panel.Width / m_PicBox.Image.Width;
 				float vpercent = (float)m_Panel.Height / m_PicBox.Image.Height;
 				float percent = ( hpercent < vpercent ) ? hpercent : vpercent;
-				
+
 				if( percent < 1.0F ) {
 					m_PicBox.SizeMode = PictureBoxSizeMode.StretchImage;
 					m_PicBox.Width = (int)( m_PicBox.Image.Width * percent );
 					m_PicBox.Height = (int)( m_PicBox.Image.Height * percent );
-				}
-				else {
+				} else {
 					m_PicBox.Size = m_PicBox.Image.Size;
 				}
 			} else {
@@ -225,7 +217,7 @@ namespace Toolkit.Controls
 			if( m_Panel.Width > m_PicBox.Width )
 				x = m_Panel.Width / 2 - m_PicBox.Width / 2;
 			if( m_Panel.Height > m_PicBox.Height )
-				y = m_Panel.Height / 2 - m_PicBox.Height / 2 ;
+				y = m_Panel.Height / 2 - m_PicBox.Height / 2;
 			m_PicBox.Location = new Point( x, y );
 		}
 
@@ -239,7 +231,7 @@ namespace Toolkit.Controls
 				m_ToolNext.Enabled = m_ToolPrev.Enabled = false;
 				return;
 			}
-			
+
 			m_ToolPrev.Enabled = m_Index != 0;
 			m_ToolNext.Enabled = m_Index != m_Count - 1;
 		}
@@ -298,14 +290,14 @@ namespace Toolkit.Controls
 		private void show_prev()
 		{
 			if( m_Index > 0 ) {
-				display_image( m_Index - 1);
+				display_image( m_Index - 1 );
 			}
 		}
 
 		private void show_next()
 		{
 			if( m_Index != -1 && m_Index < m_Count - 1 ) {
-				display_image( m_Index + 1);
+				display_image( m_Index + 1 );
 			}
 		}
 
@@ -313,8 +305,8 @@ namespace Toolkit.Controls
 		{
 			if( m_PicBox.Image != null && !m_Scale ) {
 				m_Panel.AutoScrollPosition = new Point(
-					- m_Panel.AutoScrollPosition.X,
-					- m_Panel.AutoScrollPosition.Y - 
+					-m_Panel.AutoScrollPosition.X,
+					-m_Panel.AutoScrollPosition.Y -
 						m_Panel.VerticalScroll.SmallChange );
 			}
 		}
@@ -323,8 +315,8 @@ namespace Toolkit.Controls
 		{
 			if( m_PicBox.Image != null && !m_Scale ) {
 				m_Panel.AutoScrollPosition = new Point(
-					- m_Panel.AutoScrollPosition.X,
-					- m_Panel.AutoScrollPosition.Y + 
+					-m_Panel.AutoScrollPosition.X,
+					-m_Panel.AutoScrollPosition.Y +
 						m_Panel.VerticalScroll.SmallChange );
 			}
 		}
@@ -333,9 +325,9 @@ namespace Toolkit.Controls
 		{
 			if( m_PicBox.Image != null && !m_Scale ) {
 				m_Panel.AutoScrollPosition = new Point(
-					- m_Panel.AutoScrollPosition.X  - 
+					-m_Panel.AutoScrollPosition.X -
 						m_Panel.HorizontalScroll.SmallChange,
-					- m_Panel.AutoScrollPosition.Y );
+					-m_Panel.AutoScrollPosition.Y );
 			}
 		}
 
@@ -343,9 +335,9 @@ namespace Toolkit.Controls
 		{
 			if( m_PicBox.Image != null && !m_Scale ) {
 				m_Panel.AutoScrollPosition = new Point(
-					- m_Panel.AutoScrollPosition.X  + 
+					-m_Panel.AutoScrollPosition.X +
 						m_Panel.HorizontalScroll.SmallChange,
-					- m_Panel.AutoScrollPosition.Y );
+					-m_Panel.AutoScrollPosition.Y );
 			}
 		}
 
@@ -356,8 +348,7 @@ namespace Toolkit.Controls
 		/// <summary />
 		protected override bool IsInputKey( Keys keyData )
 		{
-			switch( keyData )
-			{
+			switch( keyData ) {
 				case Keys.Left:
 				case Keys.Right:
 				case Keys.Up:
@@ -435,11 +426,11 @@ namespace Toolkit.Controls
 		//          Обробники подій для прокрутки зображення рухом миші
 		// ====================================================================
 		private void PicBox_MouseDown( object sender, MouseEventArgs e )
-		{	
+		{
 			if( m_Index != -1 && !m_Scale ) {
 				m_Drag = true;
 				m_PicBox.Cursor = Cursors.Hand;
-				m_DragStart = e.Location;				
+				m_DragStart = e.Location;
 			}
 		}
 
@@ -449,8 +440,8 @@ namespace Toolkit.Controls
 				m_Drag = false;
 				m_PicBox.Cursor = Cursors.Arrow;
 				m_Panel.AutoScrollPosition = new Point(
-					 - m_Panel.AutoScrollPosition.X - (e.X - m_DragStart.X ),
-					 - m_Panel.AutoScrollPosition.Y - (e.Y - m_DragStart.Y ) );
+					 -m_Panel.AutoScrollPosition.X - ( e.X - m_DragStart.X ),
+					 -m_Panel.AutoScrollPosition.Y - ( e.Y - m_DragStart.Y ) );
 			}
 		}
 	}
