@@ -7,7 +7,7 @@
 /*	Content:	Implementation of PersistentStream class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2008 Alexey Tkachuk								*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/

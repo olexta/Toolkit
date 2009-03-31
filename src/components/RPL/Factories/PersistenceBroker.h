@@ -7,7 +7,7 @@
 /*	Content:	Definition of Factories::PersistenceBroker class			*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2007-2009 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -74,10 +74,10 @@ namespace Factories {
 	/// Singleton class that provides main functionality to manage
 	/// persistence layer.
 	/// </summary><remarks><para>
-	///	In many ways this class is the key to the persistence layer.
+	/// In many ways this class is the key to the persistence layer.
 	/// This class follows the Singleton design pattern in that there
 	/// is only one instance of it in the object space of the
-	/// application domain. Also, this is main/ goal to manage
+	/// application domain. Also, this is main goal to manage
 	/// client-server configuration:</para><para>
 	/// 1. Broker and objects are at the client side. This is "fat
 	/// client" approach. In this case just create
@@ -103,13 +103,13 @@ namespace Factories {
 		{
 		private:
 			ReaderWriterLock^				const _lock;
-			
-			bool							m_disposed;
+
+			bool volatile					m_disposed;
 			Map<String^, WeakReference^>	m_cache;
 
 			void thread_clean( void );
-			String^	key( String ^type, int id );
-			
+			String^ key( String ^type, int id );
+
 		public:
 			BrokerCache( void );
 			~BrokerCache( void );
@@ -126,7 +126,7 @@ namespace Factories {
 		static PersistenceBroker	^s_instance = nullptr;
 		static BrokerCache			^s_cache = nullptr;
 		static IPersistenceStorage	^s_storage = nullptr;
-		
+
 	// IIRemoteStorage
 	private:
 		virtual void trans_begin( void ) sealed =
@@ -135,7 +135,7 @@ namespace Factories {
 			IIRemoteStorage::TransactionCommit;
 		virtual void trans_rollback( void ) sealed =
 			IIRemoteStorage::TransactionRollback;
-		
+
 		virtual int search( String^, Where^, OrderBy^, int, int,
 							[Out] array<HEADER>^% ) sealed =
 			IIRemoteStorage::Search;
@@ -150,7 +150,7 @@ namespace Factories {
 			IIRemoteStorage::Save;
 		virtual void remove( HEADER ) sealed =
 			IIRemoteStorage::Delete;
-		
+
 		virtual DataSet^ process_sql( String^, array<Object^>^ ) sealed =
 			IIRemoteStorage::ProcessSQL;
 

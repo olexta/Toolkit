@@ -7,7 +7,7 @@
 /*	Content:	Implementation of Adapters::Registry class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2007-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2008-2009 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -139,7 +139,7 @@ Object^ Registry::str_to_obj( String ^value )
 								 DateTimeStyles::AllowLeadingWhite |
 								 DateTimeStyles::AllowTrailingWhite,
 								 dt ) ) return dt;
-	
+
 	// if notone convertion was successful,
 	// return value as string
 	return value;
@@ -373,7 +373,7 @@ bool Registry::remove( String ^loc )
 
 	// check for correct path
 	check_path( loc );
-	
+
 	// removing root node is unsupported,
 	// so split has to complete successfuly
 	String	^lockey, ^locval;

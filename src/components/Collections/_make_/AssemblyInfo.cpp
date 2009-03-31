@@ -7,7 +7,7 @@
 /*	Content:	Module provide assembly information and properties.			*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2007-2009 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -25,7 +25,7 @@ using namespace System::Runtime::InteropServices;
 [assembly:AssemblyTitleAttribute("Toolkit.Collections")];
 [assembly:AssemblyDescriptionAttribute("Toolkit.Collections contains various collections to manage group of objects")];
 [assembly:AssemblyProductAttribute("Toolkit Collections")];
-[assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2006-2007")];
+[assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2007-2009")];
 [assembly:AssemblyInformationalVersionAttribute("1.0")];
 
 [assembly:ComVisible(false)];

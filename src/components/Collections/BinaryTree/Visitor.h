@@ -7,7 +7,7 @@
 /*	Content:	Definition of BinaryTree::Visitor class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2007-2009 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -20,7 +20,7 @@ using namespace System;
 
 
 _BINARY_TREE_BEGIN
-/// <summary>	
+/// <summary>
 /// Enumerator class that provide routines to tree bypass using specified
 /// traverse mode.
 /// </summary><remarks>
@@ -28,7 +28,7 @@ _BINARY_TREE_BEGIN
 ///		PREFIX: direct bypass (node, left subnode, right subnode);
 ///		INFIX: centered bypass (left subnode, node, right subnode);
 ///		POSTFIX: reverse bypass ( left subnode, right subnode, node);
-///	Class implements finite-state automation algorithm to traverse binary
+/// Class implements finite-state automation algorithm to traverse binary
 /// trees, so it process tree as O(N).
 /// </remarks>
 generic<typename T>

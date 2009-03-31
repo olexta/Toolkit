@@ -7,7 +7,7 @@
 /*	Content:	Definition of Where and OrderBy classes						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2008-2009 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/

@@ -7,7 +7,7 @@
 /*	Content:	Definition of Adapters::IniFile class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2007-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2008-2009 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -25,9 +25,9 @@ using namespace Toolkit::Collections;
 
 _SETTINGS_BEGIN
 namespace Adapters {
-	///	<summary>
-	///	Adapter that provide access to windows INI files.
-	///	</summary><remarks>
+	/// <summary>
+	/// Adapter that provides access to windows INI files.
+	/// </summary><remarks>
 	/// This class provide ability to store following types in INI
 	/// file: bool, int, double, DateTime and String. Each value
 	/// will be translated to string with specified format and
@@ -35,7 +35,7 @@ namespace Adapters {
 	/// stored value by string format. If no format is acceptable
 	/// than value will be restored as String.
 	/// ATTENTION: This class doesn't support transaction approach.
-	///	</remarks>
+	/// </remarks>
 	public ref class IniFile sealed : IAdapter
 	{
 	private:

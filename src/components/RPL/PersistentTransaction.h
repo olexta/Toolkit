@@ -7,7 +7,7 @@
 /*	Content:	Definition of PersistentTransaction class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2007-2009 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -44,11 +44,14 @@ private:
 		PersistentObject	^m_obj;
 		ACTION				m_act;
 
-	public:	
+	public:
 		Task( PersistentObject ^obj, ACTION act );
 
-		ITransaction^ Perform( void );
+		void Perform( void );
 	};
+
+private:
+	static Stack<ITransaction^>^	s_stack = nullptr;
 
 	Queue<Task>^	const _tasks;
 

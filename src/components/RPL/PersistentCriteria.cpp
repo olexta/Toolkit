@@ -7,7 +7,7 @@
 /*	Content:	Implementation of PersistentCriteria class					*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2007-2008 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/

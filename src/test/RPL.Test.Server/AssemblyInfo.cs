@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle( "Toolkit.RPL.Test.Server" )]
 [assembly: AssemblyDescription( "RPL server example" )]
 [assembly: AssemblyProduct( "Robust Persistence Layer" )]
-[assembly: AssemblyCopyright( "Copyright © Alexey Tkachuk 2008" )]
+[assembly: AssemblyCopyright( "Copyright © Alexey Tkachuk 2007-2008" )]
 [assembly: AssemblyInformationalVersion("1.0")]
 [assembly: ComVisible( false )]
 

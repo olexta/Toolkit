@@ -7,7 +7,7 @@
 /*	Content:	Module provide assembly information and properties.			*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2007 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2008-2009 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -25,7 +25,7 @@ using namespace System::Runtime::InteropServices;
 [assembly:AssemblyTitleAttribute("Toolkit.Remoting")];
 [assembly:AssemblyDescriptionAttribute("Toolkit.Remoting provides additional communication features")];
 [assembly:AssemblyProductAttribute("Toolkit Remoting")];
-[assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2007-2008")];
+[assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2008-2009")];
 [assembly:AssemblyInformationalVersionAttribute("1.0")];
 
 [assembly:ComVisible(false)];

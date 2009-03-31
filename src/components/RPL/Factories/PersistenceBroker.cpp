@@ -7,7 +7,7 @@
 /*	Content:	Implementation of Factories::PersistenceBroker class		*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2007-2009 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -51,7 +51,7 @@ BrokerCache::thread_clean( void )
 {
 	// initialize value to current time
 	DateTime time = DateTime::Now;
-			
+
 	try {
 		// check for thread must be terminated
 		while( !m_disposed ) {
@@ -61,7 +61,7 @@ BrokerCache::thread_clean( void )
 			if ( time.AddSeconds( CLEAR_TIMEOUT ) < DateTime::Now ) {
 				// save time of clearing
 				time = DateTime::Now;
-				
+
 				ENTER_WRITE(_lock)
 				// remove inaccessible weak references
 				for each( String ^key in m_cache.Keys ) {
@@ -88,7 +88,7 @@ String^	PersistenceBroker::				 \
 BrokerCache::key( String ^type, int id )
 {
 	if( type == nullptr ) throw gcnew ArgumentNullException("type");
-	
+
 	return (type + "_" + id.ToString());
 }
 
@@ -104,9 +104,11 @@ BrokerCache::BrokerCache( void ):					   \
 {
 	// create thread instance to clear current
 	// cache from inaccessible weak references
-	(gcnew Thread(
-		gcnew ThreadStart(this, &BrokerCache::thread_clean))
-	)->Start();
+	Thread^	thread = gcnew Thread(
+						gcnew ThreadStart(this, &BrokerCache::thread_clean));
+	thread->Name = "Cache cleaning thread";
+	thread->IsBackground = true;
+	thread->Start();
 }
 
 
@@ -126,7 +128,7 @@ BrokerCache::~BrokerCache( void )
 	if( !m_disposed ) {
 		// prevent future cache usage
 		m_disposed = true;
-		
+
 		ENTER_WRITE(_lock)
 		// pass through all references
 		for each( WeakReference ^wr in m_cache.Values ) {
@@ -438,7 +440,7 @@ void PersistenceBroker::Cache::set( HEADER header, PersistentObject ^obj )
 		// throw argument exception
 		throw gcnew ArgumentException(ERR_OBJECT_HEADER, "header");
 	}
-	
+
 	// lock cache access
 	Monitor::Enter( s_cache );
 	try {
@@ -547,7 +549,7 @@ void PersistenceBroker::Connect( IPersistenceStorage ^storage )
 	// check for the broker is opened
 	if( s_instance == nullptr ) throw gcnew InvalidOperationException(
 		ERR_BROKER_CLOSED);
-	
+
 	// save storage interface
 	s_storage = storage;
 }
@@ -612,14 +614,13 @@ void PersistenceBroker::Open( void )
 /// <summary>
 /// Closes persistent mechanism.
 /// </summary><remarks>
-/// YOU MUST CALL THIS FUNCTION BEFORE END OF WORK. This routine free
-/// all allocated resources and stop all running threads (if you'll
-/// not call this function than application domain will not be
-/// unloaded because of cross references in some threads).
+/// This routine frees all allocated resources and stops all running
+/// threads. It also calls instance disposer, so it's recommended to
+/// use it before unloading application domain.
 /// </remarks>
 //-------------------------------------------------------------------
 void PersistenceBroker::Close( void )
-{	
+{
 	dbgprint( "-> [" + AppDomain::CurrentDomain->FriendlyName + "]" );
 
 	if( s_instance != nullptr ) {

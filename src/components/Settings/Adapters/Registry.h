@@ -7,7 +7,7 @@
 /*	Content:	Definition of Adapters::Registry class						*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2007-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2008-2009 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -20,29 +20,28 @@ using namespace System;
 using namespace Microsoft;
 using namespace System::Threading;
 using namespace System::Globalization;
-//using namespace System::Collections::Generic;
-//using namespace Toolkit::Collections;
 
 
 _SETTINGS_BEGIN
 namespace Adapters {
-	/////	<summary>
-	/////	Adapter that provide access to windows INI files.
-	/////	</summary><remarks>
-	///// This class provide ability to store following types in INI
-	///// file: bool, int, double, DateTime and String. Each value
-	///// will be translated to string with specified format and
-	///// save. Restore operation will attempt to determine type of
-	///// stored value by string format. If no format is acceptable
-	///// than value will be restored as String.
-	///// ATTENTION: This class doesn't support transaction approach.
-	/////	</remarks>
+	/// <summary>
+	/// Adapter that provides runtime access to windows registry.
+	/// </summary><remarks><para>
+	/// Runtime access means that all (get and set value) operations
+	/// use direct registry API calls, so force Load/Save calls are
+	/// not necessary. Therefore loading and saving hierarchy structure
+	/// require manual Load/Save calls.</para><para>
+	/// This class provides ability to store following types in
+	/// registry: bool, int, double, DateTime and String. Value of
+	/// each type except int will be translated to string with
+	/// specified format and save. Restore operation will attempt to
+	/// determine type of stored value by string format. If no format
+	/// is acceptable than value will be restored as String.
+	/// </para></remarks>
 	public ref class Registry sealed : IAdapter
 	{
 	private:
 		static Char				const _del = '\\';
-		//static unsigned long	const _bufsize = 1024;
-		//String^					const _filename;
 		ReaderWriterLock^		const _lock;
 
 		initonly String				^_name;

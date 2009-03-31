@@ -7,7 +7,7 @@
 /*	Content:	Implementation of PersistentTransaction class				*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2006-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2007-2009 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -42,43 +42,39 @@ PersistentTransaction::Task::Task( PersistentObject ^obj, ACTION act ) : \
 //
 // Perform specified operation.
 //
-// This function performs atomar action, so it returns ITransaction
-// interface to be able rollback changes later.
+// This function performs atomar action and saves object initial
+// state. PersistentTransaction doesn't support nested transactions
+// so i extract all objects into top level stack.
 //
 //-------------------------------------------------------------------
-ITransaction^ PersistentTransaction::Task::Perform( void )
+void PersistentTransaction::Task::Perform( void )
 {
-	// save all internal object's data
-	static_cast<ITransaction^>( m_obj )->Begin();
-
-	try {
-		// check for action and call appropriate object method
-		switch( m_act ) {
-			case ACTION::Retrieve:
-				m_obj->Retrieve( false );
-			break;
-
-			case ACTION::Upgrade:
-				m_obj->Retrieve( true );
-			break;
-			
-			case ACTION::Save:
-				m_obj->Save();
-			break;
-			
-			case ACTION::Delete:
-				m_obj->Delete();
-			break;
-		}
-	} catch( Exception^ ) {
-		// rollback last changes that was make at object
-		static_cast<ITransaction^>( m_obj )->Rollback();
-		// and restore exception
-		throw;
+	// at the first object access in entire transaction stack
+	if( !s_stack->Contains( m_obj ) ) {
+		// save ITransaction interface to be able revert operation later
+		s_stack->Push( m_obj );
+		// and save all internal object's data
+		s_stack->Peek()->Begin();
 	}
-	// if operation succeded than return ITransaction
-	// interface to object to be able revert operation later
-	return m_obj;
+
+	// check for action and call appropriate object method
+	switch( m_act ) {
+		case ACTION::Retrieve:
+			m_obj->Retrieve( false );
+		break;
+
+		case ACTION::Upgrade:
+			m_obj->Retrieve( true );
+		break;
+
+		case ACTION::Save:
+			m_obj->Save();
+		break;
+
+		case ACTION::Delete:
+			m_obj->Delete();
+		break;
+	}
 }
 
 
@@ -171,7 +167,7 @@ void PersistentTransaction::Add( IEnumerable<PersistentObject^> ^objs, \
 	// add specified tasks to queue
 	for each( PersistentObject ^obj in objs  ) {
 		// ignore null references
-		if( obj != nullptr ) _tasks->Enqueue( Task( obj, action ) );
+		if( obj != nullptr ) _tasks->Enqueue( Task(obj, action) );
 	}
 }
 
@@ -185,33 +181,38 @@ void PersistentTransaction::Add( IEnumerable<PersistentObject^> ^objs, \
 //-------------------------------------------------------------------
 void PersistentTransaction::Process( void )
 {
-	Stack<ITransaction^>	changes;
-
 	// lock storage for one executable thread 
 	Monitor::Enter( PersistenceBroker::Storage );
 	try {
-		// begin storage transaction
-		PersistenceBroker::Storage->TransactionBegin();
-		try {
-			// process all tasks in right order
-			while( _tasks->Count > 0 ) {
-				// extract from queue
-				Task	task = _tasks->Dequeue();
-				// and push to stack ITransaction interface
-				// (this adds posibility of the future rollback)
-				changes.Push( task.Perform() );
+		// check to be top level transaction
+		if( s_stack == nullptr ) {
+			// begin storage transaction
+			PersistenceBroker::Storage->TransactionBegin();
+			// initialize transaction objects stack
+			s_stack = gcnew Stack<ITransaction^>();
+
+			try {
+				// process all tasks in right order
+				while( _tasks->Count > 0 ) _tasks->Dequeue().Perform();
+
+				// all operations comleted successfuly: commit storage
+				PersistenceBroker::Storage->TransactionCommit();
+				// and object changes
+				while( s_stack->Count > 0 ) s_stack->Pop()->Commit();
+			} catch( Exception^ ) {
+				// rollback all object changes
+				while( s_stack->Count > 0 ) s_stack->Pop()->Rollback();
+				// and storage changes
+				PersistenceBroker::Storage->TransactionRollback();
+				// restore exception
+				throw;
+			} finally {
+				// free transaction objects stack
+				s_stack = nullptr;
 			}
-			// all operations comleted successfuly: commit storage
-			PersistenceBroker::Storage->TransactionCommit();
-			// and object changes
-			while( changes.Count > 0 ) changes.Pop()->Commit();
-		} catch( Exception^ ) {
-			// rollback all object changes
-			while( changes.Count > 0 ) changes.Pop()->Rollback();
-			// and storage changes
-			PersistenceBroker::Storage->TransactionRollback();
-			// and restore exception
-			throw;
+		} else {
+			// this is nested transaction: process all tasks in right order only
+			while( _tasks->Count > 0 ) _tasks->Dequeue().Perform();
 		}
 	} finally {
 		// unlock storage in any case
