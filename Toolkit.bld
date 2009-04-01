@@ -1,0 +1,574 @@
+<?xml version='1.0' encoding='utf-8'?>
+<project version='6'>
+	<comment><![CDATA[This sample demonstrates an entire build process that uses Microsoft Visual Studio 6.0, 2002, 2003, and/or 2005. It uses a sample SourceSafe project if VSS is installed, which is created by calling SourceSafe.bld and can be browsed by starting SourceSafe Explorer, choosing File|Open, navigating to <TEMP Path>\VStudio\Database, clicking OK, and entering a user of Guest (blank password).
+
+The build recursively gets the latest files to %TEMP%\VisBuildPro\VStudio\work, checks out the executable files, registers the components, builds the Visual Studio projects, generates a build manifest, checks in the updated executables, labels the SourceSafe project with a build number (after incrementing the build number via script), and writes a line to a success log.
+
+Custom actions are used to build the Visual Studio projects, which provides incremental builds (only building when source files or references have changed), increments projects versions for projects that need to be built, sets project base addresses to improve performance, processes all dependencies to determine the correct build order, etc.
+
+If any step fails, the failure steps are executed, which undos any checkouts, logs the failed step to a failure file, and sends an e-mail with the error output from the failed step.  Update the TO_EMAIL, FROM_EMAIL, SMTP_SERVER project macro, and check and update the username and password of the Send Mail steps before building so that those steps will succeed.
+
+The first time the project is built, all the projects are built; if built again (close and reopen project or type Alt+F7 to reset build status, then F7), VisBuildPro detects that they are up-to-date and none of the projects get built (with the exception of C# and VB.NET 2002/2003, since Visual Studio .NET always compiles the executable for these projects even if they are up-to-date).  If the project is rebuilt (Shift+F7), all projects will be cleaned and rebuilt (achieved by using the Builder.LaunchType property in a field override for the force field on the Build steps).
+
+Several standard macros are used, such as PROJDIR, to generically determine the file locations, FAILSTEP_OUTPUT to show the error message from a previous step, DATETIME to log the current date/time.  The Visual Build Pro help provides more details on these macros and creating builds that use Visual Studio tools--click Help and lookup 'global macros', 'system macros', and 'Microsoft Visual Studio' in the help index for more information.  A LOGFILE project macro is also defined to log all build output to VStudio.log in a temporary directory.]]></comment>
+	<steps type='0'>
+		<step action='Delete Folder'>
+			<Path>%WORK_ROOT%</Path>
+			<Recurse type='11'>-1</Recurse>
+			<description>Delete tempory working folder.</description>
+			<name>Delete working folder</name>
+		</step>
+		<step action='Group'>
+			<description>Generate build version in the next format: major.minor.tag.svn and store it in tempory macro BUILD_VERSION.</description>
+			<name>Generate Build Version</name>
+			<script><![CDATA[Sub vbld_StepStarted()
+	
+	' remove build version tempory macro if exists
+	vbld_TempMacros().Remove("BUILD_VERSION")
+
+End Sub]]></script>
+		</step>
+		<step action='Subversion'>
+			<Files>tags/</Files>
+			<LocalPath>%WORK_ROOT%</LocalPath>
+			<NonInteractive type='11'>-1</NonInteractive>
+			<Password>VisualBuildPro</Password>
+			<Repository>%SVN_REPOS%</Repository>
+			<Subcommand>list</Subcommand>
+			<Switches>--no-auth-cache</Switches>
+			<Username>%WORK_USER%</Username>
+			<checked type='11'>0</checked>
+			<description>In case of tag store needed (NO_TAG is undefine) determine the last tag number that was used by curent product version and generate BUILD_VERSION tempory macro.</description>
+			<indent type='3'>1</indent>
+			<name>Process tag number</name>
+			<script><![CDATA[Function vbld_StepStarting()
+
+	If( Not vbld_TempMacro("NO_TAG") Is Nothing ) Then
+		' store product version Major.Minor
+		ver = vbld_AllMacros()("PRODUCT_VERSION").Value
+		
+		' create BUILD_VERSION with predefine value
+		vbld_TempMacros().Add "BUILD_VERSION", ver & ".0"
+		
+		' do not process step		
+		vbld_StepStarting = False
+		Exit Function
+	End If
+
+End Function
+
+
+Sub vbld_StepDone()
+	
+	If( Step.BuildStatus = vbldStepStatSucceeded ) Then
+		' modify output to simplify RegExp search
+		out = vbld_AllMacros()("LASTSTEP_OUTPUT").Value
+		out = "|" & Replace(out, vbCrLf, "|") & "|"
+		
+		ver = vbld_AllMacros()("PRODUCT_VERSION").Value
+		
+		' create regular expression
+		Set re = CreateObject("VBScript.RegExp")
+		re.Global = true
+		re.Pattern = "\|" & Replace(ver, ".", "\.") & "\.\d+(?=/\|)"
+		
+		tag = 0
+		For Each s In re.Execute(out)
+			n = CLng(Right(s, Len(s) - InStrRev( s, ".")))
+			If( n > tag ) Then tag = n
+		Next
+
+		vbld_TempMacros().Add "BUILD_VERSION", ver & "." & CStr(tag + 1)
+	End If
+	
+End Sub]]></script>
+		</step>
+		<step action='Subversion'>
+			<LocalPath>%WORK_ROOT%</LocalPath>
+			<NonInteractive type='11'>-1</NonInteractive>
+			<Password>VisualBuildPro</Password>
+			<Repository>%SVN_REPOS%</Repository>
+			<Subcommand>info</Subcommand>
+			<Switches>--no-auth-cache</Switches>
+			<Username>%WORK_USER%</Username>
+			<description>Retrieve global revision number of repository and generate full build version.</description>
+			<indent type='3'>1</indent>
+			<name>Process revision number</name>
+			<script><![CDATA[Sub vbld_StepDone()
+
+	If( Step.BuildStatus = vbldStepStatSucceeded ) Then
+		' if BUILD_VERSION doesn't exist use predefine version
+		Set build = vbld_TempMacro("BUILD_VERSION")
+		If( build Is Nothing ) Then
+			build = vbld_AllMacros()("PRODUCT_VERSION").Value & ".0"
+		Else
+			build = build.Value
+		End If
+		
+		' parse output for Revision number
+		out = vbld_AllMacros()("LASTSTEP_OUTPUT").Value
+		pos = InStr(out, "Revision: ") + 10
+		pos2 = InStr(pos, out, vbCrLf)
+		rev = CInt(Mid(out, pos, pos2-pos))
+		
+		' in case of Subversion tag create needed the revision
+		' number must be increase by 1 (tag creation request)
+		If( tag_ver(build) <> "" ) Then rev = rev + 1
+		
+		vbld_TempMacros().Add "BUILD_VERSION", build & "." & rev
+	End If
+
+End Sub]]></script>
+		</step>
+		<step action='Subversion'>
+			<Files>branches/</Files>
+			<LocalPath>%WORK_ROOT%</LocalPath>
+			<NonInteractive type='11'>-1</NonInteractive>
+			<Password>VisualBuildPro</Password>
+			<Repository>%SVN_REPOS%</Repository>
+			<Subcommand>list</Subcommand>
+			<Switches>--no-auth-cache</Switches>
+			<Username>%WORK_USER%</Username>
+			<description>Determine by product version the location of source files (branches or trunk) in Subversion repository and store path in SVN_PATH tempory macro.</description>
+			<name>Get path for source files</name>
+			<script><![CDATA[Sub vbld_StepDone()
+	
+	If( Step.BuildStatus = vbldStepStatSucceeded ) Then
+		' modify output to simplify InStr search
+		out = vbld_AllMacros()("LASTSTEP_OUTPUT").Value
+		out = "|" & Replace(out, vbCrLf, "|") & "|"
+		
+		' build default version branch name
+		branch = vbld_AllMacros()("PRODUCT_VERSION").Value & ".x/"
+		
+		' detect branch with PRODUCT_VERSION.x name and create
+		' SVN_PATH tempory macro indicate source path
+		If( InStr(1, out, "|" & branch & "|") > 0 ) Then
+			vbld_TempMacros.Add "SVN_PATH", "branches/" & branch
+		Else
+			vbld_TempMacros.Add "SVN_PATH", "trunk/"
+		End If
+	End If
+	
+End Sub]]></script>
+		</step>
+		<step action='Subversion'>
+			<Files><![CDATA[%SVN_REPOS%%SVN_PATH%
+.]]></Files>
+			<LocalPath>%WORK_ROOT%</LocalPath>
+			<NonInteractive type='11'>-1</NonInteractive>
+			<Password>VisualBuildPro</Password>
+			<Subcommand>checkout</Subcommand>
+			<Switches>--no-auth-cache</Switches>
+			<Username>%WORK_USER%</Username>
+			<description>Checkout the source files to the working folder.</description>
+			<name>Get latest version</name>
+		</step>
+		<step action='Group'>
+			<description>Build all projects that have changed and increment project versions, set base address, etc.</description>
+			<name>Build Projects</name>
+		</step>
+		<step action='Process Files'>
+			<FileExcludeExt>*.*svn*</FileExcludeExt>
+			<FileExtensions>AssemblyInfo.*</FileExtensions>
+			<FilePath>%WORK_ROOT%src\</FilePath>
+			<FileRecurse type='11'>-1</FileRecurse>
+			<description>Search for all source files with assembly information (AssemblyInfo.*) and modify build depend attributes.</description>
+			<indent type='3'>1</indent>
+			<name>Process all AssemblyInfo</name>
+		</step>
+		<step action='Subroutine Call'>
+			<Expand type='11'>-1</Expand>
+			<ParamValues array='0'>%PROCFILES_FULLPATH%</ParamValues>
+			<Parameters array='0'>ASSEMBLY_INFO</Parameters>
+			<SubName>set assembly attributes</SubName>
+			<description>Call subroutine to change AssemblyInfo file with build depend attributes.</description>
+			<indent type='3'>2</indent>
+			<name>set attributes</name>
+		</step>
+		<step action='Process Files'>
+			<FileExcludeExt>*.*svn*</FileExcludeExt>
+			<FileExtensions>*.sln</FileExtensions>
+			<FilePath>%WORK_ROOT%src\</FilePath>
+			<FileRecurse type='11'>-1</FileRecurse>
+			<condexpr>[IsVC6Installed()]</condexpr>
+			<description>Locate all *.sln files and attempt to build it</description>
+			<indent type='3'>1</indent>
+			<name>Process .NET solutions</name>
+		</step>
+		<step action='MSBuild'>
+			<Options>/nologo</Options>
+			<ProjectFile>%PROCFILES_FULLPATH%</ProjectFile>
+			<PropNames array='0'>Configuration</PropNames>
+			<PropValues array='0'>[vbld_IIf(tag_ver("%BUILD_VERSION%") = "","Debug","Release")]</PropValues>
+			<ShowCmd type='11'>-1</ShowCmd>
+			<description>Make .NET solution using MSBuild.</description>
+			<indent type='3'>2</indent>
+			<name>make</name>
+		</step>
+		<step action='Group'>
+			<condcomparison type='3'>4</condcomparison>
+			<condexpr>[tag_ver("%BUILD_VERSION%")]</condexpr>
+			<description>Tag updated version of all files with release label (if not internal build).</description>
+			<name>Tag current release</name>
+		</step>
+		<step action='Subversion'>
+			<Files>bin/*</Files>
+			<LocalPath>%WORK_ROOT%</LocalPath>
+			<Subcommand>add</Subcommand>
+			<condexpr>[tag_ver("%BUILD_VERSION%")]</condexpr>
+			<description>Mark compiled binaries to be included in current release.</description>
+			<indent type='3'>1</indent>
+			<name>Add binaries</name>
+		</step>
+		<step action='Subversion'>
+			<Files><![CDATA[.
+%SVN_REPOS%tags/[tag_ver("%BUILD_VERSION%")]]]></Files>
+			<LocalPath>%WORK_ROOT%</LocalPath>
+			<Message>Tagging [tag_ver("%BUILD_VERSION%")] release of project</Message>
+			<NonInteractive type='11'>-1</NonInteractive>
+			<Password>VisualBuildPro</Password>
+			<Subcommand>copy</Subcommand>
+			<Switches>--no-auth-cache</Switches>
+			<Username>%WORK_USER%</Username>
+			<condexpr>[tag_ver("%BUILD_VERSION%")]</condexpr>
+			<description>Tag updated trunk with compiled binaries.</description>
+			<indent type='3'>1</indent>
+			<name>Tag files as release</name>
+		</step>
+		<step action='Group'>
+			<buildfailsteps type='11'>0</buildfailsteps>
+			<description>Provide actions to notify the build master about build complete.</description>
+			<name>Done</name>
+		</step>
+		<step action='Send Mail'>
+			<From>%EMAIL_FROM%</From>
+			<HTML type='11'>-1</HTML>
+			<Message><![CDATA[<html>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html">
+<body>
+    At %DATETIME%, the build '%PROJROOT%' completed successfully.<br>
+    <br>
+    Product: %PRODUCT_NAME% <br>
+    Version: %BUILD_VERSION% <br>
+    Compilation Date: [CurrentDate] <br>
+    <br>
+    -----------------------------------------------------------------<br>
+    Follow the white rabbit: <a href=%INSTALL_PATH%>Installation executable</a>
+</body>
+</html>]]></Message>
+			<Port>25</Port>
+			<Server>tivoli</Server>
+			<Subject>'%PROJROOT%' was build successfully</Subject>
+			<Timeout>10</Timeout>
+			<To>%EMAIL_TO%</To>
+			<buildfailsteps type='11'>0</buildfailsteps>
+			<description>Notify the build master that the build completed -- change the EMAIL_FROM and EMAIL_TO project macros to your e-mail addresses.</description>
+			<indent type='3'>1</indent>
+			<name>Notify of completion</name>
+		</step>
+		<step action='Write File'>
+			<Append type='11'>-1</Append>
+			<Filename>%LOG_COMPLETED%</Filename>
+			<Text><![CDATA[%DATETIME%: %PROJFILE%, Build completed (Build number: %BUILD_VERSION%)
+]]></Text>
+			<buildfailsteps type='11'>0</buildfailsteps>
+			<description>Append a line to the completed log.</description>
+			<indent type='3'>1</indent>
+			<name>Write completion</name>
+		</step>
+		<step action='Transform XML Log'>
+			<Build0 type='11'>-1</Build0>
+			<Build1 type='11'>-1</Build1>
+			<Build2 type='11'>-1</Build2>
+			<CloseTags type='11'>-1</CloseTags>
+			<InputFile>%LOG_FILE%</InputFile>
+			<LogNested type='11'>0</LogNested>
+			<OutputFile>%WORK_TEMP%%PROJROOT%.html</OutputFile>
+			<ShowFile type='11'>-1</ShowFile>
+			<Step0 type='11'>-1</Step0>
+			<Step1 type='11'>-1</Step1>
+			<Step2 type='11'>-1</Step2>
+			<Step3 type='11'>-1</Step3>
+			<Step5 type='11'>-1</Step5>
+			<Step6 type='11'>-1</Step6>
+			<XSLTFile>%VISBUILDDIR%\Style\TransformLog.xslt</XSLTFile>
+			<buildfailsteps type='11'>0</buildfailsteps>
+			<condcomparison type='3'>6</condcomparison>
+			<condexpr>[Application.Options.LogFormat = "XML"]</condexpr>
+			<description>If using XML logging, perform transform on XML log file to generate HTML build report.</description>
+			<indent type='3'>1</indent>
+			<name>Generate HTML log</name>
+		</step></steps>
+	<steps type='1'>
+		<step action='Group'>
+			<description>Search source directory for all VBP files and generate VBG.</description>
+			<name>produce_vbg_file</name>
+		</step>
+		<step action='Write File'>
+			<Filename>%TEMP_VBG_FILE%</Filename>
+			<Text><![CDATA[VBGROUP 5.0
+]]></Text>
+			<description>Write header to VGB file</description>
+			<indent type='3'>1</indent>
+			<name>Write header</name>
+		</step>
+		<step action='Process Files'>
+			<FileExcludeExt>ArchiveAdministrator.vbp</FileExcludeExt>
+			<FileExtensions>*.vbp</FileExtensions>
+			<FilePath>%WORK_ROOT%src</FilePath>
+			<FileRecurse type='11'>-1</FileRecurse>
+			<condexpr>[IsVC6Installed()]</condexpr>
+			<description>Locate all *.vbp files and add to VBG file</description>
+			<indent type='3'>1</indent>
+			<name>Process VB6 Projects</name>
+		</step>
+		<step action='Write File'>
+			<Append type='11'>-1</Append>
+			<Filename>%TEMP_VBG_FILE%</Filename>
+			<Text><![CDATA[Project=%PROCFILES_FULLPATH%
+]]></Text>
+			<description>Add string which contain path to VBG file</description>
+			<indent type='3'>2</indent>
+			<name>Write vbp path</name>
+		</step>
+		<step action='Group'>
+			<description>Get's AssemblyInfo filename, remove all build depend attributes from it and append new values.</description>
+			<name>set assembly attributes</name>
+		</step>
+		<step action='Replace in File'>
+			<FileIn>%ASSEMBLY_INFO%</FileIn>
+			<FileOut>%ASSEMBLY_INFO%</FileOut>
+			<Find><![CDATA[(?:\[[|\<)\s*assembly\s*:\s*Assembly(?:Product|InformationalVersion|Company|Copyright|Version)(?:Attribute)*\s*\(\s*".+?"\s*\)\s*(?:\>|\]];?)\s*]]></Find>
+			<NoModS type='11'>-1</NoModS>
+			<description>Remove all assembly attributes that will be set later.</description>
+			<indent type='3'>1</indent>
+			<name>Remove build depend attributes</name>
+			<script><![CDATA[Sub vbld_StepDone()
+
+	' determine extention of processing file
+	ext = file_ext(vbld_TempMacro("ASSEMBLY_INFO").Value)
+	
+	' set tempory macros that contain language related
+	' attribute deviders and comment
+	Select Case ext
+		Case ".vb"
+			vbld_TempMacros().Add "REM"   , "'"
+			vbld_TempMacros().Add "ATTR_B", "<"
+			vbld_TempMacros().Add "ATTR_E", ">"
+		Case ".cs"
+			vbld_TempMacros().Add "REM"   , "//"
+			vbld_TempMacros().Add "ATTR_B", "[["
+			vbld_TempMacros().Add "ATTR_E", "]]"
+		Case ".cpp"
+			vbld_TempMacros().Add "REM"   , "//"
+			vbld_TempMacros().Add "ATTR_B", "[["
+			vbld_TempMacros().Add "ATTR_E", "]];"
+	End Select
+
+End Sub]]></script>
+		</step>
+		<step action='Write File'>
+			<Append type='11'>-1</Append>
+			<Filename>%ASSEMBLY_INFO%</Filename>
+			<Text><![CDATA[
+%REM%
+%REM% This is auto generated attributes for current %BUILD_VERSION% version.
+%REM%
+%ATTR_B%assembly: AssemblyProduct("%PRODUCT_NAME%")%ATTR_E%
+%ATTR_B%assembly: AssemblyInformationalVersion("[vbld_IIf(tag_ver("%BUILD_VERSION%")="","%PRODUCT_VERSION%",tag_ver("%BUILD_VERSION%"))]")%ATTR_E%
+%ATTR_B%assembly: AssemblyCompany("%PRODUCT_COMPANY%")%ATTR_E%
+%ATTR_B%assembly: AssemblyCopyright("Copyright © %PRODUCT_COMPANY% %PRODUCT_YEARS%")%ATTR_E%
+%ATTR_B%assembly: AssemblyVersion("%BUILD_VERSION%")%ATTR_E%]]></Text>
+			<description>Append build depend attributes to AssemblyInfo file.</description>
+			<indent type='3'>1</indent>
+			<name>Append build attributes</name>
+			<script><![CDATA[Sub vbld_StepDone()
+	
+	' delete used tempory macros
+	vbld_TempMacros().Remove "REM"
+	vbld_TempMacros().Remove "ATTR_B"
+	vbld_TempMacros().Remove "ATTR_E"
+
+End Sub
+
+]]></script>
+		</step></steps>
+	<steps type='2'>
+		<step action='Delete Folder'>
+			<Path>%INSTALL_PATH%</Path>
+			<buildfailsteps type='11'>0</buildfailsteps>
+			<condcomparison type='3'>1</condcomparison>
+			<condexpr>%INSTALL_PATH%</condexpr>
+			<continueonfail type='3'>1</continueonfail>
+			<description>Delete folder that was create to store installation executables.</description>
+			<name>Delete installations</name>
+		</step>
+		<step action='Group'>
+			<buildfailsteps type='11'>0</buildfailsteps>
+			<continueonfail type='3'>1</continueonfail>
+			<description>Provide actions to notify the build master about build failure.</description>
+			<name>Failed</name>
+		</step>
+		<step action='Log Message'>
+			<Message><![CDATA[
+**** OUTPUT FROM FAILED STEP ****
+
+%FAILSTEP_OUTPUT%
+
+**** END OF OUTPUT FROM FAILED STEP ****]]></Message>
+			<buildfailsteps type='11'>0</buildfailsteps>
+			<continueonfail type='3'>1</continueonfail>
+			<description>Output the failure output and message again so it is the last output to be logged.</description>
+			<indent type='3'>1</indent>
+			<name>Show failed output</name>
+		</step>
+		<step action='Send Mail'>
+			<Attachments><![CDATA[%LOG_FILE%
+]]></Attachments>
+			<From>%EMAIL_FROM%</From>
+			<Message><![CDATA[At %DATETIME%, the build '%PROJROOT%' failed with the following error:
+
+FAILURE INFORMATION:
+Step Name: %FAILSTEP_NAME%
+Step Status: %FAILSTEP_STATUS%
+Step Output:
+%FAILSTEP_OUTPUT%]]></Message>
+			<Password>VisualBuildPro</Password>
+			<PopPort>110</PopPort>
+			<Port>25</Port>
+			<Server>tivoli</Server>
+			<Subject>'%PROJROOT%' build failed</Subject>
+			<Timeout>10</Timeout>
+			<To>%EMAIL_TO%</To>
+			<UserName>%WORK_USER%</UserName>
+			<buildfailsteps type='11'>0</buildfailsteps>
+			<continueonfail type='3'>1</continueonfail>
+			<description>Notify the build master that failure occurred.</description>
+			<indent type='3'>1</indent>
+			<name>Notify of failure</name>
+		</step>
+		<step action='Write File'>
+			<Append type='11'>-1</Append>
+			<Filename>%LOG_FAILED%</Filename>
+			<Text><![CDATA[%DATETIME%: %PROJFILE%, Build failed (step: %FAILSTEP_NAME%)
+]]></Text>
+			<buildfailsteps type='11'>0</buildfailsteps>
+			<continueonfail type='3'>1</continueonfail>
+			<description>Append a line to the completed log.</description>
+			<indent type='3'>1</indent>
+			<name>Write failure</name>
+		</step></steps>
+	<macros>
+		<macro name='EMAIL_FROM'>
+			<description>From address for emails</description>
+			<value><![CDATA["Visual Build Pro" <%WORK_USER%@abbyy.ua>]]></value>
+		</macro>
+		<macro name='EMAIL_TO'>
+			<description>E-mail address to send notification of success and failure to</description>
+			<value><![CDATA["_List: Developers-ABBYY" <corp@abbyy.ua>]]></value>
+		</macro>
+		<macro name='LOG_COMPLETED'>
+			<description>File that will contain a log line for each successful build</description>
+			<value>%PROJDIR%\%PROJROOT%.success.log</value>
+		</macro>
+		<macro name='LOG_FAILED'>
+			<description>File that will be written to for each failed build</description>
+			<value>%PROJDIR%\%PROJROOT%.fail.log</value>
+		</macro>
+		<macro name='LOG_FILE'>
+			<description>Log file for this project</description>
+			<value>%WORK_ROOT%%PROJROOT%.log</value>
+		</macro>
+		<macro name='PRODUCT_COMPANY'>
+			<description>Company name macro used in Make VB, VC, and .NET steps</description>
+			<value>ABBYY Ukraine</value>
+		</macro>
+		<macro name='PRODUCT_NAME'>
+			<description>Full product name to use in file resources</description>
+			<value>Toolkit</value>
+		</macro>
+		<macro name='PRODUCT_VERSION'>
+			<description>Product mainline version in format: Major.Minor</description>
+			<value>1.0</value>
+		</macro>
+		<macro name='PRODUCT_YEARS'>
+			<description>Trademark years</description>
+			<value>2007-2009</value>
+		</macro>
+		<macro name='SVN_REPOS'>
+			<description>Path to Subversion repository</description>
+			<value>https://geser.abbyy.ua/svn/corp/%PROJROOT%/</value>
+		</macro>
+		<macro name='WORK_INSTALL'>
+			<description>Folder storing installation executables</description>
+			<value>\\geser\share\pub\</value>
+		</macro>
+		<macro name='WORK_ROOT'>
+			<description>Root folder containing working copies of files</description>
+			<value>%TEMP%\%PROJROOT%\</value>
+		</macro>
+		<macro name='WORK_TEMP'>
+			<description>Temp folder for intermidiate files saving</description>
+			<value>%WORK_ROOT%tmp\</value>
+		</macro>
+		<macro name='WORK_USER'>
+			<description>Username to present Visual Build for logging into systems</description>
+			<value>kent</value>
+		</macro></macros>
+	<script language='VBScript'><![CDATA[Sub CreateShortcut(target, sName)
+
+	Set objWshShell = CreateObject("Wscript.Shell")
+	
+	' Read desktop path using WshSpecialFolders object
+	strDesktopPath = objWshShell.SpecialFolders("Desktop")
+	
+	' Create a shortcut object on the desktop
+	Set objShortcut = objWshShell.CreateShortcut(strDesktopPath & "\" & sName & ".lnk")
+	
+	' Set shortcut object properties and save it
+	objShortcut.TargetPath = target
+	objShortcut.Save
+End Sub
+
+
+Function ExtractUNCServer(sPath)
+	sServer = ""
+	If (Left(sPath & "__", 2) = "\\") Then
+		sServer = Right(sPath, Len(sPath) - 2)
+		sServer = Left(sServer, InStr(1, sServer, "\"))
+		If (sServer <> "") Then sServer = Left(sServer, Len(sServer) - 1)
+	End If
+	ExtractUNCServer = sServer
+End Function
+
+
+Function CurrentDate()
+	CurrentDate = vbld_FormatDateEx(Now(), "yyyy.mm.dd")
+End Function
+
+
+' function return tag substring if the passed string have correct
+' version format for creating Subversion tag
+Function tag_ver(sVersion)
+	tag_ver = ""
+	
+	Set re = CreateObject("VBScript.RegExp")
+	re.Pattern = "^(\d+\.){2}[1-9]\d*(?=(\.[1-9]\d*)*$)"
+	
+	Set res = re.Execute(sVersion)
+	If( res.Count > 0 ) Then tag_ver  = res(0)
+End Function
+
+
+' return file extension
+Function file_ext(sFileName)
+	file_ext = ""
+	
+	Set re = CreateObject("VBScript.RegExp")
+	re.Pattern = "\.[^\\\/\.]+$"
+	
+	Set res = re.Execute(sFileName)
+	If( res.Count > 0 ) Then file_ext  = res(0)
+End Function]]></script>
+</project>

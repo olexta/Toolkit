@@ -6,7 +6,7 @@
 //*
 //*	Content		:	Module provide assembly information and properties.
 //*	Author		:	Alexander Kurbatov
-//*	Copyright	:	Copyright © 2006-2007 Alexander Kurbatov
+//*	Copyright	:	Copyright © 2007-2009 Alexander Kurbatov
 //*
 //****************************************************************************
 
@@ -20,10 +20,10 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 //
 [assembly: AssemblyTitle( "Toolkit.RPL.Storage" )]
-[assembly: AssemblyDescription( "Object Oriented DB Layer" )]
+[assembly: AssemblyDescription( "Toolkit.RPL.Storage implements unified interface for different storages" )]
 [assembly: AssemblyProduct( "Robust Persistence Layer" )]
-[assembly: AssemblyCopyright( "Copyright © Alexander Kurbatov 2006-2007" )]
-[assembly:AssemblyInformationalVersion("1.0")]
+[assembly: AssemblyCopyright( "Copyright © Alexander Kurbatov 2007-2009" )]
+[assembly: AssemblyInformationalVersion("1.0")]
 
 [assembly: ComVisible( false )]
 
