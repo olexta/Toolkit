@@ -210,7 +210,7 @@ End Sub]]></script>
 			<condcomparison type='3'>4</condcomparison>
 			<condexpr>[tag_ver("%BUILD_VERSION%")]</condexpr>
 			<description>Tag updated version of all files with release label (if not internal build).</description>
-			<name>Tag current release</name>
+			<name>Tag Current Release</name>
 		</step>
 		<step action='Subversion'>
 			<Files>bin/*</Files>
@@ -235,6 +235,39 @@ End Sub]]></script>
 			<description>Tag updated trunk with compiled binaries.</description>
 			<indent type='3'>1</indent>
 			<name>Tag files as release</name>
+		</step>
+		<step action='Group'>
+			<condexpr>[IsWiseInstalled]</condexpr>
+			<description>Create an release package containing the latest executables</description>
+			<name>Compile Installation</name>
+		</step>
+		<step action='Set Macro'>
+			<MacroName>INSTALL_PATH</MacroName>
+			<MacroValue>%WORK_INSTALL%%PROJROOT%\[CurrentDate]\</MacroValue>
+			<description>Set macro with relative path to install store directory</description>
+			<indent type='3'>1</indent>
+			<name>Set relative path</name>
+		</step>
+		<step action='Create Folder'>
+			<Path>%INSTALL_PATH%</Path>
+			<description>Create installation folder with current date to identify build time</description>
+			<indent type='3'>1</indent>
+			<name>Create build folder</name>
+		</step>
+		<step action='ZIP Files'>
+			<Action type='3'>2</Action>
+			<Compression>19</Compression>
+			<Dest>%INSTALL_PATH%%PROJROOT%-%BUILD_VERSION%.zip</Dest>
+			<Ext><![CDATA[bin/*
+etc/Toolkit.Workflow.Schema.xsd
+var/*]]></Ext>
+			<Hidden type='11'>0</Hidden>
+			<LogDetail type='11'>-1</LogDetail>
+			<Recurse type='11'>-1</Recurse>
+			<Source>%WORK_ROOT%</Source>
+			<description>Make version installation package.</description>
+			<indent type='3'>1</indent>
+			<name>ZIP Files</name>
 		</step>
 		<step action='Group'>
 			<buildfailsteps type='11'>0</buildfailsteps>
@@ -443,6 +476,7 @@ Step Output:
 			<To>%EMAIL_TO%</To>
 			<UserName>%WORK_USER%</UserName>
 			<buildfailsteps type='11'>0</buildfailsteps>
+			<checked type='11'>0</checked>
 			<continueonfail type='3'>1</continueonfail>
 			<description>Notify the build master that failure occurred.</description>
 			<indent type='3'>1</indent>
