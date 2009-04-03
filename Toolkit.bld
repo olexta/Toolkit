@@ -165,6 +165,47 @@ End Sub]]></script>
 			<name>Get latest version</name>
 		</step>
 		<step action='Group'>
+			<description>Copy all directories and files from lib folder this project is depend on.</description>
+			<name>Copy Dependencies</name>
+		</step>
+		<step action='Process Files'>
+			<FileExcludeExt>/.svn</FileExcludeExt>
+			<FilePath>%WORK_ROOT%lib\</FilePath>
+			<FilePathOnly type='11'>-1</FilePathOnly>
+			<description>Copy directories from lib folder this project is depend on.</description>
+			<indent type='3'>1</indent>
+			<name>Copy depend folders</name>
+		</step>
+		<step action='Subversion'>
+			<Files><![CDATA[lib/%PROCFILES_FILE_DIR%
+bin/]]></Files>
+			<LocalPath>%WORK_ROOT%</LocalPath>
+			<NonInteractive type='11'>-1</NonInteractive>
+			<Subcommand>copy</Subcommand>
+			<description>Copy directory from lib folder.</description>
+			<indent type='3'>2</indent>
+			<name>copy</name>
+		</step>
+		<step action='Process Files'>
+			<FileExtensions><![CDATA[*.dll
+*.pdb
+*.xml]]></FileExtensions>
+			<FilePath>%WORK_ROOT%lib\</FilePath>
+			<description>Copy files from lib folder this project is depend on.</description>
+			<indent type='3'>1</indent>
+			<name>Copy depend files</name>
+		</step>
+		<step action='Subversion'>
+			<Files><![CDATA[lib/%PROCFILES_FILENAME%
+bin/]]></Files>
+			<LocalPath>%WORK_ROOT%</LocalPath>
+			<NonInteractive type='11'>-1</NonInteractive>
+			<Subcommand>copy</Subcommand>
+			<description>Copy file from lib folder.</description>
+			<indent type='3'>2</indent>
+			<name>copy</name>
+		</step>
+		<step action='Group'>
 			<description>Build all projects that have changed and increment project versions, set base address, etc.</description>
 			<name>Build Projects</name>
 		</step>
@@ -214,6 +255,7 @@ End Sub]]></script>
 		</step>
 		<step action='Subversion'>
 			<Files>bin/*</Files>
+			<Force type='11'>-1</Force>
 			<LocalPath>%WORK_ROOT%</LocalPath>
 			<Subcommand>add</Subcommand>
 			<condexpr>[tag_ver("%BUILD_VERSION%")]</condexpr>
@@ -235,10 +277,11 @@ End Sub]]></script>
 			<description>Tag updated trunk with compiled binaries.</description>
 			<indent type='3'>1</indent>
 			<name>Tag files as release</name>
+			<nologging type='11'>-1</nologging>
 		</step>
 		<step action='Group'>
 			<condexpr>[IsWiseInstalled]</condexpr>
-			<description>Create an release package containing the latest executables</description>
+			<description>Create an installation executable containing the latest executables</description>
 			<name>Compile Installation</name>
 		</step>
 		<step action='Set Macro'>
@@ -476,7 +519,6 @@ Step Output:
 			<To>%EMAIL_TO%</To>
 			<UserName>%WORK_USER%</UserName>
 			<buildfailsteps type='11'>0</buildfailsteps>
-			<checked type='11'>0</checked>
 			<continueonfail type='3'>1</continueonfail>
 			<description>Notify the build master that failure occurred.</description>
 			<indent type='3'>1</indent>
