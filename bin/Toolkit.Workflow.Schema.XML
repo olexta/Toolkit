@@ -1,0 +1,488 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Toolkit.Workflow.Schema</name>
+    </assembly>
+    <members>
+        <member name="T:Toolkit.Workflow.Schema.ClassNode">
+            <summary>
+            Class that stores information about class node in XML file.
+            It obtain information about all properties, method and states.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.ClassNode.m_Type">
+            <summary>
+            Stores class type for current instance.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.ClassNode.m_Caption">
+            <summary>
+            Stores caption for current instance.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.ClassNode.m_StatesMap">
+            <summary>
+            Using this dictionary you can retrieve XML node for specified state.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.ClassNode.m_Properties">
+            <summary>
+            Stores info about all properties.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.ClassNode.m_Methods">
+            <summary>
+            Stores info about all methods.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.ClassNode.#ctor(System.Xml.XmlNode)">
+            <summary>
+            Ctor.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.ClassNode.Type">
+            <summary>
+            Returns class type.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.ClassNode.Key">
+            <summary>
+            Returns class type.
+            This property is needed only for storing instance in KeyedMap collection.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.ClassNode.Caption">
+            <summary>
+            Returns caption.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.ClassNode.StatesMap">
+            <summary>
+            Returns map: State name -> XML node.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.ClassNode.Properties">
+            <summary>
+            Returns properties.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.ClassNode.Methods">
+            <summary>
+            Returns methods.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.EnumTypeIsNotFoundException.#ctor(System.String)">
+            <summary>
+            Creates instance.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.EnumTypeIsNotFoundException.TypeName">
+            <remarks>
+            Returns type name.
+            </remarks>
+        </member>
+        <member name="T:Toolkit.Workflow.Schema.IClassInfo">
+            <summary>
+            Interface for bussines classes which allows schema object to be build for
+            specific instance of bussines class
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.IClassInfo.Type">
+            <summary>
+            returns bussines logic name of class
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.IClassInfo.StateComponents">
+            <summary>
+            returs array of strings which are component parts of global state name.
+            Part with highest priority must be first and so on...
+            </summary>
+        </member>
+        <member name="T:Toolkit.Workflow.Schema.MetaData">
+            <summary>
+            Main library class.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.MetaData.m_Instance">
+            <summary>
+            This is the one instance of this type.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.MetaData.m_IsInitialized">
+            <summary>
+            Indicates that schema was already loaded.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.MetaData.m_CurrentUICulture">
+            <summary>
+            Stores locale for l10n.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.MetaData.m_Name">
+            <summary>
+            Schema name.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.MetaData.m_NsMgr">
+            <summary>
+            Namespace manager for internal XPath purposes.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.MetaData.m_Classes">
+            <summary>
+            Saves a correspondence map: Class type -> Class description.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.MetaData.m_Enums">
+            <summary>
+            Saves a correspondence map: Enum type name -> Enum description.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.MetaData.m_PropSets">
+            <summary>
+            Saves available PropSets;
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.MetaData.m_SchemaXML">
+            <summary>
+            Memory copy of schema file.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.MetaData.GetObjectType(System.Object)">
+            <summary>
+            Returns string than represents object type and its assembly.
+            You can use this function to identify objects types in schema.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.MetaData.InitSchema(System.String,System.IO.Stream,System.IO.Stream)">
+            <summary>
+            This method creates singleton instance of MetaData class.
+            You must call this method before using MetaData instance.
+            <param name="UICulture">Culture identifier.</param>
+            <param name="xml">Schema file (.xml).</param>
+            <param name="xsd">Schema description file (.xsd).</param>
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.MetaData.DeinitSchema">
+            <summary>
+            Deinitialize schema.
+            </summary><remarks>
+            You must use this function to reinitialize schema.
+            </remarks>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.MetaData.GetEnumInfo(System.String)">
+            <summary>
+            Returns description for specified enum type.
+            </summary>
+            <param name="enumTypeName">Full type name of enum type.</param>
+            <returns>Enum description class or null.</returns>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.MetaData.GetPropSetInfo(System.String)">
+            <summary>
+            Returns PropSet description by his name.
+            </summary>
+            <returns>
+            PropSetInfo instance - if schema contains description for specified name,
+            null - otherwise.
+            </returns>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.MetaData.ToString">
+            <summary>
+            Overridden Object.ToString() method.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.MetaData.#ctor">
+            <summary>
+            Default ctor.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.MetaData.initialize(System.String,System.IO.Stream,System.IO.Stream)">
+            <summary>
+            This method perform schema loading and building program structures.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.MetaData.Instance">
+            <summary>
+            A method returning a reference to the Singleton.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.MetaData.IsInitialized">
+            <summary>
+            Indicates that schema was already loaded.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.MetaData.Item(Toolkit.Workflow.Schema.IClassInfo)">
+            <summary>
+            Gets object description.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.MetaData.Item(Toolkit.Workflow.Schema.IClassInfo,System.String[])">
+            <summary>
+            Gets description for object in specified state
+            </summary>
+            <remarks>
+            Putting null by stateComponents means work with current object state
+            </remarks>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.MetaData.PropSetsNames">
+            <summary>
+            Gets enumeration of all available PropSets.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.MetaData.Name">
+            <summary>
+            Gets current loaded schema name.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.MetaData.CurrentUICulture">
+            <summary>
+            Current culture for UI l10n.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.MetaData.XMLNsMgr">
+            <summary>
+            Gets instance of Namespace manager for internal XPath purposes.
+            </summary>
+        </member>
+        <member name="T:Toolkit.Workflow.Schema.SClass">
+            <summary>
+            This class gives full information about current state of IStateInfo object.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.SClass.m_object">
+            <summary>
+            // Reference to IClassInfo object.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.SClass.m_StateName">
+            <summary>
+            Current state name.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.SClass.m_StateMask">
+            <summary>
+             Current
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.SClass.m_Class">
+            <summary>
+            Reference to basic class information.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SClass.#ctor(Toolkit.Workflow.Schema.IClassInfo,Toolkit.Workflow.Schema.ClassNode)">
+            <summary>
+            Creates instance of class
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SClass.#ctor(Toolkit.Workflow.Schema.IClassInfo,Toolkit.Workflow.Schema.ClassNode,System.String[])">
+            <summary>
+            Creates instance of class
+            </summary>
+            <remarks>
+            Putting null by stateComponents means work with current object state
+            </remarks>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SClass.GetProperty(System.String)">
+            <summary>
+            Gets information about specified property.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SClass.GetMethod(System.String)">
+            <summary>
+            Gets information about specified method.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SClass.defineStateMask(System.String[])">
+            <summary>
+            Define mask for specified object state
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SClass.defineStateName">
+            <summary>
+            Retrieves current state name and stores it in private field.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.SClass.Caption">
+            <summary>
+            Gets class caption.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.SClass.StateName">
+            <summary>
+            Gets current state name.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.SClass.PropertiesNames">
+            <summary>
+            Gets properties names.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.SClass.MethodsNames">
+            <summary>
+            Gets methods names.
+            </summary>
+        </member>
+        <member name="T:Toolkit.Workflow.Schema.SClassMember">
+            <summary>
+            Class member information abstract class.
+            Implement shared properties, such as: Name, Caption and Description.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SClassMember.ToString">
+            <summary>
+            Overridden Object.ToString().
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SClassMember.#ctor(System.String,System.String,System.String,System.Int32)">
+            <summary>
+            Ctor.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SClassMember.#ctor(Toolkit.Workflow.Schema.SClassMember)">
+            <summary>
+            Copy ctor.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.SClassMember.Name">
+            <summary>
+            Gets, sets member's name.
+            <remarks>Setter is internal only.</remarks>		
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.SClassMember.Caption">
+            <summary>
+            Gets, sets class member user acceptance name.
+            <remarks>Setter is internal only.</remarks>
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.SClassMember.Description">
+            <summary>
+            Gets, sets class member description msg.
+            <remarks>Setter is internal only.</remarks>
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.SClassMember.DisplayOrder">
+            <summary>
+            Gets, sets class display position.
+            <remarks>Setter is internal only.</remarks>
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.SClassMember.Toolkit#Collections#IKeyedObject{System#String}#Key">
+            <summary>
+            Realization of KeyedObject;ltT;gt.Key property.
+            </summary>
+        </member>
+        <member name="T:Toolkit.Workflow.Schema.SProperty">
+            <summary>
+            This class is used to store class's property information
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.SProperty.m_Type">
+            <summary>
+            Stores property type.
+            Available types:
+            Byte, SByte, Int16, Int32, Int64, UInt16, UInt32, UInt64, Decimal
+            String, Char, Boolean, DateTime, Single, Double, Stream and enums.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.SProperty.m_IsRequired">
+            <summary>
+            Stores property requirement.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.SProperty.m_DefaultValue">
+            <summary>
+            Stores default value of property. Stored as string.
+            Convertion to another type and check needed to be performed
+            in class that uses it.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.SProperty.m_IsReadOnly">
+            <summary>
+            Stores readonly flag
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SProperty.SetDefaultValue(System.String)">
+            <summary>
+            Translates string representation of default value
+            to properly type and stores it.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SProperty.ToString">
+            <summary>
+            Overridden Object.ToString().
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SProperty.#ctor(System.String,System.String,System.String,System.Int32,System.Type,System.Boolean,System.Boolean,System.Object)">
+            <summary>
+            Internal class ctor.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SProperty.#ctor(Toolkit.Workflow.Schema.SProperty)">
+            <summary>
+            Internal copy ctor.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.SProperty.IsRequired">
+            <summary>
+            Property accessor to m_isRequired.
+            Set accessor has only internal access modifier
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.SProperty.Type">
+            <summary>
+            Property type.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.SProperty.DefaultValue">
+            <summary>
+            Property accessor to m_defaultValue.
+            Set accessor has only internal access modifier
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.SProperty.IsReadOnly">
+            <summary>
+            Property accessor to m_IsReadOnly.
+            Set accessor has only internal access modifier
+            </summary>
+        </member>
+        <member name="T:Toolkit.Workflow.Schema.SMethod">
+            <remarks/>
+        </member>
+        <member name="F:Toolkit.Workflow.Schema.SMethod.m_IsAvailable">
+            <summary>
+            Stores method involve possibility
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SMethod.#ctor(System.String,System.String,System.String,System.Int32,System.Boolean)">
+            <summary>
+            Ctor.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.SMethod.#ctor(Toolkit.Workflow.Schema.SMethod)">
+            <summary>
+            Internal copy ctor.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Workflow.Schema.SMethod.IsAvailable">
+            <summary>
+            Property accessor to m_isAvailable.
+            Set accessor has only internal access modifier
+            </summary>
+        </member>
+        <member name="T:Toolkit.Workflow.Schema.Tools">
+            <summary>
+            This class is created only for internal purposes.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Workflow.Schema.Tools.GetLocalizedString(System.Xml.XmlNode,System.String)">
+            <summary>
+            Gets localized string for specified node.
+            First it search for "localizedSuffix" node
+            and if it not present search for "suffix" node.
+            </summary>
+            <returns>Null if string with specified suffix is not founded
+            otherwise returns desired value.</returns>
+        </member>
+    </members>
+</doc>
