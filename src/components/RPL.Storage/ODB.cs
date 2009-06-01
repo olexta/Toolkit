@@ -162,11 +162,17 @@ public class ODB : IPersistenceStorage
 			result = "( Source.[" + propName + "] " + op + " " + opd + ") ";
 		} else {
 			// query for non base properties
-			result = "(EXISTS(SELECT ID FROM [_properties] AS p WHERE (ObjectID = Source.ID) " +
+			result = "((EXISTS(SELECT ID FROM [_properties] AS p WHERE (ObjectID = Source.ID) " +
 								"AND " +
 								"(Name = '" + clause.OPD + "') " + // define property name
 								"AND " +
-								"(" + column + " " + op + " " + opd + "))) "; // define property value
+								"(" + column + " " + op + " " + opd + "))) " + // define property value
+						"OR " +
+						"(EXISTS(SELECT ID FROM [_images] AS p WHERE (ObjectID = Source.ID) " +
+								"AND " +
+								"(Name = '" + clause.OPD + "') " + // define property name
+								"AND " +
+								"(" + column + " " + op + " " + opd + "))))";// define property value
 		}
 		return result;
 	}
@@ -853,102 +859,90 @@ public class ODB : IPersistenceStorage
 
 			// iterate through recieved properties
 			foreach( PROPERTY prop in props ) {
-				// saving large stream property. 7900 is maximum length of sql_variant field in _properties table because
-				// SQL Server 2000 limits maximum row size to 8060 bytes.
-				if( (prop.Value.ToObject() is PersistentStream ) 
-					&& 
-					(((PersistentStream)prop.Value.ToObject()).Length > 7900) ) {
-					
-					// different actions based on property state
-					switch( prop.State ) {
-						case PROPERTY.STATE.Changed:
-							// add query for delete property from _properties table (property may be there before)
-							cmd.CommandText += 
-								"DELETE FROM [_properties] " +
-								"WHERE [ObjectID]=" + objID + " AND " +
-								"[Name]='" + prop.Name + "';";
-							goto case PROPERTY.STATE.New;
-						case PROPERTY.STATE.New:
+				// strore propery value suitable for saving as sql_variant
+				object value;
+				// converting value to sql_variant capable type
+				if( prop.Value.ToObject() is PersistentStream ) {
+					// reading stream value to byte array
+					PersistentStream ps = ((PersistentStream)prop.Value.ToObject());
+					byte[] buffer = new byte[ps.Length];
+					ps.Seek(0, SeekOrigin.Begin);
+					ps.Read(buffer, 0, (int)ps.Length);
+					value = buffer;
+				} else if( (prop.Value.ToObject().GetType() == typeof(DateTime)) &&
+				   (prop.State == PROPERTY.STATE.Changed || prop.State == PROPERTY.STATE.New) ) {
+
+					// DateTime Property must be converted to precision of sql server before sav
+					value = datetime_to_sql( (DateTime)prop.Value );
+					// add to changed properies List
+					_props.Add( new PROPERTY(prop.Name, new ValueBox(value), PROPERTY.STATE.Changed) );
+				} else {
+					// no convertion is needed
+					value = prop.Value.ToObject();
+				}
+
+				// check property action
+				switch( prop.State ) {
+					case PROPERTY.STATE.New:
+						// saving large stream property. 7900 is maximum length of sql_variant field in _properties table because
+						// SQL Server 2000 limits maximum row size to 8060 bytes.
+						if( (prop.Value.ToObject() is PersistentStream)
+							&&
+							(((PersistentStream)prop.Value.ToObject()).Length > 7900) ) {
 							// saving stream property to _images table
-							save_image(objID, prop.Name, (PersistentStream)prop.Value);
-							break;
-						case PROPERTY.STATE.Deleted:
-							// add query to delete property from both tables
-							cmd.CommandText += 
-								"DELETE FROM [_properties] WHERE [ObjectID]=" + objID + " AND " +
-								"[Name]='" + prop.Name + "';" +
-								"DELETE FROM [_images] WHERE [ObjectID]=" + objID + " AND " +
-								"[Name]='" + prop.Name + "';";
-							break;
-					}
-				} else { // saving simple property
-					// strore propery value suitable for saving as sql_variant
-					object value;
-					// converting value to sql_variant capable type
-					if( prop.Value.ToObject() is PersistentStream ) {
-						// reading stream value to byte array
-						PersistentStream ps = ((PersistentStream)prop.Value.ToObject());
-						byte[] buffer = new byte[ps.Length];
-						ps.Seek(0, SeekOrigin.Begin);
-						ps.Read(buffer, 0, (int)ps.Length);
-						value = buffer;
-					} else if( (prop.Value.ToObject().GetType() == typeof(DateTime)) &&
-					   (prop.State == PROPERTY.STATE.Changed || prop.State == PROPERTY.STATE.New) ) {
-
-						// DateTime Property must be converted to precision of sql server before sav
-						value = datetime_to_sql( (DateTime)prop.Value );
-						// add to changed properies List
-						_props.Add( new PROPERTY(prop.Name, new ValueBox(value), PROPERTY.STATE.Changed) );
-					} else {
-						// no convertion is needed
-						value = prop.Value.ToObject();
-					}
-
-					// check property action
-					switch( prop.State ) {
-						case PROPERTY.STATE.New:
+							save_image( objID, prop.Name, (PersistentStream)prop.Value );
+						} else {
 							// adding new row to DB
 							cmd.CommandText +=
-								"INSERT INTO [_properties] ([ObjectID], [Name], [Value]) " + 
+								"INSERT INTO [_properties] ([ObjectID], [Name], [Value]) " +
 								"VALUES " +
 									"(" + objID + ", '" +
 									prop.Name + "', " +
 									"@PropValue_" + prop.Name + " );";
-							cmd.Parameters.Add( new SqlParameter("@PropValue_" + prop.Name, value) );
-							break;
-						case PROPERTY.STATE.Changed:
+							cmd.Parameters.Add( new SqlParameter( "@PropValue_" + prop.Name, value ) );
+						}
+						break;
+					case PROPERTY.STATE.Changed:
+						// saving large stream property. 7900 is maximum length of sql_variant field in _properties table because
+						// SQL Server 2000 limits maximum row size to 8060 bytes.
+						if( (prop.Value.ToObject() is PersistentStream)
+							&&
+							(((PersistentStream)prop.Value.ToObject()).Length > 7900) ) {
+							// add query for delete property from _properties table (property may be there before)
+							cmd.CommandText +=
+								"DELETE FROM [_properties] " +
+								"WHERE [ObjectID]=" + objID + " AND " +
+								"[Name]='" + prop.Name + "';";
+							// saving stream property to _images table
+							save_image( objID, prop.Name, (PersistentStream)prop.Value );
+						} else {
 							// update row in DB
 							cmd.CommandText +=
 								"UPDATE [_properties] " +
 								"SET [Value] = @PropValue_" + prop.Name + " " +
 								"WHERE [ObjectID]=" + objID + " AND " +
 									  "[Name]='" + prop.Name + "';";
-							cmd.Parameters.Add( new SqlParameter("@PropValue_" + prop.Name, value) );
+							cmd.Parameters.Add( new SqlParameter( "@PropValue_" + prop.Name, value ) );
 
 							// try to delete property from _images table if it is PersistentStream
-							if( prop.Value.ToObject() is PersistentStream ) {
-								cmd.CommandText += 
-									"DELETE FROM [_images] " +
-									"WHERE [ObjectID]=" + objID + " AND " +
-									"[Name]='" + prop.Name + "';";
-							}
-							break;
-						case PROPERTY.STATE.Deleted:
-							// delete property from _properties table
-							cmd.CommandText +=
-								"DELETE FROM [_properties] " +
-								"WHERE [ObjectID]=" + objID + " AND " +
-									  "[Name]='" + prop.Name + "';";
-
-							// if it is PersistentStream property then delete property from _images table
 							if( prop.Value.ToObject() is PersistentStream ) {
 								cmd.CommandText +=
 									"DELETE FROM [_images] " +
 									"WHERE [ObjectID]=" + objID + " AND " +
 									"[Name]='" + prop.Name + "';";
 							}
-							break;
-					}
+						}
+						break;
+					case PROPERTY.STATE.Deleted:
+						// delete property from _properties table
+						cmd.CommandText +=
+							"DELETE FROM [_properties] " +
+							"WHERE [ObjectID]=" + objID + " AND " +
+								"[Name]='" + prop.Name + "';" +
+							"DELETE FROM [_images] " +
+							"WHERE [ObjectID]=" + objID + " AND " +
+								"[Name]='" + prop.Name + "';";
+						break;
 				}
 			}
 
