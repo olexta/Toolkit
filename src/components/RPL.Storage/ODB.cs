@@ -90,16 +90,20 @@ public class ODB : IPersistenceStorage
 						// return query that always return true
 						return ("(0=0)");
 					} else {
-						return "EXISTS( SELECT ID FROM _properties WHERE (ObjectID = Source.ID) " +
-								"AND Name = '" + clause.OPD + "') ";
+						return "( EXISTS( SELECT ID FROM _properties WHERE (ObjectID = Source.ID) " +
+								"AND Name = '" + clause.OPD + "') OR " +
+								"EXISTS( SELECT ID FROM _images WHERE (ObjectID = Source.ID) " +
+								"AND Name = '" + clause.OPD + "') )";
 					}
 				case Where.Clause.OP.EQ:
 					if( isProxyProperty ) {
 						// return query that always return false
 						return ("(0=1)");
 					} else {
-						return "NOT EXISTS(SELECT ID FROM _properties WHERE (ObjectID = Source.ID) " +
-								"AND Name = '" + clause.OPD + "') ";
+						return "( NOT EXISTS(SELECT ID FROM _properties WHERE (ObjectID = Source.ID) " +
+								"AND Name = '" + clause.OPD + "') AND "+
+								"NOT EXISTS( SELECT ID FROM _images WHERE (ObjectID = Source.ID) " +
+								"AND Name = '" + clause.OPD + "') )";
 					}
 				default:
 					throw new ArgumentException("Invalid operator for requested propery value.\nDBNull may coexist only with:\n\t '!=' or '='");
@@ -162,17 +166,11 @@ public class ODB : IPersistenceStorage
 			result = "( Source.[" + propName + "] " + op + " " + opd + ") ";
 		} else {
 			// query for non base properties
-			result = "((EXISTS(SELECT ID FROM [_properties] AS p WHERE (ObjectID = Source.ID) " +
+			result = "(EXISTS(SELECT ID FROM [_properties] AS p WHERE (ObjectID = Source.ID) " +
 								"AND " +
 								"(Name = '" + clause.OPD + "') " + // define property name
 								"AND " +
-								"(" + column + " " + op + " " + opd + "))) " + // define property value
-						"OR " +
-						"(EXISTS(SELECT ID FROM [_images] AS p WHERE (ObjectID = Source.ID) " +
-								"AND " +
-								"(Name = '" + clause.OPD + "') " + // define property name
-								"AND " +
-								"(" + column + " " + op + " " + opd + "))))";// define property value
+								"(" + column + " " + op + " " + opd + "))) "; // define property value
 		}
 		return result;
 	}
