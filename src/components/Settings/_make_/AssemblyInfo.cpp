@@ -24,10 +24,6 @@ using namespace System::Runtime::InteropServices;
 //
 [assembly:AssemblyTitleAttribute("Toolkit.Settings")];
 [assembly:AssemblyDescriptionAttribute("Toolkit.Settings provides classes to manage application settings")];
-[assembly:AssemblyProductAttribute("Toolkit Settings")];
-[assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2008-2009")];
-[assembly:AssemblyInformationalVersionAttribute("1.0")];
-
 [assembly:ComVisible(false)];
 [assembly:CLSCompliantAttribute(true)];
 
@@ -42,4 +38,12 @@ using namespace System::Runtime::InteropServices;
 // You can specify all the value or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
 //
-[assembly:AssemblyVersionAttribute("1.0.*")];
+
+//
+// This is auto generated attributes for current 1.0.3.874 version.
+//
+[assembly: AssemblyProduct("Toolkit")];
+[assembly: AssemblyInformationalVersion("1.0.3")];
+[assembly: AssemblyCompany("ABBYY Ukraine")];
+[assembly: AssemblyCopyright("Copyright © ABBYY Ukraine 2007-2009")];
+[assembly: AssemblyVersion("1.0.3.874")];
