@@ -334,11 +334,12 @@ var/*]]></Ext>
 </body>
 </html>]]></Message>
 			<Port>25</Port>
-			<Server>tivoli</Server>
+			<Server>post.abbyy.ua</Server>
 			<Subject>'%PROJROOT%' was build successfully</Subject>
 			<Timeout>10</Timeout>
 			<To>%EMAIL_TO%</To>
 			<buildfailsteps type='11'>0</buildfailsteps>
+			<continueonfail type='3'>1</continueonfail>
 			<description>Notify the build master that the build completed -- change the EMAIL_FROM and EMAIL_TO project macros to your e-mail addresses.</description>
 			<indent type='3'>1</indent>
 			<name>Notify of completion</name>
@@ -510,14 +511,12 @@ Step Name: %FAILSTEP_NAME%
 Step Status: %FAILSTEP_STATUS%
 Step Output:
 %FAILSTEP_OUTPUT%]]></Message>
-			<Password>VisualBuildPro</Password>
 			<PopPort>110</PopPort>
 			<Port>25</Port>
-			<Server>tivoli</Server>
+			<Server>post.abbyy.ua</Server>
 			<Subject>'%PROJROOT%' build failed</Subject>
 			<Timeout>10</Timeout>
 			<To>%EMAIL_TO%</To>
-			<UserName>%WORK_USER%</UserName>
 			<buildfailsteps type='11'>0</buildfailsteps>
 			<continueonfail type='3'>1</continueonfail>
 			<description>Notify the build master that failure occurred.</description>
