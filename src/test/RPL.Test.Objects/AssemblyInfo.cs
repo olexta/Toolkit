@@ -21,10 +21,6 @@ using System.Runtime.InteropServices;
 //
 [assembly: AssemblyTitle( "Toolkit.RPL.Test.Objects" )]
 [assembly: AssemblyDescription( "RPL test objects" )]
-[assembly: AssemblyProduct( "Robust Persistence Layer" )]
-[assembly: AssemblyCopyright( "Copyright © Alexander Kurbatov 2006-2007" )]
-[assembly:AssemblyInformationalVersion("1.0")]
-
 [assembly: ComVisible( false )]
 
 // Version information for an assembly consists of the following four values:
@@ -37,4 +33,12 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 //
-[assembly: AssemblyVersion( "1.0.*" )]
+
+//
+// This is auto generated attributes for current 1.0.4.1132 version.
+//
+[assembly: AssemblyProduct("Toolkit")]
+[assembly: AssemblyInformationalVersion("1.0.4")]
+[assembly: AssemblyCompany("ABBYY Ukraine")]
+[assembly: AssemblyCopyright("Copyright © ABBYY Ukraine 2007-2009")]
+[assembly: AssemblyVersion("1.0.4.1132")]

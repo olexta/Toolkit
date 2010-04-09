@@ -1,0 +1,822 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        "Toolkit.Settings"
+    </assembly>
+    <members>
+        <member name="M:Toolkit.Settings.Manager.Save">
+            <summary>
+Flash all data from internal adapters to sources.
+</summary>
+            <remarks>
+This function requests force data flush from all adapters to
+sources. For realtime adapters this function is used rarely.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Manager.Load">
+            <summary>
+Reload all data from sources to internal adapters.
+</summary>
+            <remarks>
+Really, this call rebuild tree of nodes for each adapter (of
+course, adapter can perform any additional processing).
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Manager.Remove(System.String)">
+            <summary>
+Removes adapter with specified name.
+</summary>
+            <remarks>
+It is only one way to remove existing adapter interface from root
+node: using standard way ('Remove' method of Childs) will raise
+exception. So, root and adapters means as a single whole.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Manager.Add(Toolkit.Settings.Adapters.IAdapter)">
+            <summary>
+Add new adapter with specified interface to root and returns node
+that contains it.
+</summary>
+            <remarks>
+It is only one way to add new adapter interface to root node:
+using standard way ('Add' method of Childs) will raise exception.
+So, root and adapters means as a single whole.
+</remarks>
+        </member>
+        <member name="P:Toolkit.Settings.Manager.Value">
+            <summary>
+Gets or sets value of Manager.
+</summary>
+            <remarks>
+This property is not supported for root node. So getter returns
+ValueBox with null reference and setter throws exception.
+</remarks>
+        </member>
+        <member name="P:Toolkit.Settings.Manager.Item">
+            <summary>
+Sets a new value to the item that is located by specified
+relative path.
+</summary>
+            <remarks>
+If item is not found by the specified path - it will be created,
+such as all subitems.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Manager.#ctor(Toolkit.Settings.Adapters.IAdapter[])">
+            <summary>
+Creates new instance of the Manager class that is empty or is
+initialized with specified list of adapter interfaces.
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Manager.OnSetParent(Toolkit.Settings.Node)">
+            <summary>
+Performs additional custom processes before setting a new parent
+to the current Manager instance.
+</summary>
+            <remarks>
+Root node cann't have any parent, so this function throw
+exception only.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.Nodes.Revert">
+            <summary>
+Canceles last operation and restore Nodes to previous state.
+</summary>
+            <remarks>
+I need this function to undo operations without 'set_parent'
+call.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.Nodes.Remove(System.String,System.Boolean)">
+            <summary>
+Removes node with the specified name from the collection.
+</summary>
+            <remarks>
+If force parameter is set to false then this function is similar
+to parent Remove, in other case no addition handlers will be 
+called: OnRemove and OnRemoveComplete.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.Nodes.Clear(System.Boolean)">
+            <summary>
+Clears the content of the Nodes instance.
+</summary>
+            <remarks>
+If force parameter is set to false then this function is similar
+to parent Clear, in other case no addition handlers will be 
+called: OnClear and OnClearComplete.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.Nodes.Add(Toolkit.Settings.Node,System.Boolean)">
+            <summary>
+Adds a node into the collection.
+</summary>
+            <remarks>
+If force parameter is set to false then this function is similar
+to parent Add, in other case no addition handlers will be called:
+OnInsert and OnInsertComplete.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.Nodes.Remove(System.String)">
+            <summary>
+Removes node that is located on specified relative path.
+</summary>
+            <remarks>
+This is overriden Remove method. If specified path doesn't
+contain relative elements, then removes from this collection
+items. In other case pass call to parent.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.Nodes.Contains(System.String)">
+            <summary>
+Determines whether the node exists on specified relative path.
+</summary>
+            <remarks>
+This is overriden Contains method. If specified path doesn't
+contain relative elements, then searchs in this collection items.
+In other case pass call to parent.
+</remarks>
+        </member>
+        <member name="P:Toolkit.Settings.Node.Nodes.Item">
+            <summary>
+Find node that is located on specified relative path.
+</summary>
+            <remarks>
+This is overriden KeyedMap accessor. If specified path doesn't
+contain relative elements, then searchs in this collection items.
+In other case pass call to parent.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.Nodes.#ctor(Toolkit.Settings.Node,System.Collections.Generic.IEnumerable`1{Toolkit.Settings.Node^})">
+            <summary>
+Creates new instance of the Nodes class for specified parent and
+init themself by collection of childs.
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Node.Nodes.#ctor(Toolkit.Settings.Node,Toolkit.Settings.Node)">
+            <summary>
+Creates new instance of the Nodes class for specified parent and
+init themself by one child.
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Node.Nodes.#ctor(Toolkit.Settings.Node)">
+            <summary>
+Creates new instance of the Nodes class for specified parent.
+</summary>
+            <remarks>
+This collection is used as childs/subnodes for specified parent
+node.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.Nodes.OnRemoveComplete(Toolkit.Settings.Node)">
+            <summary>
+Performs additional custom processes after removing a node from
+the Nodes instance.
+</summary>
+            <remarks>
+Notify node about removing from collection (this is equal to
+remove node's parent reference).
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.Nodes.OnInsertComplete(Toolkit.Settings.Node)">
+            <summary>
+Performs additional custom processes after inserting a node to
+the Nodes instance.
+</summary>
+            <remarks>
+Notify node about adding to collection (this is equal to set
+node's parent reference).
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.Nodes.OnClear">
+            <summary>
+Performs additional custom processes before clearing the Nodes
+instance.
+</summary>
+            <remarks>
+Each node must be notified about removing from collection.
+</remarks>
+        </member>
+        <member name="P:Toolkit.Settings.Node.Item">
+            <summary>
+Gets or sets node value that is located on specified relative
+path.
+</summary>
+            <remarks>
+Default implementation searchs subnode with specified relative
+path and call apropriate get or set Value handler. In case of
+unssuccesful search ArgumentException will be raised.
+</remarks>
+        </member>
+        <member name="P:Toolkit.Settings.Node.Childs">
+            <summary>
+Gets subnodes collection.
+</summary>
+            <remarks>
+This collection can be empty, but never nullptr.
+</remarks>
+        </member>
+        <member name="P:Toolkit.Settings.Node.Path">
+            <summary>
+Gets full path to this node.
+</summary>
+            <remarks>
+Full path include name of this node at the end. This property
+proceed current subnode only, so root node may be not "root" in
+common sence (like "/" in UNIX). To determine this situation you
+can use check for 'Delimeter' at the begining of the returned
+path ("real" root node have "" as name, so path will start with
+'Delimeter').
+</remarks>
+        </member>
+        <member name="P:Toolkit.Settings.Node.Name">
+            <summary>
+Gets name of the node.
+</summary>
+        </member>
+        <member name="P:Toolkit.Settings.Node.Delimeter">
+            <summary>
+Gets string that is used as delimeter in node path.
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Node.Dispose">
+            <summary>
+Class disposer.
+</summary>
+            <remarks>
+Set parent reference to null, dispose all childs and removes it
+from collection.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.#ctor(System.String,Toolkit.Settings.Node)">
+            <summary>
+Creates new instance of the Node class and initialise it with
+specified name and parent.
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Node.#ctor(System.String)">
+            <summary>
+Creates new instance of the Node class, and initialise it with
+specified name.
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Node.OnSetParentComplete(Toolkit.Settings.Node)">
+            <summary>
+Performs additional custom processes after setting a new parent
+to the current Node instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action after the
+specified parent is set.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.OnSetParent(Toolkit.Settings.Node)">
+            <summary>
+Performs additional custom processes before setting a new parent
+to the current Node instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+specified parent is set.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.Find(System.String@)">
+            <summary>
+Find node that is located on specified relative path.
+</summary>
+            <remarks>
+In case of unsuccessful result return as deep founded node as
+possible. Path will contain subpath that was not found.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.RootTraverse(Toolkit.Settings.Node*)">
+            <summary>
+Returns path and reference to root node.
+</summary>
+            <remarks>
+This function proceed only current subnode, so founded node may
+be not root in common sense (like "/" in UNIX). To determine this
+situation you can use check for 'Delimeter' at the begining of
+the returned path ("real" root node have "" as name, so path will
+start with 'Delimeter').
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ParsePath(System.String@)">
+            <summary>
+Split input string to next subnode and tail.
+</summary>
+            <remarks>
+Subnode name returns as function result, and tail is returned
+through input string.
+</remarks>
+        </member>
+        <member name="T:Toolkit.Settings.Manager">
+            <summary>
+This class provide main functionality to manage settings.
+</summary>
+            <remarks>
+In many ways this class is the key to the settings. It must
+be created first and is used to manage adapters to different
+settings storage mechanisms (there are no other methods to
+add adapter except 'Add' function). Manager inherits from
+Node class and is root to all tree of settings. To access
+Manager from any other node you can use "/" path. Root is
+only one node that have empty name.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Adapters.IniFile.#ctor(System.String,System.String)">
+            <summary>
+Creates new instance of the IniFile class and initialize it with
+specified name and path to file.
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Adapters.IniFile.#ctor(System.String)">
+            <summary>
+Creates new instance of the IniFile class and initialize it with
+specified path to file.
+</summary>
+            <remarks>
+Current adapter name builds by extracting file name without
+extension from passed path.
+</remarks>
+        </member>
+        <member name="T:Toolkit.Settings.Adapters.IniFile">
+            <summary>
+Adapter that provides access to windows INI files.
+</summary>
+            <remarks>
+This class provide ability to store following types in INI
+file: bool, int, double, DateTime and String. Each value
+will be translated to string with specified format and
+save. Restore operation will attempt to determine type of
+stored value by string format. If no format is acceptable
+than value will be restored as String.
+ATTENTION: This class doesn't support transaction approach.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Item.Save">
+            <summary>
+Flush subitems to source.
+</summary>
+            <remarks>
+This function requests force data flush from adapter to source.
+It can be called for Online item only.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Item.Load">
+            <summary>
+Reload subitems tree from source.
+</summary>
+            <remarks>
+This function can be called for Online item only.
+</remarks>
+        </member>
+        <member name="P:Toolkit.Settings.Item.Value">
+            <summary>
+Gets or sets value of current setting's item.
+</summary>
+            <remarks>
+If item state is Online - request will be passed to coresponding
+adapter directly. In other case, value will be cached to the
+moment when item will be connected to adapter.
+</remarks>
+        </member>
+        <member name="P:Toolkit.Settings.Item.Item">
+            <summary>
+Sets a new value to the item that is located by specified
+relative path.
+</summary>
+            <remarks>
+If item is not found by the specified path - it will be created,
+such as all subitems.
+</remarks>
+        </member>
+        <member name="P:Toolkit.Settings.Item.State">
+            <summary>
+Gets connection state of current setting's item.
+</summary>
+            <remarks>
+Setting has two states: Online and Offline. The first means to be
+connected to some adapter (you can traverse from this to adapter
+node) and second means having cached value .
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Item.Dispose">
+            <summary>
+Class disposer.
+</summary>
+            <remarks>
+Set state of item to Unknown and set value to null.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Item.#ctor(Toolkit.Settings.Item)">
+            <summary>
+Copy constructor. Creates new (standalone) copy of the spesified
+item.
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Item.#ctor(System.String,Toolkit.Settings.Node.ValueBox)">
+            <summary>
+Creates new (standalone) instance of the Item class with
+specified name and value.
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Item.#ctor(System.String)">
+            <summary>
+Creates new (standalone) instance of the Item class with
+specified name (value will be set to null reference).
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Item.OnSetParentComplete(Toolkit.Settings.Node)">
+            <summary>
+Performs additional custom processes after setting a new parent
+to the current Item instance.
+</summary>
+            <remarks>
+Following actions will be done after the specified parent is set:
+  1. check this to offline and parent for online states
+  2. and push stored values
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Item.OnSetParent(Toolkit.Settings.Node)">
+            <summary>
+Performs additional custom processes before setting a new parent
+to the current Item instance.
+</summary>
+            <remarks>
+Folowing actions will be done before the specified parent is set:
+  1. check parent for the proper type
+  2. cache item and subitems valus from adapter in needed
+  3. remove current item from adapter
+</remarks>
+        </member>
+        <member name="T:Toolkit.Settings.Item">
+            <summary>
+Class Item implements simple setting functionality.
+</summary>
+            <remarks>
+It is the only one class that get access to values. Item is
+derived from Node class, so it provide all it functionality.
+Each Item can be in one of the two states: online and offline.
+Online state means that item get and set value to adapter
+directly. In offline, mode value is cached to the item's
+internal storage. When some item is removed from Childs
+collection it cache data from adapter. After attach item to
+online childs it flushes internal storage to adapter.
+</remarks>
+        </member>
+        <member name="T:Toolkit.Settings.Node.Nodes">
+            <summary>
+Represents a collection of subnodes.
+</summary>
+            <remarks>
+This class inherits from the generic KeyedMap. Each node have
+it's own unique name, so this name is used as key. Nodes class
+override some On... routines to handle collection changes. Also,
+default indexer and Contains is overriden to accept relative
+pathes.
+</remarks>
+        </member>
+        <member name="T:Toolkit.Settings.Adapter">
+            <summary>
+This class encapsulates the behavior needed to save and load
+values from some adapter.
+</summary>
+            <remarks>
+This is wrapper around IAdapter interface to represent this
+class as another one node. So, neither another class can
+acceess to IAdapter manual. Adapter is private class, so user
+can access only through common Node functionality. In common
+hierarhy of nodes it is placed just after root (for example
+"/ini" - the path to adapter with name "ini".
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Adapters.Registry.#ctor(System.String,System.String)">
+            <summary>
+Creates new instance of the Registry class and initialize it with
+specified name and Windows registry key.
+</summary>
+            <remarks>
+You cann't open root registry keys.
+</remarks>
+        </member>
+        <member name="T:Toolkit.Settings.Adapters.Registry">
+            <summary>
+Adapter that provides runtime access to windows registry.
+</summary>
+            <remarks>
+                <para>
+Runtime access means that all (get and set value) operations
+use direct registry API calls, so force Load/Save calls are
+not necessary. Therefore loading and saving hierarchy structure
+require manual Load/Save calls.</para>
+                <para>
+This class provides ability to store following types in
+registry: bool, int, double, DateTime and String. Value of
+each type except int will be translated to string with
+specified format and save. Restore operation will attempt to
+determine type of stored value by string format. If no format
+is acceptable than value will be restored as String.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Adapters.IAdapter.Flush(System.String)">
+            <summary>
+Flashes settings from internal cache to source.
+</summary>
+            <param name="location">Fullpath data location.</param>
+            <remarks>
+This function must flash all children settings also.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Adapters.IAdapter.Reload(System.String)">
+            <summary>
+Retrieves settings from source to internal cache.
+</summary>
+            <param name="location">Fullpath data location.</param>
+            <returns>
+List of the setting's fullnames that were retrieved.
+</returns>
+            <remarks>
+This function must load all children settings also.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Adapters.IAdapter.Remove(System.String)">
+            <summary>
+Removes setting value that is located by specified path from cache.
+</summary>
+            <param name="location">Fullpath data location.</param>
+            <returns>
+true if the path is successfully found and value was removed;
+otherwise, false.
+</returns>
+            <remarks>
+Must remove all children settings also.
+</remarks>
+        </member>
+        <member name="P:Toolkit.Settings.Adapters.IAdapter.Delimeter">
+            <summary>
+Get's string that is used in location pathes as delimiter.
+</summary>
+        </member>
+        <member name="P:Toolkit.Settings.Adapters.IAdapter.Name">
+            <summary>
+Gets adapter's name.
+</summary>
+            <remarks>
+This have not be class name, but value that will be node's name in
+settings tree structure for this instance of Adapter class.
+</remarks>
+        </member>
+        <member name="P:Toolkit.Settings.Adapters.IAdapter.Item(System.String)">
+            <summary>
+Gets/puts setting's value that is located by specified path from/to
+cache.
+</summary>
+        </member>
+        <member name="T:Toolkit.Settings.Adapters.IAdapter">
+            <summary>
+Encapsulates the behavior needed for working with
+storage adapters.
+</summary>
+            <remarks>
+Each adapter class must implement this interface.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.ToString">
+            <summary>
+Returns a String that represents the current ValueBox.
+</summary>
+            <remarks>
+This function call the internal data ToString() method or return
+"null" for internal null reference.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.ToObject">
+            <summary>
+Returns a handle to the internal data.
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.Equals(System.Object)">
+            <summary>
+Determines whether the specified Object is equal to the current
+ValueBox instance.
+</summary>
+            <remarks>
+Try build new instance of the ValueBox class by specified Object
+parameter. If custructor fails, returns false. In other case uses
+Equal operator.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.Equals(Toolkit.Settings.Node.ValueBox)">
+            <summary>
+Returns a value indicating whether this instance and a specified
+ValueBox object represent the same value.
+</summary>
+            <remarks>
+It uses Equal operator in implementation.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Inequality(Toolkit.Settings.Node.ValueBox,Toolkit.Settings.Node.ValueBox)">
+            <summary>
+Operator !=. Check for two instances of ValueBox to be not equal.
+</summary>
+            <remarks>
+It uses Equal operator in implementation.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Equality(Toolkit.Settings.Node.ValueBox,Toolkit.Settings.Node.ValueBox)">
+            <summary>
+Operator ==. Check for two instances of ValueBox to be equal.
+</summary>
+            <remarks>
+Checks internal m_value members to be equivalent.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Explicit(Toolkit.Settings.Node.ValueBox)~System.Single">
+            <summary>
+Explicit cast operator from ValueBox to float value.
+</summary>
+            <remarks>
+If internal data is not double value then InvalidCastException
+will be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Explicit(Toolkit.Settings.Node.ValueBox)~System.UInt64">
+            <summary>
+Explicit cast operator from ValueBox to unsigned long long value.
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Explicit(Toolkit.Settings.Node.ValueBox)~System.Int64">
+            <summary>
+Explicit cast operator from ValueBox to long long value.
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Explicit(Toolkit.Settings.Node.ValueBox)~System.UInt32">
+            <summary>
+Explicit cast operator from ValueBox to unsigned int value.
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Explicit(Toolkit.Settings.Node.ValueBox)~System.UInt16">
+            <summary>
+Explicit cast operator from ValueBox to unsigned short value.
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Explicit(Toolkit.Settings.Node.ValueBox)~System.Int16">
+            <summary>
+Explicit cast operator from ValueBox to short value.
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Explicit(Toolkit.Settings.Node.ValueBox)~System.Byte">
+            <summary>
+Explicit cast operator from ValueBox to unsigned char value.
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Explicit(Toolkit.Settings.Node.ValueBox)~System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte">
+            <summary>
+Explicit cast operator from ValueBox to char value.
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Explicit(Toolkit.Settings.Node.ValueBox)~System.String">
+            <summary>
+Explicit cast operator from ValueBox to String value (native).
+</summary>
+            <remarks>
+This cast operator differs from other: it doesn't requires
+internal data to be in valid type. Since this is settings, so any
+setting can be converted to string value. This function is
+similar to ToString() method.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Explicit(Toolkit.Settings.Node.ValueBox)~System.DateTime">
+            <summary>
+Explicit cast operator from ValueBox to DateTime value (native).
+</summary>
+            <remarks>
+If internal data is not DateTime value then InvalidCastException
+will be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Explicit(Toolkit.Settings.Node.ValueBox)~System.Double">
+            <summary>
+Explicit cast operator from ValueBox to double value (native).
+</summary>
+            <remarks>
+If internal data is not double value then InvalidCastException
+will be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Explicit(Toolkit.Settings.Node.ValueBox)~System.Int32">
+            <summary>
+Explicit cast operator from ValueBox to int value (native).
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Explicit(Toolkit.Settings.Node.ValueBox)~System.Boolean">
+            <summary>
+Explicit cast operator from ValueBox to bool value (native).
+</summary>
+            <remarks>
+If internal data is not bool value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Implicit(System.String)~Toolkit.Settings.Node.ValueBox">
+            <summary>
+Implicit cast operator from String value to ValueBox. 
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Implicit(System.DateTime)~Toolkit.Settings.Node.ValueBox">
+            <summary>
+Implicit cast operator from DateTime value to ValueBox. 
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Implicit(System.Double)~Toolkit.Settings.Node.ValueBox">
+            <summary>
+Implicit cast operator from double value to ValueBox. 
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Implicit(System.Int32)~Toolkit.Settings.Node.ValueBox">
+            <summary>
+Implicit cast operator from int value to ValueBox. 
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.op_Implicit(System.Boolean)~Toolkit.Settings.Node.ValueBox">
+            <summary>
+Implicit cast operator from bool value to ValueBox. 
+</summary>
+        </member>
+        <member name="M:Toolkit.Settings.Node.ValueBox.#ctor(System.Object)">
+            <summary>
+Creates new instance of the ValueBox class containing specified
+object as internal data.
+</summary>
+            <remarks>
+Now following types are supported as native: bool, int, double,
+DateTime and String. And char, unsigned char, short, unsigned
+short, unsigned int, float are convertible to native.
+</remarks>
+        </member>
+        <member name="T:Toolkit.Settings.Node.ValueBox">
+            <summary>
+This class incapsulates type check for setting value.
+</summary>
+            <remarks>
+ValueBox is wrapper arroud Object handle and provide runtime
+type check, implicit and explicit cast operators, Equal
+comparison.
+Now, the following types are supported: bool, int, double,
+DateTime and String.
+</remarks>
+        </member>
+        <member name="T:Toolkit.Settings.Node">
+            <summary>
+This class encapsulates tree representation of settings.
+</summary>
+            <remarks>
+This is the class from which all classes that accept tree
+approach inherit from. Each node have it's own key - name,
+so class implements Toolkit::Collections::IKeyedObject
+interface. Name is const during node's lifecycle. Also, Path
+property returns path to root node (where each node is
+separated by delimeter). Default accessor gets or sets value
+by specified relative path (this node value can be modified
+by using of property Value). By using Load/Save functions
+you can reload/flush data of this node and all it's subnodes.
+</remarks>
+        </member>
+    </members>
+</doc>
