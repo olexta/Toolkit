@@ -54,7 +54,7 @@ public:
 
 	Node^ Add( IAdapter ^adapter );
 	void Remove( String ^adapter );
-	
+
 	virtual void Load( void ) override;
 	virtual void Save( void ) override;
 };

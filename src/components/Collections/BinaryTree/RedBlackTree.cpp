@@ -134,7 +134,7 @@ RedBlackNode::Color::set( COLOR value  )
 generic<typename TKey, typename TValue>
 void RedBlackTree<TKey, TValue>:: \
 RedBlackVisitor::OnCheckState( void )
-{	
+{
 	if( _fnGetStamp() != _stamp ) {
 		// tree was changed, next iteration may be unpredictable
 		throw gcnew InvalidOperationException(ERR_ENUM_EXEC);
@@ -192,7 +192,7 @@ bool RedBlackTree<TKey, TValue>::backup( KeyValuePair<TKey, TValue> data,
 	m_backup._action = action;
 	m_backup._count = m_count;
 	m_backup._root = m_root;
-	
+
 	// return true if tree can be reverted to
 	// previous state
 	return (action != RESTORE_POINT::ACTION::None);
@@ -338,9 +338,9 @@ void RedBlackTree<TKey, TValue>::delete_fixup( RedBlackNode ^x )
 		if( x == x->Parent->Left ) {
 
 			RedBlackNode	^w = x->Parent->Right;
-			
+
 			if( w->Color == RedBlackNode::COLOR::Red ) {
-				
+
 				w->Color = RedBlackNode::COLOR::Black;
 				x->Parent->Color = RedBlackNode::COLOR::Red;
 				rotate_left( x->Parent );
@@ -348,13 +348,13 @@ void RedBlackTree<TKey, TValue>::delete_fixup( RedBlackNode ^x )
 			}
 			if( w->Left->Color == RedBlackNode::COLOR::Black &&
 				w->Right->Color == RedBlackNode::COLOR::Black ) {
-			
+
 				w->Color = RedBlackNode::COLOR::Red;
 				x = x->Parent;
 			} else {
 
 				if( w->Right->Color == RedBlackNode::COLOR::Black ) {
-					
+
 					w->Left->Color = RedBlackNode::COLOR::Black;
 					w->Color = RedBlackNode::COLOR::Red;
 					rotate_right( w );
@@ -367,11 +367,11 @@ void RedBlackTree<TKey, TValue>::delete_fixup( RedBlackNode ^x )
 				x = m_root;
 			}
 		} else {
-			
+
 			RedBlackNode	^w = x->Parent->Left;
 
 			if( w->Color == RedBlackNode::COLOR::Red ) {
-				
+
 				w->Color = RedBlackNode::COLOR::Black;
 				x->Parent->Color = RedBlackNode::COLOR::Red;
 				rotate_right( x->Parent );
@@ -383,9 +383,9 @@ void RedBlackTree<TKey, TValue>::delete_fixup( RedBlackNode ^x )
 				w->Color = RedBlackNode::COLOR::Red;
 				x = x->Parent;
 			} else {
-				
+
 				if( w->Left->Color == RedBlackNode::COLOR::Black ) {
-					
+
 					w->Right->Color = RedBlackNode::COLOR::Black;
 					w->Color = RedBlackNode::COLOR::Red;
 					rotate_left( w );
@@ -647,7 +647,7 @@ bool RedBlackTree<TKey, TValue>::Delete( TKey key )
 	Interlocked::Increment( m_stamp );
     // backup current state
 	backup( x->Data, RESTORE_POINT::ACTION::Delete );
-	
+
 	// delete founded node
 	delete_node( x );
 	// modyfy dictionary properties
@@ -696,7 +696,7 @@ bool RedBlackTree<TKey, TValue>::Undo( void )
 	// depend on action type proccess different
 	// restoration procedure
 	switch( m_backup._action ) {
-		
+
 		case RESTORE_POINT::ACTION::Insert:
 			// find node for specified key
 			if( (x = find_node( m_backup._data.Key )) == nullptr ) break;
@@ -726,7 +726,7 @@ bool RedBlackTree<TKey, TValue>::Undo( void )
 			// save successful result
 			res = true;
 		break;
-		
+
 		case RESTORE_POINT::ACTION::DeleteAll:
 			// check for empty tree
 			if( m_root != _leaf ) break;

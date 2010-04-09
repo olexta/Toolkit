@@ -33,12 +33,12 @@ Item::STATE Item::check_parent( Node ^parent )
 {
 	// check for null reference
 	if( parent == nullptr ) return STATE::Unknown;
-		
+
 	// initial state as Unknown
 	STATE	state = STATE::Unknown;
 	// get parent type
 	Type	^t = parent->GetType();
-		
+
 	// for object of the Item class parent may be
 	// Adapter or another Item only, so check this
 	if( t == Adapter::typeid ) {
@@ -124,7 +124,7 @@ bool Item::set_state( STATE state, bool sync )
 			if( m_state != STATE::Online )
 				throw gcnew InvalidOperationException(String::Format(
 				ERR_ITEM_SYNC, m_state.ToString(), state.ToString() ));
-			
+
 			// load value from adapter and store it
 			m_value = get_adapter()->GetValue( RootTraverse( nullptr ) );
 		break;
@@ -332,8 +332,8 @@ Item::Item( String ^name, ValueBox value ) : \
 	// check name of node (name cann't be empty string)
 	if( name == "" )
 		throw gcnew ArgumentException(String::Format(
-		ERR_EMPTY_NAME, "item" ));	
-	
+		ERR_EMPTY_NAME, "item" ));
+
 	// store value in local variable (now we
 	// created standalone property)
 	m_value = value;
@@ -397,7 +397,7 @@ EXIT_WRITE(_lock)}
 /// </remarks>
 //-------------------------------------------------------------------
 Item::STATE Item::State::get( void )
-{	
+{
 	return m_state;
 }
 
@@ -435,7 +435,7 @@ void Item::default::set( String ^path, ValueBox value )
 EXIT_WRITE(_lock)}
 
 
-//-------------------------------------------------------------------	
+//-------------------------------------------------------------------
 /// <summary>
 /// Gets or sets value of current setting's item.
 /// </summary><remarks>
@@ -489,7 +489,7 @@ void Item::Value::set( ValueBox value )
 EXIT_WRITE(_lock)}
 
 
-//-------------------------------------------------------------------	
+//-------------------------------------------------------------------
 /// <summary>
 /// Reload subitems tree from source.
 /// </summary><remarks>
@@ -503,7 +503,7 @@ void Item::Load( void )
 	if( m_state != STATE::Online )
 		throw gcnew InvalidOperationException(String::Format(
 		ERR_ITEM_STATE, m_state.ToString() ));
-	
+
 	// dispose all childs
 	for each( Node ^node in _childs ) delete node;
 	// and removes it from collection
@@ -518,7 +518,7 @@ void Item::Load( void )
 EXIT_WRITE(_lock)}
 
 
-//-------------------------------------------------------------------	
+//-------------------------------------------------------------------
 /// <summary>
 /// Flush subitems to source.
 /// </summary><remarks>
@@ -533,7 +533,7 @@ void Item::Save( void )
 	if( m_state != STATE::Online )
 		throw gcnew InvalidOperationException(String::Format(
 		ERR_ITEM_STATE, m_state ));
-	
+
 	// call flush for this node
 	get_adapter()->Save( RootTraverse( nullptr ) );
 

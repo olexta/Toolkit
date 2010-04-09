@@ -50,7 +50,7 @@ ObjectLinks::log_record::set( PersistentObject ^obj, STATE action )
 	// get log record for property with specified name
 	STATE	state = STATE::None;
 	m_log->TryGetValue( obj, state );
-	
+
 	// depend on current log record, write new
 	switch( state ) {
 		// there is no record in log, so write action
@@ -169,7 +169,7 @@ ObjectLinks::trans_rollback( void )
 {
 	// get top record from stack
 	RESTORE_POINT	point = backup.Pop();
-	
+
 	// clear content
 	m_list.Clear();
 

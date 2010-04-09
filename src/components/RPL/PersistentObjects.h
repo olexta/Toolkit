@@ -36,7 +36,7 @@ private:
 	// IEnumerable
 	virtual System::Collections::IEnumerator^ get_enumerator( void ) sealed =
 		System::Collections::IEnumerable::GetEnumerator;
-	
+
 	// IEnumerable<PersistenObject^>
 	virtual bool items_is_readonly( void ) sealed =
 		ICollection<PersistentObject^>::IsReadOnly::get;

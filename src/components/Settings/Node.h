@@ -59,7 +59,7 @@ protected:
 	String^				const _name;			// name of the node
 	ReaderWriterLock^	const _lock;			// lock object
 	initonly Nodes^		_childs;				// subnodes collection
-	
+
 	static String^ ParsePath( String^ %path );
 
 	String^ RootTraverse( Node^ *root );
@@ -93,7 +93,7 @@ public:
 		virtual ValueBox get( void ) abstract;
 		virtual void set( ValueBox value ) abstract;
 	}
-	
+
 	virtual void Load( void ) abstract;
 	virtual void Save( void ) abstract;
 };

@@ -259,7 +259,7 @@ KeyedMap<TKey, TItem>% KeyedMap<TKey, TItem>::operator+=( TItem item )
 {
 	// validate input value
 	if( item == nullptr ) throw gcnew ArgumentNullException("item");
-	
+
 	// add item to tree
 	Add( item );
 
@@ -300,7 +300,7 @@ KeyedMap<TKey, TItem>% KeyedMap<TKey, TItem>::operator-=( TItem item )
 //-------------------------------------------------------------------
 generic<typename TKey, typename TItem>
 TItem KeyedMap<TKey, TItem>::default::get( TKey key )
-{	
+{
 	// validate input value
 	if( key == nullptr ) throw gcnew ArgumentNullException("key");
 
@@ -337,7 +337,7 @@ void KeyedMap<TKey, TItem>::Add( TItem item )
 {
 	// validate item
 	if( item == nullptr ) throw gcnew ArgumentNullException("item");
-	
+
 	//fire event before the action
 	OnInsert( item );
 
@@ -442,7 +442,7 @@ void KeyedMap<TKey, TItem>::CopyTo( array<TItem> ^dest, int index )
 {
 	// check for destination array is null reference
 	if( dest == nullptr ) throw gcnew ArgumentNullException("dest");
-	
+
 	// check for array index is less than 0
 	if( index < 0 )
 		throw gcnew ArgumentOutOfRangeException("index", ERR_OUT_OF_RANGE);
@@ -454,7 +454,7 @@ void KeyedMap<TKey, TItem>::CopyTo( array<TItem> ^dest, int index )
 		// throw exception
 		throw gcnew ArgumentException(ERR_ARRAY_TOO_SMALL);
 	}
-	
+
 	// copy collection content
 	for each( TItem item in this ) dest[index++] = item;
 }
@@ -510,7 +510,7 @@ bool KeyedMap<TKey, TItem>::Remove( TItem item )
 	// so check for item exists (this function may be override
 	// in derived classes to provide "deep" compare of objects)
 	if( !Contains( item ) ) return false;
-	
+
 	// i must use key to find item to remove (keys in collections
 	// are unique, so previous check guarantine existing item)
 	// because of need passing real reference to handlers

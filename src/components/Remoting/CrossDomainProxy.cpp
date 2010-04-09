@@ -68,7 +68,7 @@ CrossDomainProxy<T>::CrossDomainProxy( String ^URL, String ^clientID ) : \
 	}
 	// no channel was found
 	if ( _sink == nullptr ) throw gcnew RemotingException(String::Format(
-							ERR_NO_CHANNEL, _url ));	
+							ERR_NO_CHANNEL, _url ));
 }
 
 
@@ -88,7 +88,7 @@ CrossDomainProxy<T>::operator T( CrossDomainProxy<T> ^proxy )
 	return static_cast<T>( proxy->GetTransparentProxy() );
 }
 
-	
+
 //-------------------------------------------------------------------
 /// <summary>
 /// Invokes the method that is specified in the provided IMessage on

@@ -47,7 +47,7 @@ namespace Adapters {
 		initonly CultureInfo	^_ci;
 
 		Map<String^, Object^>	^m_cache;
-		
+
 		List<String^>^ get_ini_string( String ^section, String ^key );
 		unsigned long set_ini_string( String ^section, String ^key,
 									  String ^string );
@@ -67,7 +67,7 @@ namespace Adapters {
 			IAdapter::Name::get;
 		virtual String^ get_delimeter( void ) sealed =
 			IAdapter::Delimeter::get;
-		
+
 		virtual bool remove( String ^loc ) sealed =
 			IAdapter::Remove;
 		virtual IEnumerable<String^>^ reload( String ^loc ) sealed =

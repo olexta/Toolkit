@@ -136,7 +136,7 @@ void Map<TKey, TValue>::pairs_copy_to( array<KeyValuePair<TKey, TValue>> ^dest,
 {
 	// check for destination array is null reference
 	if( dest == nullptr ) throw gcnew ArgumentNullException("dest");
-	
+
 	// check for array index is less than 0
 	if( index < 0 )
 		throw gcnew ArgumentOutOfRangeException("index", ERR_OUT_OF_RANGE);
@@ -148,7 +148,7 @@ void Map<TKey, TValue>::pairs_copy_to( array<KeyValuePair<TKey, TValue>> ^dest,
 		// throw exception
 		throw gcnew ArgumentException(ERR_ARRAY_TOO_SMALL);
 	}
-	
+
 	// copy collection content
 	for each( KeyValuePair<TKey, TValue> pair in this ) dest[index++] = pair;
 }
@@ -181,7 +181,7 @@ bool Map<TKey, TValue>::pairs_remove( KeyValuePair<TKey, TValue> pair )
 	// so check for pair exists (this function may be override
 	// in derived classes to provide "deep" compare of objects)
 	if( !pairs_contains( pair ) ) return false;
-	
+
 	// i must use key to find pair to remove (keys in collections
 	// are unique, so previous check guarantine existing item)
 	// because of need passing real reference to handlers
@@ -387,12 +387,12 @@ Map<TKey, TValue>::Map( IEnumerable<KeyValuePair<TKey, TValue>> ^e )
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
 TValue Map<TKey, TValue>::default::get( TKey key )
-{	
+{
 	// validate input key
 	if( key == nullptr ) throw gcnew ArgumentNullException("key");
 
 	TValue		value;
-	
+
 	// find value with specified key (in case of unsuccessful search
 	// exception KeyNotFoundException will be raised by)
 	if( !Find( key, value ) )
@@ -403,7 +403,7 @@ TValue Map<TKey, TValue>::default::get( TKey key )
 
 generic<typename TKey, typename TValue>
 void Map<TKey, TValue>::default::set( TKey key, TValue value )
-{	
+{
 	// validate input key
 	if( key == nullptr ) throw gcnew ArgumentNullException("key");
 
@@ -451,7 +451,7 @@ ICollection<TKey>^ Map<TKey, TValue>::Keys::get( void )
 {
 	List<TKey>	^keys = gcnew List<TKey>();
 
-	
+
 	// pass through collection as O(n) operation and create
 	// standalone list of keys (i can't use array because
 	// i don't know pairs count confidently and i need to
@@ -478,7 +478,7 @@ ICollection<TValue>^ Map<TKey, TValue>::Values::get( void )
 {
 	List<TValue>	^values = gcnew List<TValue>();
 
-	
+
 	// pass through collection as O(n) operation and create
 	// standalone list of keys (i can't use array because
 	// i don't know pairs count confidently and i need to
@@ -503,7 +503,7 @@ void Map<TKey, TValue>::Add( TKey key, TValue value )
 {
 	// validate key
 	if( key == nullptr ) throw gcnew ArgumentNullException("key");
-	
+
 	//fire event before the action
 	OnInsert( key, value );
 
@@ -598,7 +598,7 @@ bool Map<TKey, TValue>::ContainsValue( TValue value )
 	for each( KeyValuePair<TKey, TValue> pair in this ) {
 		// use equality comparer for specified type
 		if( EqualityComparer<TValue>::Default->Equals( pair.Value, value ) ) {
-			// search is succeeded	
+			// search is succeeded
 			return true;
 		}
 	}
@@ -619,7 +619,7 @@ bool Map<TKey, TValue>::Remove( TKey key )
 	if( key == nullptr ) throw gcnew ArgumentNullException("key"); 
 
 	TValue		value;	// value corresponding specified key
-	
+
 	// find value with specified key and return false
 	// in case of key was not found
 	if( !Find( key, value) ) return false;

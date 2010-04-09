@@ -130,7 +130,7 @@ public:
 		virtual String^ get( void );
 		virtual void set( String ^value );
 	}
-	
+
 	virtual void Retrieve( bool upgrade );
 	virtual void Save( void );
 	virtual void Delete( void );

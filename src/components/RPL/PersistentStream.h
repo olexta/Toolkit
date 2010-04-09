@@ -72,7 +72,7 @@ private:
 			virtual __int64 get( void ) override;
 			virtual void set( __int64 value ) override;
 		}
-		
+
 		virtual void Flush( void ) override;
 	    virtual int Read( [In] [Out] array<unsigned char> ^buffer,
 						  int offset, int count ) override;
@@ -153,7 +153,7 @@ public:
 		__int64 get( void ) ;
 		void set( __int64 value );
 	}
-	
+
 	void ExportToFile( String ^path );
 	void Flush( void )  ;
     int Read( [In] [Out] array<unsigned char> ^buffer,

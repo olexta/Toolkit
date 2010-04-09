@@ -49,7 +49,7 @@ public:
 	property Node^ default[String^] {
 		virtual Node^ get( String^ path ) override;
 	}
-	
+
 	virtual bool Contains( String ^path ) override;
 
 	void Add( Node ^node, bool force );

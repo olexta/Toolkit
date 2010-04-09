@@ -42,21 +42,21 @@ String^ Adapter::path_to_adp( String ^fullpath )
 		throw gcnew ArgumentException(String::Format(
 		ERR_ADP_ACCEPT_PATH, _name, _adp->Delimeter ));
 	}
-	
+
 	// compose prefix for valid fullpath (it consists of
 	// current adapter name that is bounded by two delimeters)
 	String^	const prefix = _delimeter + _name + _delimeter;
-	
+
 	// check that specified full path starts with prefix
 	if( !fullpath->StartsWith( prefix ) ) {
 		// throw argument exception
 		throw gcnew ArgumentException(String::Format(
 		ERR_PATH_STARTS, fullpath, "full", prefix ));
 	}
-	
+
 	// replace prefix at the begining by delimeter
 	String	^adppath = _delimeter + fullpath->Remove( 0, prefix->Length );
-	
+
 	// replace node delimeter by adapter delimeter
 	return adppath->Replace( _delimeter, _adp->Delimeter );
 }
@@ -154,7 +154,7 @@ void Adapter::default::set( String ^path, ValueBox value )
 EXIT_WRITE(_lock)}
 
 
-//-------------------------------------------------------------------	
+//-------------------------------------------------------------------
 //
 // Gets or sets value of adapter.
 //
@@ -306,7 +306,7 @@ void Adapter::Remove( String ^fullpath )
 
 	// convert path to adapter format and call 'Remove'
 	String	^adppath = path_to_adp( fullpath );
-	
+
 	if( !_adp->Remove( adppath ) ) {
 		// ignore result, because this is not so important request
 		// TODO: output to debug

@@ -127,7 +127,7 @@ String^ PersistentCriteria::Type::get( void )
 }
 
 void PersistentCriteria::Where::set( ::Where ^value )
-{	
+{
 	// clear content to prevent request-result collisions
 	Reset();
 	// store WHERE clause
@@ -141,7 +141,7 @@ void PersistentCriteria::Where::set( ::Where ^value )
 /// </summary>
 //-------------------------------------------------------------------
 ::OrderBy ^ PersistentCriteria::OrderBy::get( void )
-{	
+{
 	return m_orderBy;
 }
 
@@ -172,7 +172,7 @@ void PersistentCriteria::BottomLimit::set( int value )
 	if( value < 0 ) throw gcnew ArgumentException(ERR_LESS_THEN_ZERRO);
 	// clear content to prevent request-result collisions
 	Reset();
-	
+
 	m_bottom = value;
 }
 
@@ -272,7 +272,7 @@ void PersistentCriteria::Perform( void )
 			// and add object to the list
 			m_list.Add( obj );
 		}
-		
+
 		// process addition action depend on type of criteria
 		try {
 			// notify about search complete

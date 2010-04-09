@@ -161,7 +161,7 @@ List<String^>^ IniFile::get_ini_string( String ^section, String ^key )
 		// empty string value): add it to the list
 		list->Add( "" );
 	}
-	
+
 	return list;
 }
 
@@ -325,7 +325,7 @@ Object^ IniFile::str_to_obj( String ^value )
 								 DateTimeStyles::AllowLeadingWhite |
 								 DateTimeStyles::AllowTrailingWhite,
 								 dt ) ) return dt;
-	
+
 	// if notone convertion was successful,
 	// return value as string
 	return value;
@@ -434,7 +434,7 @@ bool IniFile::remove( String ^loc )
 
 	// check for correct path
 	check_path( loc );
-	
+
 	// create new list of locations
 	List<String^>	^locs = gcnew List<String^>;
 	// and copy there all locations 
@@ -601,7 +601,7 @@ void IniFile::flush( String ^loc )
 			} else {
 				// try to delete key-value pair from file
 				set_ini_string( sec, key, nullptr );
-				
+
 				// check for this location is empty leaf section
 				// (it be leaf, if no subpathes exists)
 				if( ((i + 1) >= locs->Count) || 
@@ -610,7 +610,7 @@ void IniFile::flush( String ^loc )
 					String	^guid = Guid::NewGuid().ToString();
 					int res = set_ini_string( locs[i], guid, "fake" );
 					// and now delete it
-					if( res ==0 ) res = set_ini_string( locs[i], guid, nullptr );
+					if( res == 0 ) res = set_ini_string( locs[i], guid, nullptr );
 					if( res != 0 )
 						throw gcnew IO::IOException(String::Format(
 						ERR_INI_WRITE, _filename, res ));
@@ -633,7 +633,7 @@ void IniFile::flush( String ^loc )
 				((m_cache[secs[i]] != nullptr) ||
 				 (((i + 1) < secs->Count) &&
 				  secs[i + 1]->Contains(
-				  	(secs[i] == _del.ToString() ? "" : secs[i]) + _del ))) ) {
+					(secs[i] == _del.ToString() ? "" : secs[i]) + _del ))) ) {
 				// this is unneeded section: remove it
 				set_ini_string( secs[i], nullptr, nullptr );
 			}

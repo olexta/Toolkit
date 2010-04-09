@@ -51,7 +51,7 @@ ObjectProperties::log_record::set( String ^key, STATE action )
 	// get log record for property with specified name
 	STATE	state = STATE::None;
 	m_log->TryGetValue( key, state );
-	
+
 	// depend on current log record, write new
 	switch( state ) {
 		// there is no record in log, so write action
@@ -110,7 +110,7 @@ ObjectProperties::subscribe_to( ValueBox %value, bool subscribe )
 		PersistentStream::ON_CHANGE		^change = nullptr;
 		change = gcnew PersistentStream::ON_CHANGE( this,
 						&PersistentObject::ObjectProperties::on_ps_change );
-		
+
 		// and (un)subscribe depend on passed parameter
 		if( subscribe )
 			ps->on_change += change;
@@ -245,7 +245,7 @@ ObjectProperties::trans_commit( void )
 {
 	// removes top record from stack
 	RESTORE_POINT	point = backup.Pop();
-	
+
 	// look through old properties
 	for each( KeyValuePair<String^, ValueBox> pair in point._props ) {
 		// if property value supports transactions
@@ -269,7 +269,7 @@ ObjectProperties::trans_rollback( void )
 {
 	// get top record from stack
 	RESTORE_POINT	point = backup.Pop();
-	
+
 	// clear instance
 	clear();
 	// restore previous state
@@ -300,7 +300,7 @@ ObjectProperties::OnClear( void )
 {
 	// notify parent using following specific call
 	_owner->on_change( nullptr, DBNull::Value, DBNull::Value );
-	
+
 	// process all properties in collection
 	for each( KeyValuePair<String^, ValueBox> pair in this ) {
 		// if value is PersistentStream, unsubscribe from events

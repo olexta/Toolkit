@@ -130,7 +130,7 @@ String^ Node::ParsePath( String^ %path )
 {
 	// search for delimeter
 	int		pos = path->IndexOf( _delimeter, 0 );
-	
+
 	// split string by this delimeter
 	String	^res = pos < 0 ? path : path->Substring( 0, pos );
 	path = pos < 0 ? "" : path->Substring( pos + _delimeter->Length );
@@ -182,7 +182,7 @@ Node^ Node::Find( String^ %path )
 
 	Node	^node = nullptr;
 	String	^subnode = ParsePath( path );
-	
+
 	// select node to recursive request
 	if( subnode == "" ) {
 		// this is root node request, so search current subnode
@@ -389,9 +389,9 @@ Node::ValueBox Node::default::get( String ^path )
 
 	// copy path because of, it will be modified by Find request 
 	String	^relpath = path;
-	// search apropriate node	
+	// search apropriate node
 	Node	^node = Find( relpath );
-	
+
 	// if specified item was not found, throw exception
 	if( relpath != "" )
 		throw gcnew ArgumentException(String::Format(
@@ -404,15 +404,15 @@ EXIT_READ(_lock)}
 
 void Node::default::set( String ^path, ValueBox value )
 {ENTER_WRITE(_lock)
-	
+
 	// check for null reference
 	if( path == nullptr ) throw gcnew ArgumentNullException("path");
 
 	// copy path because of, it will be modified by Find request 
 	String	^relpath = path;
-	// search apropriate node	
+	// search apropriate node
 	Node	^node = Find( relpath );
-	
+
 	// if specified item was not found, throw exception
 	if( relpath != "" )
 		throw gcnew ArgumentException(String::Format(

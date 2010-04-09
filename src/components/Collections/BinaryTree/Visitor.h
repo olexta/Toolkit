@@ -41,7 +41,7 @@ public:
 private:
 	// define states of automation
 	typedef enum class STATE {Start, Left, Right, Parent, Stop};
-	
+
 private:
 	Node<T>^	const _root;		// root node
 	Node<T>^	const _leaf;		// leaf node (null reference by default)

@@ -118,7 +118,7 @@ void PersistentStream::StreamWrapper::Position::set( __int64 value )
 {
 	_owner->Position = value;
 }
-	
+
 
 //-------------------------------------------------------------------
 //
@@ -369,7 +369,7 @@ void PersistentStream::get_object_data( SerializationInfo ^info,
 	m_fs->Read( buf, 0, buf->Length );
 	// restore position
 	m_fs->Position = pos;
-	
+
 	// save serialization data
 	info->AddValue( "content",  buf );
 	info->AddValue( "position", pos );
@@ -442,7 +442,7 @@ PersistentStream::PersistentStream( String ^path ) : \
 	m_fs = gcnew FileStream(m_path, FileMode::OpenOrCreate,
 							FileAccess::ReadWrite, FileShare::None, 8,
 							FileOptions::DeleteOnClose);
-	
+
 	try {
 		// open specified file
 		FileStream	^fs = gcnew FileStream(path,
@@ -693,7 +693,7 @@ int PersistentStream::ReadByte( void )
 {
 	// check stream state
 	check_state();
-	
+
 	return m_fs->ReadByte();
 }
 
@@ -707,7 +707,7 @@ __int64 PersistentStream::Seek( __int64 offset, SeekOrigin origin )
 {
 	// check stream state
 	check_state();
-	
+
 	return m_fs->Seek( offset, origin );
 }
 

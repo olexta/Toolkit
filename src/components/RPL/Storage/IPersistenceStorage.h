@@ -29,7 +29,7 @@ _RPL_BEGIN
 namespace Storage {
 	/// <summary>
 	/// Encapsulates persistent object header.
-	///	</summary>
+	/// </summary>
 	[Serializable]
 	public value class HEADER
 	{
@@ -42,7 +42,7 @@ namespace Storage {
 	public:
 		HEADER( String ^type, int id, DateTime stamp, String ^name ): \
 			_type(type), _id(id), _stamp(stamp), _name(name) {}
-		
+
 		/// <summary>
 		/// Gets type of the object.
 		/// </summary>
@@ -176,7 +176,7 @@ namespace Storage {
 		/// it by itself.
 		/// </remarks>
 		void TransactionRollback( void );
-		
+
 		/// <summary>
 		/// Search storage for persistent objects that satisfy specified conditions.
 		/// </summary>
@@ -245,7 +245,7 @@ namespace Storage {
 		/// object has newer modification stamp.
 		/// </para></remarks>
 		void Delete( HEADER header );
-		
+
 		/// <summary>
 		/// Submit hardcoded SQL statements to the persistence.
 		/// </summary>

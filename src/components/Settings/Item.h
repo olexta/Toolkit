@@ -76,7 +76,7 @@ public:
 		virtual ValueBox get( void ) override;
 		virtual void set( ValueBox value ) override;
 	}
-	
+
 	virtual void Load( void ) override;
 	virtual void Save( void ) override;
 };

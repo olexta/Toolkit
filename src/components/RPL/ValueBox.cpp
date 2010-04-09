@@ -128,7 +128,7 @@ ValueBox::ValueBox( Object ^o ): \
 
 	// get type of value
 	Type	^type = o->GetType();
-	
+
 	// check this type through all supported types (native 
 	// types checks first, so it minimize processing of
 	// cast operators, because of they convert values to
@@ -308,7 +308,7 @@ ValueBox::operator PersistentStream^( ValueBox box )
 {
 	// get real value
 	Object	^val = box.ToObject();
-	
+
 	PersistentStream	^ps = dynamic_cast<PersistentStream^>( val );
 	if( ps == nullptr ) {
 		// stored value is not a Stream

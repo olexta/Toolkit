@@ -206,7 +206,7 @@ void PersistentObjects::Add( PersistentObject ^obj )
 		// throw exception
 		throw gcnew ArgumentException(ERR_OBJECT_EXISTS);
 	}
-	
+
 	// fire event before the action
 	OnInsert( obj );
 	// add object to list
@@ -231,12 +231,12 @@ void PersistentObjects::Clear( void )
 {
 	// fire event before the action
 	OnClear();
-	
+
 	// create backup list
 	List<PersistentObject^>		backup(%m_list);
 	// clear collection
 	m_list.Clear();
-	
+
 	// fire event after the action 
 	try {
 		OnClearComplete();

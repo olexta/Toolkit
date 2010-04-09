@@ -90,7 +90,7 @@ Node::ValueBox::ValueBox( Object ^value ): \
 
 	// get type of value
 	Type	^type = value->GetType();
-	
+
 	// check this type through all supported types (native 
 	// types checks first, so it minimize processing of
 	// cast operators, because of they convert values to

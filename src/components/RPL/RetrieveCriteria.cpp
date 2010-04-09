@@ -66,7 +66,7 @@ void RetrieveCriteria::OnPerformComplete( void )
 			static_cast<ITransaction^>( obj )->Begin();
 			// add push to stack to future rollback
 			changes.Push( obj );
-			
+
 			// now make request based on type of retrieve criteria
 			// (if no full retrieve is needed then make object
 			// (proxy or full) up-to-date only)
@@ -80,7 +80,7 @@ void RetrieveCriteria::OnPerformComplete( void )
 		while( changes.Count > 0 ) changes.Pop()->Rollback();
 		// and restore exception
 		throw;
-	}	
+	}
 }
 
 
@@ -136,7 +136,7 @@ RetrieveCriteria::RetrieveCriteria( String ^type,						\
 /// </remarks>
 //-------------------------------------------------------------------
 bool RetrieveCriteria::AsProxies::get( void )
-{	
+{
 	return m_asProxies;
 }
 

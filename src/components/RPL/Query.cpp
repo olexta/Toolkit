@@ -103,7 +103,7 @@ OrderBy::OrderBy( ... array<Clause^> ^args )
 {
 	// check for the null reference
 	if( args == nullptr ) throw gcnew ArgumentNullException("args");
-	// clone arguments list	
+	// clone arguments list
 	_args = static_cast<array<Clause^>^>( args->Clone() );
 }
 

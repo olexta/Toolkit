@@ -43,7 +43,7 @@ protected:
 	int			m_count;
 
 	PersistentCriteria( String ^type );
-		
+
 	virtual void Reset( void );
 	virtual void OnPerformComplete( void );
 

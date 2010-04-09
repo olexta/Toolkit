@@ -49,7 +49,7 @@ protected:
 
 public:
 	Adapter( Node^ parent, IAdapter ^adapter );
-	
+
 	property ValueBox default[String^] {
 		virtual void set( String ^path, ValueBox value ) override;
 	}
@@ -57,7 +57,7 @@ public:
 		virtual ValueBox get( void ) override;
 		virtual void set( ValueBox value ) override;
 	}
-	
+
 	ValueBox GetValue( String ^fullpath );
 	void SetValue( String ^fullpath, ValueBox value );
 	IEnumerable<Node^>^ Load( String ^fullpath );

@@ -33,7 +33,7 @@ ref class PersistentStream;
 /// to link properties with it's owner object.
 /// </remarks>
 ref class PersistentObject::
-ObjectProperties : PersistentProperties, ITransaction							
+ObjectProperties : PersistentProperties, ITransaction
 {
 public:
 	[Flags]

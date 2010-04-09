@@ -32,7 +32,7 @@ _REMOTING_BEGIN
 /// The clients can never directly connect to the actual service objects that
 /// are instantiated in separate AppDomains. The object they will connect to
 /// must be some sort of a cross domain marshaller that can intercept a method
-/// call and forward it to the appropriate AppDomain. A	CrossDomainMarshaler
+/// call and forward it to the appropriate AppDomain. A CrossDomainMarshaler
 /// that is a ContextBoundObject provide this feature and must be installed as
 /// an interceptor.
 /// </remarks>
@@ -76,7 +76,7 @@ private:
 			CrossDomain::IService^ get( void );
 		}
 	};
-	
+
 private:
 	TimeSpan			const _timeout;
 	SERVICE_FACTORY^	const _factory;

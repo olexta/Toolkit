@@ -187,7 +187,7 @@ void Node::Nodes::Add( Node ^node, bool force )
 {
 	// validate node
 	if( node == nullptr ) throw gcnew ArgumentNullException("node");
-	
+
 	// if force parameter is false
 	if( !force ) {
 		// call parrent method
@@ -202,7 +202,7 @@ void Node::Nodes::Add( Node ^node, bool force )
 	}
 }
 
-	
+
 //-------------------------------------------------------------------
 /// <summary>
 /// Clears the content of the Nodes instance.

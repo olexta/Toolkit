@@ -53,7 +53,7 @@ bool Visitor<T>::stop_traverse( STATE state )
 		case STATE::Left:
 			return (_traverse == TRAVERSE::Prefix);
 		break;
-		
+
 		case STATE::Right:
 			return (_traverse == TRAVERSE::Infix);
 		break;
@@ -135,7 +135,7 @@ Visitor<T>::Visitor( Node<T> ^root, TRAVERSE traverse, Node<T> ^leaf ) : \
 //-------------------------------------------------------------------
 generic<typename T>
 Visitor<T>::~Visitor( void )
-{	
+{
 	if( !m_disposed ) {
 		// reset enumerator state
 		m_state = STATE::Stop;
@@ -181,7 +181,7 @@ T Visitor<T>::Current::get( void )
 //-------------------------------------------------------------------
 generic<typename T>
 bool Visitor<T>::MoveNext( void )
-{	
+{
 	// check enumerator state
 	check_state();
 
@@ -195,7 +195,7 @@ bool Visitor<T>::MoveNext( void )
 				// from initial state select left direction only
 				if( stop_traverse( m_state = STATE::Left ) ) return true;
 			break;
-			
+
 			case STATE::Left:
 				// we have left direction now
 				if( m_current->Left != _leaf ) {
@@ -210,7 +210,7 @@ bool Visitor<T>::MoveNext( void )
 					if( stop_traverse( m_state = STATE::Right) ) return true;
 				}
 			break;
-			
+
 			case STATE::Right:
 				// we have right direction now
 				if( m_current->Right != _leaf) {
@@ -225,7 +225,7 @@ bool Visitor<T>::MoveNext( void )
 					if( stop_traverse( m_state = STATE::Parent ) ) return true;
 				}
 			break;
-	
+
 			case STATE::Parent:
 				// check for root element
 				if( m_current != _root ) {

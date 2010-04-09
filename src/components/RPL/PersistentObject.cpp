@@ -134,7 +134,7 @@ void PersistentObject::trans_begin( void )
 	point._name = m_name;
 	point._state = m_state;
 	point._changed = m_changed;
-	
+
 	// call to collections about transaction begin
 	static_cast<ITransaction^>( _links )->Begin();
 	static_cast<ITransaction^>( _props )->Begin();
@@ -238,7 +238,7 @@ PersistentObject::PersistentObject( void ):	\
 	m_state(STATE::Full), m_changed(false)
 {
 	dbgprint( "-> " + this->GetType()->ToString() );
-	
+
 	// create empty collections
 	_links = gcnew ObjectLinks(this);
 	_props = gcnew ObjectProperties(this);
@@ -648,7 +648,7 @@ void PersistentObject::Retrieve( bool upgrade )
 				newprops->Add( prop.Name, prop.Value );
 			}
 			_props->Reload( newprops );
-		}	
+		}
 
 		// notify about complete
 		OnRetrieveComplete();

@@ -111,7 +111,7 @@ CrossDomainMarshaler::ServiceSlot::~ServiceSlot( void )
 		} catch( Exception ^e ) {
 			// output exception info
 			Diagnostics::Trace::WriteLine( String::Format( 
-			ERR_DISPOSE, m_service->GetType(), e->Message ) );		
+			ERR_DISPOSE, m_service->GetType(), e->Message ) );
 		} finally {
 			// unload domain created for service
 			AppDomain::Unload( m_domain );

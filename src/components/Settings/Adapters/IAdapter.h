@@ -52,7 +52,7 @@ namespace Adapters {
 		property String^ Delimeter {
 			virtual String^ get( void );
 		}
-		
+
 		/// <summary>
 		/// Removes setting value that is located by specified path from cache.
 		/// </summary>
@@ -64,7 +64,7 @@ namespace Adapters {
 		/// Must remove all children settings also.
 		/// </remarks>
 		virtual bool Remove( String ^location );
-		
+
 		/// <summary>
 		/// Retrieves settings from source to internal cache.
 		/// </summary>

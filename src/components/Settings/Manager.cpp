@@ -99,7 +99,7 @@ void Manager::default::set( String ^path, ValueBox value )
 EXIT_WRITE(_lock)}
 
 
-//-------------------------------------------------------------------	
+//-------------------------------------------------------------------
 /// <summary>
 /// Gets or sets value of Manager.
 /// </summary><remarks>
@@ -158,7 +158,7 @@ void Manager::Remove( String ^adapter )
 
 	// check for null reference
 	if( adapter == nullptr ) throw gcnew ArgumentNullException("adapter");
-	
+
 	// dispose adapter with all it childs
 	delete _childs[adapter];
 	// and force remove from collection of childs
@@ -178,7 +178,7 @@ EXIT_WRITE(_lock)}
 //-------------------------------------------------------------------
 void Manager::Load( void )
 {ENTER_WRITE(_lock)
-	
+
 	// pass this call to each adapter
 	for each( Node ^node in _childs ) node->Load();
 

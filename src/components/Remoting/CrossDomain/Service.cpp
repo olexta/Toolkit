@@ -45,7 +45,7 @@ Service::Proxy::Proxy( MarshalByRefObject ^obj )
 IMessage^ Service::Proxy::Invoke( IMessage ^msg )
 {
 	msg->Properties["__Uri"] = _uri;
-			
+
 	return ChannelServices::SyncDispatchMessage( msg );
 }
 

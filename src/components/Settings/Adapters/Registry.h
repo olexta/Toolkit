@@ -67,7 +67,7 @@ namespace Adapters {
 			IAdapter::Name::get;
 		virtual String^ get_delimeter( void ) sealed =
 			IAdapter::Delimeter::get;
-		
+
 		virtual bool remove( String ^loc ) sealed =
 			IAdapter::Remove;
 		virtual IEnumerable<String^>^ reload( String ^loc ) sealed =

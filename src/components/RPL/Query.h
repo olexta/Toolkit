@@ -43,7 +43,7 @@ public:
 			/// property should be sorted in ascending order, from
 			/// lowest value to highest value.
 			/// </summary>
-			ASC=1,			
+			ASC=1,
 			/// <summary>
 			/// Specifies that the values of the specified object
 			/// property should be sorted in descending order, from
@@ -135,7 +135,7 @@ private:
 	String^		const _opd;
 	OP			const _op;
 	ValueBox	const _value;
-	
+
 public:
 	Clause( String ^opd, ValueBox value );
 	Clause( String ^opd, OP op, ValueBox value );

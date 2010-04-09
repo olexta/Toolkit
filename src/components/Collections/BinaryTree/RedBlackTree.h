@@ -87,7 +87,7 @@ private protected:
 
 	protected:
 		virtual void OnCheckState( void ) override;
-		
+
 	public:
 		RedBlackVisitor( RedBlackTree ^rbt );
 	};
@@ -111,7 +111,7 @@ private:
 		RedBlackNode	^_root;
 	};
 	RESTORE_POINT	m_backup;
-	
+
 	int				m_count;
 	RedBlackNode	^m_root;
 	long long		m_stamp;

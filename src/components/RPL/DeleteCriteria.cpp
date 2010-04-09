@@ -46,7 +46,7 @@ void DeleteCriteria::OnPerformComplete( void )
 			static_cast<ITransaction^>( obj )->Begin();
 			// push to stack to future rollback
 			changes.Push( obj );
-			
+
 			// now make retrieve request
 			obj->Retrieve( true );
 		}
