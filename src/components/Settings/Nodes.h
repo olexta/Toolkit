@@ -38,8 +38,8 @@ private:
 
 protected:
 	virtual void OnClear( void ) override;
-	virtual void OnInsert( Node ^node ) override;
-	virtual void OnRemove( Node ^node ) override;
+	virtual void OnInsertComplete( Node ^node ) override;
+	virtual void OnRemoveComplete( Node ^node ) override;
 
 public:
 	Nodes( Node ^parent );
@@ -51,6 +51,7 @@ public:
 	}
 
 	virtual bool Contains( String ^path ) override;
+	virtual bool Remove( String ^path ) override;
 
 	void Add( Node ^node, bool force );
 	void Clear( bool force );

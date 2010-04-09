@@ -61,6 +61,8 @@
 	"Cann't locate root node."
 #define ERR_ROOT_PARENT													\
 	"Root cann't have parent."
+#define ERR_ROOT_REMOVE													\
+	"Cann't remove root node."
 #define ERR_INI_FILE													\
 	"INI file is corrupt. A key cann't contain any of the following "	+\
 	"strings: '{0}'."

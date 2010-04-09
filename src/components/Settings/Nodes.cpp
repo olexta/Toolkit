@@ -38,14 +38,14 @@ void Node::Nodes::OnClear( void )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Performs additional custom processes before inserting a node to
+/// Performs additional custom processes after inserting a node to
 /// the Nodes instance.
 /// </summary><remarks>
 /// Notify node about adding to collection (this is equal to set
 /// node's parent reference).
 /// </remarks>
 //-------------------------------------------------------------------
-void Node::Nodes::OnInsert( Node ^node )
+void Node::Nodes::OnInsertComplete( Node ^node )
 {
 	// set parent reference
 	node->set_parent( _parent );
@@ -54,14 +54,14 @@ void Node::Nodes::OnInsert( Node ^node )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Performs additional custom processes before removing a node from
+/// Performs additional custom processes after removing a node from
 /// the Nodes instance.
 /// </summary><remarks>
 /// Notify node about removing from collection (this is equal to
 /// remove node's parent reference).
 /// </remarks>
 //-------------------------------------------------------------------
-void Node::Nodes::OnRemove( Node ^node )
+void Node::Nodes::OnRemoveComplete( Node ^node )
 {
 	// remove parent reference
 	node->set_parent( nullptr );
@@ -129,7 +129,7 @@ Node^ Node::Nodes::default::get( String ^path )
 	if( path == nullptr ) throw gcnew ArgumentNullException("path");
 
 	// if path contains relative elements
-	if( (path == _parent->_cur_path) || 
+	if( (path == _parent->_cur_path) ||
 		(path == _parent->_par_path) ||
 		path->Contains( _parent->_delimeter ) ) {
 		// pass this call to parent
@@ -149,9 +149,9 @@ Node^ Node::Nodes::default::get( String ^path )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Find node that is located on specified relative path.
+/// Determines whether the node exists on specified relative path.
 /// </summary><remarks>
-/// This is overriden KeyedMap accessor. If specified path doesn't
+/// This is overriden Contains method. If specified path doesn't
 /// contain relative elements, then searchs in this collection items.
 /// In other case pass call to parent.
 /// </remarks>
@@ -162,7 +162,7 @@ bool Node::Nodes::Contains( String ^path )
 	if( path == nullptr ) throw gcnew ArgumentNullException("path");
 
 	// if path contains relative elements
-	if( (path == _parent->_cur_path) || 
+	if( (path == _parent->_cur_path) ||
 		(path == _parent->_par_path) ||
 		path->Contains( _parent->_delimeter ) ) {
 		// pass search request to parent
@@ -170,6 +170,43 @@ bool Node::Nodes::Contains( String ^path )
 	} else {
 		// try find node in this collection
 		return KeyedMap::Contains( path );
+	}
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
+/// Removes node that is located on specified relative path.
+/// </summary><remarks>
+/// This is overriden Remove method. If specified path doesn't
+/// contain relative elements, then removes from this collection
+/// items. In other case pass call to parent.
+/// </remarks>
+//-------------------------------------------------------------------
+bool Node::Nodes::Remove( String ^path )
+{
+	// check for the null reference
+	if( path == nullptr ) throw gcnew ArgumentNullException("path");
+
+	// if path contains relative elements
+	if( (path == _parent->_cur_path) ||
+		(path == _parent->_par_path) ||
+		path->Contains( _parent->_delimeter ) ) {
+		// pass search request to parent
+		Node	^node = _parent->get_child( path );
+		// check for succeeded request
+		if( node == nullptr ) {
+			// node was not found, return false
+			return false;
+		} else if( node->m_parent == nullptr ) {
+			// node has not parent
+			throw gcnew InvalidOperationException(ERR_ROOT_REMOVE);
+		}
+		// and pass remove request to node's parent
+		return node->m_parent->Childs->KeyedMap::Remove( node->Name );
+	} else {
+		// try remove node in this collection
+		return KeyedMap::Remove( path );
 	}
 }
 
@@ -243,7 +280,7 @@ bool Node::Nodes::Remove( String ^name, bool force )
 	// if not force is set
 	if( !force ) {
 		// call parent function
-		return Remove( name );
+		return KeyedMap::Remove( name );
 	} else {
 		// use protected functions to force delete
 		// node without any additional processing

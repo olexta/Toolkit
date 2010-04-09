@@ -630,7 +630,8 @@ void IniFile::flush( String ^loc )
 		if( (secs[i] + _del)->StartsWith( loc + _del ) ) {
 			// check that section hasn't keys and isn't empty leaf
 			if( (get_ini_string( secs[i], nullptr )->Count == 0) &&
-				((m_cache[secs[i]] != nullptr) ||
+				((secs[i] == _del.ToString()) ||
+				 (m_cache[secs[i]] != nullptr) ||
 				 (((i + 1) < secs->Count) &&
 				  secs[i + 1]->Contains(
 					(secs[i] == _del.ToString() ? "" : secs[i]) + _del ))) ) {
