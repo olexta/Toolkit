@@ -47,11 +47,11 @@ protected:
 	List<PersistentObject^>	m_list;
 
 	virtual void OnClear( void );
-	virtual void OnInsert( PersistentObject ^prop );
-	virtual void OnRemove( PersistentObject ^prop );
+	virtual void OnInsert( PersistentObject ^obj );
+	virtual void OnRemove( PersistentObject ^obj );
 	virtual void OnClearComplete( void );
-	virtual void OnInsertComplete( PersistentObject ^prop );
-	virtual void OnRemoveComplete( PersistentObject ^prop );
+	virtual void OnInsertComplete( PersistentObject ^obj );
+	virtual void OnRemoveComplete( PersistentObject ^obj );
 
 public:
 	// TODO: понять как будет работать даное решение при тонком клиенте
@@ -71,5 +71,11 @@ public:
 	virtual bool Contains( PersistentObject ^obj );
 	virtual void CopyTo( array<PersistentObject^> ^dest, int index );
 	virtual bool Remove( PersistentObject ^obj );
+
+	virtual bool Exists( Predicate<PersistentObject^> ^match );
+	virtual PersistentObject^ Find( Predicate<PersistentObject^> ^match );
+	virtual PersistentObjects^ FindAll( Predicate<PersistentObject^> ^match );
+	virtual void ForEach( Action<PersistentObject^> ^action );
+	virtual bool TrueForAll( Predicate<PersistentObject^> ^match );
 };
 _RPL_END

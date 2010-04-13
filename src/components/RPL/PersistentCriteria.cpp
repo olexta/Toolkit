@@ -75,6 +75,22 @@ void PersistentCriteria::OnPerformComplete( void )
 
 //-------------------------------------------------------------------
 /// <summary>
+/// Performs additional custom processes before removing all objects
+/// from the PersistentCriteria instance.
+/// </summary><remarks>
+/// This sealed method raises error to notify about read-only
+/// collection.
+/// </remarks>
+//-------------------------------------------------------------------
+void PersistentCriteria::OnClear( void )
+{
+	throw gcnew InvalidOperationException(String::Format(
+	ERR_SUPPORTED_OPERATION, this->GetType()->ToString() ));
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
 /// Performs additional custom processes before removing an element
 /// from the PersistentCriteria instance.
 /// </summary><remarks>
