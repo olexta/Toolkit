@@ -9,9 +9,6 @@ using System;
 [assembly: AssemblyTitle( "BrowserControl.Test" )]
 [assembly: AssemblyDescription( "" )]
 [assembly: AssemblyConfiguration( "" )]
-[assembly: AssemblyCompany( "ABBYY Ukraine" )]
-[assembly: AssemblyProduct( "BrowserControl" )]
-[assembly: AssemblyCopyright( "Copyright © ABBYY Ukraine 2008" )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 [assembly: CLSCompliantAttribute( true ) ]
@@ -31,5 +28,13 @@ using System;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion( "1.0.0.0" )]
 [assembly: AssemblyFileVersion( "1.0.0.0" )]
+
+//
+// This is auto generated attributes for current 1.0.5.1145 version.
+//
+[assembly: AssemblyProduct("Toolkit")]
+[assembly: AssemblyInformationalVersion("1.0.5")]
+[assembly: AssemblyCompany("ABBYY Ukraine")]
+[assembly: AssemblyCopyright("Copyright © ABBYY Ukraine 2007-2009")]
+[assembly: AssemblyVersion("1.0.5.1145")]
