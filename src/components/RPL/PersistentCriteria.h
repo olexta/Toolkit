@@ -47,7 +47,6 @@ protected:
 	virtual void Reset( void );
 	virtual void OnPerformComplete( void );
 
-	virtual void OnClear( void ) override sealed;
 	virtual void OnRemove( PersistentObject ^obj ) override sealed;
 	virtual void OnInsert( PersistentObject ^obj ) override sealed;
 

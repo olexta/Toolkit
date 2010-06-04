@@ -224,7 +224,7 @@ void PersistentObjects::Add( PersistentObject ^obj )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Clears the content of the PersistentObjects instance.
+/// Clears the content of the PersistentObjects instance. 
 /// </summary>
 //-------------------------------------------------------------------
 void PersistentObjects::Clear( void )
@@ -263,7 +263,7 @@ bool PersistentObjects::Contains( PersistentObject ^obj )
 //-------------------------------------------------------------------
 ///<summary>
 /// Copies the elements of the PersistentObjects to an array of type
-/// PersistentObject^, starting at the specified array index.
+/// PersistentObject^, starting at the specified array index. 
 /// </summary>
 //-------------------------------------------------------------------
 void PersistentObjects::CopyTo( array<PersistentObject^> ^dest, int index )
@@ -300,65 +300,4 @@ bool PersistentObjects::Remove( PersistentObject ^obj )
 	}
 
 	return true;
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Determines whether the collection contains object that match the
-/// conditions defined by the specified predicate.
-/// </summary>
-//-------------------------------------------------------------------
-bool PersistentObjects::Exists( Predicate<PersistentObject^> ^match )
-{
-	return m_list.Exists( match );
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Searches for an object that matches the conditions defined by the
-/// specified predicate, and returns the first occurrence within the
-/// entire collection.
-/// </summary>
-//-------------------------------------------------------------------
-PersistentObject^ PersistentObjects::Find( Predicate<PersistentObject^> ^match )
-{
-	return m_list.Find( match );
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Retrieves the all the objects that match the conditions defined
-/// by the specified predicate.
-/// </summary>
-//-------------------------------------------------------------------
-PersistentObjects^															\
-PersistentObjects::FindAll( Predicate<PersistentObject^> ^match )
-{
-	return gcnew PersistentObjects(m_list.FindAll( match ));
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Performs the specified action on each object of the collection.
-/// </summary>
-//-------------------------------------------------------------------
-void PersistentObjects::ForEach( Action<PersistentObject^> ^action )
-{
-	m_list.ForEach( action );
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Determines whether every object in the collection matches the
-/// conditions defined by the specified predicate.
-/// </summary>
-//-------------------------------------------------------------------
-bool PersistentObjects::TrueForAll( Predicate<PersistentObject^> ^match )
-{
-	return m_list.TrueForAll( match );
 }

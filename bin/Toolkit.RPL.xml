@@ -157,36 +157,6 @@ Creates a new instance of the OrderBy.Clause class that uses
 ascending sorting order for specified operand.
 </summary>
         </member>
-        <member name="M:Toolkit.RPL.PersistentObjects.TrueForAll(System.Predicate`1{Toolkit.RPL.PersistentObject^})">
-            <summary>
-Determines whether every object in the collection matches the
-conditions defined by the specified predicate.
-</summary>
-        </member>
-        <member name="M:Toolkit.RPL.PersistentObjects.ForEach(System.Action`1{Toolkit.RPL.PersistentObject^})">
-            <summary>
-Performs the specified action on each object of the collection.
-</summary>
-        </member>
-        <member name="M:Toolkit.RPL.PersistentObjects.FindAll(System.Predicate`1{Toolkit.RPL.PersistentObject^})">
-            <summary>
-Retrieves the all the objects that match the conditions defined
-by the specified predicate.
-</summary>
-        </member>
-        <member name="M:Toolkit.RPL.PersistentObjects.Find(System.Predicate`1{Toolkit.RPL.PersistentObject^})">
-            <summary>
-Searches for an object that matches the conditions defined by the
-specified predicate, and returns the first occurrence within the
-entire collection.
-</summary>
-        </member>
-        <member name="M:Toolkit.RPL.PersistentObjects.Exists(System.Predicate`1{Toolkit.RPL.PersistentObject^})">
-            <summary>
-Determines whether the collection contains object that match the
-conditions defined by the specified predicate.
-</summary>
-        </member>
         <member name="M:Toolkit.RPL.PersistentObjects.Remove(Toolkit.RPL.PersistentObject)">
             <summary>
 Removes the specified object from the collection.
@@ -195,7 +165,7 @@ Removes the specified object from the collection.
         <member name="M:Toolkit.RPL.PersistentObjects.CopyTo(Toolkit.RPL.PersistentObject[],System.Int32)">
             <summary>
 Copies the elements of the PersistentObjects to an array of type
-PersistentObject^, starting at the specified array index.
+PersistentObject^, starting at the specified array index. 
 </summary>
         </member>
         <member name="M:Toolkit.RPL.PersistentObjects.Contains(Toolkit.RPL.PersistentObject)">
@@ -206,7 +176,7 @@ object.
         </member>
         <member name="M:Toolkit.RPL.PersistentObjects.Clear">
             <summary>
-Clears the content of the PersistentObjects instance.
+Clears the content of the PersistentObjects instance. 
 </summary>
         </member>
         <member name="M:Toolkit.RPL.PersistentObjects.Add(Toolkit.RPL.PersistentObject)">
@@ -1068,16 +1038,6 @@ collection.
         <member name="M:Toolkit.RPL.PersistentCriteria.OnRemove(Toolkit.RPL.PersistentObject)">
             <summary>
 Performs additional custom processes before removing an element
-from the PersistentCriteria instance.
-</summary>
-            <remarks>
-This sealed method raises error to notify about read-only
-collection.
-</remarks>
-        </member>
-        <member name="M:Toolkit.RPL.PersistentCriteria.OnClear">
-            <summary>
-Performs additional custom processes before removing all objects
 from the PersistentCriteria instance.
 </summary>
             <remarks>

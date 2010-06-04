@@ -36,10 +36,10 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 
 //
-// This is auto generated attributes for current 1.0.5.1145 version.
+// This is auto generated attributes for current 1.0.5.1167 version.
 //
 [assembly: AssemblyProduct("Toolkit")]
 [assembly: AssemblyInformationalVersion("1.0.5")]
 [assembly: AssemblyCompany("ABBYY Ukraine")]
 [assembly: AssemblyCopyright("Copyright © ABBYY Ukraine 2007-2009")]
-[assembly: AssemblyVersion("1.0.5.1145")]
+[assembly: AssemblyVersion("1.0.5.1167")]
