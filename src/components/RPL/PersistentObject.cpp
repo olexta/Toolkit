@@ -136,8 +136,8 @@ void PersistentObject::trans_begin( void )
 	point._changed = m_changed;
 
 	// call to collections about transaction begin
-	static_cast<ITransaction^>( _links )->Begin();
-	static_cast<ITransaction^>( _props )->Begin();
+	safe_cast<ITransaction^>( _links )->Begin();
+	safe_cast<ITransaction^>( _props )->Begin();
 
 	// push record to stack
 	backup.Push( point );
@@ -160,8 +160,8 @@ void PersistentObject::trans_commit( void )
 	backup.Pop();
 
 	// call to collections about successful transaction
-	static_cast<ITransaction^>( _links )->Commit();
-	static_cast<ITransaction^>( _props )->Commit();
+	safe_cast<ITransaction^>( _links )->Commit();
+	safe_cast<ITransaction^>( _props )->Commit();
 }
 
 
@@ -197,8 +197,8 @@ void PersistentObject::trans_rollback( void )
 	m_changed = point._changed;
 
 	// call to collections about transaction rollback
-	static_cast<ITransaction^>( _links )->Rollback();
-	static_cast<ITransaction^>( _props )->Rollback();
+	safe_cast<ITransaction^>( _links )->Rollback();
+	safe_cast<ITransaction^>( _props )->Rollback();
 }
 
 

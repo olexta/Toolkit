@@ -85,7 +85,7 @@ CrossDomainProxy<T>::operator T( CrossDomainProxy<T> ^proxy )
 	// (this is because base of T is MarshalByRefObject)
 	if( proxy == nullptr ) return T();
 
-	return static_cast<T>( proxy->GetTransparentProxy() );
+	return safe_cast<T>( proxy->GetTransparentProxy() );
 }
 
 
@@ -108,7 +108,7 @@ IMessage^ CrossDomainProxy<T>::Invoke( IMessage ^msg )
 	msg->Properties["__Uri"] = _url;
 
 	// pass the client's unique identifier as part of the call context
-	LogicalCallContext	^context = static_cast<LogicalCallContext^>(
+	LogicalCallContext	^context = safe_cast<LogicalCallContext^>(
 								   msg->Properties["__CallContext"] );
 	context->SetData( CLIENT_ID, _clientID );
 

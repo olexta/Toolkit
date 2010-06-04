@@ -62,7 +62,8 @@ protected:
 
 	static String^ ParsePath( String^ %path );
 
-	String^ RootTraverse( Node^ *root );
+	String^ RootTraverse( void );
+	String^ RootTraverse( Node^ %root );
 	Node^ Find( String^ %path );
 
 	virtual void OnSetParent( Node ^parent );

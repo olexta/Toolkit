@@ -18,10 +18,10 @@ using namespace _SETTINGS;
 
 
 //
-// Define double static cast operation
+// Define double safe cast operation
 //
 #define SCAST_(to, from, value)													\
-static_cast<to>( static_cast<from>( value ) )
+safe_cast<to>( safe_cast<from>( value ) )
 
 //
 // Define macro for implicit cast operator from specified type to ValueBox.
@@ -42,7 +42,7 @@ Node::ValueBox::operator type( ValueBox box )									\
 	Type	^r = (box.m_value != nullptr ? box.m_value->GetType() : nullptr);	\
 	Type	^t = type::typeid;													\
 																				\
-	if( r == t ) return static_cast<type>( box.m_value );						\
+	if( r == t ) return safe_cast<type>( box.m_value );							\
 																				\
 	throw gcnew InvalidCastException(String::Format(							\
 	ERR_CAST_FROM_TO, (r != nullptr ? r->ToString() : "null"),					\
@@ -97,19 +97,19 @@ Node::ValueBox::ValueBox( Object ^value ): \
 	// such types, then process all convertible)
 	if( type == bool::typeid ) {
 		// native bool
-		m_value = static_cast<bool>( value );
+		m_value = safe_cast<bool>( value );
 	} else if( type == int::typeid ) {
 		// native int
-		m_value = static_cast<int>( value );
+		m_value = safe_cast<int>( value );
 	} else if( type == double::typeid ) {
 		// native double
-		m_value = static_cast<double>( value );
+		m_value = safe_cast<double>( value );
 	} else if( type == DateTime::typeid ) {
 		// native DateTime
-		m_value = static_cast<DateTime>( value );
+		m_value = safe_cast<DateTime>( value );
 	} else if( type == String::typeid ) {
 		// native String
-		m_value = static_cast<String^>( value );
+		m_value = safe_cast<String^>( value );
 	} else if( type == char::typeid ) {
 		// convertible to int
 		m_value = SCAST_(int, char, value);

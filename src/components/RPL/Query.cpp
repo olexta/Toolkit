@@ -47,7 +47,7 @@ OrderBy::Clause::Clause( String ^opd, SORT sort ) : \
 	// check for the null reference
 	if( opd == nullptr ) throw gcnew ArgumentNullException("opd");
 	// check for the valid sort value
-	if( !static_cast<System::Collections::IList^>(
+	if( !safe_cast<System::Collections::IList^>(
 			Enum::GetValues( SORT::typeid ) )->Contains( sort ) ) {
 		// throw exception
 		throw gcnew ArgumentOutOfRangeException("sort");
@@ -104,7 +104,7 @@ OrderBy::OrderBy( ... array<Clause^> ^args )
 	// check for the null reference
 	if( args == nullptr ) throw gcnew ArgumentNullException("args");
 	// clone arguments list
-	_args = static_cast<array<Clause^>^>( args->Clone() );
+	_args = safe_cast<array<Clause^>^>( args->Clone() );
 }
 
 
@@ -149,7 +149,7 @@ Where::Clause::Clause( String ^opd, OP op, ValueBox value ) : \
 	// check for the null reference
 	if( opd == nullptr ) throw gcnew ArgumentNullException("opd");
 	// check for the valid operator value
-	if( !static_cast<System::Collections::IList^>(
+	if( !safe_cast<System::Collections::IList^>(
 			Enum::GetValues( OP::typeid ) )->Contains( op ) ) {
 		// throw exception
 		throw gcnew ArgumentOutOfRangeException("op");

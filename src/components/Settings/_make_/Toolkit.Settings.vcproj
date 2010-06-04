@@ -21,7 +21,7 @@
 			IntermediateDirectory="..\..\..\..\tmp\$(ProjectName)\"
 			ConfigurationType="2"
 			CharacterSet="1"
-			ManagedExtensions="1"
+			ManagedExtensions="3"
 			BuildLogFile="$(IntDir)BuildLog.htm"
 			>
 			<Tool Name="VCPreBuildEventTool" />
@@ -73,7 +73,7 @@
 			IntermediateDirectory="..\..\..\..\tmp\$(ProjectName)\"
 			ConfigurationType="2"
 			CharacterSet="1"
-			ManagedExtensions="1"
+			ManagedExtensions="3"
 			WholeProgramOptimization="1"
 			BuildLogFile="$(IntDir)BuildLog.htm"
 			>

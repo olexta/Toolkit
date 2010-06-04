@@ -20,6 +20,7 @@ using namespace System;
 using namespace System::Threading;
 using namespace System::Globalization;
 using namespace System::Collections::Generic;
+using namespace System::Runtime::InteropServices;
 using namespace Toolkit::Collections;
 
 
@@ -38,6 +39,54 @@ namespace Adapters {
 	/// </remarks>
 	public ref class IniFile sealed : IAdapter
 	{
+	private:
+		/// <summary>
+		/// Retrieves a string from the specified section in an initialization
+		/// file.
+		/// </summary><returns>
+		/// The return value is the number of characters copied to the buffer,
+		/// not including the terminating null character. If neither lpAppName
+		/// nor lpKeyName is NULL and the supplied destination buffer is too
+		/// small to hold the requested string, the string is truncated and
+		/// followed by a null character, and the return value is equal to
+		/// nSize minus one. If either lpAppName or lpKeyName is NULL and the
+		/// supplied destination buffer is too small to hold all the strings,
+		/// the last string is truncated and followed by two null characters.
+		/// In this case, the return value is equal to nSize minus two.
+		///</returns><remarks>
+		/// If lpAppName is NULL, GetPrivateProfileString copies all section
+		/// names in the specified file to the supplied buffer. If lpKeyName
+		/// is NULL, the function copies all key names in the specified
+		/// section to the supplied buffer. In either case, each string is
+		/// followed by a null character and the final string is followed by a
+		/// second null character. If the supplied destination buffer is too
+		/// small to hold all the strings, the last string is truncated and
+		/// followed by two null characters.
+		/// </remarks>
+		[DllImport("kernel32.dll", CharSet=CharSet::Auto)]
+		static unsigned int GetPrivateProfileString(
+													 String^ lpAppName,
+													 String^ lpKeyName,
+													 String^ lpDefault,
+													 array<wchar_t>^ lpReturnedString,
+													 unsigned int nSize,
+													 String^ lpFileName
+												   );
+		/// <summary>
+		/// Copies a string into the specified section of an initialization
+		/// file.
+		/// </summary><remarks>
+		/// If lpKeyName is NULL, the entire section, including all entries
+		/// within the section, is deleted. If lpString is NULL, the key
+		/// pointed to by the lpKeyName parameter is deleted.
+		/// </remarks>
+		[DllImport("KERNEL32.DLL", CharSet=CharSet::Auto)]
+		static bool WritePrivateProfileString(
+											   String^ lpAppName,
+											   String^ lpKeyName,
+											   String^ lpString,
+											   String^ lpFileName
+											 );
 	private:
 		static Char				const _del = '/';
 		static unsigned long	const _bufsize = 1024;

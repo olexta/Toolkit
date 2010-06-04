@@ -327,7 +327,7 @@ PersistentStream::PersistentStream( SerializationInfo ^info,
 								FileOptions::DeleteOnClose);
 
 		// restore stream content
-		array<unsigned char>	^buf = static_cast<array<unsigned char>^>(
+		array<unsigned char>	^buf = safe_cast<array<unsigned char>^>(
 											info->GetValue( "content",
 											array<unsigned char>::typeid ) );
 		m_fs->Write( buf, 0, buf->Length );

@@ -21,10 +21,10 @@ using namespace _REMOTING;
 
 // Define lock macroses
 #define ENTER_(lock)	try { Monitor::Enter(								\
-							static_cast<Collections::ICollection^>(			\
+							safe_cast<Collections::ICollection^>(			\
 							lock )->SyncRoot);
 #define EXIT_(lock)		} finally { Monitor::Exit(							\
-							static_cast<Collections::ICollection^>(			\
+							safe_cast<Collections::ICollection^>(			\
 							lock )->SyncRoot);}
 
 
@@ -44,7 +44,7 @@ void CrossDomainMarshaler::ServiceSlot::on_timer( Object ^state )
 	delete this;
 
 	// remove this instance from parent collection
-	static_cast<Collections::IDictionary^>( state )->Remove( _clientID );
+	safe_cast<Collections::IDictionary^>( state )->Remove( _clientID );
 
 EXIT_(state)}
 

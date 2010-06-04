@@ -63,7 +63,7 @@ void RetrieveCriteria::OnPerformComplete( void )
 	try {
 		for each( PersistentObject ^obj in m_list ) {
 			// save all object's properties
-			static_cast<ITransaction^>( obj )->Begin();
+			safe_cast<ITransaction^>( obj )->Begin();
 			// add push to stack to future rollback
 			changes.Push( obj );
 

@@ -141,6 +141,25 @@ String^ Node::ParsePath( String^ %path )
 
 //-------------------------------------------------------------------
 /// <summary>
+/// Returns path to root node.
+/// </summary><remarks>
+/// This function proceed only current subnode, so founded node may
+/// be not root in common sense (like "/" in UNIX). To determine this
+/// situation you can use check for 'Delimeter' at the begining of
+/// the returned path ("real" root node have "" as name, so path will
+/// start with 'Delimeter').
+/// </remarks>
+//-------------------------------------------------------------------
+String^ Node::RootTraverse( void )
+{
+	Node	^node = nullptr;
+
+	return RootTraverse( node );
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
 /// Returns path and reference to root node.
 /// </summary><remarks>
 /// This function proceed only current subnode, so founded node may
@@ -150,13 +169,13 @@ String^ Node::ParsePath( String^ %path )
 /// start with 'Delimeter').
 /// </remarks>
 //-------------------------------------------------------------------
-String^ Node::RootTraverse( Node^ *root )
+String^ Node::RootTraverse( Node^ %root )
 {
 	// if this node is root - return it's name and
 	// reference to this
 	if( m_parent == nullptr ) {
-		// check for null pointer
-		if( root != nullptr ) *root = this;
+		// save root reference
+		root = this;
 		// and return path as name
 		return _name;
 	}
@@ -188,7 +207,7 @@ Node^ Node::Find( String^ %path )
 		// this is root node request, so search current subnode
 		// for root and check that founded local root to be
 		// "real" root (have empty name)
-		if( RootTraverse( &node ), (node->_name != "") ) {
+		if( RootTraverse( node ), (node->_name != "") ) {
 			// throw exception
 			throw gcnew InvalidOperationException(ERR_ROOT_LOCATE);
 		}
@@ -353,7 +372,7 @@ String^ Node::Name::get( void )
 String^ Node::Path::get( void )
 {ENTER_READ(_lock)
 
-	return RootTraverse( nullptr );
+	return RootTraverse();
 
 EXIT_READ(_lock)}
 

@@ -46,7 +46,7 @@ Item::STATE Item::check_parent( Node ^parent )
 		state = STATE::Online;
 	} else if( t == Item::typeid ) {
 		// if parent is Item class - extract it's state
-		state = static_cast<Item^>( parent )->m_state;
+		state = safe_cast<Item^>( parent )->m_state;
 	} else {
 		// throw invalid parent type exception
 		throw gcnew ArgumentException(String::Format(
@@ -90,14 +90,14 @@ Item::STATE Item::check_parent( Node ^parent )
 Adapter^ Item::get_adapter( void )
 {
 	// get full path to current item
-	String	^path = RootTraverse( nullptr );
+	String	^path = RootTraverse();
 
 	// check that local root is "real" root
 	if( !path->StartsWith( _delimeter ) )
 		throw gcnew InvalidOperationException(ERR_ROOT_LOCATE);
 
 	// and return search for adapter request result
-	return static_cast<Adapter^>(
+	return safe_cast<Adapter^>(
 		Find( _delimeter + ParsePath( path->Substring( _delimeter->Length ) ) ) );
 }
 
@@ -126,7 +126,7 @@ bool Item::set_state( STATE state, bool sync )
 				ERR_ITEM_SYNC, m_state.ToString(), state.ToString() ));
 
 			// load value from adapter and store it
-			m_value = get_adapter()->GetValue( RootTraverse( nullptr ) );
+			m_value = get_adapter()->GetValue( RootTraverse() );
 		break;
 
 		// have to be Offline state to load values into adapter
@@ -136,7 +136,7 @@ bool Item::set_state( STATE state, bool sync )
 				ERR_ITEM_SYNC, m_state.ToString(), state.ToString() ));
 
 			// upload stored value into adapter
-			get_adapter()->SetValue( RootTraverse( nullptr ), m_value );
+			get_adapter()->SetValue( RootTraverse(), m_value );
 			// and reset
 			m_value = nullptr;
 		break;
@@ -165,7 +165,7 @@ bool Item::set_state( STATE state, bool sync )
 // contain value parameter because of creating Unknown setting only.
 //
 //-------------------------------------------------------------------
-Item::Item( Item ^parent, String ^path, Item^ *leaf ) : \
+Item::Item( Item ^parent, String ^path, Item^ %leaf ) : \
 	Node(ParsePath(path), parent)
 {
 	// check name of node (name cann't be empty string)
@@ -191,7 +191,7 @@ Item::Item( Item ^parent, String ^path, Item^ *leaf ) : \
 		_childs = gcnew Nodes(this, item);
 	} else {
 		// this is las item in chunk, so set leaf to this
-		if( leaf != nullptr ) *leaf = this;
+		leaf = this;
 	}
 }
 
@@ -210,8 +210,10 @@ Item::Item( Item ^parent, String ^path, Item^ *leaf ) : \
 //-------------------------------------------------------------------
 Item^ Item::create_chain( Item ^parent, String ^path )
 {
+	Item	^stub = nullptr; // just reference stub
+
 	// if no parent specified - just create simple chunk
-	if( parent == nullptr ) return gcnew Item(nullptr, path, nullptr);
+	if( parent == nullptr ) return gcnew Item(nullptr, path, stub);
 
 	// parent is specified, so find last item
 	// corresponding to specified path
@@ -221,7 +223,7 @@ Item^ Item::create_chain( Item ^parent, String ^path )
 	if( last == nullptr ) throw gcnew ArgumentException(ERR_ITEM_CHAIN_PATH);
 
 	// create simple chain by path tail
-	Item	^chain = gcnew Item(nullptr, path, nullptr);
+	Item	^chain = gcnew Item(nullptr, path, stub);
 	// and add it to childs of founded item
 	last->_childs->Add( chain );
 
@@ -239,7 +241,7 @@ Item^ Item::create_chain( String ^path, ValueBox value )
 {
 	// OK, create chunk of items
 	Item	^leaf = nullptr;
-	Item	^chain = gcnew Item(nullptr, path, &leaf);
+	Item	^chain = gcnew Item(nullptr, path, leaf);
 
 	// set state to Offline
 	chain->set_state( STATE::Offline, false );
@@ -273,7 +275,7 @@ void Item::OnSetParent( Node ^parent )
 		set_state( STATE::Offline, true );
 
 		// remove this node from adapter
-		get_adapter()->Remove( RootTraverse( nullptr ) );
+		get_adapter()->Remove( RootTraverse() );
 	}
 }
 
@@ -456,7 +458,7 @@ Node::ValueBox Item::Value::get( void )
 		break;
 		// request value from adapter
 		case STATE::Online:
-			return get_adapter()->GetValue( RootTraverse( nullptr ) );
+			return get_adapter()->GetValue( RootTraverse() );
 		break;
 		// undepricable results
 		default:
@@ -478,7 +480,7 @@ void Item::Value::set( ValueBox value )
 		break;
 		// pass value to adapter
 		case STATE::Online:
-			return get_adapter()->SetValue( RootTraverse( nullptr ), value );
+			return get_adapter()->SetValue( RootTraverse(), value );
 		break;
 		// undepricable results
 		default:
@@ -510,7 +512,7 @@ void Item::Load( void )
 	_childs->Clear( true );
 
 	// pass call to adapter, that creates subnodes
-	for each( Node ^node in get_adapter()->Load( RootTraverse( nullptr ) ) ) {
+	for each( Node ^node in get_adapter()->Load( RootTraverse() ) ) {
 		// attach this nodes to current item
 		_childs->Add( node );
 	}
@@ -535,6 +537,6 @@ void Item::Save( void )
 		ERR_ITEM_STATE, m_state ));
 
 	// call flush for this node
-	get_adapter()->Save( RootTraverse( nullptr ) );
+	get_adapter()->Save( RootTraverse() );
 
 EXIT_WRITE(_lock)}

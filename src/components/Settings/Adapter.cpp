@@ -328,7 +328,7 @@ void Adapter::Load( void )
 	_childs->Clear( true );
 
 	// pass call to Load function, that creates subnodes
-	for each( Node ^node in Load( RootTraverse( nullptr ) + _delimeter ) ) {
+	for each( Node ^node in Load( RootTraverse() + _delimeter ) ) {
 		// attach this nodes to current item
 		_childs->Add( node );
 	}
@@ -345,6 +345,6 @@ void Adapter::Save( void )
 {ENTER_WRITE(_lock)
 
 	// pass call to Save function
-	Save( RootTraverse( nullptr ) + _delimeter );
+	Save( RootTraverse() + _delimeter );
 
 EXIT_WRITE(_lock)}

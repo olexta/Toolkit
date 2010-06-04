@@ -19,10 +19,10 @@ using namespace _RPL;
 
 
 //
-// Define double static cast operation
+// Define double safe cast operation
 //
 #define SCAST_(to, from, value)												\
-static_cast<to>( static_cast<from>( value ) )
+safe_cast<to>( safe_cast<from>( value ) )
 
 //
 // Define macro for implicit cast operator from
@@ -45,7 +45,7 @@ ValueBox::operator type( ValueBox box )										\
 	Type	^r = val->GetType();											\
 	Type	^t = type::typeid;												\
 																			\
-	if( r == t ) return static_cast<type>( val );							\
+	if( r == t ) return safe_cast<type>( val );								\
 																			\
 	throw gcnew InvalidCastException(String::Format(						\
 	ERR_CAST_FROM_TO, r->ToString(), t->ToString() ));						\
@@ -135,22 +135,22 @@ ValueBox::ValueBox( Object ^o ): \
 	// such types, then process all convertible)
 	if( type == bool::typeid ) {
 		// native bool
-		m_value = static_cast<bool>( o );
+		m_value = safe_cast<bool>( o );
 	} else if( type == int::typeid ) {
 		// native int
-		m_value = static_cast<int>( o );
+		m_value = safe_cast<int>( o );
 	} else if( type == double::typeid ) {
 		// native double
-		m_value = static_cast<double>( o );
+		m_value = safe_cast<double>( o );
 	} else if( type == DateTime::typeid ) {
 		// native DateTime
-		m_value = static_cast<DateTime>( o );
+		m_value = safe_cast<DateTime>( o );
 	} else if( type == String::typeid ) {
 		// native String
-		m_value = static_cast<String^>( o );
+		m_value = safe_cast<String^>( o );
 	} else if( type == PersistentStream::typeid ) {
 		// native PersistentStream
-		m_value = static_cast<PersistentStream^>( o );
+		m_value = safe_cast<PersistentStream^>( o );
 	} else if( type == DBNull::typeid ) {
 		// native DBNull
 		// do nothing: m_value already initialized with it

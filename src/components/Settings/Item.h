@@ -48,9 +48,8 @@ private:
 	STATE check_parent( Node ^parent );
 	Adapter^ get_adapter( void );
 	bool set_state( STATE state, bool sync );
-	//IEnumerable<Item^>^ expand_childs( void );
 
-	Item( Item ^parent, String ^path, Item^ *leaf );
+	Item( Item ^parent, String ^path, Item^ %leaf );
 
 internal:
 	static Item^ create_chain( Item ^parent, String ^path );

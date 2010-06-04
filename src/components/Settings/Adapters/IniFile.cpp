@@ -12,85 +12,9 @@
 /*																			*/
 /****************************************************************************/
 
-#include "vcclr.h"
 #include "IniFile.h"
 
-using namespace System::Runtime::InteropServices;
 using namespace _SETTINGS::Adapters;
-
-
-//-----------------------------------------------------------------------------
-//					External functions declaration (Win32)
-//-----------------------------------------------------------------------------
-
-//-------------------------------------------------------------------
-//
-// Retrieves the calling thread's last-error code value.
-//
-// The last-error code is maintained on a per-thread basis. Multiple
-// threads do not overwrite each other's last-error code.
-//
-//-------------------------------------------------------------------
-extern "C"
-unsigned long __stdcall
-GetLastError( void );
-
-
-//-------------------------------------------------------------------
-//
-// Retrieves a string from the specified section in an initialization
-// file.
-//
-// If lpAppName is NULL, GetPrivateProfileString copies all section
-// names in the specified file to the supplied buffer. If lpKeyName
-// is NULL, the function copies all key names in the specified
-// section to the supplied buffer. In either case, each string is
-// followed by a null character and the final string is followed by a
-// second null character. If the supplied destination buffer is too
-// small to hold all the strings, the last string is truncated and
-// followed by two null characters.
-//
-// The return value is the number of characters copied to the buffer,
-// not including the terminating null character. If neither lpAppName
-// nor lpKeyName is NULL and the supplied destination buffer is too
-// small to hold the requested string, the string is truncated and
-// followed by a null character, and the return value is equal to
-// nSize minus one. If either lpAppName or lpKeyName is NULL and the
-// supplied destination buffer is too small to hold all the strings,
-// the last string is truncated and followed by two null characters.
-// In this case, the return value is equal to nSize minus two.
-//
-//-------------------------------------------------------------------
-extern "C"
-unsigned long __stdcall
-GetPrivateProfileStringW(
-						  const wchar_t *lpAppName,
-						  const wchar_t *lpKeyName,
-						  const wchar_t *lpDefault,
-						  wchar_t *lpReturnedString,
-						  unsigned long nSize,
-						  const wchar_t *lpFileName
-						);
-
-
-//-------------------------------------------------------------------
-//
-// Copies a string into the specified section of an initialization
-// file.
-//
-// If lpKeyName is NULL, the entire section, including all entries
-// within the section, is deleted. If lpString is NULL, the key
-// pointed to by the lpKeyName parameter is deleted.
-//
-//-------------------------------------------------------------------
-extern "C"
-int __stdcall
-WritePrivateProfileStringW(
-							const wchar_t *lpAppName,
-							const wchar_t *lpKeyName,
-							const wchar_t *lpString,
-							const wchar_t *lpFileName
-						  );
 
 
 //-----------------------------------------------------------------------------
@@ -110,52 +34,31 @@ WritePrivateProfileStringW(
 //-------------------------------------------------------------------
 List<String^>^ IniFile::get_ini_string( String ^section, String ^key )
 {
-	// initialize pin pointers to string parameters
-	// (this is needed for marshaling to unmanaged code)
-	pin_ptr<const wchar_t>	lpFileName = PtrToStringChars( _filename );
-	pin_ptr<const wchar_t>	lpAppName = PtrToStringChars( section );
-	pin_ptr<const wchar_t>	lpKeyName = PtrToStringChars( key );
-
 	// allocate memory and initialize it to '\0'
-	wchar_t			*buf = new wchar_t[_bufsize]();
-	unsigned long	ret = 0;
+	array<wchar_t>	^buf = gcnew array<wchar_t>(_bufsize);
+	unsigned int	ret = 0;
 
 	// now read value/keys/sections from ini file
 	// until all data go in allocated buffer
-	for( unsigned long nSize = _bufsize;
-		 (ret = GetPrivateProfileStringW( lpAppName, lpKeyName, NULL,
-										  buf, nSize, lpFileName )
-		 ) == nSize - (lpKeyName ? 1 : 2); ) {
-		// free previous buffer
-		delete [] buf;
+	for( unsigned int nSize = _bufsize;
+		 (ret = GetPrivateProfileString( section, key, nullptr,
+										 buf, nSize, _filename )
+		 ) == nSize - (key ? 1 : 2); ) {
 		// and allocate new increazed
-		buf = new wchar_t[nSize += _bufsize]();
+		buf = gcnew array<wchar_t>(nSize += _bufsize);
 	}
+	if( !key && (ret > 0) ) ret--;
 
 	// create List of strings that will contain result
 	List<String^>	^list = gcnew List<String^>();
-
-	// GetPrivateProfileStringW function fill buffer with
-	// one string value or all section/key names that is
-	// devided by '\0' character, so parse result string
-	// to extract all names
-	for( wchar_t *wc = buf; wc < buf + ret; wc++ ) {
-		// string costructor copy all characters
-		// from buffer to first '\0'
-		String	^s = gcnew String(wc);
-		// add this section to list
-		list->Add( s );
-		// and move pointer to the end of the name
-		wc += s->Length;
-	}
-
-	// free buffer
-	delete [] buf;
+	// and fill it with result
+	list->AddRange( safe_cast<IEnumerable<String^>^>(
+					(gcnew String(buf, 0, ret))->Split( '\0' )) );
 
 	// if ini string value request returns empty
 	// array, then more deep processing is needed:
 	// check that section contains specified key
-	if(	(list->Count == 0) && (section != nullptr) && (key != nullptr ) &&
+	if( (list->Count == 0) && (section != nullptr) && (key != nullptr ) &&
 		get_ini_string( section, nullptr )->Contains( key ) ) {
 		// this is not default value (key have
 		// empty string value): add it to the list
@@ -183,18 +86,10 @@ List<String^>^ IniFile::get_ini_string( String ^section, String ^key )
 unsigned long IniFile::set_ini_string( String ^section, String ^key,
 									   String ^string )
 {
-	// initialize pin pointers to string parameters
-	// (this is needed for marshaling to unmanaged code)
-	pin_ptr<const wchar_t>	lpFileName = PtrToStringChars( _filename );
-	pin_ptr<const wchar_t>	lpAppName = PtrToStringChars( section );
-	pin_ptr<const wchar_t>	lpKeyName = PtrToStringChars( key );
-	pin_ptr<const wchar_t>	lpString = PtrToStringChars( string );
-
 	// attempt save changes to specified ini file
-	if( !WritePrivateProfileStringW( lpAppName, lpKeyName,
-									 lpString, lpFileName ) ) {
+	if( !WritePrivateProfileString( section, key, string, _filename ) ) {
 		// return last error if unsucceeded
-		return GetLastError();
+		return Marshal::GetLastWin32Error();
 	};
 	// all right, return 0
 	return 0;
@@ -271,19 +166,19 @@ String^ IniFile::obj_to_str( Object ^value )
 	// depend on value type make specific formatting
 	if( type == bool::typeid ) {
 		// convert bool to string using default format
-		return static_cast<bool>( value ).ToString();
+		return safe_cast<bool>( value ).ToString();
 	} else if( type == int::typeid ) {
 		// convert int to string by own format using modified culture info
-		return static_cast<int>( value ).ToString( INT_F, _ci );
+		return safe_cast<int>( value ).ToString( INT_F, _ci );
 	} else if( type == double::typeid ) {
 		// convert double to string by own format using modified culture info
-		return static_cast<double>( value ).ToString( DOUBLE_F, _ci );
+		return safe_cast<double>( value ).ToString( DOUBLE_F, _ci );
 	} else if( type == DateTime::typeid ) {
 		// convert DateTime to string by own format using modified culture info
-		return static_cast<DateTime>( value ).ToString( DATETIME_F, _ci );
+		return safe_cast<DateTime>( value ).ToString( DATETIME_F, _ci );
 	} else if( type == String::typeid ) {
 		// just return specified string
-		return static_cast<String^>( value );
+		return safe_cast<String^>( value );
 	} else {
 		// we doesn't support this type of value
 		throw gcnew ArgumentException(String::Format(

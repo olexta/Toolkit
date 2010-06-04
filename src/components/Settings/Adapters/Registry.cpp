@@ -91,16 +91,16 @@ String^ Registry::obj_to_str( Object ^value )
 	// depend on value type make specific formatting
 	if( type == bool::typeid ) {
 		// convert bool to string using default format
-		return static_cast<bool>( value ).ToString();
+		return safe_cast<bool>( value ).ToString();
 	} else if( type == double::typeid ) {
 		// convert double to string by own format using modified culture info
-		return static_cast<double>( value ).ToString( DOUBLE_F, _ci );
+		return safe_cast<double>( value ).ToString( DOUBLE_F, _ci );
 	} else if( type == DateTime::typeid ) {
 		// convert DateTime to string by own format using modified culture info
-		return static_cast<DateTime>( value ).ToString( DATETIME_F, _ci );
+		return safe_cast<DateTime>( value ).ToString( DATETIME_F, _ci );
 	} else if( type == String::typeid ) {
 		// just return specified string
-		return static_cast<String^>( value );
+		return safe_cast<String^>( value );
 	} else {
 		// we doesn't support this type of value
 		throw gcnew ArgumentException(String::Format(
@@ -287,7 +287,7 @@ Object^ Registry::get_value( String ^loc )
 			// do nothing: this is realy integer
 		} else if( type == String::typeid ) {
 			// parse string representation for known types
-			value = str_to_obj( static_cast<String^>( value ) );
+			value = str_to_obj( safe_cast<String^>( value ) );
 		} else {
 			// this is unsupported type - ignore it
 			value = nullptr;

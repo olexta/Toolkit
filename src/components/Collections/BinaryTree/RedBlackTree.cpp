@@ -70,7 +70,7 @@ generic<typename TKey, typename TValue>
 RedBlackTree<TKey, TValue>::RedBlackNode^ RedBlackTree<TKey, TValue>:: \
 RedBlackNode::Parent::get( void )
 {
-	return static_cast<RedBlackNode^>( Node::Parent );
+	return safe_cast<RedBlackNode^>( Node::Parent );
 }
 
 
@@ -84,7 +84,7 @@ generic<typename TKey, typename TValue>
 RedBlackTree<TKey, TValue>::RedBlackNode^ RedBlackTree<TKey, TValue>:: \
 RedBlackNode::Left::get( void )
 {
-	return static_cast<RedBlackNode^>( Node::Left );
+	return safe_cast<RedBlackNode^>( Node::Left );
 }
 
 
@@ -98,7 +98,7 @@ generic<typename TKey, typename TValue>
 RedBlackTree<TKey, TValue>::RedBlackNode^ RedBlackTree<TKey, TValue>:: \
 RedBlackNode::Right::get( void )
 {
-	return static_cast<RedBlackNode^>( Node::Right );
+	return safe_cast<RedBlackNode^>( Node::Right );
 }
 
 

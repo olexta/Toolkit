@@ -69,7 +69,7 @@ protected:
 	virtual void OnClear( void ) override;
 	virtual void OnInsert( String ^key, ValueBox value ) override;
 	virtual void OnRemove( String ^key, ValueBox value ) override;
-	virtual	void OnSet( String ^key, ValueBox value ) override;
+	virtual void OnSet( String ^key, ValueBox value ) override;
 	virtual void OnInsertComplete( String ^key, ValueBox value ) override;
 	virtual void OnRemoveComplete( String ^key, ValueBox value ) override;
 	virtual void OnSetComplete( String ^key, ValueBox value ) override;

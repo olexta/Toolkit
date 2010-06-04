@@ -19,7 +19,7 @@
 			IntermediateDirectory="..\..\..\..\tmp\$(ProjectName)\"
 			ConfigurationType="2"
 			CharacterSet="1"
-			ManagedExtensions="1"
+			ManagedExtensions="3"
 			>
 			<Tool Name="VCPreBuildEventTool" />
 			<Tool Name="VCCustomBuildTool" />
@@ -71,7 +71,7 @@
 			IntermediateDirectory="..\..\..\..\tmp\$(ProjectName)\"
 			ConfigurationType="2"
 			CharacterSet="1"
-			ManagedExtensions="1"
+			ManagedExtensions="3"
 			WholeProgramOptimization="1"
 			>
 			<Tool Name="VCPreBuildEventTool" />

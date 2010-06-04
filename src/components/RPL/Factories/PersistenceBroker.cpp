@@ -162,7 +162,7 @@ BrokerCache::default::get( String ^type, int id )
 	// try get weak reference for object
 	if( m_cache.TryGetValue( key( type, id ), wr ) ) {
 		// and return target object if succeeded
-		return static_cast<PersistentObject^>( wr->Target );
+		return safe_cast<PersistentObject^>( wr->Target );
 	}
 	return nullptr;
 
