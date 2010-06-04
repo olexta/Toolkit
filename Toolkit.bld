@@ -565,7 +565,7 @@ Step Output:
 		</macro>
 		<macro name='PRODUCT_VERSION'>
 			<description>Product mainline version in format: Major.Minor</description>
-			<value>1.0</value>
+			<value>1.1</value>
 		</macro>
 		<macro name='PRODUCT_YEARS'>
 			<description>Trademark years</description>
