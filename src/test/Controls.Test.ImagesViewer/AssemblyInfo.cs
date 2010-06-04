@@ -7,10 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle( "" )]
 [assembly: AssemblyDescription( "" )]
-[assembly: AssemblyCompany( "ABBYY Ukraine" )]
 [assembly: AssemblyProduct( "" )]
-[assembly: AssemblyCopyright( "Copyright © ABBYY Ukraine 2008" )]
-
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
@@ -26,5 +23,13 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion( "1.0.*" )]
 [assembly: AssemblyFileVersion( "1.0.0.0" )]
+
+//
+// This is auto generated attributes for current 1.1.1.1170 version.
+//
+[assembly: AssemblyProduct("Toolkit")]
+[assembly: AssemblyInformationalVersion("1.1.1")]
+[assembly: AssemblyCompany("ABBYY Ukraine")]
+[assembly: AssemblyCopyright("Copyright © ABBYY Ukraine 2007-2009")]
+[assembly: AssemblyVersion("1.1.1.1170")]
