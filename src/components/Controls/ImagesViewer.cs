@@ -116,10 +116,7 @@ namespace Toolkit.Controls
 		/// </remarks>
 		public int Count
 		{
-			get
-			{
-				return m_Count;
-			}
+			get { return m_Count; }
 			set
 			{
 				if( value < 0 ) {
@@ -141,10 +138,7 @@ namespace Toolkit.Controls
 		/// </summary>
 		public bool ImageScaling
 		{
-			get
-			{
-				return m_Scale;
-			}
+			get { return m_Scale; }
 			set
 			{
 				m_Scale = value;
@@ -160,7 +154,7 @@ namespace Toolkit.Controls
 		//
 		private void display_image( int index )
 		{
-			if( index >= 0 && show_image != null ) {
+			if( (index >= 0) && (show_image != null) && Visible ) {
 				ShowImageEventArgs args = new ShowImageEventArgs( index );
 				show_image( this, args );
 				m_Image = args.Image;
@@ -221,7 +215,7 @@ namespace Toolkit.Controls
 			m_PicBox.Location = new Point( x, y );
 		}
 
-		// 
+		//
 		// Здійснює вмикання/вимикання кнопок "Попереднє"/"Наступне"
 		// в залежності від поточного стану перегляду.
 		//
@@ -236,6 +230,18 @@ namespace Toolkit.Controls
 			m_ToolNext.Enabled = m_Index != m_Count - 1;
 		}
 
+		//
+		// Обробник події показу контрола.
+		//
+		protected override void OnVisibleChanged( EventArgs e )
+		{
+			// якщо зображення досі не завантажено (контрол був невидимий)
+			// спробуємо його отримати
+			if( Visible && (m_Image == null) ) display_image( m_Index );
+
+			base.OnVisibleChanged( e );
+		}
+
 		// 
 		// Обробник події зміни розміру вікна.
 		// 
@@ -244,9 +250,7 @@ namespace Toolkit.Controls
 		{
 			base.OnSizeChanged( e );
 
-			if( m_Index != -1 ) {
-				rescale();
-			}
+			if( m_Index != -1 ) rescale();
 		}
 
 		// ====================================================================
@@ -275,9 +279,7 @@ namespace Toolkit.Controls
 		// ====================================================================
 		private void show_first()
 		{
-			if( m_Index > 0 ) {
-				display_image( 0 );
-			}
+			if( m_Index > 0 ) display_image( 0 );
 		}
 
 		private void show_last()
@@ -289,9 +291,7 @@ namespace Toolkit.Controls
 
 		private void show_prev()
 		{
-			if( m_Index > 0 ) {
-				display_image( m_Index - 1 );
-			}
+			if( m_Index > 0 ) display_image( m_Index - 1 );
 		}
 
 		private void show_next()
