@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -118,165 +118,39 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="m_ToolNext.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
-  </data>
-  <data name="&gt;&gt;m_ToolPrev.Name" xml:space="preserve">
-    <value>m_ToolPrev</value>
-  </data>
-  <data name="&gt;&gt;m_PicBox.Parent" xml:space="preserve">
-    <value>m_Panel</value>
-  </data>
-  <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>System.Windows.Forms.UserControl, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;m_ToolNext.Name" xml:space="preserve">
-    <value>m_ToolNext</value>
-  </data>
-  <data name="m_ToolLblInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>0, 22</value>
-  </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="m_Panel.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
+  <data name="m_PicBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
   </data>
   <data name="m_PicBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>143, 122</value>
+    <value>40, 38</value>
   </data>
-  <data name="&gt;&gt;m_ToolSeparator.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;m_Panel.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="$this.Size" type="System.Drawing.Size, System.Drawing">
-    <value>337, 281</value>
-  </data>
-  <data name="m_ToolScale.Text" xml:space="preserve">
-    <value>Scale</value>
-  </data>
-  <data name="&gt;&gt;m_Tools.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="m_ToolPrev.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
-  </data>
-  <data name="m_ToolNext.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="&gt;&gt;m_PicBox.Type" xml:space="preserve">
-    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="m_Tools.Size" type="System.Drawing.Size, System.Drawing">
-    <value>337, 25</value>
-  </data>
-  <data name="m_Panel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 25</value>
-  </data>
-  <data name="&gt;&gt;m_ToolPrev.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;m_ToolSeparator.Name" xml:space="preserve">
-    <value>m_ToolSeparator</value>
-  </data>
-  <data name="&gt;&gt;m_Panel.Name" xml:space="preserve">
-    <value>m_Panel</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="m_Panel.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="&gt;&gt;m_Tools.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="m_PicBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>92, 59</value>
-  </data>
-  <data name="&gt;&gt;m_ToolNext.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="m_ToolScale.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
-  </data>
-  <data name="m_ToolPrev.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAC1JREFUOE9jYBh+
-        4MCBA/+BvoJh4j2IphFkAHFgCGmEeYhsJw9aA4iLqsGvCgBm8jYfwf8r6AAAAABJRU5ErkJggg==
-</value>
-  </data>
-  <data name="m_ToolLblCount.Text" xml:space="preserve">
-    <value>0/0</value>
-  </data>
-  <data name="&gt;&gt;m_ToolScale.Name" xml:space="preserve">
-    <value>m_ToolScale</value>
-  </data>
-  <data name="m_Tools.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="m_Panel.AutoScroll" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="m_PicBox.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;m_Panel.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;m_ToolLblInfo.Name" xml:space="preserve">
-    <value>m_ToolLblInfo</value>
-  </data>
-  <data name="m_ToolNext.Text" xml:space="preserve">
-    <value>Next image</value>
-  </data>
-  <data name="&gt;&gt;m_Tools.Name" xml:space="preserve">
-    <value>m_Tools</value>
-  </data>
-  <data name="m_Tools.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
-  </data>
-  <data name="&gt;&gt;m_Tools.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="m_ToolPrev.Text" xml:space="preserve">
-    <value>Previous image</value>
-  </data>
-  <data name="&gt;&gt;m_ToolScale.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;m_ToolLblCount.Name" xml:space="preserve">
-    <value>m_ToolLblCount</value>
-  </data>
-  <data name="&gt;&gt;m_Panel.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="m_ToolLblCount.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
-  </data>
-  <data name="&gt;&gt;m_ToolLblCount.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripLabel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;m_PicBox.Name" xml:space="preserve">
     <value>m_PicBox</value>
   </data>
-  <data name="m_ToolNext.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAACxJREFUOE9jYBhW
-        4D/QN/8PHDgAokkGYM0j1ACy/U5/jaB4pSiaSE4Y9NUAAMdUNh+UtE0EAAAAAElFTkSuQmCC
-</value>
+  <data name="&gt;&gt;m_PicBox.Type" xml:space="preserve">
+    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="m_ToolScale.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
+  <data name="&gt;&gt;m_PicBox.Parent" xml:space="preserve">
+    <value>m_Panel</value>
   </data>
-  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>6, 13</value>
+  <data name="&gt;&gt;m_PicBox.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
-  <data name="m_ToolPrev.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
+  <data name="&gt;&gt;m_Panel.Name" xml:space="preserve">
+    <value>m_Panel</value>
   </data>
-  <data name="&gt;&gt;$this.Name" xml:space="preserve">
-    <value>ImagesViewer</value>
+  <data name="&gt;&gt;m_Panel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;m_Panel.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;m_Panel.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="m_ToolScale.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -293,28 +167,34 @@
         7jiEurG2/KNW2jyv14tarcIhy6q4of9y+BuDcJK7YU2IbwAAAABJRU5ErkJggg==
 </value>
   </data>
-  <data name="&gt;&gt;m_ToolLblInfo.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripLabel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="m_ToolScale.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
   </data>
-  <data name="m_Panel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>337, 256</value>
+  <data name="m_ToolScale.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 22</value>
   </data>
-  <data name="m_ToolSeparator.Size" type="System.Drawing.Size, System.Drawing">
-    <value>6, 25</value>
+  <data name="m_ToolScale.Text" xml:space="preserve">
+    <value>Scale</value>
   </data>
-  <data name="&gt;&gt;m_PicBox.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="m_PicBox.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <metadata name="m_Tools.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>0, 0</value>
+  <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Ukrainian (Ukraine)</value>
   </metadata>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Ukrainian (Ukraine)</value>
-  </metadata>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>6, 13</value>
+  </data>
+  <data name="&gt;&gt;m_ToolScale.Name" xml:space="preserve">
+    <value>m_ToolScale</value>
+  </data>
+  <data name="&gt;&gt;m_ToolScale.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>MultiImageViewer</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>Toolkit.Controls.MultiImageViewerBase, Toolkit.Controls, Version=1.0.3884.31671, Culture=neutral, PublicKeyToken=null</value>
+  </data>
 </root>

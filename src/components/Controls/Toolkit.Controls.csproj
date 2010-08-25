@@ -61,13 +61,19 @@
     <Compile Include="NotificationForm.Designer.cs">
       <DependentUpon>NotificationForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImagesViewer.cs">
+    <Compile Include="MultiObjectViewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ImagesViewer.designer.cs">
-      <DependentUpon>ImagesViewer.cs</DependentUpon>
+    <Compile Include="MultiObjectViewer.designer.cs">
+      <DependentUpon>MultiObjectViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="ResourceHelper.cs" />
+    <Compile Include="MultiImageViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MultiImageViewer.Designer.cs">
+      <DependentUpon>MultiImageViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="TreeViewer.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -76,6 +82,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="MultiImageViewer.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MultiImageViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MultiImageViewer.uk-UA.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MultiImageViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="NotificationForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>NotificationForm.cs</DependentUpon>
@@ -87,12 +101,12 @@
     <EmbeddedResource Include="NotificationForm_Ext.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImagesViewer.resx">
-      <DependentUpon>ImagesViewer.cs</DependentUpon>
+    <EmbeddedResource Include="MultiObjectViewer.resx">
+      <DependentUpon>MultiObjectViewer.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImagesViewer.uk-UA.resx">
-      <DependentUpon>ImagesViewer.cs</DependentUpon>
+    <EmbeddedResource Include="MultiObjectViewer.uk-UA.resx">
+      <DependentUpon>MultiObjectViewer.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="NotificationForm_Ext.uk-UA.resx">
