@@ -59,6 +59,7 @@
     <Compile Include="IClassInfo.cs" />
     <Compile Include="MetaData.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="StringCollectionInfo.cs" />
     <Compile Include="SClass.cs" />
     <Compile Include="SClassMember.cs" />
     <Compile Include="SProperty.cs" />

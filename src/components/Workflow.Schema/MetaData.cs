@@ -68,6 +68,11 @@ namespace Toolkit.Workflow.Schema
 		private Map<string, PropSetInfo> m_PropSets;
 
 		/// <summary>
+		/// Saves available PropertyVariantsInfo
+		/// </summary>
+		private Map<string, StringCollectionInfo> m_StringCollections;
+
+		/// <summary>
 		/// Memory copy of schema file.
 		/// </summary>
 		private XmlDocument m_SchemaXML;
@@ -209,6 +214,33 @@ namespace Toolkit.Workflow.Schema
 		}
 
 		/// <summary>
+		/// Gets enumeration of all available PropertyVariants.
+		/// </summary>
+		public IEnumerable<string> StringCollectionNames
+		{
+			get
+			{
+				return m_StringCollections.Keys;
+			}
+		}
+
+		/// <summary>
+		/// Returns PropertyVariants description by his name.
+		/// </summary>
+		/// <returns>
+		/// PropertyVariantsInfo instance - if schema contains description for specified name,
+		/// null - otherwise.
+		/// </returns>
+		public StringCollectionInfo GetStringCollectionInfo( string stringCollectionName )
+		{
+			if( m_StringCollections.ContainsKey( stringCollectionName ) ) {
+				return m_StringCollections[stringCollectionName];
+			} else {
+				return null;
+			}
+		}
+
+		/// <summary>
 		/// Gets current loaded schema name.
 		/// </summary>
 		public string Name
@@ -291,6 +323,12 @@ namespace Toolkit.Workflow.Schema
 			foreach( XmlNode node in m_SchemaXML.DocumentElement.SelectNodes( "ws:propSet", m_NsMgr ) ) {
 				PropSetInfo psi = new PropSetInfo( node );
 				m_PropSets.Add( psi.Name, psi );
+			}
+			
+			m_StringCollections = new Map<string, StringCollectionInfo>();
+			foreach( XmlNode node in m_SchemaXML.DocumentElement.SelectNodes( "ws:stringCollection", m_NsMgr ) ) {
+				StringCollectionInfo sci = new StringCollectionInfo( node );
+				m_StringCollections.Add( sci.Name, sci );
 			}
 		}
 	}

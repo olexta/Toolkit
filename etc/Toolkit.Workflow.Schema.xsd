@@ -1,23 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- SVN: $Id$ -->
-<xsd:schema
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://abbyy.ua/Toolkit/Workflow.Schema"
-	xmlns:target="http://abbyy.ua/Toolkit/Workflow.Schema"
-	elementFormDefault="qualified"
-	attributeFormDefault="qualified">
-
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://abbyy.ua/Toolkit/Workflow.Schema" xmlns:target="http://abbyy.ua/Toolkit/Workflow.Schema" elementFormDefault="qualified" attributeFormDefault="qualified">
 	<xsd:element name="schema" type="target:Schema" />
-
 	<xsd:complexType name="Schema">
 		<xsd:sequence>
 			<xsd:element name="class" type="target:Class" minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="enum" type="target:Enum"  minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="enum" type="target:Enum" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="propSet" type="target:PropSet" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="stringCollection" type="target:StringCollection" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 	</xsd:complexType>
-
 	<xsd:complexType name="Class">
 		<xsd:sequence>
 			<xsd:element name="caption" type="xsd:string" />
@@ -28,13 +21,11 @@
 		</xsd:sequence>
 		<xsd:attribute name="type" type="xsd:string" use="required" />
 	</xsd:complexType>
-
 	<xsd:complexType name="Properties">
 		<xsd:sequence>
 			<xsd:element name="property" type="target:Property" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-
 	<xsd:complexType name="Property">
 		<xsd:sequence>
 			<xsd:element name="caption" type="xsd:string" />
@@ -42,20 +33,18 @@
 			<xsd:element name="description" type="xsd:string" />
 			<xsd:element name="localizedDescription" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="type" type="xsd:string" />
-			<xsd:element name="defaultValue" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="defaultValue" type="xsd:string" minOccurs="0" maxOccurs="1" />
 			<xsd:element name="displayOrder" type="xsd:int" />
 			<xsd:element name="isReadOnly" type="xsd:boolean" />
 			<xsd:element name="isRequired" type="xsd:boolean" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 	</xsd:complexType>
-
 	<xsd:complexType name="Methods">
 		<xsd:sequence>
 			<xsd:element name="method" type="target:Method" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-
 	<xsd:complexType name="Method">
 		<xsd:sequence>
 			<xsd:element name="caption" type="xsd:string" />
@@ -67,13 +56,11 @@
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 	</xsd:complexType>
-
 	<xsd:complexType name="States">
 		<xsd:sequence>
 			<xsd:element name="state" type="target:State" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-
 	<xsd:complexType name="State">
 		<xsd:sequence>
 			<xsd:element name="name" type="xsd:string" />
@@ -83,13 +70,11 @@
 		</xsd:sequence>
 		<xsd:attribute name="mask" type="xsd:string" use="required" />
 	</xsd:complexType>
-
 	<xsd:complexType name="OverridenProperties">
 		<xsd:sequence>
 			<xsd:element name="property" type="target:OverridenProperty" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-
 	<xsd:complexType name="OverridenProperty">
 		<xsd:sequence>
 			<xsd:element name="caption" type="xsd:string" minOccurs="0" />
@@ -102,13 +87,11 @@
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 	</xsd:complexType>
-
 	<xsd:complexType name="OverridenMethods">
 		<xsd:sequence>
 			<xsd:element name="method" type="target:OverridenMethod" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-
 	<xsd:complexType name="OverridenMethod">
 		<xsd:sequence>
 			<xsd:element name="caption" type="xsd:string" minOccurs="0" />
@@ -119,8 +102,7 @@
 			<xsd:element name="isAvailable" type="xsd:boolean" minOccurs="0" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
-	</xsd:complexType>	
-
+	</xsd:complexType>
 	<!-- Enumeration of acceptable property types
 	<xsd:simpleType name="PropertyType">
 		<xsd:restriction base="xsd:string">
@@ -151,7 +133,6 @@
 			<xsd:enumeration value="uk-UA" />
 		</xsd:restriction>
 	</xsd:simpleType>
-
 	<!-- Extending xsd:string type with uiculture attribute -->
 	<xsd:complexType name="LocalizedString">
 		<xsd:simpleContent>
@@ -160,14 +141,12 @@
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
-
 	<xsd:complexType name="Enum">
 		<xsd:sequence>
 			<xsd:element name="const" type="target:EnumConst" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 		<xsd:attribute name="type" type="xsd:string" use="required" />
 	</xsd:complexType>
-
 	<xsd:complexType name="EnumConst">
 		<xsd:sequence>
 			<xsd:element name="value" type="xsd:int" />
@@ -175,22 +154,19 @@
 			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-	
 	<xsd:complexType name="PropSet">
 		<xsd:sequence>
 			<xsd:element name="caption" type="xsd:string" />
-			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />		
+			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="properties" type="target:PropSetProperties" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 	</xsd:complexType>
-	
 	<xsd:complexType name="PropSetProperties">
 		<xsd:sequence>
 			<xsd:element name="property" type="target:PropSetProperty" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-	
 	<xsd:complexType name="PropSetProperty">
 		<xsd:sequence>
 			<xsd:element name="caption" type="xsd:string" />
@@ -198,7 +174,23 @@
 			<xsd:element name="description" type="xsd:string" minOccurs="0" />
 			<xsd:element name="localizedDescription" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
-		<xsd:attribute name="name" type="xsd:string" use="required"/>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
 	</xsd:complexType>
-
+	<xsd:complexType name="StringCollection">
+		<xsd:sequence>
+			<xsd:element name="items" type="target:StringCollectionValues" />
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+	</xsd:complexType>
+	<xsd:complexType name="StringCollectionValues">
+		<xsd:sequence>
+			<xsd:element name="item" type="target:StringCollectionValue" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="StringCollectionValue">
+		<xsd:sequence>
+			<xsd:element name="value" type="xsd:string" />
+			<xsd:element name="localizedValue" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 </xsd:schema>
