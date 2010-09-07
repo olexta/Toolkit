@@ -60,11 +60,11 @@ namespace Toolkit.Workflow.Schema
 
 		private string m_Name;
 		private string m_Caption;
-		private Map<string, PropSetPropertyInfo> m_Properties;
+		private Dictionary<string, PropSetPropertyInfo> m_Properties;
 
 		internal PropSetInfo( XmlNode node )
 		{
-			m_Properties = new Map<string, PropSetPropertyInfo>();
+			m_Properties = new Dictionary<string, PropSetPropertyInfo>();
 			m_Name = node.Attributes.GetNamedItem( "ws:name" ).Value;
 			m_Caption = Tools.GetLocalizedString( node, "caption" );
 			string keyName, keyCaption, keyDescription;

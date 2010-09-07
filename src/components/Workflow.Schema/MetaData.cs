@@ -65,12 +65,12 @@ namespace Toolkit.Workflow.Schema
 		/// <summary>
 		/// Saves available PropSets;
 		/// </summary>
-		private Map<string, PropSetInfo> m_PropSets;
+		private KeyedMap<string, PropSetInfo> m_PropSets;
 
 		/// <summary>
 		/// Saves available PropertyVariantsInfo
 		/// </summary>
-		private Map<string, StringCollectionInfo> m_StringCollections;
+		private KeyedMap<string, StringCollectionInfo> m_StringCollections;
 
 		/// <summary>
 		/// Memory copy of schema file.
@@ -192,8 +192,10 @@ namespace Toolkit.Workflow.Schema
 		/// </summary>
 		public IEnumerable<string> PropSetsNames
 		{
-			get {
-				return m_PropSets.Keys;
+			get	{
+				foreach( PropSetInfo psi in m_PropSets ) {
+					yield return psi.Name;
+				}
 			}
 		}
 
@@ -206,7 +208,7 @@ namespace Toolkit.Workflow.Schema
 		/// </returns>
 		public PropSetInfo GetPropSetInfo( string propSetName )
 		{
-			if( m_PropSets.ContainsKey( propSetName ) ) {
+			if( m_PropSets.Contains( propSetName ) ) {
 				return m_PropSets[ propSetName ];
 			} else {
 				return null;
@@ -218,9 +220,10 @@ namespace Toolkit.Workflow.Schema
 		/// </summary>
 		public IEnumerable<string> StringCollectionNames
 		{
-			get
-			{
-				return m_StringCollections.Keys;
+			get {
+				foreach( StringCollectionInfo sci in m_StringCollections ) {
+					yield return sci.Name;
+				}
 			}
 		}
 
@@ -233,7 +236,7 @@ namespace Toolkit.Workflow.Schema
 		/// </returns>
 		public StringCollectionInfo GetStringCollectionInfo( string stringCollectionName )
 		{
-			if( m_StringCollections.ContainsKey( stringCollectionName ) ) {
+			if( m_StringCollections.Contains( stringCollectionName ) ) {
 				return m_StringCollections[stringCollectionName];
 			} else {
 				return null;
@@ -319,16 +322,16 @@ namespace Toolkit.Workflow.Schema
 			foreach( XmlNode node in m_SchemaXML.DocumentElement.SelectNodes( "ws:enum", m_NsMgr ) )
 				m_Enums.Add( new EnumInfo( node ) );
 
-			m_PropSets = new Map<string,PropSetInfo>();
+			m_PropSets = new KeyedMap<string,PropSetInfo>();
 			foreach( XmlNode node in m_SchemaXML.DocumentElement.SelectNodes( "ws:propSet", m_NsMgr ) ) {
 				PropSetInfo psi = new PropSetInfo( node );
-				m_PropSets.Add( psi.Name, psi );
+				m_PropSets.Add( psi );
 			}
 			
-			m_StringCollections = new Map<string, StringCollectionInfo>();
+			m_StringCollections = new KeyedMap<string, StringCollectionInfo>();
 			foreach( XmlNode node in m_SchemaXML.DocumentElement.SelectNodes( "ws:stringCollection", m_NsMgr ) ) {
 				StringCollectionInfo sci = new StringCollectionInfo( node );
-				m_StringCollections.Add( sci.Name, sci );
+				m_StringCollections.Add( sci );
 			}
 		}
 	}
