@@ -117,11 +117,79 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="down" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAACxJREFUOE9jYBgF
+        wzEEWJhY/uPDRPkZlwFEaYYpQjeEJM3ohpCleVQT8SEAAFWhFLX8dtyVAAAAAElFTkSuQmCC
+    </value>
+  </data>
+  <data name="Error_btnClose_text" xml:space="preserve">
+    <value>Quit application</value>
+  </data>
+  <data name="Error_ico" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE2goCCq9qCxGtuhEVpuATE6HhDg2dvwQEpnEAAKoOAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALuDcCG9HfCCjc/wcm2/8LJdP/FCTB/yUjpP8tIZL/FxKb5wAB
+        oUQAAAAAAAAAAAAAAAAAAAAAAAAAAAAOwDUAKOr0AC/4/wAu9v8ALfT/ACvw/wAo6v8AJeX/DyPI/zAj
+        kf8gGZX5AAGhRAAAAAAAAAAAAAAAAAAX7AcKLOjaBTj+/wU4/v8FN/7/AzX+/wEy/P8AL/j/ACvw/wAn
+        6P8HI9b/MSSQ/xYSnOcAAKsOAAAAAAAAAAACHN9eI1D9/w9B/v8QQv7/D0H+/w0//v8JPP7/BDf+/wAy
+        /P8ALfP/ACfp/xIkxv8uI5L/AwWlcgAAAAAAAAAAFjbmqzBd/v8eTf3/YoDu/2eG8v9vjvX/dZP4/3eW
+        +/92lf3/dpT9/3eT+v8oTfD/Kiaf/w4Por8AAAAAAAAAACZI6s8+af7/KVT2/9va1v/f39//6Ojo//Dw
+        8P/4+Pj//v7+//7+/v/+/v7/SGr2/xonvv8UFqXkAAAAAAAAAAArT+3OU3r+/y9T6P/d3Nj/4eHg/+rq
+        6f/z8/L//Pz8//7+/v/+/v7//v7+/0ds+f8RKdH/Exis4gAAAAAAAAAAJEfvp3GS/v8yVuf/Xm/Z/19z
+        4/9geO3/X3v3/19+/v9cf/7/XH/+/12A/v8dS/z/DSva/wsVtrsAAAAAAAAAAAYp9VZ1lv3/X4f+/0h3
+        /v9GdP7/P23+/zZl/v8rXP7/IVL+/xZI/v8MPv7/AjT+/w0t3v8CDsBrAAAAAAAAAAAAKf4EOVv40oWk
+        /v9UgP7/S3n+/0Vz/v86af7/L1/+/yRV/v8ZSv7/DkD+/wM2/v8GIdbfAAfhCgAAAAAAAAAAAAAAAAAo
+        +SpUePvthKP+/1+I/v9Gdf7/PGv+/zBg/v8lVf7/Gkv+/w9B/v8EL/D0AA/BOAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAACn5Kjpc+dF6nP3/c5b+/1Z+/v9AbP7/MV/+/yRT/f8KMezbABPINQAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAKf4ECC/4VihM8qYwVPHOKk7vzxk77qsDI+peABvzBwAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAA//+sQfAPrEHgB6xBwAOsQYABrEGAAaxBgAGsQYABrEGAAaxBgAGsQYABrEGAAaxBwAOsQeAH
+        rEHwD6xB//+sQQ==
+    </value>
+  </data>
+  <data name="up" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAACxJREFUOE9jYBgF
+        gzwEWJhY/oMwWc6EaSbLEHTNJBmCSzNJhpDl51FN5IcAAFWhFLVt3UoHAAAAAElFTkSuQmCC
+    </value>
+  </data>
+  <data name="Warning_btnClose_text" xml:space="preserve">
+    <value>Close window</value>
+  </data>
+  <data name="Warning_ico" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAaDtlguosemKqXJqCOlyagbp8qoFKnLqA2ry6gFrMulALDNpQCyzqUAscykAK7JowCm
+        xJwAa6c+AAAAAAB5ri1wxt/+itvt/3bb7P9i2+3/Tt7t/znh7/8c4/L/DOz1/wH0+f8A/f3/AP7+/wD+
+        /v8A/v7/ANLh+ABeoR8Aeq49es3k/4zb7P932uz/Y9vs/1Dd7f8v2/L/KENI/zpdYP8B8vr/APr8/wD+
+        /v8A/v7/AP7+/wD4+v8AYZZIAHyyAiuhxciR3O3/e9rs/2ja7P9U3O3/ONnv/xlPXv8maXf/B+34/wD2
+        +f8A/P3/AP7+/wD+/v8AutTfAGylCAAAAAAAjcY4Zsfh/oHa7P9t2uz/W9vs/0jd7f8l2Or/GN3s/xTq
+        9P8E8Pf/APb6/wD8/f8A8fb/AHutVgAAAAAAAAAAAAAAABafz6KG2uz/ddrs/2Pa7P9S3O3/KYOP/y2J
+        kP8g5vL/Euv0/wbv9v8A9fn/AK3NwgBxqQEAAAAAAAAAAAAAAAAAZIobTLzc837a7P9t2uz/R9ny/y5B
+        RP88UVP/IeX0/yLm8f8X6fP/Ctfn/QB4sDIAAAAAAAAAAAAAAAAAAAAAAAAAAAidz3p91ur/eNrs/zq1
+        z/8qKCj/Ojg4/yfF2P8y4e//KOXx/wWVwJ0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoNoIN7Ta3Yba
+        7P81l7D/ISEh/zExMf8tp7j/RN7u/yK+2vEAf7kYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACb
+        0VJ1z+b/VLvW/xUuNv8iO0L/PMXf/1DZ6/8FjrZ3AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAJqrVvZbc7f9w0+v/Y9Tt/3La7P8rrdHcAIrDBwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAACX0S1oxeD7mNzt/43b7P9tz+b/AYa9UQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAFIrQlKLd7f+f3u7/KaHMvQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAACX0AsYlcWIH5jFlgCHuBgAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAA//+sQYABrEEAAKxBAACsQQAArEGAAaxBwAGsQcADrEHgB6xB4AesQfAPrEH4D6xB+B+sQfw/
+        rEH8P6xB//+sQQ==
+    </value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="tbDetails.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Left, Right</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="tbDetails.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 103</value>
   </data>
@@ -245,6 +313,9 @@
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
     <value>387, 286</value>
+  </data>
+  <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
+    <value>CenterScreen</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>NotificationForm</value>

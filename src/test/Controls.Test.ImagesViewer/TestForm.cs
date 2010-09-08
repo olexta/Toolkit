@@ -19,9 +19,10 @@ namespace Toolkit.Controls.Test
 			InitializeComponent();
 		}
 
-		private void m_Viewer_ShowImage( object sender, ImagesViewer.ShowImageEventArgs e )
+		private void m_Viewer_ShowObject( object sender, MultiImageViewer.ShowObjectEventArgs e )
 		{
-			e.Image = Image.FromFile( m_List[e.ImageIndex] );
+			if( m_List.Count > e.Index )
+				e.Object = Image.FromFile( m_List[e.Index] );
 		}
 
 		private void button1_Click( object sender, EventArgs e )

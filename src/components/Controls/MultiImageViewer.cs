@@ -15,6 +15,7 @@ namespace Toolkit.Controls
 		// ====================================================================
 		//            Ф-ї масшабування та позиціювання зображення
 		// ====================================================================
+
 		private void rescale()
 		{
 			if( (Index == -1) || (m_PicBox.Image == null) ) return;
@@ -46,42 +47,22 @@ namespace Toolkit.Controls
 			m_PicBox.Location = new Point( x, y );
 		}
 
-		private void scroll_up()
-		{
-			if( (m_PicBox.Image != null) && !m_ToolScale.Checked ) {
-				m_Panel.AutoScrollPosition = new Point(
-					-m_Panel.AutoScrollPosition.X,
-					-m_Panel.AutoScrollPosition.Y -
-						m_Panel.VerticalScroll.SmallChange );
-			}
-		}
-
-		private void scroll_down()
+		private void scroll_v( int lines )
 		{
 			if( (m_PicBox.Image != null) && !m_ToolScale.Checked ) {
 				m_Panel.AutoScrollPosition = new Point(
 					-m_Panel.AutoScrollPosition.X,
 					-m_Panel.AutoScrollPosition.Y +
-						m_Panel.VerticalScroll.SmallChange );
+						lines * m_Panel.VerticalScroll.SmallChange );
 			}
 		}
 
-		private void scroll_left()
-		{
-			if( (m_PicBox.Image != null) && !m_ToolScale.Checked ) {
-				m_Panel.AutoScrollPosition = new Point(
-					-m_Panel.AutoScrollPosition.X -
-						m_Panel.HorizontalScroll.SmallChange,
-					-m_Panel.AutoScrollPosition.Y );
-			}
-		}
-
-		private void scroll_right()
+		private void scroll_h( int lines )
 		{
 			if( (m_PicBox.Image != null) && !m_ToolScale.Checked ) {
 				m_Panel.AutoScrollPosition = new Point(
 					-m_Panel.AutoScrollPosition.X +
-						m_Panel.HorizontalScroll.SmallChange,
+						lines * m_Panel.HorizontalScroll.SmallChange,
 					-m_Panel.AutoScrollPosition.Y );
 			}
 		}
@@ -89,10 +70,6 @@ namespace Toolkit.Controls
 		// ====================================================================
 		//          Обробники подій для прокрутки зображення рухом миші
 		// ====================================================================
-		private void PicBox_Click( object sender, EventArgs e )
-		{
-			this.Focus();
-		}
 
 		private void PicBox_MouseDown( object sender, MouseEventArgs e )
 		{
@@ -123,20 +100,20 @@ namespace Toolkit.Controls
 			}
 		}
 
-		private void ToolScale_Click( object sender, EventArgs e )
+		/// <summary />
+		protected override void OnMouseWheel( MouseEventArgs e )
 		{
-			this.Focus();
-		}
+			scroll_v( -e.Delta * SystemInformation.MouseWheelScrollLines
+							   / SystemInformation.MouseWheelScrollDelta );
 
-		private void ToolScale_CheckedChanged( object sender, EventArgs e )
-		{
-			if( Index != -1 ) rescale();
+			base.OnMouseWheel( e );
 		}
 
 		// ====================================================================
 		//         Обробники подій управління процесом переглядання
 		//                    за допомогою клавіатури
 		// ====================================================================
+
 		/// <summary />
 		protected override bool IsInputKey( Keys keyData )
 		{
@@ -156,16 +133,16 @@ namespace Toolkit.Controls
 		{
 			switch( e.KeyCode ) {
 				case Keys.Up:
-					scroll_up();
+					scroll_v( -1 );
 				break;
 				case Keys.Down:
-					scroll_down();
+					scroll_v( 1 );
 				break;
 				case Keys.Left:
-					scroll_left();
+					scroll_h( -1 );
 				break;
 				case Keys.Right:
-					scroll_right();
+					scroll_h( 1 );
 				break;
 			}
 			base.OnKeyDown( e );
@@ -177,6 +154,25 @@ namespace Toolkit.Controls
 			if( e.KeyCode == Keys.F ) ImageScaling = !ImageScaling;
 
 			base.OnKeyUp( e );
+		}
+
+		// ====================================================================
+		//                   Загальні обробники подій
+		// ====================================================================
+
+		private void PicBox_Click( object sender, EventArgs e )
+		{
+			this.Focus();
+		}
+
+		private void ToolScale_Click( object sender, EventArgs e )
+		{
+			this.Focus();
+		}
+
+		private void ToolScale_CheckedChanged( object sender, EventArgs e )
+		{
+			if( Index != -1 ) rescale();
 		}
 
 		/// <summary>

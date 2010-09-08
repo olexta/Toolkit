@@ -28,24 +28,25 @@ namespace Toolkit.Controls.Test
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.m_Viewer = new Toolkit.Controls.ImagesViewer();
+			this.m_Viewer = new Toolkit.Controls.MultiImageViewer();
 			this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
 			this.button1 = new System.Windows.Forms.Button();
-			( (System.ComponentModel.ISupportInitialize)( this.numericUpDown1 ) ).BeginInit();
+			((System.ComponentModel.ISupportInitialize) (this.numericUpDown1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// m_Viewer
 			// 
-			this.m_Viewer.Anchor = ( (System.Windows.Forms.AnchorStyles)( ( ( ( System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom )
-						| System.Windows.Forms.AnchorStyles.Left )
-						| System.Windows.Forms.AnchorStyles.Right ) ) );
-			this.m_Viewer.Count = 5;
+			this.m_Viewer.Anchor = ((System.Windows.Forms.AnchorStyles) ((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.m_Viewer.Count = 0;
 			this.m_Viewer.ImageScaling = true;
+			this.m_Viewer.Index = -1;
 			this.m_Viewer.Location = new System.Drawing.Point( 12, 49 );
 			this.m_Viewer.Name = "m_Viewer";
 			this.m_Viewer.Size = new System.Drawing.Size( 342, 330 );
 			this.m_Viewer.TabIndex = 1;
-			this.m_Viewer.ShowImage += new Toolkit.Controls.ImagesViewer.ShowImageEventHandler( this.m_Viewer_ShowImage );
+			this.m_Viewer.ShowObject += new Toolkit.Controls.MultiObjectViewer<System.Drawing.Image>.SHOW_OBJECT( this.m_Viewer_ShowObject );
 			// 
 			// numericUpDown1
 			// 
@@ -75,14 +76,14 @@ namespace Toolkit.Controls.Test
 			this.Controls.Add( this.m_Viewer );
 			this.Name = "TestForm";
 			this.Text = "TestForm";
-			( (System.ComponentModel.ISupportInitialize)( this.numericUpDown1 ) ).EndInit();
+			((System.ComponentModel.ISupportInitialize) (this.numericUpDown1)).EndInit();
 			this.ResumeLayout( false );
 
 		}
 
 		#endregion
 
-		private Toolkit.Controls.ImagesViewer m_Viewer;
+		private Toolkit.Controls.MultiImageViewer m_Viewer;
 		private System.Windows.Forms.NumericUpDown numericUpDown1;
 		private System.Windows.Forms.Button button1;
 
