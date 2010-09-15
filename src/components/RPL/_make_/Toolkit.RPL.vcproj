@@ -38,7 +38,7 @@
 			<Tool Name="VCWebDeploymentTool" />
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
+				CommandLine="&quot;$(ProjectDir)\..\..\..\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
 			/>
 			<Tool
 				Name="VCLinkerTool"
@@ -91,7 +91,7 @@
 			<Tool Name="VCWebDeploymentTool" />
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="&quot;$(ProjectDir)\..\..\..\..\etc\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
+				CommandLine="&quot;$(ProjectDir)\..\..\..\XMLDocFix.vbs&quot; &quot;$(TargetDir)$(TargetName).xml&quot;"
 			/>
 			<Tool
 				Name="VCLinkerTool"

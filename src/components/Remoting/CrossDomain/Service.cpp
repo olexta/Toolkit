@@ -73,7 +73,7 @@ IMessage^ Service::marshal( IMessage ^msg )
 /// Creates new instance of the CrossDomain::Service class.
 /// </summary>
 //-------------------------------------------------------------------
-Service::Service( String ^clientID,	\
+Service::Service( String ^clientID,									\
 				  CrossDomainMarshaler::SERVICE_FACTORY ^factory )
 {
 	// create real service and store proxy to it
