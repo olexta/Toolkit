@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Toolkit.RPL.Storage</name>
+    </assembly>
+    <members>
+        <member name="T:Toolkit.RPL.Storage.ODB">
+            <summary>
+            Object Oriented DB implementation
+            </summary>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.ODB.get_header(System.Int32)">
+            <summary>
+            gets saved object properties
+            </summary>
+            <param name="id">ID of object</param>
+            <returns>HEADER of requested object</returns>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.ODB.datetime_to_sql(System.DateTime)">
+            <summary>
+            Converts DateType type according to MS SQL Server precision.
+            </summary>
+            <param name="dt">DateTime to be converted</param>
+            <returns>DateTime rounded to .**0, .**3, .**7 milliseconds</returns>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.ODB.save_image(System.Int32,System.String,Toolkit.RPL.PersistentStream)">
+            <summary>
+            Saves stream property to SQL BLOB field
+            </summary>
+            <param name="objID">Stream owner object ID</param>
+            <param name="propName">Name of stream property</param>
+            <param name="stream">Stream property</param>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.ODB.read_image(System.Int32,System.String,Toolkit.RPL.PersistentStream@)">
+            <summary>
+            Read BLOB field to stream property
+            </summary>
+            <param name="objID">Stream owner object ID</param>
+            <param name="propName">Name of stream property</param>
+            <param name="stream">Stream property</param>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.ODB.#ctor(System.String)">
+            <summary>
+            Default public constructor
+            </summary>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.ODB.Delete(Toolkit.RPL.Storage.HEADER)">
+            <summary>
+            Delete object with specified header from storage.
+            </summary>
+            <param name="header">Header value.</param>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.ODB.ProcessSQL(System.String,System.Object[])">
+            <summary>
+            Execute specified SQL request on the storage.
+            </summary>
+            <param name="sql">SQL request to be executed.</param>
+            <param name="params"></param>
+            <returns>Disconnected table of in-memory data.</returns>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.ODB.Retrieve(Toolkit.RPL.Storage.HEADER@)">
+            <summary>
+            Retrieve object header from storage.
+            </summary>
+            <param name="header">In/Out header value.</param>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.ODB.Retrieve(Toolkit.RPL.Storage.HEADER@,Toolkit.RPL.Storage.LINK[]@,Toolkit.RPL.Storage.PROPERTY[]@)">
+            <summary>
+            Retrieve object header, links and properties.
+            </summary>
+            <param name="header">In/Out header value.</param>
+            <param name="links">Array of object links.</param>
+            <param name="props">Array of object properties.</param>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.ODB.Save(Toolkit.RPL.Storage.HEADER@,Toolkit.RPL.Storage.LINK[],Toolkit.RPL.Storage.PROPERTY[],Toolkit.RPL.Storage.LINK[]@,Toolkit.RPL.Storage.PROPERTY[]@)">
+            <summary>
+            Save object header, links and properties to storage.
+            </summary>
+            <param name="header">In/Out header value.</param>
+            <param name="links">Array of modified object links.</param>
+            <param name="props">Array of modified object properties.</param>
+            <param name="mlinks">Array of new object links.</param>
+            <param name="mprops">Array of new object properties.</param>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.ODB.Search(System.String,Toolkit.RPL.Where,Toolkit.RPL.OrderBy,System.Int32,System.Int32,Toolkit.RPL.Storage.HEADER[]@)">
+            <summary>
+            Search objects that sutisfies search criteria.
+            </summary>
+            <param name="type">Objects type.</param>
+            <param name="where">Where object</param>
+            <param name="order">>OrderBy object</param>
+            <param name="bottom">Bottom limit in the request.</param>
+            <param name="count">Count limit in the request.</param>
+            <param name="headers">Array of found object headers.</param>
+            <returns>Count of found objects</returns>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.ODB.TransactionBegin">
+            <summary>
+            Starts a storage transaction.
+            </summary>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.ODB.TransactionCommit">
+            <summary>
+            Commits the storage transaction.
+            </summary>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.ODB.TransactionRollback">
+            <summary>
+            Rolls back a transaction from a pending state.
+            </summary>
+        </member>
+    </members>
+</doc>

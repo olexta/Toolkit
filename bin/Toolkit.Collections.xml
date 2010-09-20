@@ -1,0 +1,593 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        "Toolkit.Collections"
+    </assembly>
+    <members>
+        <member name="P:Toolkit.Collections.BinaryTree.Node`1.Data">
+            <summary>
+Gets/sets a data that current node contains.
+</summary>
+        </member>
+        <member name="P:Toolkit.Collections.BinaryTree.Node`1.Right">
+            <summary>
+Gets/sets right subnode for this.
+</summary>
+        </member>
+        <member name="P:Toolkit.Collections.BinaryTree.Node`1.Left">
+            <summary>
+Gets/sets left subnode for this.
+</summary>
+        </member>
+        <member name="P:Toolkit.Collections.BinaryTree.Node`1.Parent">
+            <summary>
+Gets/sets parent node for this.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.Node`1.#ctor(`0)">
+            <summary>
+Create new instance of the BinaryTree::Node class that contains
+specified data.
+</summary>
+            <remarks>
+Created node have not parent and childs.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.Node`1.#ctor">
+            <summary>
+Create new instance of the BinaryTree::Node class that contains
+default data value.
+</summary>
+            <remarks>
+Created node have not parent and childs.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.Visitor`1.Reset">
+            <summary>
+Sets the enumerator to it's initial position, which is before the
+first element in the tree traverse.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.Visitor`1.MoveNext">
+            <summary>
+Advances the enumerator to the next element in the tree.
+</summary>
+            <remarks>
+This algorithm implements non recursive tree traverse based on
+finite-state machine. It process tree as O(N).
+</remarks>
+        </member>
+        <member name="P:Toolkit.Collections.BinaryTree.Visitor`1.Current">
+            <summary>
+Returns data stored in the node that iterator in current state is
+pointed on.
+</summary>
+            <remarks>
+In case of enumeration has not be started or has already finished
+throw InvalidOperationException.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.Visitor`1.Dispose">
+            <summary>
+Clear all managed resources and set automation to undefined
+state.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.Visitor`1.#ctor(Toolkit.Collections.BinaryTree.Node`1{`0},Toolkit.Collections.BinaryTree.Visitor`1{`0}.TRAVERSE,Toolkit.Collections.BinaryTree.Node`1{`0})">
+            <summary>
+Creates new instance of the Visitor class for specified binary
+tree root node, traverse mode and leaf node.
+</summary>
+            <remarks>
+Create a synchronization objects and initialize class members.
+Some binary trees (for example Red-Black trees) use special Node
+instances instead of nullptr to mark leaf nodes. So, i need use
+this reference to determine tree leafs.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.Visitor`1.#ctor(Toolkit.Collections.BinaryTree.Node`1{`0},Toolkit.Collections.BinaryTree.Visitor`1{`0}.TRAVERSE)">
+            <summary>
+Creates new instance of the Visitor class for specified binary
+tree root node and traverse mode.
+</summary>
+            <remarks>
+Create a synchronization objects and initialize class members.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.Visitor`1.OnCheckState">
+            <summary>
+Performs additional custom processes before any tree traverse.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+traverse is started.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.RedBlackTree`2.Size">
+            <summary>
+Returns the number of items contained in the instance of the tree.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.RedBlackTree`2.Undo">
+            <summary>
+Cancel last operation and restore RedBlackTree to previous state. 
+</summary>
+            <remarks>
+Only last operation can be canceled. If cancel was succeeded
+function returns true, in other case returns false.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.RedBlackTree`2.DeleteAll">
+            <summary>
+Clears the content of the RedBlackTree instance.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.RedBlackTree`2.Delete(`0)">
+            <summary>
+Delete an item with specified key from the tree.
+</summary>
+            <remarks>
+Function return deletion result: if item was found it returns
+true, in other case - false.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.RedBlackTree`2.Insert(`0,`1,System.Boolean)">
+            <summary>
+Allocate node for data and insert in tree.
+</summary>
+            <remarks>
+If "overwrite" flag is set to true, founded item with specified
+key (if it exists) will be overwriten.
+Function returns INSERT result: if new node was created it
+returns true, in other case - false.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.RedBlackTree`2.Find(`0,`1@)">
+            <summary>
+Find item by specified key.
+</summary>
+            <remarks>
+Returns search success result: if specified key was found returns
+true, in other case returs false.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.BinaryTree.RedBlackTree`2.#ctor">
+            <summary>
+Default class constructor.
+</summary>
+            <remarks>
+Create a synchronization objects and initialize class members.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.TryGetValue(`0,`1@)">
+            <summary>
+Gets the value associated with the specified key.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.Remove(`0)">
+            <summary>
+Removes value with the specified key from the Map instance.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.ContainsValue(`1)">
+            <summary>
+Determines whether the Map contains a specific value by using a
+linear search algorithm.
+</summary>
+            <remarks>
+This method may use shalow comparison only: it search for the
+pair having value same as passed using equality comparer to
+check. The default equality comparer checks whether type T
+implements the System.IEquatable generic interface and if so
+returns an EqualityComparer that uses that implementation.
+Otherwise it returns an EqualityComparer that uses the overrides
+of Object.Equals and Object.GetHashCode provided by T.
+The default implementation of this method is intended to be
+overridden by a derived class to perform "deep" object
+comparison through operator == or in some other case.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.ContainsKey(`0)">
+            <summary>
+Determines whether the Map contains the value with specified key.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.Clear">
+            <summary>
+Clears the content of the Map instance.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.Add(`0,`1)">
+            <summary>
+Adds the specified key and value to the Map instance.
+</summary>
+        </member>
+        <member name="P:Toolkit.Collections.Map`2.Values">
+            <summary>
+Gets a collection containing the values in the Map.
+</summary>
+            <remarks>
+This propery returns readonly, standalone collection of values.
+</remarks>
+        </member>
+        <member name="P:Toolkit.Collections.Map`2.Keys">
+            <summary>
+Gets a collection containing the keys in the Map.
+</summary>
+            <remarks>
+This propery returns readonly, standalone collection of keys.
+</remarks>
+        </member>
+        <member name="P:Toolkit.Collections.Map`2.Count">
+            <summary>
+Gets the number of elements contained in the Map.
+</summary>
+        </member>
+        <member name="P:Toolkit.Collections.Map`2.Item">
+            <summary>
+Gets or sets the value associated with the specified key.
+</summary>
+            <remarks>
+If the specified key is not found, a get operation throws a
+KeyNotFoundException, and a set operation creates a new element
+with the specified key.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.#ctor(System.Collections.Generic.IEnumerable`1{System.Collections.Generic.KeyValuePair`2{`0,`1}})">
+            <summary>
+Create instance of the Map class initialized with all pairs in
+the given collection.
+</summary>
+            <remarks>
+If pairs in collection have not unique keys then only the last
+pair will be stored. All pairs with null reference keys will be
+ignored.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.#ctor(System.Collections.Generic.KeyValuePair`2{`0,`1})">
+            <summary>
+Create instance of the Map class initialized with specified pair.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.#ctor">
+            <summary>
+Default class constructor.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.OnSetComplete(`0,`1)">
+            <summary>
+Performs additional custom processes after setting a value in the
+Map instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action after the
+specified element is set.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.OnRemoveComplete(`0,`1)">
+            <summary>
+Performs additional custom processes after removing a pair from
+the Map instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action after the
+specified pair is removed.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.OnInsertComplete(`0,`1)">
+            <summary>
+Performs additional custom processes after inserting a new pair
+into the Map instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action after the
+specified pair is inserted.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.OnClearComplete">
+            <summary>
+Performs additional custom processes after clearing the contents
+of the Map instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action after the
+Map is cleared.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.OnSet(`0,`1)">
+            <summary>
+Performs additional custom processes before setting a value in
+the Map instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+specified element is set.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.OnRemove(`0,`1)">
+            <summary>
+Performs additional custom processes before removing a pair from
+the Map instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+specified pair is removed.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.OnInsert(`0,`1)">
+            <summary>
+Performs additional custom processes before inserting a new pair
+into the Map instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+specified pair is inserted.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.Map`2.OnClear">
+            <summary>
+Performs additional custom processes before clearing the contents
+of the Map instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+Map is cleared.
+</remarks>
+        </member>
+        <member name="T:Toolkit.Collections.Map`2">
+            <summary>
+Represents a collection of key/value pairs and provides storage services
+that implement fast access to values by it's keys. 
+</summary>
+            <remarks>
+Values can be identified by it's unique key, so i chouse Red-Black tree
+as internal storage. Access to value by it's key is processed as O(log N).
+Tree traverse (for each) is implemnted as iteration algorithm, so it
+process as O(N).
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.TrueForAll(System.Predicate`1{`1})">
+            <summary>
+Determines whether every element in the KeyedMap matches the
+conditions defined by the specified predicate.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.ForEach(System.Action`1{`1})">
+            <summary>
+Performs the specified action on each element of the KeyedMap.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.FindAll(System.Predicate`1{`1})">
+            <summary>
+Retrieves the all the item that match the conditions defined by
+the specified predicate.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.Find(System.Predicate`1{`1})">
+            <summary>
+Searches for an item that matches the conditions defined by the
+specified predicate, and returns the first occurrence within the
+entire KeyedMap.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.Exists(System.Predicate`1{`1})">
+            <summary>
+Determines whether the specified KeyedMap contains items that
+match the conditions defined by the specified predicate.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.Remove(`1)">
+            <summary>
+Removes the specific item from the KeyedMap.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.Remove(`0)">
+            <summary>
+Removes item with the specified key from the KeyedMap instance.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.CopyTo(`1[],System.Int32)">
+            <summary>
+Copies the elements of the KeyedMap to an Array, starting at a
+particular Array index. 
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.Contains(`1)">
+            <summary>
+Determines whether the KeyedMap contains a specific item.
+</summary>
+            <remarks>
+It checks content equivalence by using default equality comparer
+for specified type.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.Contains(`0)">
+            <summary>
+Determines whether the KeyedMap contains the item with specified
+key.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.Clear">
+            <summary>
+Clears the content of the KeyedMap instance.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.Add(`1)">
+            <summary>
+Adds an item into the KeyedMap instance.
+</summary>
+        </member>
+        <member name="P:Toolkit.Collections.KeyedMap`2.Count">
+            <summary>
+Gets the number of elements contained in the KeyedMap.
+</summary>
+        </member>
+        <member name="P:Toolkit.Collections.KeyedMap`2.Item">
+            <summary>
+Gets item with the specified key.
+</summary>
+            <remarks>
+No setter method defined because of dublicate parameters (each
+item contains it's own key that will be used as collection key).
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.#ctor(System.Collections.Generic.IEnumerable`1{`1})">
+            <summary>
+Create instance of the KeyedMap class initialized with all items
+in the given collection.
+</summary>
+            <remarks>
+If items in collection have not unique keys then only the last
+item will be stored. All null references will be ignored.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.#ctor(`1)">
+            <summary>
+Create instance of the KeyedMap class initialized with specified
+item.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.#ctor">
+            <summary>
+Default class constructor.
+</summary>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.OnRemoveComplete(`1)">
+            <summary>
+Performs additional custom processes after removing an item from
+the KeyedMap instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action after the
+specified item is removed.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.OnInsertComplete(`1)">
+            <summary>
+Performs additional custom processes after inserting a new item
+into the KeyedMap instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action after the
+specified item is inserted.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.OnClearComplete">
+            <summary>
+Performs additional custom processes after clearing the contents
+of the KeyedMap instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action after the
+KeyedMap is cleared.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.OnRemove(`1)">
+            <summary>
+Performs additional custom processes before removing an item from
+the KeyedMap instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+specified item is removed.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.OnInsert(`1)">
+            <summary>
+Performs additional custom processes before inserting a new item
+into the KeyedMap instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+specified item is inserted.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Collections.KeyedMap`2.OnClear">
+            <summary>
+Performs additional custom processes before clearing the contents
+of the KeyedMap instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+KeyedMap is cleared.
+</remarks>
+        </member>
+        <member name="T:Toolkit.Collections.KeyedMap`2">
+            <summary>
+This class provide storage services that implement fast access for keyed
+objects by it's keys.
+</summary>
+            <remarks>
+It store pointers to IKeyedObjects and provide routines for manipulation.
+Objects can be identified by it's unique key, so i chouse Red-Black tree
+as internal storage. Class doesn't implement any check for key changing
+during it's lifetime, so such actions will have unpredictable results.
+Access to item by it's name is processed as O(log N). Tree traverse (for
+each) is implemented as iteration algorithm, so it process as O(N).
+</remarks>
+        </member>
+        <member name="P:Toolkit.Collections.IKeyedObject`1.Key">
+            <summary>
+Gets the key in the object.
+</summary>
+        </member>
+        <member name="T:Toolkit.Collections.IKeyedObject`1">
+            <summary>
+Encapsulates the behavior needed to represent object as keyed object.
+</summary>
+            <remarks>
+Keyed object store it's own key as some property. This property MUST BE NOT
+CHANGED throught object's life cycle. In other case results of the all
+generic intrfaces will be unpredictable.
+</remarks>
+        </member>
+        <member name="T:Toolkit.Collections.BinaryTree.RedBlackTree`2">
+            <summary>
+This class provide storage services (based on Red-Black tree algorithms)
+that implement fast access for objects by it's keys.
+</summary>
+            <remarks>
+Access to item by it's name is processed as O(log N). Tree traverse ("for
+each" language construct) is implemented as iteration algorithm, so it
+process as O(N).
+</remarks>
+        </member>
+        <member name="T:Toolkit.Collections.BinaryTree.Visitor`1">
+            <summary>
+Enumerator class that provide routines to tree bypass using specified
+traverse mode.
+</summary>
+            <remarks>
+This class represent three traverse modes:
+	PREFIX: direct bypass (node, left subnode, right subnode);
+	INFIX: centered bypass (left subnode, node, right subnode);
+	POSTFIX: reverse bypass ( left subnode, right subnode, node);
+Class implements finite-state automation algorithm to traverse binary
+trees, so it process tree as O(N).
+</remarks>
+        </member>
+        <member name="T:Toolkit.Collections.BinaryTree.Node`1">
+            <summary>
+This class provide common definition for binary tree node.
+</summary>
+            <remarks>
+All specialized tree node structures must be derived from this class. 
+</remarks>
+        </member>
+    </members>
+</doc>

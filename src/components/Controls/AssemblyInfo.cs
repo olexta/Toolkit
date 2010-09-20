@@ -8,10 +8,6 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitleAttribute( "Toolkit.Controls" )]
 [assembly: AssemblyDescriptionAttribute( "Toolkit.Controls module provide GUI controls" )]
-[assembly: AssemblyProductAttribute( "Toolkit Custom Controls" )]
-[assembly: AssemblyCopyrightAttribute( "Copyright © Nikita Marunyak, Alexander Kurbatov 2007-2009" )]
-[assembly: AssemblyInformationalVersionAttribute( "1.0" )]
-
 [assembly: CLSCompliantAttribute( true )]
 
 
@@ -29,4 +25,12 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion( "1.0.*" )]
+
+//
+// This is auto generated attributes for current 1.2.3.1256 version.
+//
+[assembly: AssemblyProduct("Toolkit")]
+[assembly: AssemblyInformationalVersion("1.2.3")]
+[assembly: AssemblyCompany("ABBYY Ukraine")]
+[assembly: AssemblyCopyright("Copyright © ABBYY Ukraine 2007-2009")]
+[assembly: AssemblyVersion("1.2.3.1256")]
