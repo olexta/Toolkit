@@ -7,7 +7,7 @@
 /*	Content:	Implementation of KeyedMap class							*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2007-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2007-2010 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -110,7 +110,7 @@ IEnumerator<TItem>^ KeyedMap<TKey, TItem>::items_get_enumerator( void )
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action before the
-/// collection is cleared.
+/// KeyedMap is cleared.
 /// </remarks>
 //-------------------------------------------------------------------
 generic<typename TKey, typename TItem>
@@ -158,7 +158,7 @@ void KeyedMap<TKey, TItem>::OnRemove( TItem item )
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action after the
-/// collection is cleared.
+/// KeyedMap is cleared.
 /// </remarks>
 //-------------------------------------------------------------------
 generic<typename TKey, typename TItem>
@@ -249,49 +249,6 @@ KeyedMap<TKey, TItem>::KeyedMap( IEnumerable<TItem> ^e )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Operator +=. Add specified item to collection.
-/// </summary><remarks>
-/// This operator is equivalent to Add(TItem) method.
-/// </remarks>
-//-------------------------------------------------------------------
-generic<typename TKey, typename TItem>
-KeyedMap<TKey, TItem>% KeyedMap<TKey, TItem>::operator+=( TItem item )
-{
-	// validate input value
-	if( item == nullptr ) throw gcnew ArgumentNullException("item");
-
-	// add item to tree
-	Add( item );
-
-	return *this;
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
-/// Operator -=. Remove specified item from collection.
-/// </summary><remarks>
-/// This operator is equivalent to Remove(TItem) method, but throws
-/// KeyNotFoundException exception if specified item is not present
-/// in the collection.
-/// </remarks>
-//-------------------------------------------------------------------
-generic<typename TKey, typename TItem>
-KeyedMap<TKey, TItem>% KeyedMap<TKey, TItem>::operator-=( TItem item )
-{
-	// validate input value
-	if( item == nullptr ) throw gcnew ArgumentNullException("item");
-
-	// remove item from tree
-	if( !Remove( item ) )
-		throw gcnew KeyNotFoundException(ERR_KEY_NOT_FOUND);
-
-	return *this;
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
 /// Gets item with the specified key.
 /// </summary><remarks>
 /// No setter method defined because of dublicate parameters (each
@@ -329,7 +286,7 @@ int KeyedMap<TKey, TItem>::Count::get( void )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Adds an item into the collection.
+/// Adds an item into the KeyedMap instance.
 /// </summary>
 //-------------------------------------------------------------------
 generic<typename TKey, typename TItem>
@@ -432,10 +389,10 @@ bool KeyedMap<TKey, TItem>::Contains( TItem item )
 
 
 //-------------------------------------------------------------------
-///	<summary>
-///	Copies the elements of the KeyedMap to an Array, starting at a
-///	particular Array index. 
-///	</summary>
+/// <summary>
+/// Copies the elements of the KeyedMap to an Array, starting at a
+/// particular Array index. 
+/// </summary>
 //-------------------------------------------------------------------
 generic<typename TKey, typename TItem>
 void KeyedMap<TKey, TItem>::CopyTo( array<TItem> ^dest, int index )
@@ -462,7 +419,7 @@ void KeyedMap<TKey, TItem>::CopyTo( array<TItem> ^dest, int index )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Removes item with the specified key from the collection.
+/// Removes item with the specified key from the KeyedMap instance.
 /// </summary>
 //-------------------------------------------------------------------
 generic<typename TKey, typename TItem>
@@ -479,7 +436,7 @@ bool KeyedMap<TKey, TItem>::Remove( TKey key )
 
 	// fire event before action
 	OnRemove( item );
-	// remove from collection by key
+	// remove from instance by key
 	Delete( key );
 	// fire event after action
 	try {
@@ -511,8 +468,97 @@ bool KeyedMap<TKey, TItem>::Remove( TItem item )
 	// in derived classes to provide "deep" compare of objects)
 	if( !Contains( item ) ) return false;
 
-	// i must use key to find item to remove (keys in collections
+	// i must use key to find item to remove (keys in collection
 	// are unique, so previous check guarantine existing item)
 	// because of need passing real reference to handlers
 	return Remove( item->Key );
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
+/// Determines whether the specified KeyedMap contains items that
+/// match the conditions defined by the specified predicate.
+/// </summary>
+//-------------------------------------------------------------------
+generic<typename TKey, typename TItem>
+bool KeyedMap<TKey, TItem>::Exists( Predicate<TItem> ^match )
+{
+	if( match == nullptr ) throw gcnew ArgumentNullException("match");
+
+	for each( TItem item in this ) {
+		if( match( item ) ) return true;
+	}
+	return false;
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
+/// Searches for an item that matches the conditions defined by the
+/// specified predicate, and returns the first occurrence within the
+/// entire KeyedMap.
+/// </summary>
+//-------------------------------------------------------------------
+generic<typename TKey, typename TItem>
+TItem KeyedMap<TKey, TItem>::Find( Predicate<TItem> ^match )
+{
+	if( match == nullptr ) throw gcnew ArgumentNullException("match");
+
+	for each( TItem item in this ) {
+		if( match( item ) ) return item;
+	}
+	return TItem();
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
+/// Retrieves the all the item that match the conditions defined by
+/// the specified predicate.
+/// </summary>
+//-------------------------------------------------------------------
+generic<typename TKey, typename TItem>
+array<TItem>^ KeyedMap<TKey, TItem>::FindAll( Predicate<TItem> ^match )
+{
+	if( match == nullptr ) throw gcnew ArgumentNullException("match");
+
+	List<TItem>	^list = gcnew List<TItem>();
+
+	for each( TItem item in this ) {
+		if( match( item) ) list->Add( item );
+	}
+	return list->ToArray();
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
+/// Performs the specified action on each element of the KeyedMap.
+/// </summary>
+//-------------------------------------------------------------------
+generic<typename TKey, typename TItem>
+void KeyedMap<TKey, TItem>::ForEach( Action<TItem> ^action )
+{
+	if( action == nullptr ) throw gcnew ArgumentNullException("action");
+
+	for each( TItem item in this ) action( item );
+}
+
+
+//-------------------------------------------------------------------
+/// <summary>
+/// Determines whether every element in the KeyedMap matches the
+/// conditions defined by the specified predicate.
+/// </summary>
+//-------------------------------------------------------------------
+generic<typename TKey, typename TItem>
+bool KeyedMap<TKey, TItem>::TrueForAll( Predicate<TItem> ^match )
+{
+	if( match == nullptr ) throw gcnew ArgumentNullException("match");
+
+	for each( TItem item in this ) {
+		if( !match( item ) ) return false;
+	}
+	return true;
 }

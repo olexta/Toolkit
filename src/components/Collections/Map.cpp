@@ -7,7 +7,7 @@
 /*	Content:	Implementation of Map class									*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2007-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2007-2010 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -37,9 +37,9 @@ KeyValuePair<TKey, TValue> Map<TKey, TValue>::Enumerator::current_item( void )
 
 //-------------------------------------------------------------------
 //
-// Creates new instance of the Enumerator class for specified
-// collection. I need pass call to parent constructor only, all
-// processing  will be done by it.
+// Creates new instance of the Enumerator class for specified Map.
+// I need pass call to parent constructor only, all processing will
+// be done by it.
 //
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
@@ -209,7 +209,7 @@ IEnumerator<KeyValuePair<TKey, TValue>>^ Map<TKey, TValue>::pairs_get_enumerator
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action before the
-/// collection is cleared.
+/// Map is cleared.
 /// </remarks>
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
@@ -273,7 +273,7 @@ void Map<TKey, TValue>::OnSet( TKey key, TValue value )
 /// </summary><remarks>
 /// The default implementation of this method is intended to be
 /// overridden by a derived class to perform some action after the
-/// collection is cleared.
+/// Map is cleared.
 /// </remarks>
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
@@ -495,7 +495,7 @@ ICollection<TValue>^ Map<TKey, TValue>::Values::get( void )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Adds the specified key and value to the collection.
+/// Adds the specified key and value to the Map instance.
 /// </summary>
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
@@ -609,7 +609,7 @@ bool Map<TKey, TValue>::ContainsValue( TValue value )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Removes value with the specified key from the collection.
+/// Removes value with the specified key from the Map instance.
 /// </summary>
 //-------------------------------------------------------------------
 generic<typename TKey, typename TValue>
@@ -626,7 +626,7 @@ bool Map<TKey, TValue>::Remove( TKey key )
 
 	// fire event before action
 	OnRemove( key, value );
-	// remove from collection by key
+	// remove from map by key
 	Delete( key );
 	// fire event after action
 	try {

@@ -7,7 +7,7 @@
 /*	Content:	Definition of KeyedMap class								*/
 /*																			*/
 /*	Author:		Alexey Tkachuk												*/
-/*	Copyright:	Copyright © 2007-2008 Alexey Tkachuk						*/
+/*	Copyright:	Copyright © 2007-2010 Alexey Tkachuk						*/
 /*				All Rights Reserved											*/
 /*																			*/
 /****************************************************************************/
@@ -80,9 +80,6 @@ public:
 	explicit KeyedMap( TItem item );
 	explicit KeyedMap( IEnumerable<TItem> ^e );
 
-	KeyedMap% operator+=( TItem item );
-	KeyedMap% operator-=( TItem item );
-
 	property TItem default[TKey] {
 		virtual TItem get( TKey key );
 	}
@@ -97,5 +94,11 @@ public:
 	virtual void CopyTo( array<TItem> ^dest, int index );
 	virtual bool Remove( TKey key );
 	virtual bool Remove( TItem item );
+
+	bool Exists( Predicate<TItem> ^match );
+	TItem Find( Predicate<TItem> ^match );
+	array<TItem>^ FindAll( Predicate<TItem> ^match );
+	void ForEach( Action<TItem> ^action );
+	bool TrueForAll( Predicate<TItem> ^match );
 };
 _COLLECTIONS_END
