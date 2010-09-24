@@ -284,15 +284,20 @@ OP_EXP_TO_(DateTime)
 /// <summary>
 /// Explicit cast operator from ValueBox to String value (native).
 /// </summary><remarks>
-/// This cast operator differs from other: it doesn't requires
-/// internal data to be in valid type. Since this is settings, so any
-/// setting can be converted to string value. This function is
-/// similar to ToString() method.
+/// If internal data is not String value then InvalidCastException
+/// will be raised.
 /// </remarks>
 //-------------------------------------------------------------------
 ValueBox::operator String^( ValueBox box )
 {
-	return box.ToString();
+	Object	^val = box.ToObject();
+	Type	^r = val->GetType();
+	Type	^t = String::typeid;
+
+	if( r == t ) return safe_cast<String^>( val );
+
+	throw gcnew InvalidCastException(String::Format(
+	ERR_CAST_FROM_TO, r->ToString(), t->ToString() ));
 }
 
 
