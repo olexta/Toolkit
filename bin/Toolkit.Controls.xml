@@ -1,0 +1,630 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Toolkit.Controls</name>
+    </assembly>
+    <members>
+        <member name="T:Toolkit.Controls.AnimationBox">
+            <summary>
+            Represents a animated Windows picture box control.
+            </summary><remarks>
+            Please don't change Image and Size properties while animation
+            is running because it can cause unpredictable behaviour.
+            </remarks>
+        </member>
+        <member name="M:Toolkit.Controls.AnimationBox.#ctor">
+            <summary>
+            Initializes a new instance of the class. 
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.AnimationBox.Start">
+            <summary>
+            Starts animation.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.AnimationBox.Stop">
+            <summary>
+            Stops animation.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.AnimationBox.Speed">
+            <summary>
+            Gets or sets animation speed in ms.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.AnimationBox.IsStarted">
+            <summary>
+            Gets a value indicating whether animation is running.
+            </summary>
+        </member>
+        <member name="T:Toolkit.Controls.NotificationForm">
+            <summary>
+            Dialog wich display information about occured exception or custom message with details.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.NotificationForm.Show(System.String,System.String,Toolkit.Controls.NotificationForm.NotificationType)">
+            <summary>
+            Shows notification dialog with specified strings and notification type.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.NotificationForm.Show(System.String,System.String)">
+            <summary>
+            Shows notification dialog with specified strings and default notification type(warning).
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.NotificationForm.Show(System.Exception,Toolkit.Controls.NotificationForm.NotificationType)">
+            <summary>
+            Show dialog with specified type and information strings stored in exception.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.NotificationForm.Show(System.Exception)">
+            <summary>
+            Show dialog with default(warning) notification type and information strings stored in exception.
+            </summary> 
+        </member>
+        <member name="F:Toolkit.Controls.NotificationForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.NotificationForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Toolkit.Controls.NotificationForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Toolkit.Controls.NotificationForm.NotificationType">
+            <summary>
+            Notification type
+            </summary>
+        </member>
+        <member name="F:Toolkit.Controls.NotificationForm.NotificationType.Warning">
+            <summary>Warning.</summary>
+        </member>
+        <member name="F:Toolkit.Controls.NotificationForm.NotificationType.Error">
+            <summary>Error.</summary>
+        </member>
+        <member name="T:Toolkit.Controls.MultiObjectViewerBase">
+            <summary>
+            Базовий графічний контрол для перегляду послідовності об'єктів.
+            </summary><remarks>
+            Для коректної роботи дизайнера Visual Studio графічну реалізацію
+            об'єкту винесено в окремий не шаблонний клас.
+            </remarks>
+        </member>
+        <member name="M:Toolkit.Controls.MultiObjectViewerBase.OnKeyDown(System.Windows.Forms.KeyEventArgs)">
+            <summary />
+        </member>
+        <member name="M:Toolkit.Controls.MultiObjectViewerBase.OnKeyUp(System.Windows.Forms.KeyEventArgs)">
+            <summary />
+        </member>
+        <member name="M:Toolkit.Controls.MultiObjectViewerBase.#ctor">
+            <summary>
+            Створює новий екземпляр класу.
+            </summary><remarks>
+            Об'явлено захищеним для обов'язкового наслідування від класу.
+            </remarks>
+        </member>
+        <member name="M:Toolkit.Controls.MultiObjectViewerBase.DisplayObject(System.Int32)">
+            <summary>
+            Ф-я відображення об'єкта.
+            </summary><remarks>
+            Для реалізації функціоналу більшого ніж відображення
+            індексу активного об'єкту, необхідно перекрити реалізацію
+            у дочірному класі.
+            </remarks>
+        </member>
+        <member name="F:Toolkit.Controls.MultiObjectViewerBase.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.MultiObjectViewerBase.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Toolkit.Controls.MultiObjectViewerBase.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Controls.MultiObjectViewerBase.m_Tools">
+            <summary>
+            Панель інструментів.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Controls.MultiObjectViewerBase.m_ToolLblInfo">
+            <summary>
+            Мітка панелі інструментів.
+            </summary><remarks>
+            Мітка розташована справа на панелі інструментів.
+            </remarks>
+        </member>
+        <member name="F:Toolkit.Controls.MultiObjectViewerBase.m_Panel">
+            <summary>
+            Панель для відображення об'єктів.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.MultiObjectViewerBase.Index">
+            <summary>
+            Повертає/встановлює індекс об'єкту для відображається.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.MultiObjectViewerBase.Count">
+            <summary>
+            Повертає/встановлює кількість об'єктів.
+            </summary>
+            <remarks>
+            Кількість має бути не меньше нуля і встановлення значення
+            більше нуля призводить до показу першого об'єкта.
+            </remarks>
+        </member>
+        <member name="T:Toolkit.Controls.MultiObjectViewer`1">
+            <summary>
+            Клас доповнює MultiObjectViewerBase клас шаблонним інтерфейсом.
+            </summary>
+            <typeparam name="T">Тип ідентифікації об'єкту відображення.</typeparam>
+        </member>
+        <member name="M:Toolkit.Controls.MultiObjectViewer`1.DisplayObject(System.Int32)">
+            <summary>
+            Розширена функція відображення об'єкта.
+            </summary><remarks>
+            Розширює стандартний функціонал подією показу об'єкта
+            та викликом обов'язкової функції відображення об'єкту.
+            </remarks>
+        </member>
+        <member name="M:Toolkit.Controls.MultiObjectViewer`1.OnVisibleChanged(System.EventArgs)">
+            <summary>
+            Обробники події показу контрола.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.MultiObjectViewer`1.DrawObject(`0)">
+            <summary>
+            Абстрактна функція відображення об'єкту.
+            </summary>
+            <param name="obj">Об'єкт для відображення.</param>
+        </member>
+        <member name="E:Toolkit.Controls.MultiObjectViewer`1.ShowObject">
+            <summary>
+            Подія отримання нового об'єкту для показу.
+            </summary><remarks>
+            У цієї події може бути лише один обробник.
+            </remarks>
+        </member>
+        <member name="T:Toolkit.Controls.MultiObjectViewer`1.ShowObjectEventArgs">
+            <summary>
+            Структура для виклика запиту на отримання нового об'єкту.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.MultiObjectViewer`1.ShowObjectEventArgs.#ctor(System.Int32)">
+            <summary>
+            Створює новий екземпляр класу.
+            </summary>
+            <param name="index">Індекс необхідного об'єкту.</param>
+        </member>
+        <member name="P:Toolkit.Controls.MultiObjectViewer`1.ShowObjectEventArgs.Index">
+            <summary>
+            Повертає індекс запрошеного об'єкта.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.MultiObjectViewer`1.ShowObjectEventArgs.Object">
+            <summary>
+            Повертає/встановлює запрошений об'єкт.
+            </summary>
+        </member>
+        <member name="T:Toolkit.Controls.MultiObjectViewer`1.SHOW_OBJECT">
+            <summary>
+            Делегат події отримання нового об'єкту для відображення.
+            </summary>
+            <param name="sender">Кореспондент запиту.</param>
+            <param name="e">Структура з параметрами запиту.</param>
+        </member>
+        <member name="T:Toolkit.Controls.MultiImageViewer">
+            <summary>
+            Елемент керування для перегляду послідовності зображень.
+            </summary>
+        </member>
+        <member name="T:Toolkit.Controls.MultiImageViewerBase">
+            <summary>
+            Базовий клас елемента керування для перегляду послідовності зображень.
+            </summary><remarks>
+            Необхідність в даному класі виникає через недосконалість
+            дизайнеру VisualStudio.
+            </remarks>
+        </member>
+        <member name="M:Toolkit.Controls.MultiImageViewerBase.#ctor">
+            <summary>
+            Створює новий екземпляр класу.
+            </summary><remarks>
+            Конструктор робимо захищеним для обов'язкового унаслідування.
+            </remarks>
+        </member>
+        <member name="M:Toolkit.Controls.MultiImageViewerBase.DrawObject(System.Drawing.Image)">
+            <summary>
+            Функція відображення зображення.
+            </summary>
+            <param name="image">Зображення для відображення.</param>
+            <remarks>
+            Обов'язково має бути реалізована у дочірному класі. У
+            жодному разі не визивати батьківський метод!
+            </remarks>
+        </member>
+        <member name="M:Toolkit.Controls.MultiImageViewer.OnMouseWheel(System.Windows.Forms.MouseEventArgs)">
+            <summary />
+        </member>
+        <member name="M:Toolkit.Controls.MultiImageViewer.IsInputKey(System.Windows.Forms.Keys)">
+            <summary />
+        </member>
+        <member name="M:Toolkit.Controls.MultiImageViewer.OnKeyDown(System.Windows.Forms.KeyEventArgs)">
+            <summary />
+        </member>
+        <member name="M:Toolkit.Controls.MultiImageViewer.OnKeyUp(System.Windows.Forms.KeyEventArgs)">
+            <summary />
+        </member>
+        <member name="M:Toolkit.Controls.MultiImageViewer.OnSizeChanged(System.EventArgs)">
+            <summary>
+            Обробник події зміни розміру вікна.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.MultiImageViewer.DrawObject(System.Drawing.Image)">
+            <summary>
+            Функція відображення зображення.
+            </summary>
+            <param name="image">Зображення для відображення.</param>
+        </member>
+        <member name="M:Toolkit.Controls.MultiImageViewer.#ctor">
+            <summary>
+            Створює новий елемент керування переглядом послідовності
+            зображень.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Controls.MultiImageViewer.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.MultiImageViewer.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Toolkit.Controls.MultiImageViewer.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.MultiImageViewer.ImageScaling">
+            <summary>
+            Повертає/встановлює значення флагу масштабування зображення
+            під розміри вікна.
+            </summary>
+        </member>
+        <member name="T:Toolkit.Controls.TreeViewer">
+            <summary>
+            Управляет набором Tab'ов
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.#ctor">
+            <summary>
+            Базовый конструктор.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.change_tab(System.Int32,System.Int32)">
+            <summary>
+            Изменение активного Tab'а
+            </summary>
+            <param name="index">предполагаемый новый индекс</param>
+            <param name="prev">индекс предыдущего</param>
+            <returns>true в случае успешности изменения активного Tab'a, 
+            иначе false</returns>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.update_layout(System.Boolean)">
+            <summary>
+            Изменение отображения дочерних визуальных контролов
+            </summary>
+            <param name="fullUpdate">если true, то перед выполнением операции
+            удаляются все дочерние визуальные контролы, иначе изменяется 
+            расположение текущих</param>
+        </member>
+        <member name="F:Toolkit.Controls.TreeViewer.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:Toolkit.Controls.TreeViewer.SelectedIndexChanged">
+            <summary>
+            Occurs when the SelectedIndex property is changed.
+            </summary>
+        </member>
+        <member name="E:Toolkit.Controls.TreeViewer.Selected">
+            <summary>
+            Occurs when a tab is selected.
+            </summary>
+        </member>
+        <member name="E:Toolkit.Controls.TreeViewer.Selecting">
+            <summary>
+            Occurs before a tab is selected, enabling a handler to cancel the tab change.
+            </summary>
+        </member>
+        <member name="E:Toolkit.Controls.TreeViewer.Deselected">
+            <summary>
+            Occurs when a tab is deselected.
+            </summary>
+        </member>
+        <member name="E:Toolkit.Controls.TreeViewer.Deselecting">
+            <summary>
+            Occurs before a tab is deselected, enabling a handler to cancel the tab change.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.TreeViewer.Tabs">
+            <summary>
+            Получени коллекции с Tab'ами, которые принадлежат данному контролу
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.TreeViewer.SelectedIndex">
+            <summary>
+            Получение/Изменение индекса текущего активного Tab'а
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.TreeViewer.TabCount">
+            <summary>
+            Возвращает количество Tab'ов в BrowserControl'е
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.TreeViewer.SelectedTab">
+            <summary>
+            Устанавливает/Возвращает текущий Tab.
+            При установке происходит проверка на приналежность передаваемого Tab'a
+            данному экземрляру BrowserControl'а
+            При возвращении активного Tab'a возвращается null
+            в случае отсутствия онного.
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.TreeViewer.ToolStrip">
+            <summary>
+            Возвращает объект типа ToolStrip компоненты
+            </summary>
+        </member>
+        <member name="T:Toolkit.Controls.TreeViewer.BrowserControlCancelEventHandler">
+            <summary>
+            Represents the method that will handle the 
+            BrowserControl.Selecting or BrowserControl.Deselecting event 
+            of a BrowserControl control.
+            </summary>
+        </member>
+        <member name="T:Toolkit.Controls.TreeViewer.BrowserControlEventHandler">
+            <summary>
+            Represents the method that will handle the 
+            BrowserControl.Selected or BrowserControl.Deselected event 
+            of a BrowserControl control.
+            </summary>
+        </member>
+        <member name="T:Toolkit.Controls.TreeViewer.BrowserControlAction">
+            <summary>
+            Определение значений, которые представляю события BrowserControl'a
+            </summary>
+        </member>
+        <member name="F:Toolkit.Controls.TreeViewer.BrowserControlAction.Deselected">
+            <summary>
+            представление события BrowserControl.Deselected.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Controls.TreeViewer.BrowserControlAction.Deselecting">
+            <summary>
+            представление события BrowserControl.Deselecting.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Controls.TreeViewer.BrowserControlAction.Selected">
+            <summary>
+            представление события BrowserControl.Selected.
+            </summary>
+        </member>
+        <member name="F:Toolkit.Controls.TreeViewer.BrowserControlAction.Selecting">
+            <summary>
+            представление события BrowserControl.Selecting.
+            </summary>
+        </member>
+        <member name="T:Toolkit.Controls.TreeViewer.BrowserControlCancelEventArgs">
+            <summary>
+            Представление информациия для BrowserControl.Selecting и BrowserControl.Deselecting события TabControl'a
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.BrowserControlCancelEventArgs.#ctor(Toolkit.Controls.TreeViewer.Tab,System.Int32,System.Boolean,Toolkit.Controls.TreeViewer.BrowserControlAction)">
+            <summary>
+            Конструктор по-умолчанию
+            </summary>
+            <param name="tab">ссылка на объект типа Tab, к которому 
+            относится событие</param>
+            <param name="tabIndex">Начинающийся с 0, индекс Tab'a,
+            который генерирует событие</param>
+            <param name="cancel">true, чтобы отменить операцию,
+            иначе false</param>
+            <param name="action">одно из значений BrowserControlAction</param>
+        </member>
+        <member name="T:Toolkit.Controls.TreeViewer.BrowserControlEventArgs">
+            <summary>
+            Представление информациия для BrowserControl.Selected и BrowserControl.Deselected события TabControl'a
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.BrowserControlEventArgs.#ctor(Toolkit.Controls.TreeViewer.Tab,System.Int32,Toolkit.Controls.TreeViewer.BrowserControlAction)">
+            <summary>
+            Конструктор по-умолчанию
+            </summary>
+            <param name="tab">ссылка на объект типа Tab, к которому 
+            относится событие</param>
+            <param name="tabIndex">Начинающийся с 0, индекс Tab'a,
+            который генерирует событие</param>
+            <param name="action">одно из значений BrowserControlAction</param>
+        </member>
+        <member name="T:Toolkit.Controls.TreeViewer.TabCollection">
+            <summary>
+            Содержит коллекцию объектов типа Tab.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.TabCollection.#ctor(Toolkit.Controls.TreeViewer)">
+            <summary>
+            Конструктор по-умолчанию.
+            </summary>
+            <param name="bc">ссылка на родительский объект типа BrowserConrtrol</param>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.TabCollection.IndexOf(Toolkit.Controls.TreeViewer.Tab)">
+            <summary>
+            Возвращает индекс указанного Tab'a в коллекции
+            </summary>
+            <param name="item">объект типа Tab который 
+            необходимо найти в коллекции</param>
+            <returns>Начинающийся с 0 индекс Tab'a в коллекции; -1, если отсутствует</returns>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.TabCollection.Insert(System.Int32,Toolkit.Controls.TreeViewer.Tab)">
+            <summary>
+            Вставляет существующий объект Tab в коллекцию по указаному индексу
+            </summary>
+            <param name="index">Tab, который необходимо добавить в коллекцию</param>
+            <param name="item">Начинающийся с 0 индекс, по которому необходимо 
+            произвести вставку в коллекцию</param>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.TabCollection.RemoveAt(System.Int32)">
+            <summary>
+            Удаляет Tab с указанным индексом из коллекции
+            </summary>
+            <param name="index">Начинающийся с 0 индекс Tab'a в коллекции,
+            который необходимо удалить</param>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.TabCollection.Add(Toolkit.Controls.TreeViewer.Tab)">
+            <summary>
+            Добавление Tab'a в коллекцию
+            </summary>
+            <param name="item">Tab, который необходимо добавить</param>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.TabCollection.Clear">
+            <summary>
+            Удаление всех Tab'ов из коллекции
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.TabCollection.Contains(Toolkit.Controls.TreeViewer.Tab)">
+            <summary>
+            Опредение приналежности Tab'aколлекции
+            </summary>
+            <param name="item">Tab, которій необходимо найти в коллекции</param>
+            <returns>true, если коллекция содержит Tab, иначе false</returns>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.TabCollection.CopyTo(Toolkit.Controls.TreeViewer.Tab[],System.Int32)">
+            <summary>
+            Копирует коллекцию в одномерный масив
+            </summary>
+            <param name="array">массив в который необходимо скопировать коллекцию</param>
+            <param name="arrayIndex">Начинающийся с 0 индекс начала в массиве,
+            с которого производить вставку</param>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.TabCollection.Remove(Toolkit.Controls.TreeViewer.Tab)">
+            <summary>
+            Удаляет Tab из коллекции
+            </summary>
+            <param name="item">Tab, который необходимо удалить</param>
+            <returns>успешность выполнения операции</returns>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.TabCollection.GetEnumerator">
+            <summary>
+            Returns an enumeration of all the tab pages in the collection.
+            </summary>
+            <returns>An System.Collections.IEnumerator for the 
+            TabCollection.</returns>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.TabCollection.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through a collection.
+            </summary>
+            <returns>An System.Collections.IEnumerator object that 
+            can be used to iterate through the collection.</returns>
+        </member>
+        <member name="E:Toolkit.Controls.TreeViewer.TabCollection.CollectionChanged">
+            <summary>
+            событие генерируемое при внесении изменений в коллекцию
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.TreeViewer.TabCollection.Item(System.Int32)">
+            <summary>
+            Возвращает/Устанавливает Tab в коллекции
+            </summary>
+            <param name="index">Начинающийся с 0 индекс Tab'a, 
+            который возвращается/устанавливается</param>
+            <returns>Tab по указанному индексу</returns>
+        </member>
+        <member name="P:Toolkit.Controls.TreeViewer.TabCollection.Count">
+            <summary>
+            Возвращает количество Tab'ов в коллекции
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.TreeViewer.TabCollection.IsReadOnly">
+            <summary>
+            Возвращает значение, которое указывает пожно ли изменять коллекцию
+            </summary>
+        </member>
+        <member name="T:Toolkit.Controls.TreeViewer.Tab">
+            <summary>
+            Реализация "закладки" для BrowserControl'а
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.Tab.#ctor(System.String)">
+            <summary>
+            Конструктор по умолчанию
+            </summary>
+            <param name="caption">заголовок компоненты</param>
+        </member>
+        <member name="F:Toolkit.Controls.TreeViewer.Tab.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.Tab.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:Toolkit.Controls.TreeViewer.Tab.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="P:Toolkit.Controls.TreeViewer.Tab.TreeView">
+            <summary>
+            Возвращает/устанавливает TreeView компоненты
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.TreeViewer.Tab.ToolTip">
+            <summary>
+            Возвращает/устанавливает значение подсказки компоненты
+            </summary>
+        </member>
+        <member name="P:Toolkit.Controls.TreeViewer.Tab.Caption">
+            <summary>
+             Свойство для полученя/присваивания заголовка
+            </summary>
+        </member>
+    </members>
+</doc>

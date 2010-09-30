@@ -1,0 +1,2060 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        "Toolkit.RPL"
+    </assembly>
+    <members>
+        <member name="M:Toolkit.RPL.DeleteCriteria.#ctor(System.String,Toolkit.RPL.Where,Toolkit.RPL.OrderBy)">
+            <summary>
+Create instance of the DeleteCriteria class for given type that
+contains spicified WHERE and ORDER BY clauses.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.DeleteCriteria.#ctor(System.String,Toolkit.RPL.Where)">
+            <summary>
+Create instance of the DeleteCriteria class for given object's
+type that contains specified WHERE clause.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.DeleteCriteria.#ctor(System.String)">
+            <summary>
+Create "empty" (for all objects) delete criteria instance
+coresponding to specified object's type.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.DeleteCriteria.OnPerformComplete">
+            <summary>
+Performs additional custom processes after filling collection by
+proxies: delete objects in persistence storage.
+</summary>
+            <remarks>
+                <para>
+I can't simply create DELETE SQL request to prevent data lost
+without business logic checking: then, i use single Delete call
+to each object to apply business check. But this is atomar
+operation, so it performs under transactional control.</para>
+                <para>
+If no errors was raised then criteria will contain set of deleted
+objects.
+</para>
+            </remarks>
+        </member>
+        <member name="T:Toolkit.RPL.DeleteCriteria">
+            <summary>
+This class encapsulates the behavior needed to delete scope of objects.
+</summary>
+            <remarks>
+                <para>
+This criterial request means action on persistent mechanism. So, it
+proceses under transactial control in following steps: all objects retrieve
+from storage it's properties and links, then delete request will be
+performed to each object.</para>
+                <para>
+After operation complete, criteria will be filled by deleted objects.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.RetrieveCriteria.Move(System.Int32)">
+            <summary>
+Read next/previous count of objects from recordset.
+</summary>
+            <remarks>
+Collection content will be cleared and filled by next/previous
+new data. Positive sign of count means using "next" request and
+negative means "previous". Using of zero means clearing the
+collection and fill only common properties such as CountFound.
+Function return bool value that indicates not emty content of
+collection.
+</remarks>
+        </member>
+        <member name="P:Toolkit.RPL.RetrieveCriteria.AsProxies">
+            <summary>
+Gets or sets retrieving method.
+</summary>
+            <remarks>
+If this property is set to true, then proxy objects will be
+retrieved. This feature can be usefull to network traffic reduce
+or to increase perfomance. By default is set to false.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.RetrieveCriteria.#ctor(System.String,Toolkit.RPL.Where,Toolkit.RPL.OrderBy)">
+            <summary>
+Create instance of the RetrieveCriteria class to retrieve the
+objects of given type that sutisfy specified WHERE and ORDER BY
+clauses.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.RetrieveCriteria.#ctor(System.String,Toolkit.RPL.Where)">
+            <summary>
+Create instance of the RetrieveCriteria class to retrieve the
+objects of given type that satisfy spicified WHERE clause.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.RetrieveCriteria.#ctor(System.String)">
+            <summary>
+Create instance of the RetrieveCriteria class to retrieve the
+objects of given type.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.RetrieveCriteria.OnPerformComplete">
+            <summary>
+Performs additional custom processes after filling collection by
+proxies: make objects up-to-date and retrieves full objects from
+persistence storage if needed.
+</summary>
+            <remarks>
+This is atomar operation, so it performs under transactional
+control.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.RetrieveCriteria.Reset">
+            <summary>
+Clear search result.
+</summary>
+            <remarks>
+Call base class implementation and reset current cursor position
+that could be modified by using cursor routine "Move".
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ToString">
+            <summary>
+Returns a String that represents the current Object.
+</summary>
+            <remarks>
+Override standart object method ToString(): returns object name
+in string representation.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.GetHashCode">
+            <summary>
+Returns hash code for the current PersistentObject.
+</summary>
+            <remarks>
+If object is stored in DB then function returns hash code for
+string composed from object Type and ID.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.Delete">
+            <summary>
+Delete object from persistance mechanism permanently.
+</summary>
+            <remarks>
+After this operation object will be proxy with ID(-1), stamp(0)
+and it's own name. No links and properties will be accessed after
+operation. Default implementation check for the next object
+states: "new" and "deleted".
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.Save">
+            <summary>
+Save object to persistance mechanism.
+</summary>
+            <remarks>
+For the proxy object name will be stored in DB only. After this
+operation timestamp will be modified and for the new objects auto
+generated ID will be assign. Two events will be raised: OnSave
+before and OnSaveComplete after operation. Default implementation
+check for the next object states: "deleted".
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.Retrieve(System.Boolean)">
+            <summary>
+Reload proxy/full object from persistance mechanism making it
+up-to-date.
+</summary>
+            <param name="upgrade">
+Used to build full object by proxy.
+</param>
+            <remarks>
+Two events will be raised during processing: OnRetrieve before
+and OnRetrieveComplete after operation. Default implementation
+checks for the next object states: "new" and "deleted".
+</remarks>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentObject.Name">
+            <summary>
+Gets or sets object's short name.
+</summary>
+            <remarks>
+This property can be overriden in derived classes to be composed
+from one or more object properties.
+</remarks>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentObject.IsChanged">
+            <summary>
+Gets a value indicating that the current object is changed.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentObject.Stamp">
+            <summary>
+Gets a time of the last object's modification.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentObject.IsProxy">
+            <summary>
+Gets a value indicating that the current object is proxy.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentObject.ID">
+            <summary>
+Gets identifier that represent object in persistence storage.
+</summary>
+            <remarks>
+This ID may be not unique in persistance storage, but combination
+of object type and ID must be unique.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.OnChange(System.String,Toolkit.RPL.ValueBox,Toolkit.RPL.ValueBox)">
+            <summary>
+Performs additional custom processes before add/delete/change
+persistent property of the PersistantObject instance.
+</summary>
+            <remarks>
+                <para>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+object's persistent property is added/deleted/changed. If this
+is add event, then oldValue will be set to DBNull. If this is
+delete event, then newValue will be set to nullptr.</para>
+                <para>
+If "prop" parameter is null reference then content of properties
+will be cleared.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.OnChange(Toolkit.RPL.PersistentObject)">
+            <summary>
+Performs additional custom processes before add/delete new object
+link to the PersistentObject instance. 
+</summary>
+            <remarks>
+                <para>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+new object's link is added/deleted. Event occurs before action,
+so you must check for this link exists already to determine type
+of action.</para>
+                <para>
+If "obj" parameter is null reference then content of the links
+collection will be cleared.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.OnChange(System.String,System.String)">
+            <summary>
+Performs additional custom processes before change object name.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+object name is changeded.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.OnDeleteComplete">
+            <summary>
+Performs additional custom processes after delete instance of the
+PersistentObject class from persistence mechanism.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action after the
+object is deleted from persistance storage.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.OnDelete">
+            <summary>
+Performs additional custom processes before delete instance of
+the PersistentObject class from persistence mechanism.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+object is deleted from persistance storage.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.OnSaveComplete">
+            <summary>
+Performs additional custom processes after save properties and
+links of PersistentObject instance to persistence mechanism.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action after the
+object's properties and links is saved to persistance storage.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.OnSave">
+            <summary>
+Performs additional custom processes before save properties and
+links of PersistentObject instance to persistence mechanism.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+object's properties and links are saved to persistance storage.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.OnRetrieveComplete">
+            <summary>
+Performs additional custom processes after retrieve up-to-date DB
+data of PersistentObject instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action after the
+object is retrieved from persistance storage.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.OnRetrieve">
+            <summary>
+Performs additional custom processes before retrieve up-to-date
+DB data of PersistentObject instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+object is retrieved from persistance storage.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.OnTransactionRollback">
+            <summary>
+Performs additional custom processes when transaction fails.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to restore it's state to previous,
+saved by "OnTransactionBegin". But be shure that no exceptions is
+raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.OnTransactionCommit">
+            <summary>
+Performs additional custom processes for successfull transaction.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to delete it's own save point that
+was created by "OnTransactionBegin" early.  But be shure that no
+exceptions is raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.OnTransactionBegin">
+            <summary>
+Performs additional custom processes when transaction starts.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to create it's own save point. But
+be shure that no exceptions is raised.
+</remarks>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentObject.Properties">
+            <summary>
+Gets collection of object's properties.
+</summary>
+            <remarks>
+                <para>
+It's recomended to implement all properties in derived classes
+as native routines to provide more deep control of busines
+logic.</para>
+                <para>
+You can setup new property by using default setter.
+</para>
+            </remarks>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentObject.Links">
+            <summary>
+Gets collection of object's links.
+</summary>
+            <remarks>
+It's STRONGLY recomended to implement all links in derived
+classes as native routines to provide more deep type and busines
+logic control.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.Dispose">
+            <summary>
+Class destructor.
+</summary>
+            <remarks>
+Switch object to proxy state. This disposer clears transaction
+stack, mark object as proxy, dispose links and properties.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.#ctor(System.Int32,System.DateTime,System.String)">
+            <summary>
+Creates proxy PersistentObject instance.
+</summary>
+            <remarks>
+                <para>
+Such constructor must provide each derived class.</para>
+                <para>
+For this type of object Propertis and Links will be empty and no
+operations are allowed for it.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.#ctor">
+            <summary>
+Default class constructor builds new persistent object.
+</summary>
+            <remarks>
+For the new objects ID will be set to 0 and IsProxy to false.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ProcessSQL(System.String,System.Object[])">
+            <summary>
+Submit hardcoded SQL statements to the persistence.
+</summary>
+            <remarks>
+                <para>
+This is critical feature that allows you to embed SQL in your
+application code.</para>
+                <para>
+To compose parametrized SQL request use standard String.Format
+naming style (place '{n}' instead of parameter).
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.TrueForAll(System.Predicate`1{Toolkit.RPL.PersistentObject^})">
+            <summary>
+Determines whether every object in the collection matches the
+conditions defined by the specified predicate.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.ForEach(System.Action`1{Toolkit.RPL.PersistentObject^})">
+            <summary>
+Performs the specified action on each object of the collection.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.FindAll(System.Predicate`1{Toolkit.RPL.PersistentObject^})">
+            <summary>
+Retrieves the all the objects that match the conditions defined
+by the specified predicate.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.Find(System.Predicate`1{Toolkit.RPL.PersistentObject^})">
+            <summary>
+Searches for an object that matches the conditions defined by the
+specified predicate, and returns the first occurrence within the
+entire collection.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.Exists(System.Predicate`1{Toolkit.RPL.PersistentObject^})">
+            <summary>
+Determines whether the collection contains object that match the
+conditions defined by the specified predicate.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.Remove(Toolkit.RPL.PersistentObject)">
+            <summary>
+Removes the specified object from the collection.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.CopyTo(Toolkit.RPL.PersistentObject[],System.Int32)">
+            <summary>
+Copies the elements of the PersistentObjects to an array of type
+PersistentObject^, starting at the specified array index.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.Contains(Toolkit.RPL.PersistentObject)">
+            <summary>
+Determines whether the PersistentObjects contains a specific
+object.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.Clear">
+            <summary>
+Clears the content of the PersistentObjects instance.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.Add(Toolkit.RPL.PersistentObject)">
+            <summary>
+Adds an object into the collection.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentObjects.Count">
+            <summary>
+Gets the number of objects contained in the PersistentObjects
+instance.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.#ctor(System.Collections.Generic.IEnumerable`1{Toolkit.RPL.PersistentObject^})">
+            <summary>
+Create instance of the PersistentObjects class initialized with
+the all objects in the given collection.
+</summary>
+            <remarks>
+If object is not unique in the collection then only one reference
+will be added. Null references will not be added to the instance.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.#ctor">
+            <summary>
+Default class constructor.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.OnRemoveComplete(Toolkit.RPL.PersistentObject)">
+            <summary>
+Performs additional custom processes after removing an object from
+the PersistentObjects instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action after the
+specified property is removed.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.OnInsertComplete(Toolkit.RPL.PersistentObject)">
+            <summary>
+Performs additional custom processes after inserting a new object
+into the PersistentObjects instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action after the
+specified object is inserted.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.OnClearComplete">
+            <summary>
+Performs additional custom processes after removing all objects
+from PersistentObjects instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action after all
+objects are removed.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.OnRemove(Toolkit.RPL.PersistentObject)">
+            <summary>
+Performs additional custom processes before removing an object
+from the PersistentObjects instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+specified object is removed.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.OnInsert(Toolkit.RPL.PersistentObject)">
+            <summary>
+Performs additional custom processes before inserting a new object
+into the PersistentObjects instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before the
+specified object is inserted.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObjects.OnClear">
+            <summary>
+Performs additional custom processes before removing all objects
+from PersistentObjects instance.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action before all
+objects are removed.
+</remarks>
+        </member>
+        <member name="T:Toolkit.RPL.RetrieveCriteria">
+            <summary>
+This class encapsulates the behavior needed to search scope of objects.
+</summary>
+            <remarks>
+                <para>
+This criterial request means action on persistent mechanism. So, it
+proceses under transactial control.</para>
+                <para>
+Also, it add Move() routine that you can use to move throught all records.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.ToString">
+            <summary>
+Returns a String that represents the current ValueBox.
+</summary>
+            <remarks>
+                <para>
+This function returns: </para>
+                <para>
+1. "&lt;null&gt;" for null reference or DBNull </para>
+                <para>
+2. and result of internal data ToString() call in other cases 
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.ToObject">
+            <summary>
+Returns a handle to the internal data.
+</summary>
+            <remarks>
+This function returns modified internal data: if box contains
+null reference than it returns DBNull::Value. This functionality
+prevents from null accessing errors. ToObject is used in all
+functions instead of direct m_value access.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.Equals(System.Object)">
+            <summary>
+Determines whether the specified Object is equal to the current
+ValueBox instance.
+</summary>
+            <remarks>
+Try build new instance of the ValueBox class by specified Object
+parameter. If custructor fails, returns false. In other case uses
+Equal operator.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.Equals(Toolkit.RPL.ValueBox)">
+            <summary>
+Returns a value indicating whether this instance and a specified
+ValueBox object represent the same value.
+</summary>
+            <remarks>
+It uses Equal operator in implementation.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Inequality(Toolkit.RPL.ValueBox,Toolkit.RPL.ValueBox)">
+            <summary>
+Operator !=. Check for two instances of ValueBox to be not equal.
+</summary>
+            <remarks>
+It uses Equal operator in implementation.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Equality(Toolkit.RPL.ValueBox,Toolkit.RPL.ValueBox)">
+            <summary>
+Operator ==. Check for two instances of ValueBox to be equal.
+</summary>
+            <remarks>
+Checks internal values to be equivalent.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~System.Single">
+            <summary>
+Explicit cast operator from ValueBox to float value.
+</summary>
+            <remarks>
+If internal data is not double value then InvalidCastException
+will be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~System.UInt64">
+            <summary>
+Explicit cast operator from ValueBox to unsigned long long value.
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~System.Int64">
+            <summary>
+Explicit cast operator from ValueBox to long long value.
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~System.UInt32">
+            <summary>
+Explicit cast operator from ValueBox to unsigned int value.
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~System.UInt16">
+            <summary>
+Explicit cast operator from ValueBox to unsigned short value.
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~System.Int16">
+            <summary>
+Explicit cast operator from ValueBox to short value.
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~System.Byte">
+            <summary>
+Explicit cast operator from ValueBox to unsigned char value.
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte">
+            <summary>
+Explicit cast operator from ValueBox to char value.
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~System.DBNull">
+            <summary>
+Explicit cast operator from ValueBox to DBNull value (native).
+</summary>
+            <remarks>
+If internal data is not DBNull::Value or null reference then
+InvalidCastException will be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~Toolkit.RPL.PersistentStream">
+            <summary>
+Explicit cast operator from ValueBox to PersistentStream value.
+</summary>
+            <remarks>
+If internal data is not PersistentStream value then
+InvalidCastException will be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~System.String">
+            <summary>
+Explicit cast operator from ValueBox to String value (native).
+</summary>
+            <remarks>
+If internal data is not String value then InvalidCastException
+will be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~System.DateTime">
+            <summary>
+Explicit cast operator from ValueBox to DateTime value (native).
+</summary>
+            <remarks>
+If internal data is not DateTime value then InvalidCastException
+will be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~System.Double">
+            <summary>
+Explicit cast operator from ValueBox to double value (native).
+</summary>
+            <remarks>
+If internal data is not double value then InvalidCastException
+will be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~System.Int32">
+            <summary>
+Explicit cast operator from ValueBox to int value (native).
+</summary>
+            <remarks>
+If internal data is not int value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Explicit(Toolkit.RPL.ValueBox)~System.Boolean">
+            <summary>
+Explicit cast operator from ValueBox to bool value (native).
+</summary>
+            <remarks>
+If internal data is not bool value then InvalidCastException will
+be raised.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Implicit(System.DBNull)~Toolkit.RPL.ValueBox">
+            <summary>
+Implicit cast operator from DBNull value to ValueBox. 
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Implicit(Toolkit.RPL.PersistentStream)~Toolkit.RPL.ValueBox">
+            <summary>
+Implicit cast operator from PersistentStream value to ValueBox. 
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Implicit(System.String)~Toolkit.RPL.ValueBox">
+            <summary>
+Implicit cast operator from String value to ValueBox. 
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Implicit(System.DateTime)~Toolkit.RPL.ValueBox">
+            <summary>
+Implicit cast operator from DateTime value to ValueBox. 
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Implicit(System.Double)~Toolkit.RPL.ValueBox">
+            <summary>
+Implicit cast operator from double value to ValueBox. 
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Implicit(System.Int32)~Toolkit.RPL.ValueBox">
+            <summary>
+Implicit cast operator from int value to ValueBox. 
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.op_Implicit(System.Boolean)~Toolkit.RPL.ValueBox">
+            <summary>
+Implicit cast operator from bool value to ValueBox. 
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.ValueBox.#ctor(System.Object)">
+            <summary>
+Creates new instance of the ValueBox class containing specified
+object as internal data.
+</summary>
+            <remarks>
+Now following types are supported as native: bool, int, double,
+DateTime, String, PersistentStream and DBNull. And char, unsigned
+char, short, unsigned short, unsigned int, float are convertible
+to native.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentTransaction.Process">
+            <summary>
+Process transaction.
+</summary>
+            <remarks>
+Exposes internal content of transaction.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentTransaction.Add(System.Collections.Generic.IEnumerable`1{Toolkit.RPL.PersistentObject^},Toolkit.RPL.PersistentTransaction.ACTION)">
+            <summary>
+Add some objects manipulation request to transaction.
+</summary>
+            <remarks>
+All null references in the collection will be ignored.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentTransaction.Add(Toolkit.RPL.PersistentObject,Toolkit.RPL.PersistentTransaction.ACTION)">
+            <summary>
+Add some object manipulation request to transaction.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentTransaction.#ctor(System.Collections.Generic.IEnumerable`1{Toolkit.RPL.PersistentObject^},Toolkit.RPL.PersistentTransaction.ACTION)">
+            <summary>
+Create instance of the PersistentTransaction class and fill it by
+specified action at the collection of persistent objects.
+</summary>
+            <remarks>
+All null references in the collection will be ignored.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentTransaction.#ctor(Toolkit.RPL.PersistentObject,Toolkit.RPL.PersistentTransaction.ACTION)">
+            <summary>
+Create instance of the PersistentTransaction class and fill it by
+specified action at persistent object.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentTransaction.#ctor">
+            <summary>
+Default constructor. Create instance of the PersistentTransaction
+class.
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.PersistentTransaction">
+            <summary>
+This class encapsulates the behavior that is needed to use transactions.
+</summary>
+            <remarks>
+                <para>
+Only you need, this is add object or collection of objects with asked
+action to transaction instance (use "Add" method) and perform operation
+by calling Process().</para>
+                <para>
+If transaction will be not succeded, then some error (from persistence
+storage) will be raised and all changes will be rolled back.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.Where.op_LogicalNot(Toolkit.RPL.Where)">
+            <summary>
+Creates agregation of the predicate that uses the logical
+operation NOT.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.Where.op_BitwiseAnd(Toolkit.RPL.Where,Toolkit.RPL.Where)">
+            <summary>
+Creates combination of two predicates that uses the logical
+operation AND.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.Where.op_BitwiseOr(Toolkit.RPL.Where,Toolkit.RPL.Where)">
+            <summary>
+Creates combination of two predicates that uses the logical
+operation OR.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Where.Operation.Not.SubWhere">
+            <summary>
+Gets search expression NOT operation is applied to.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Where.Operation.And.RightWhere">
+            <summary>
+Gets right search condition AND operator is applied to.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Where.Operation.And.LeftWhere">
+            <summary>
+Gets left search condition AND operator is applied to.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Where.Operation.Or.RightWhere">
+            <summary>
+Gets right search condition OR operator is applied to.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Where.Operation.Or.LeftWhere">
+            <summary>
+Gets left search condition OR operator is applied to.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Where.Clause.Value">
+            <summary>
+Gets predicate value.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Where.Clause.Operator">
+            <summary>
+Gets predicate comparison operator.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Where.Clause.OPD">
+            <summary>
+Gets predicate operand.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.Where.Clause.#ctor(System.String,Toolkit.RPL.Where.Clause.OP,Toolkit.RPL.ValueBox)">
+            <summary>
+Creates a new instance of the Where.Clause class (predicate) 
+consists of specified operand, comparison operator and value.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.Where.Clause.#ctor(System.String,Toolkit.RPL.ValueBox)">
+            <summary>
+Creates a new instance of the Where.Clause class (predicate)
+where specified operand is equal to the specified value.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.OrderBy.op_Implicit(Toolkit.RPL.OrderBy.Clause)~Toolkit.RPL.OrderBy">
+            <summary>
+Implicit cast operator from OrderBy.Clause value to OrderBy. 
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.OrderBy.#ctor(Toolkit.RPL.OrderBy.Clause[])">
+            <summary>
+Creates a new instance of the OrderBy class using specified set
+of clauses.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.OrderBy.Clause.Sort">
+            <summary>
+Gets sorting order.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.OrderBy.Clause.OPD">
+            <summary>
+Gets order operand.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.OrderBy.Clause.#ctor(System.String,Toolkit.RPL.OrderBy.Clause.SORT)">
+            <summary>
+Creates a new instance of the OrderBy.Clause class with specified
+operand and sorting order.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.OrderBy.Clause.#ctor(System.String)">
+            <summary>
+Creates a new instance of the OrderBy.Clause class that uses
+ascending sorting order for specified operand.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.ToString">
+            <summary>
+Returns a String that represents the current Object.
+</summary>
+            <remarks>
+Overrides standart object method ToString() to provide special
+value for stream data.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.WriteByte(System.Byte)">
+            <summary>
+Writes a byte to the current position in the stream and advances
+the position within the stream by one byte.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+Writes a sequence of bytes to the current stream and advances the
+current position within this stream by the number of bytes
+written.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.SetLength(System.Int64)">
+            <summary>
+Sets the length of the current stream.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.Seek(System.Int64,System.IO.SeekOrigin)">
+            <summary>
+Sets the position within the current stream.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.ReadByte">
+            <summary>
+Reads a byte from the stream and advances the position within the
+stream by one byte, or returns -1 if at the end of the stream.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+Reads a sequence of bytes from the current stream and advances
+the position within the stream by the number of bytes read.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.Flush">
+            <summary>
+Clears all buffers for this stream and causes any buffered data to
+be written to the underlying device.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.ExportToFile(System.String)">
+            <summary>
+Stores stream content to the specified file.
+</summary>
+            <remarks>
+If the file already exists, it will be overwritten.
+</remarks>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentStream.Position">
+            <summary>
+Gets or sets the position within the current stream.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentStream.Length">
+            <summary>
+Gets the length in bytes of the stream.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentStream.CanWrite">
+            <summary>
+Gets a value indicating whether the current stream supports
+writing.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentStream.CanSeek">
+            <summary>
+Gets a value indicating whether the current stream supports
+seeking.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentStream.CanRead">
+            <summary>
+Gets a value indicating whether the current stream supports
+reading.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.op_Implicit(Toolkit.RPL.PersistentStream)~System.IO.Stream">
+            <summary>
+Implicit cast operator from PersistentStream to Stream.
+</summary>
+            <remarks>
+This operator creates inherited from Stream proxy object that
+pass all calls to the specified PersistentStream instance.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.Finalize">
+            <summary>
+Class finalizer.
+</summary>
+            <remarks>
+Removes all temporary files (ignore IO exceptions).
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.Dispose">
+            <summary>
+Class disposer.
+</summary>
+            <remarks>
+Disposes internal stream and call finalizer.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.#ctor(System.Byte[])">
+            <summary>
+Initializes a new instance of the PersistentStream class based on
+the specified byte array.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.#ctor(System.String)">
+            <summary>
+Initializes a new instance of the PersistentStream class with the
+specified file content.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentStream.#ctor">
+            <summary>
+Initializes a new instance of the PersistentStream class with
+empy content.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentProperties.#ctor(System.Collections.Generic.IEnumerable`1{System.Collections.Generic.KeyValuePair`2{System.String^,Toolkit.RPL.ValueBox}})">
+            <summary>
+Create instance of the PersistentProperties class initialized
+with KeyValue pairs in the given collection.
+</summary>
+            <remarks>
+If pairs in collection have not unique keys then only the last
+value will be stored. All null references will be ignored and no
+events will be faired.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentProperties.#ctor">
+            <summary>
+Default class constructor.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentCriteria.Perform">
+            <summary>
+Performs criteria operation.
+</summary>
+            <remarks>
+This operation is atomic and performs in transaction context.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentCriteria.IndexOf(Toolkit.RPL.PersistentObject)">
+            <summary>
+Determines the index of a specific object in the collection. 
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentCriteria.Item">
+            <summary>
+Gets the object at the specified index.
+</summary>
+            <remarks>
+This is default indexed property.
+</remarks>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentCriteria.CountFound">
+            <summary>
+Gets number of found objects using specified InnerQuery request
+with current WHERE clause.
+</summary>
+            <remarks>
+To get count of objects that was processed by this criteria
+request (with specified "BottomLimit" and "CountLimit" values) 
+use "Count" property.
+</remarks>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentCriteria.CountLimit">
+            <summary>
+Gets or sets count limit in criteria request.
+</summary>
+            <remarks>
+This is the number of rows that will be retrieved. By default it
+is set to int::MaxValue.
+</remarks>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentCriteria.BottomLimit">
+            <summary>
+Gets or sets bottom limit in criteria request.
+</summary>
+            <remarks>
+This is 0-based index of the recordset's row retrieved from DB.
+By default is set to 0.
+</remarks>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentCriteria.OrderBy">
+            <summary>
+Gets or sets SQL ORDER BY clause.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentCriteria.Where">
+            <summary>
+Gets or sets SQL WHERE clause.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentCriteria.Type">
+            <summary>
+Gets object type this criteria was created for.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentCriteria.OnInsert(Toolkit.RPL.PersistentObject)">
+            <summary>
+Performs additional custom processes before inserting a new object
+into the PersistentCriteria instance.
+</summary>
+            <remarks>
+This sealed method raises error to notify about read-only
+collection.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentCriteria.OnRemove(Toolkit.RPL.PersistentObject)">
+            <summary>
+Performs additional custom processes before removing an element
+from the PersistentCriteria instance.
+</summary>
+            <remarks>
+This sealed method raises error to notify about read-only
+collection.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentCriteria.OnClear">
+            <summary>
+Performs additional custom processes before removing all objects
+from the PersistentCriteria instance.
+</summary>
+            <remarks>
+This sealed method raises error to notify about read-only
+collection.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentCriteria.OnPerformComplete">
+            <summary>
+Performs additional custom processes after filling collection by
+proxies.
+</summary>
+            <remarks>
+The default implementation of this method is intended to be
+overridden by a derived class to perform some action depend on
+criteria type.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentCriteria.Reset">
+            <summary>
+Clear search result and reset criteria to it initial state.
+</summary>
+            <remarks>
+This function must be called from setters that is used to compose
+SQL request (those, that can change search result). Derived class
+can override this function to process reset request.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentCriteria.#ctor(System.String)">
+            <summary>
+Create new instance of the PersistentCriteria class for given
+object type.
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.PersistentCriteria">
+            <summary>
+This abstract class encapsulates the common behavior needed to search,
+delete and update scope of persistent objects.
+</summary>
+            <remarks>
+This is class from which all search classes inherit from. Class derived
+from PersistentObjects. You can set WHERE and ORDER BY clauses to limit
+count of objects to retrieve. BottomLimit and CountLimit provide limits for
+scope of objects represented by recordset.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.Factories.PersistenceBroker.InitializeLifetimeService">
+            <summary>
+Gives the instance an infinite lifetime by preventing a lease
+from being created.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.Factories.PersistenceBroker.Close">
+            <summary>
+Closes persistent mechanism.
+</summary>
+            <remarks>
+This routine frees all allocated resources and stops all running
+threads. It also calls instance disposer, so it's recommended to
+use it before unloading application domain.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.Factories.PersistenceBroker.Open">
+            <summary>
+Opens persistent mechanism.
+</summary>
+            <remarks>
+If BrokerFactory is set, it is used for PersistenceBroker object
+creation. 
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.Factories.PersistenceBroker.Disconnect">
+            <summary>
+Disconnects from persistent storage.
+</summary>
+            <remarks>
+                <para>
+Use on the server side to disconnect from storage.</para>
+                <para>
+After this function call all operations with objects will be
+failed, but objects instances will not be destroyed. So you will
+be able use it after reconnect.</para>
+                <para>
+This function defined as static that prevent access to server
+real routine through .NET Remoting.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.Factories.PersistenceBroker.Connect(Toolkit.RPL.Storage.IPersistenceStorage)">
+            <summary>
+Connects to persistent storage using specified interface.
+</summary>
+            <remarks>
+                <para>
+Use on the server side to connect to storage.</para>
+                <para>
+This function defined as static that prevent access to server
+real routine through .NET Remoting.
+</para>
+            </remarks>
+        </member>
+        <member name="P:Toolkit.RPL.Factories.PersistenceBroker.IsOpened">
+            <summary>
+Gets value indicating state of persistence mechanism.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Factories.PersistenceBroker.ObjectFactory">
+            <summary>
+Sets delegate that provide persistent object creation.
+</summary>
+            <remarks>
+This interface must be set on the client but is not needed on the
+server side.
+</remarks>
+        </member>
+        <member name="P:Toolkit.RPL.Factories.PersistenceBroker.BrokerFactory">
+            <summary>
+Sets delegate that provide custom broker creation. Null means
+using of default creation algorithm.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.Factories.PersistenceBroker.Dispose">
+            <summary>
+PersistenceBroker disposer.
+</summary>
+            <remarks>
+This disposer is called on the server side of communication and
+acts as Disconnect function.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.Factories.PersistenceBroker.#ctor">
+            <summary>
+Default class constructor.
+</summary>
+            <remarks>
+Specify it to provide singleton pattern.
+</remarks>
+        </member>
+        <member name="P:Toolkit.RPL.Factories.PersistenceBroker.Cache">
+            <summary>
+Gets or sets object by specified header.
+</summary>
+            <remarks>
+Getter searchs for object in cache and if unsuccessful creates it
+using factory.
+</remarks>
+        </member>
+        <member name="P:Toolkit.RPL.Factories.PersistenceBroker.Storage">
+            <summary>
+Gets internal access to the storage.
+</summary>
+            <remarks>
+Access to the members from this interface can acts through .NET
+Remoting.
+</remarks>
+        </member>
+        <member name="T:Toolkit.RPL.Factories.PersistenceBroker">
+            <summary>
+Singleton class that provides main functionality to manage
+persistence layer.
+</summary>
+            <remarks>
+                <para>
+In many ways this class is the key to the persistence layer.
+This class follows the Singleton design pattern in that there
+is only one instance of it in the object space of the
+application domain. Also, this is main goal to manage
+client-server configuration:</para>
+                <para>
+1. Broker and objects are at the client side. This is "fat
+client" approach. In this case just create
+IPersistenceStorage interface and connect it by using Connect
+function.</para>
+                <para>
+2. Broker and objects are at the server side. This is "thin
+client" approach. Configure .NET remoting to create all
+persistent objects (business objects, criterias and
+transactions) at the server side and just use it.</para>
+                <para>
+3. Persistent objects are at client, but Broker is at the
+server side (default). Configure .NET remoting to create
+Broker on the server. All communication between client and
+server will be passed through IIRemoteStorage interface.
+</para>
+            </remarks>
+        </member>
+        <member name="T:Toolkit.RPL.Factories.IIRemoteStorage">
+            <summary>
+Interface that provides internal access to the storage.
+</summary>
+            <remarks>
+                <para>
+Calls to members of this interface can be passed through .NET
+Remoting. So, you should not use any persistence objects
+access in implementation (in other case remote client request
+will be used).</para>
+                <para>
+Now, this interface duplicate IPersistenceStorage interface
+but have private access modifier. This is done to protect
+storage from implementer access. But still have one bug:
+implicit cast to IPersistenceStorage remove access
+restrictions. To avoid this just duplicate IPersistenceStorage
+code here.
+</para>
+            </remarks>
+        </member>
+        <member name="T:Toolkit.RPL.Factories.OBJECT_FACTORY">
+            <summary>
+Returns new instance of the specified type of object.
+</summary>
+            <remarks>
+That function calls every time new object retrieved from
+storage.
+</remarks>
+        </member>
+        <member name="T:Toolkit.RPL.Factories.BROKER_FACTORY">
+            <summary>
+Encapsulates the behavior needed for broker creation.
+</summary>
+            <remarks>
+It can be usefull to define custom creation algorithm for
+broker. For example, you want create all instances of
+PersistenceBroker in separated domains.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.IPersistenceStorage.ProcessSQL(System.String,System.Object[])">
+            <summary>
+Submit hardcoded SQL statements to the persistence.
+</summary>
+            <param name="sql">SQL request to be processed.</param>
+            <param name="params">Represents a list of parameters are passed to
+SQL request.</param>
+            <remarks>
+Parametrized request uses standard String.Format naming style.
+</remarks>
+            <returns>
+Disconnected an in-memory cache of data.
+</returns>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.IPersistenceStorage.Delete(Toolkit.RPL.Storage.HEADER)">
+            <summary>
+Delete object with specified header from storage.
+</summary>
+            <param name="header">Header value.</param>
+            <remarks>
+                <para>
+Type and object ID must be specified while call request.</para>
+                <para>
+Storage has to check specified date and throw exception if DB
+object has newer modification stamp.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.IPersistenceStorage.Save(Toolkit.RPL.Storage.HEADER@,Toolkit.RPL.Storage.LINK[],Toolkit.RPL.Storage.PROPERTY[],Toolkit.RPL.Storage.LINK[]@,Toolkit.RPL.Storage.PROPERTY[]@)">
+            <summary>
+Save object header, links and properties to storage.
+</summary>
+            <param name="header">In/Out header value.</param>
+            <param name="links">Array of modified object links.</param>
+            <param name="props">Array of modified object properties.</param>
+            <param name="mlinks">Array of new object links.</param>
+            <param name="mprops">Array of new object properties.</param>
+            <remarks>
+                <para>
+Type and object ID must be specified while call request.</para>
+                <para>
+Storage has to check specified date and throw exception if DB
+object has newer modification stamp.</para>
+                <para> 
+After save some links or properties may be updated by storage. So
+such objects have to be returned through mlinks and mprops params.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.IPersistenceStorage.Retrieve(Toolkit.RPL.Storage.HEADER@,Toolkit.RPL.Storage.LINK[]@,Toolkit.RPL.Storage.PROPERTY[]@)">
+            <summary>
+Retrieve object header, links and properties from storage.
+</summary>
+            <param name="header">In/Out header value.</param>
+            <param name="links">Array of object links.</param>
+            <param name="props">Array of object properties.</param>
+            <remarks>
+                <para>
+Type and object ID must be specified while call request.</para>
+                <para>
+Persistence storage has to check specified date and return links
+and properties if object is not up-to-date.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.IPersistenceStorage.Retrieve(Toolkit.RPL.Storage.HEADER@)">
+            <summary>
+Retrieve object header from storage.
+</summary>
+            <param name="header">In/Out header value.</param>
+            <remarks>
+Type and object ID must be specified while call request.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.IPersistenceStorage.Search(System.String,Toolkit.RPL.Where,Toolkit.RPL.OrderBy,System.Int32,System.Int32,Toolkit.RPL.Storage.HEADER[]@)">
+            <summary>
+Search storage for persistent objects that satisfy specified conditions.
+</summary>
+            <param name="type">Objects type.</param>
+            <param name="where">SQL WHERE clause.</param>
+            <param name="order">SQL ORDER BY clause.</param>
+            <param name="bottom">Bottom limit in the request.</param>
+            <param name="count">Count limit in the request.</param>
+            <param name="headers">Array of found object headers.</param>
+            <returns>
+Number of objects found
+</returns>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.IPersistenceStorage.TransactionRollback">
+            <summary>
+Rolls back a transaction from a pending state.
+</summary>
+            <remarks>
+RPL supports nested transaction. If storage doesn't, it must expose
+it by itself.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.IPersistenceStorage.TransactionCommit">
+            <summary>
+Commits the storage transaction.
+</summary>
+            <remarks>
+RPL supports nested transaction. If storage doesn't, it must expose
+it by itself.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.Storage.IPersistenceStorage.TransactionBegin">
+            <summary>
+Starts a storage transaction.
+</summary>
+            <remarks>
+RPL supports nested transaction. If storage doesn't, it must expose
+it by itself.
+</remarks>
+        </member>
+        <member name="T:Toolkit.RPL.Storage.IPersistenceStorage">
+            <summary>
+Encapsulates the behavior needed for low-level working with persistence
+storage.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Storage.PROPERTY.State">
+            <summary>
+Gets action this property is performed.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Storage.PROPERTY.Value">
+            <summary>
+Gets property value.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Storage.PROPERTY.Name">
+            <summary>
+Gets property name.
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.Storage.PROPERTY.STATE">
+            <summary>
+Encapsulates persistent property action.
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.Storage.PROPERTY">
+            <summary>
+Encapsulates persistent object property.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Storage.LINK.State">
+            <summary>
+Gets action this link is performed.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Storage.LINK.Header">
+            <summary>
+Gets header of the object this link is pointed to.
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.Storage.LINK.STATE">
+            <summary>
+Encapsulates persistent link action.
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.Storage.LINK">
+            <summary>
+Encapsulates persistent object link.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Storage.HEADER.Name">
+            <summary>
+Gets object's short name.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Storage.HEADER.Stamp">
+            <summary>
+Gets a time of the last object's modification.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Storage.HEADER.ID">
+            <summary>
+Gets identifier that represent object in persistence storage.
+</summary>
+        </member>
+        <member name="P:Toolkit.RPL.Storage.HEADER.Type">
+            <summary>
+Gets type of the object.
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.Storage.HEADER">
+            <summary>
+Encapsulates persistent object header.
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.Where.Operation.Not">
+            <summary>
+Negates the Boolean expression specified by the predicate.
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.Where.Operation.And">
+            <summary>
+Combines two conditions and evaluates to TRUE when both of the
+conditions are TRUE.
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.Where.Operation.Or">
+            <summary>
+Combines two conditions and evaluates to TRUE when either
+condition is TRUE. 
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.Where.Operation">
+            <summary>
+This class represents a combination of one or more predicates
+that use the logical operations AND, OR, and NOT.
+</summary>
+        </member>
+        <member name="F:Toolkit.RPL.Where.Clause.OP.LE">
+            <summary> Less than or equal to. </summary>
+        </member>
+        <member name="F:Toolkit.RPL.Where.Clause.OP.GE">
+            <summary> Greater than or equal to. </summary>
+        </member>
+        <member name="F:Toolkit.RPL.Where.Clause.OP.LT">
+            <summary> Less than. </summary>
+        </member>
+        <member name="F:Toolkit.RPL.Where.Clause.OP.GT">
+            <summary> Greater than. </summary>
+        </member>
+        <member name="F:Toolkit.RPL.Where.Clause.OP.NE">
+            <summary> Not equal to. </summary>
+        </member>
+        <member name="F:Toolkit.RPL.Where.Clause.OP.EQ">
+            <summary> Equal to. </summary>
+        </member>
+        <member name="T:Toolkit.RPL.Where.Clause.OP">
+            <summary>
+Comparison operators.
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.Where.Clause">
+            <summary>
+Represents simple WHERE clause (predicate).
+</summary>
+            <remarks>
+Predicate is an expression that returns TRUE or FALSE.
+</remarks>
+        </member>
+        <member name="T:Toolkit.RPL.Where">
+            <summary>
+Specifies a search condition to restrict the objects returned.
+</summary>
+            <remarks>
+This is abstract class from which all condition classes inherit
+from.
+</remarks>
+        </member>
+        <member name="F:Toolkit.RPL.OrderBy.Clause.SORT.DESC">
+            <summary>
+Specifies that the values of the specified object
+property should be sorted in descending order, from
+highest value to lowest value.
+</summary>
+        </member>
+        <member name="F:Toolkit.RPL.OrderBy.Clause.SORT.ASC">
+            <summary>
+Specifies that the values of the specified object
+property should be sorted in ascending order, from
+lowest value to highest value.
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.OrderBy.Clause.SORT">
+            <summary>
+Specifies sorting order.
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.OrderBy.Clause">
+            <summary>
+Describes how to order objects according specified property.
+</summary>
+        </member>
+        <member name="T:Toolkit.RPL.OrderBy">
+            <summary>
+Encapsulates the common behavoir to organize search request.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectProperties.Reload(System.Collections.Generic.IEnumerable`1{System.Collections.Generic.KeyValuePair`2{System.String^,Toolkit.RPL.ValueBox}})">
+            <summary>
+Fill current ObjectProperties instance by specified collection
+of properties.
+</summary>
+            <remarks>
+This function is used in 'Retrieve' request to update object
+properties.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectProperties.Get(Toolkit.RPL.PersistentObject.ObjectProperties.STATE)">
+            <summary>
+Returns properties that are in one of the specified states.
+</summary>
+            <remarks>
+If requested state is 'Deleted', then return properties with
+DBNull:Value values.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectProperties.Accept">
+            <summary>
+Accept all changes of content in this ObjectProperties instance.
+</summary>
+            <remarks>
+This function is used in 'Save' request to mark poperties as
+up-to-date.
+</remarks>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentObject.ObjectProperties.IsChanged">
+            <summary>
+Indicates that content was changed.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectProperties.Dispose">
+            <summary>
+Class disposer.
+</summary>
+            <remarks>
+Must be called if collection doesn't needed anymore. Main goal is
+to unsubscribe from PersistentStream events.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectProperties.#ctor(Toolkit.RPL.PersistentObject,System.Collections.Generic.IEnumerable`1{System.Collections.Generic.KeyValuePair`2{System.String^,Toolkit.RPL.ValueBox}})">
+            <summary>
+Create ObjectProperties instance initialized with all KeyValue
+pairs items in the given collection and store parent object.
+</summary>
+            <remarks>
+If pairs in collection have not unique keys then only the last
+value will be stored. All null references will be ignored and
+no events will be faired.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectProperties.#ctor(Toolkit.RPL.PersistentObject)">
+            <summary>
+Create ObjectProperties instance initialized with parent object.
+</summary>
+            <remarks>
+Stores parent object to give posibility of state checking and
+event manipulations.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectProperties.OnSetComplete(System.String,Toolkit.RPL.ValueBox)">
+            <summary>
+Performs additional custom processes after setting a value to
+some property from the ObjectProperties instance.
+</summary>
+            <remarks>
+Just adds log record.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectProperties.OnRemoveComplete(System.String,Toolkit.RPL.ValueBox)">
+            <summary>
+Performs additional custom processes after removing a property
+from the ObjectProperties instance.
+</summary>
+            <remarks>
+                <para>
+1. If removed property is PersistentStream, unsubscribe this from
+on_change event handler. </para>
+                <para>
+2. Add log record.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectProperties.OnInsertComplete(System.String,Toolkit.RPL.ValueBox)">
+            <summary>
+Performs additional custom processes after inserting a new
+property into the ObjectProperties instance.
+</summary>
+            <remarks>
+                <para>
+Just adds log record.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectProperties.OnSet(System.String,Toolkit.RPL.ValueBox)">
+            <summary>
+Performs additional custom processes before set a value to some
+property from the ObjectProperties instance.
+</summary>
+            <remarks>
+                <para>
+1. If property is PersistentStream, subscribe this to on_change
+event handler. </para>
+                <para>
+2. Call parent routine to notify about.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectProperties.OnRemove(System.String,Toolkit.RPL.ValueBox)">
+            <summary>
+Performs additional custom processes before removing a property
+from the ObjectProperties instance.
+</summary>
+            <remarks>
+Call parent routine to notify about.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectProperties.OnInsert(System.String,Toolkit.RPL.ValueBox)">
+            <summary>
+Performs additional custom processes before inserting a property
+into the ObjectProperties instance.
+</summary>
+            <remarks>
+                <para>
+1. If inserted property is PersistentStream, subscribe this to
+on_change event handler. </para>
+                <para>
+2. Call parent routine to notify about.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectProperties.OnClear">
+            <summary>
+Performs additional custom processes before remove all properties
+from the ObjectProperties instance.
+</summary>
+            <remarks>
+Call parent routine to notify about.
+</remarks>
+        </member>
+        <member name="T:Toolkit.RPL.PersistentObject.ObjectProperties">
+            <summary>
+Store object properties.
+</summary>
+            <remarks>
+This class derived from PersistentProperties and was developed
+to link properties with it's owner object.
+</remarks>
+        </member>
+        <member name="T:Toolkit.RPL.PersistentProperties">
+            <summary>
+This class provide services for collection of properties.
+</summary>
+            <remarks>
+It store names, values and provide routines for manipulation. Access
+to property value by it name is processed as O(log N).
+</remarks>
+        </member>
+        <member name="T:Toolkit.RPL.PersistentStream">
+            <sumamry>
+Represents stream property that can be stored in persistent storage.
+</sumamry>
+            <remarks>
+                <para>
+This stream is designed as atomic value, so you can use one instance in one
+property only.</para>
+                <para>
+Attempt to assign existing instance to more than one property will throw
+InvalidOperationException.
+</para>
+            </remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectLinks.Reload(System.Collections.Generic.IEnumerable`1{Toolkit.RPL.PersistentObject^})">
+            <summary>
+Fill current ObjectLinks instance by specified collection of
+links.
+</summary>
+            <remarks>
+This function is used in 'Retrieve' request to update object
+links.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectLinks.Get(Toolkit.RPL.PersistentObject.ObjectLinks.STATE)">
+            <summary>
+Returns links that are in one of the specified states.
+</summary>
+            <remarks>
+This function returns links to existing objects only: all new and
+deleted objects will be ignored.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectLinks.Accept">
+            <summary>
+Accept all changes of content in this ObjectLinks instance.
+</summary>
+            <remarks>
+                <para>
+This function is used in 'Save' request to mark links as
+up-to-date.</para>
+                <para>
+After this function call, all links to non existing objects (new
+and deleted) will be removed from the collection.
+</para>
+            </remarks>
+        </member>
+        <member name="P:Toolkit.RPL.PersistentObject.ObjectLinks.IsChanged">
+            <summary>
+Indicates that content was changed.
+</summary>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectLinks.Dispose">
+            <summary>
+Class disposer.
+</summary>
+            <remarks>
+Clears content and log only.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectLinks.#ctor(Toolkit.RPL.PersistentObject,System.Collections.Generic.IEnumerable`1{Toolkit.RPL.PersistentObject^})">
+            <summary>
+Create ObjectLinks instance initialized with all the items in the
+given collection and store owner object.
+</summary>
+            <remarks>
+If some object is not unique in the collection, then only one
+reference will be added. All null references will be ignored.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectLinks.#ctor(Toolkit.RPL.PersistentObject)">
+            <summary>
+Create ObjectLinks instance initialized with parent object.
+</summary>
+            <remarks>
+Stores parent object to give posibility of state checking and
+event manipulations.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectLinks.OnRemoveComplete(Toolkit.RPL.PersistentObject)">
+            <summary>
+Performs additional custom processes after removing an element
+from the ObjectLinks instance.
+</summary>
+            <remarks>
+Add 'deleted' log record.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectLinks.OnInsertComplete(Toolkit.RPL.PersistentObject)">
+            <summary>
+Performs additional custom processes after inserting a new
+element into the ObjectLinks instance.
+</summary>
+            <remarks>
+Add 'new' log record.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectLinks.OnRemove(Toolkit.RPL.PersistentObject)">
+            <summary>
+Performs additional custom processes when removing an element
+from the ObjectLinks instance.
+</summary>
+            <remarks>
+Call owner method to notify it about action.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectLinks.OnInsert(Toolkit.RPL.PersistentObject)">
+            <summary>
+Performs additional custom processes before inserting a new link
+into the ObjectLinks instance.
+</summary>
+            <remarks>
+Call owner method to notify it about action.
+</remarks>
+        </member>
+        <member name="M:Toolkit.RPL.PersistentObject.ObjectLinks.OnClear">
+            <summary>
+Performs additional custom processes before remove all links from
+the ObjectLinks instance.
+</summary>
+            <remarks>
+Call owner method to notify it about action.
+</remarks>
+        </member>
+        <member name="T:Toolkit.RPL.PersistentObject.ObjectLinks">
+            <summary>
+Store object relations.
+</summary>
+            <remarks>
+This class derived from PersistentObjects and was developed
+to link relations with it's owner object.
+</remarks>
+        </member>
+        <member name="T:Toolkit.RPL.PersistentObjects">
+            <summary>
+This class provide services for collection of objects.
+</summary>
+            <remarks>
+It provides some usefull routines such as unique object control,
+null reference control and some others. It implements OnXXX events
+to control collection access too.
+</remarks>
+        </member>
+        <member name="T:Toolkit.RPL.PersistentObject">
+            <summary>
+This class encapsulates the behavior needed to make a single object
+persistent and is the class from which all classes in your business domain
+inherit from.
+</summary>
+            <remarks>
+All inherited classes must provide same constructors (except default).
+Methods Retrive, Save and Delete can be overriden, but you must call parent
+routines to store object in persistence mechanism. There are two types of
+object: full and proxy. Full object is a normal object, having properties
+and links to other objects, in contrast to proxy that have type, id and
+name only. Full object can be constructed from proxy by calling Retrive.
+But proxy also accept all operations: retrieve, save and delete.
+</remarks>
+        </member>
+        <member name="T:Toolkit.RPL.ValueBox">
+            <summary>
+This class incapsulate type check for property value.
+</summary>
+            <remarks>
+Value is wrapper arroud Object handle and provide runtime
+type check, implicit and explicit cast operators, Equal
+comparison.
+Now, the following types are supported: bool, int, double,
+DateTime, String, PersistentStream and DBNull.
+</remarks>
+        </member>
+        <member name="T:Toolkit.RPL.ITransaction">
+            <summary>
+Encapsulates the behavior needed for transaction support.
+</summary>
+            <remarks>
+All objects that support transactions must implement this interface.
+</remarks>
+        </member>
+    </members>
+</doc>
