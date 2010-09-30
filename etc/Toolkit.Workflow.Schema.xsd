@@ -6,8 +6,8 @@
 		<xsd:sequence>
 			<xsd:element name="class" type="target:Class" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="enum" type="target:Enum" minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="propSet" type="target:PropSet" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="stringCollection" type="target:StringCollection" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="propSet" type="target:PropSet" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 	</xsd:complexType>
@@ -154,6 +154,23 @@
 			<xsd:element name="localizedCaption" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
+	<xsd:complexType name="StringCollection">
+		<xsd:sequence>
+			<xsd:element name="items" type="target:StringCollectionValues" />
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+	</xsd:complexType>
+	<xsd:complexType name="StringCollectionValues">
+		<xsd:sequence>
+			<xsd:element name="item" type="target:StringCollectionValue" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="StringCollectionValue">
+		<xsd:sequence>
+			<xsd:element name="value" type="xsd:string" />
+			<xsd:element name="localizedValue" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 	<xsd:complexType name="PropSet">
 		<xsd:sequence>
 			<xsd:element name="caption" type="xsd:string" />
@@ -175,22 +192,5 @@
 			<xsd:element name="localizedDescription" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<xsd:complexType name="StringCollection">
-		<xsd:sequence>
-			<xsd:element name="items" type="target:StringCollectionValues" />
-		</xsd:sequence>
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<xsd:complexType name="StringCollectionValues">
-		<xsd:sequence>
-			<xsd:element name="item" type="target:StringCollectionValue" minOccurs="0" maxOccurs="unbounded" />
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="StringCollectionValue">
-		<xsd:sequence>
-			<xsd:element name="value" type="xsd:string" />
-			<xsd:element name="localizedValue" type="target:LocalizedString" minOccurs="0" maxOccurs="unbounded" />
-		</xsd:sequence>
 	</xsd:complexType>
 </xsd:schema>
