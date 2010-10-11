@@ -24,10 +24,6 @@ using namespace System::Runtime::InteropServices;
 //
 [assembly:AssemblyTitleAttribute("Toolkit.Collections")];
 [assembly:AssemblyDescriptionAttribute("Toolkit.Collections contains various collections to manage group of objects")];
-[assembly:AssemblyProductAttribute("Toolkit Collections")];
-[assembly:AssemblyCopyrightAttribute("Copyright © Alexey Tkachuk 2007-2009")];
-[assembly:AssemblyInformationalVersionAttribute("1.0")];
-
 [assembly:ComVisible(false)];
 [assembly:CLSCompliantAttribute(true)];
 
@@ -42,4 +38,12 @@ using namespace System::Runtime::InteropServices;
 // You can specify all the value or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
 //
-[assembly:AssemblyVersionAttribute("1.0.*")];
+
+//
+// This is auto generated attributes for current 1.2.5.1299 version.
+//
+[assembly: AssemblyProduct("Toolkit")];
+[assembly: AssemblyInformationalVersion("1.2.5")];
+[assembly: AssemblyCompany("ABBYY Ukraine")];
+[assembly: AssemblyCopyright("Copyright © ABBYY Ukraine 2007-2009")];
+[assembly: AssemblyVersion("1.2.5.1299")];
