@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.Remoting.Messaging;
 using Toolkit.RPL.Factories;
 using System.Runtime.Remoting.Channels;
