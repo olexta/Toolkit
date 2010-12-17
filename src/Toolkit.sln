@@ -1,4 +1,5 @@
-icrosoft Visual Studio Solution File, Format Version 9.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Toolkit.RPL", "components\RPL\_make_\Toolkit.RPL.vcproj", "{6A8B0CAD-71E5-4872-8807-A046E0660E6A}"
 	ProjectSection(ProjectDependencies) = postProject
