@@ -5,7 +5,7 @@
 //*
 //*	Content		:	
 //*	Author		:	Nikita Marunyak
-//*	Copyright	:	Copyright © 2008 Nikita Marunyak
+//*	Copyright	:	Copyright Â© 2008 Nikita Marunyak
 //*
 //* SVN			:	$Id$	  
 //*

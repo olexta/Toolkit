@@ -4,7 +4,7 @@
 //*	Module		:	StringCollectionInfo.cs
 //*
 //*	Author		:	Alexander Kurbatov
-//*	Copyright	:	Copyright © 2008 Alexander Kurbatov
+//*	Copyright	:	Copyright В© 2008 Alexander Kurbatov
 //*
 //* SVN			:	$Id$	
 //*
@@ -18,9 +18,9 @@ using System.Xml;
 namespace Toolkit.Workflow.Schema
 {
 /// <summary>
-/// Для хранения коллекции тестовых значений.
-/// Типовым применением является хранение в схеме фиксированного набора 
-/// возможных значений для свойства.
+/// Р”Р»СЏ С…СЂР°РЅРµРЅРёСЏ РєРѕР»Р»РµРєС†РёРё С‚РµСЃС‚РѕРІС‹С… Р·РЅР°С‡РµРЅРёР№.
+/// РўРёРїРѕРІС‹Рј РїСЂРёРјРµРЅРµРЅРёРµРј СЏРІР»СЏРµС‚СЃСЏ С…СЂР°РЅРµРЅРёРµ РІ СЃС…РµРјРµ С„РёРєСЃРёСЂРѕРІР°РЅРЅРѕРіРѕ РЅР°Р±РѕСЂР° 
+/// РІРѕР·РјРѕР¶РЅС‹С… Р·РЅР°С‡РµРЅРёР№ РґР»СЏ СЃРІРѕР№СЃС‚РІР°.
 /// </summary>
 public class StringCollectionInfo : IKeyedObject<string>
 {
@@ -30,13 +30,13 @@ public class StringCollectionInfo : IKeyedObject<string>
 	internal StringCollectionInfo( XmlNode node )
 	{
 		m_values = new List<string>();
-		// получение имени коллекции
+		// РїРѕР»СѓС‡РµРЅРёРµ РёРјРµРЅРё РєРѕР»Р»РµРєС†РёРё
 		m_name = node.Attributes.GetNamedItem( "ws:name" ).Value;
-		// получение значений коллекции
+		// РїРѕР»СѓС‡РµРЅРёРµ Р·РЅР°С‡РµРЅРёР№ РєРѕР»Р»РµРєС†РёРё
 		foreach( XmlNode keyNode in node.SelectNodes( "ws:items/ws:item",
 													  MetaData.Instance.XMLNsMgr ) )
 		{
-			// получение локализированного значения
+			// РїРѕР»СѓС‡РµРЅРёРµ Р»РѕРєР°Р»РёР·РёСЂРѕРІР°РЅРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ
 			m_values.Add( Tools.GetLocalizedString( keyNode, "value" ) );
 		}
 	}
@@ -47,7 +47,7 @@ public class StringCollectionInfo : IKeyedObject<string>
 	}
 
 	/// <summary>
-	/// Получение имени колллекции(свойства)
+	/// РџРѕР»СѓС‡РµРЅРёРµ РёРјРµРЅРё РєРѕР»Р»Р»РµРєС†РёРё(СЃРІРѕР№СЃС‚РІР°)
 	/// </summary>
 	public string Name
 	{
@@ -55,7 +55,7 @@ public class StringCollectionInfo : IKeyedObject<string>
 	}
 
 	/// <summary>
-	/// Получение набора значений
+	/// РџРѕР»СѓС‡РµРЅРёРµ РЅР°Р±РѕСЂР° Р·РЅР°С‡РµРЅРёР№
 	/// </summary>
 	public IEnumerable<string> Values
 	{
