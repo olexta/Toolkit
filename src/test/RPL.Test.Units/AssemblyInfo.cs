@@ -20,10 +20,6 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle( "Toolkit.RPL.Test.Units" )]
 [assembly: AssemblyDescription( "RPL unit tests" )]
-[assembly: AssemblyCompany( "ABBYY Ukraine" )]
-[assembly: AssemblyProduct( "Robust Persistence Layer" )]
-[assembly: AssemblyCopyright( "Copyright Â© ABBYY Ukraine 2008" )]
-
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM componenets.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
@@ -41,4 +37,12 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion( "1.0.*" )]
+
+//
+// This is auto generated attributes for current 1.2.6.1362 version.
+//
+[assembly: AssemblyProduct("Toolkit")]
+[assembly: AssemblyInformationalVersion("1.2.6")]
+[assembly: AssemblyCompany("ABBYY Ukraine")]
+[assembly: AssemblyCopyright("Copyright © ABBYY Ukraine 2007-2011")]
+[assembly: AssemblyVersion("1.2.6.1362")]
