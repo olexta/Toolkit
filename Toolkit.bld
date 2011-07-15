@@ -32,11 +32,9 @@ End Sub]]></script>
 			<Files>tags/</Files>
 			<LocalPath>%WORK_ROOT%</LocalPath>
 			<NonInteractive type='11'>-1</NonInteractive>
-			<Password>VisualBuildPro</Password>
 			<Repository>%SVN_REPOS%</Repository>
 			<Subcommand>list</Subcommand>
 			<Switches>--no-auth-cache</Switches>
-			<Username>%WORK_USER%</Username>
 			<checked type='11'>0</checked>
 			<description>In case of tag store needed (NO_TAG is undefine) determine the last tag number that was used by curent product version and generate BUILD_VERSION tempory macro.</description>
 			<indent type='3'>1</indent>
@@ -86,11 +84,9 @@ End Sub]]></script>
 		<step action='Subversion'>
 			<LocalPath>%WORK_ROOT%</LocalPath>
 			<NonInteractive type='11'>-1</NonInteractive>
-			<Password>VisualBuildPro</Password>
 			<Repository>%SVN_REPOS%</Repository>
 			<Subcommand>info</Subcommand>
 			<Switches>--no-auth-cache</Switches>
-			<Username>%WORK_USER%</Username>
 			<description>Retrieve global revision number of repository and generate full build version.</description>
 			<indent type='3'>1</indent>
 			<name>Process revision number</name>
@@ -124,11 +120,9 @@ End Sub]]></script>
 			<Files>branches/</Files>
 			<LocalPath>%WORK_ROOT%</LocalPath>
 			<NonInteractive type='11'>-1</NonInteractive>
-			<Password>VisualBuildPro</Password>
 			<Repository>%SVN_REPOS%</Repository>
 			<Subcommand>list</Subcommand>
 			<Switches>--no-auth-cache</Switches>
-			<Username>%WORK_USER%</Username>
 			<description>Determine by product version the location of source files (branches or trunk) in Subversion repository and store path in SVN_PATH tempory macro.</description>
 			<name>Get path for source files</name>
 			<script><![CDATA[Sub vbld_StepDone()
@@ -157,10 +151,8 @@ End Sub]]></script>
 .]]></Files>
 			<LocalPath>%WORK_ROOT%</LocalPath>
 			<NonInteractive type='11'>-1</NonInteractive>
-			<Password>VisualBuildPro</Password>
 			<Subcommand>checkout</Subcommand>
 			<Switches>--no-auth-cache</Switches>
-			<Username>%WORK_USER%</Username>
 			<description>Checkout the source files to the working folder.</description>
 			<name>Get latest version</name>
 		</step>
@@ -269,10 +261,8 @@ bin/]]></Files>
 			<LocalPath>%WORK_ROOT%</LocalPath>
 			<Message>Tagging [tag_ver("%BUILD_VERSION%")] release of project</Message>
 			<NonInteractive type='11'>-1</NonInteractive>
-			<Password>VisualBuildPro</Password>
 			<Subcommand>copy</Subcommand>
 			<Switches>--no-auth-cache</Switches>
-			<Username>%WORK_USER%</Username>
 			<condexpr>[tag_ver("%BUILD_VERSION%")]</condexpr>
 			<description>Tag updated trunk with compiled binaries.</description>
 			<indent type='3'>1</indent>
@@ -339,6 +329,7 @@ var/*]]></Ext>
 			<Timeout>10</Timeout>
 			<To>%EMAIL_TO%</To>
 			<buildfailsteps type='11'>0</buildfailsteps>
+			<checked type='11'>0</checked>
 			<continueonfail type='3'>1</continueonfail>
 			<description>Notify the build master that the build completed -- change the EMAIL_FROM and EMAIL_TO project macros to your e-mail addresses.</description>
 			<indent type='3'>1</indent>
@@ -518,6 +509,7 @@ Step Output:
 			<Timeout>10</Timeout>
 			<To>%EMAIL_TO%</To>
 			<buildfailsteps type='11'>0</buildfailsteps>
+			<checked type='11'>0</checked>
 			<continueonfail type='3'>1</continueonfail>
 			<description>Notify the build master that failure occurred.</description>
 			<indent type='3'>1</indent>
