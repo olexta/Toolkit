@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <project version='6'>
 	<comment><![CDATA[This sample demonstrates an entire build process that uses Microsoft Visual Studio 6.0, 2002, 2003, and/or 2005. It uses a sample SourceSafe project if VSS is installed, which is created by calling SourceSafe.bld and can be browsed by starting SourceSafe Explorer, choosing File|Open, navigating to <TEMP Path>\VStudio\Database, clicking OK, and entering a user of Guest (blank password).
 
@@ -569,11 +569,11 @@ Step Output:
 		</macro>
 		<macro name='PRODUCT_YEARS'>
 			<description>Trademark years</description>
-			<value>2007-2009</value>
+			<value>2007-2011</value>
 		</macro>
 		<macro name='SVN_REPOS'>
 			<description>Path to Subversion repository</description>
-			<value>https://geser.abbyy.ua/svn/corp/%PROJROOT%/</value>
+			<value>https://geser.abbyy.ua/svn/%PROJROOT%/</value>
 		</macro>
 		<macro name='WORK_INSTALL'>
 			<description>Folder storing installation executables</description>
