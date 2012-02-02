@@ -1044,51 +1044,52 @@ public class ODB : IPersistenceStorage
 		#endregion
 
 		// template for search query:
-		// - gets ids of object that meets $QUERY$,
-		// - skips $BOOTOM$ rows
-		// - return only $COUNT$ object HEADERs
-		cmd.CommandText="DECLARE @_counter as int \n" + 
-						"DECLARE @_id as int \n" +
-						"DECLARE @_resultID TABLE ([ids] int) \n" +
+		// - gets ids of object that meets {0},
+		// - skips @bottom rows
+		// - return only @count object HEADERs
+		cmd.CommandText="DECLARE @_counter as int\n" +
+						"DECLARE @_id as int\n" +
+						"DECLARE @_resultID TABLE ([ids] int)\n" +
 						"--Check for user rights and return requested count of items\n" +
-						"DECLARE cursor_Found CURSOR SCROLL FOR \n" + 
-						"$QUERY$\n" +
-						"OPEN cursor_Found \n\t" +
-							"SET @_counter = 0 \n\t" +
-							"FETCH ABSOLUTE $BOTTOM$ FROM cursor_Found INTO @_id \n\t" +
-							"WHILE( (@@FETCH_STATUS = 0) AND (@_counter < $COUNT$) ) BEGIN \n\t\t" +
-								"INSERT INTO @_resultID ([ids]) VALUES (@_id) \n\t\t" +
-								"FETCH NEXT FROM cursor_Found INTO @_id \n\t\t" +
-								"SET @_counter = @_counter + 1 \n\t" +
-							"END \n" +
-						"CLOSE cursor_Found \n" +
-						"DEALLOCATE cursor_Found \n" +
-						"--Make SQL request \n" +
-						"SELECT [ID], [ObjectName], [ObjectType], [TimeStamp] FROM _objects INNER JOIN @_resultID as resultID ON _objects.ID = resultID.ids";
+						"DECLARE cursor_Found CURSOR SCROLL FOR\n" +
+						"{0}\n" +
+						"OPEN cursor_Found\n" +
+						"    SET @countFound= @@CURSOR_ROWS\n" +
+						"    SET @_counter = 0\n" +
+						"    FETCH ABSOLUTE @bottom FROM cursor_Found INTO @_id\n" +
+						"    WHILE( (@@FETCH_STATUS = 0) AND (@_counter < @count) ) BEGIN\n" +
+						"        INSERT INTO @_resultID ([ids]) VALUES (@_id)\n" +
+						"        FETCH NEXT FROM cursor_Found INTO @_id\n" +
+						"        SET @_counter = @_counter + 1\n" +
+						"    END\n" +
+						"CLOSE cursor_Found\n" +
+						"DEALLOCATE cursor_Found\n" +
+						"--Make SQL request\n" +
+						"SELECT [ID], [ObjectName], [ObjectType], [TimeStamp]\n" +
+						"FROM _objects INNER JOIN @_resultID as resultID ON _objects.ID = resultID.ids";
 
 		// search query part with ordering
 		string query = string.Format(
-						"SELECT Source.[ID] " +
-						"FROM (Select * FROM _objects WHERE ObjectType = '{0}') AS Source " + 
+						"SELECT Source.[ID]\n" +
+						"FROM (Select * FROM _objects WHERE ObjectType = '{0}') AS Source\n" + 
 						"{1}" + //orderJoin
-						"{2}" + // WHERE
+						"{2}" + //WHERE
 						"{3}", // ORDER BY
 						type, orderJoin,
 						string.IsNullOrEmpty(whereQuery) ? "" : "WHERE " + whereQuery,
 						orderBy == "" ? "" : "ORDER BY " + orderBy );
-
+		SqlParameter param = new SqlParameter( "@countFound", SqlDbType.Int );
+		param.Direction = ParameterDirection.Output;
+		cmd.Parameters.Add( param );
+		// setting query count limits
+		cmd.Parameters.Add( new SqlParameter( "@bottom", bottom + 1 ) );
+		cmd.Parameters.Add( new SqlParameter( "@count", count ) );
 		// creating SqlParameters for passed values
 		foreach( string parm in parms.Keys ) {
 			cmd.Parameters.Add( new SqlParameter(parm, parms[parm]));
 		}
 		// replacing parts in search query template
-		cmd.CommandText = cmd.CommandText.Replace("$QUERY$", query);
-		// if bottom is not set then set it to return from first row
-		if( bottom == 0 ) { bottom = 1; }
-		// replacing limit parts in search query template
-		cmd.CommandText = cmd.CommandText.Replace("$BOTTOM$", bottom.ToString());
-		cmd.CommandText = cmd.CommandText.Replace("$COUNT$", count.ToString());
-
+		cmd.CommandText = string.Format( cmd.CommandText, query );
 #if (DEBUG)
 		Debug.Print("ODB.Search: sql search query = '{0}'", cmd.CommandText );
 #endif
@@ -1102,7 +1103,6 @@ public class ODB : IPersistenceStorage
 			// ID, ObjectName, ObjectType, TimeStamp
 			#region retrive data and create proxies
 			DbDataReader dr = cmd.ExecuteReader();
-			
 			// create List for storing found objects
 			objects = new List<HEADER>();
 			try {
@@ -1136,7 +1136,7 @@ public class ODB : IPersistenceStorage
 #endif
 		#endregion
 		// return count objects found
-		return objects.Count;
+		return (int)cmd.Parameters["@countFound"].Value;
 	}
 
 	/// <summary>
