@@ -557,11 +557,11 @@ Step Output:
 		</macro>
 		<macro name='PRODUCT_VERSION'>
 			<description>Product mainline version in format: Major.Minor</description>
-			<value>1.2</value>
+			<value>1.3</value>
 		</macro>
 		<macro name='PRODUCT_YEARS'>
 			<description>Trademark years</description>
-			<value>2007-2011</value>
+			<value>2007-2012</value>
 		</macro>
 		<macro name='SVN_REPOS'>
 			<description>Path to Subversion repository</description>
