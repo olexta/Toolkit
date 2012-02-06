@@ -34,7 +34,7 @@ using namespace _RPL;
 /// Clear search result.
 /// </summary><remarks>
 /// Call base class implementation and reset current cursor position
-/// that could be modified by using cursor routine "Move".
+/// that could be modified by using cursor routine "Next".
 /// </remarks>
 //-------------------------------------------------------------------
 void RetrieveCriteria::Reset( void )
@@ -148,19 +148,18 @@ void RetrieveCriteria::AsProxies::set( bool value )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Read next/previous count of objects from recordset.
+/// Read next count of objects from the recordset.
 /// </summary><remarks>
-/// Collection content will be cleared and filled by next/previous
-/// new data. Positive sign of count means using "next" request and
-/// negative means "previous". Using of zero means clearing the
-/// collection and fill only common properties such as CountFound.
+/// Collection content will be cleared and filled by next new data.
+/// Using of zero means clearing the collection and fill only common
+/// properties such as CountFound.
 /// Function return bool value that indicates not emty content of
-/// collection.
+/// resulting collection.
 /// </remarks>
 //-------------------------------------------------------------------
-bool RetrieveCriteria::Move( int count )
+bool RetrieveCriteria::Next( unsigned short count )
 {
-	int	oldBottom = m_bottom;
+	int oldBottom = m_bottom;
 	int oldCount = m_count;
 
 	// init cursor position for first request.
@@ -170,26 +169,16 @@ bool RetrieveCriteria::Move( int count )
 
 	// set new bottom and count limits according
 	// to current cursor position and requested offset
-	if( count > 0 ) {
-
-		m_count = MIN(count, m_bottom + m_count - m_pos);
-		m_bottom = MAX(m_bottom, m_pos);
-	} else {
-
-		m_bottom = MAX(m_bottom, m_pos + count);
-		m_count = m_pos - m_bottom;
-	}
+	m_count = MIN(count, m_bottom + m_count - m_pos);
+	m_bottom = MAX(m_bottom, m_pos);
 
 	// try perform operation: we must restore old bottom
 	// and count limits in any case, so use finally block
 	try {
 		Perform();
 
-		// set new cursor location. if after last request count
-		// of elements was changed, then for "previous" offset
-		// i set new position directly (not through returned
-		// value: Count)
-		m_pos += (count > 0 ? Count : -m_count);
+		// set new cursor location
+		m_pos += Count;
 	} finally {
 		// restore bottom and top limits
 		m_bottom = oldBottom;

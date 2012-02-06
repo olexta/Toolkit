@@ -91,7 +91,7 @@ Node::ValueBox::ValueBox( Object ^value ): \
 	// get type of value
 	Type	^type = value->GetType();
 
-	// check this type through all supported types (native 
+	// check this type through all supported types (native
 	// types checks first, so it minimize processing of
 	// cast operators, because of they convert values to
 	// such types, then process all convertible)
@@ -138,7 +138,7 @@ Node::ValueBox::ValueBox( Object ^value ): \
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Implicit cast operator from bool value to ValueBox. 
+/// Implicit cast operator from bool value to ValueBox.
 /// </summary>
 //-------------------------------------------------------------------
 OP_IMP_FROM_(bool)
@@ -146,7 +146,7 @@ OP_IMP_FROM_(bool)
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Implicit cast operator from int value to ValueBox. 
+/// Implicit cast operator from int value to ValueBox.
 /// </summary>
 //-------------------------------------------------------------------
 OP_IMP_FROM_(int)
@@ -154,7 +154,7 @@ OP_IMP_FROM_(int)
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Implicit cast operator from double value to ValueBox. 
+/// Implicit cast operator from double value to ValueBox.
 /// </summary>
 //-------------------------------------------------------------------
 OP_IMP_FROM_(double)
@@ -162,7 +162,7 @@ OP_IMP_FROM_(double)
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Implicit cast operator from DateTime value to ValueBox. 
+/// Implicit cast operator from DateTime value to ValueBox.
 /// </summary>
 //-------------------------------------------------------------------
 OP_IMP_FROM_(DateTime)
@@ -170,7 +170,7 @@ OP_IMP_FROM_(DateTime)
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Implicit cast operator from String value to ValueBox. 
+/// Implicit cast operator from String value to ValueBox.
 /// </summary>
 //-------------------------------------------------------------------
 OP_IMP_FROM_(String^)

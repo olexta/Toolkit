@@ -129,7 +129,7 @@ ValueBox::ValueBox( Object ^o ): \
 	// get type of value
 	Type	^type = o->GetType();
 
-	// check this type through all supported types (native 
+	// check this type through all supported types (native
 	// types checks first, so it minimize processing of
 	// cast operators, because of they convert values to
 	// such types, then process all convertible)
@@ -182,7 +182,7 @@ ValueBox::ValueBox( Object ^o ): \
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Implicit cast operator from bool value to ValueBox. 
+/// Implicit cast operator from bool value to ValueBox.
 /// </summary>
 //-------------------------------------------------------------------
 OP_IMP_FROM_(bool)
@@ -190,7 +190,7 @@ OP_IMP_FROM_(bool)
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Implicit cast operator from int value to ValueBox. 
+/// Implicit cast operator from int value to ValueBox.
 /// </summary>
 //-------------------------------------------------------------------
 OP_IMP_FROM_(int)
@@ -198,7 +198,7 @@ OP_IMP_FROM_(int)
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Implicit cast operator from double value to ValueBox. 
+/// Implicit cast operator from double value to ValueBox.
 /// </summary>
 //-------------------------------------------------------------------
 OP_IMP_FROM_(double)
@@ -206,7 +206,7 @@ OP_IMP_FROM_(double)
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Implicit cast operator from DateTime value to ValueBox. 
+/// Implicit cast operator from DateTime value to ValueBox.
 /// </summary>
 //-------------------------------------------------------------------
 OP_IMP_FROM_(DateTime)
@@ -214,7 +214,7 @@ OP_IMP_FROM_(DateTime)
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Implicit cast operator from String value to ValueBox. 
+/// Implicit cast operator from String value to ValueBox.
 /// </summary>
 //-------------------------------------------------------------------
 OP_IMP_FROM_(String^)
@@ -222,7 +222,7 @@ OP_IMP_FROM_(String^)
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Implicit cast operator from PersistentStream value to ValueBox. 
+/// Implicit cast operator from PersistentStream value to ValueBox.
 /// </summary>
 //-------------------------------------------------------------------
 OP_IMP_FROM_(PersistentStream^)
@@ -230,7 +230,7 @@ OP_IMP_FROM_(PersistentStream^)
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Implicit cast operator from DBNull value to ValueBox. 
+/// Implicit cast operator from DBNull value to ValueBox.
 /// </summary>
 //-------------------------------------------------------------------
 OP_IMP_FROM_(DBNull^)
@@ -520,7 +520,7 @@ Object^ ValueBox::ToObject( void )
 /// </summary><remarks><para>
 /// This function returns: </para><para>
 /// 1. "&lt;null&gt;" for null reference or DBNull </para><para>
-/// 2. and result of internal data ToString() call in other cases 
+/// 2. and result of internal data ToString() call in other cases
 /// </para></remarks>
 //-------------------------------------------------------------------
 String^ ValueBox::ToString( void )

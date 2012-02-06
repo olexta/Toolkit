@@ -28,7 +28,7 @@ _RPL_BEGIN
 /// </summary><remarks>
 /// This is class from which all search classes inherit from. Class derived
 /// from PersistentObjects. You can set WHERE and ORDER BY clauses to limit
-/// count of objects to retrieve. BottomLimit and CountLimit provide limits for
+/// search of objects by some criteria. CountLimit propery provides limit for
 /// scope of objects represented by recordset.
 /// </remarks>
 public ref class PersistentCriteria abstract : PersistentObjects
@@ -62,10 +62,6 @@ public:
 	property RPL::OrderBy^ OrderBy {
 		RPL::OrderBy^ get( void );
 		void set( RPL::OrderBy ^value );
-	}
-	property int BottomLimit {
-		int get( void );
-		void set( int value );
 	}
 	property int CountLimit {
 		int get( void );

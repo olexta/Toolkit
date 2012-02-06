@@ -25,7 +25,7 @@ _RPL_BEGIN
 /// </summary><remarks><para>
 /// This criterial request means action on persistent mechanism. So, it
 /// proceses under transactial control.</para><para>
-/// Also, it add Move() routine that you can use to move throught all records.
+/// Also, it add Next() routine that you can use to move throught all records.
 /// </para></remarks>
 public ref class RetrieveCriteria sealed : PersistentCriteria
 {
@@ -47,6 +47,6 @@ public:
 		void set( bool value );
 	}
 
-	bool Move( int count );
+	bool Next( unsigned short count );
 };
 _RPL_END

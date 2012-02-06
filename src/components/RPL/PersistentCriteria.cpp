@@ -172,29 +172,6 @@ void PersistentCriteria::OrderBy::set( ::OrderBy ^value )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Gets or sets bottom limit in criteria request.
-/// </summary><remarks>
-/// This is 0-based index of the recordset's row retrieved from DB.
-/// By default is set to 0.
-/// </remarks>
-//-------------------------------------------------------------------
-int PersistentCriteria::BottomLimit::get( void )
-{
-	return m_bottom;
-}
-
-void PersistentCriteria::BottomLimit::set( int value )
-{
-	if( value < 0 ) throw gcnew ArgumentException(ERR_LESS_THEN_ZERRO);
-	// clear content to prevent request-result collisions
-	Reset();
-
-	m_bottom = value;
-}
-
-
-//-------------------------------------------------------------------
-/// <summary>
 /// Gets or sets count limit in criteria request.
 /// </summary><remarks>
 /// This is the number of rows that will be retrieved. By default it
@@ -218,12 +195,11 @@ void PersistentCriteria::CountLimit::set( int value )
 
 //-------------------------------------------------------------------
 /// <summary>
-/// Gets number of found objects using specified InnerQuery request
+/// Gets number of founded objects using specified InnerQuery request
 /// with current WHERE clause.
 /// </summary><remarks>
 /// To get count of objects that was processed by this criteria
-/// request (with specified "BottomLimit" and "CountLimit" values) 
-/// use "Count" property.
+/// request (with specified "CountLimit" value) use "Count" property.
 /// </remarks>
 //-------------------------------------------------------------------
 int PersistentCriteria::CountFound::get( void )
