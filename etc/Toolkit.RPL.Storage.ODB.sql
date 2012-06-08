@@ -5,10 +5,7 @@ GO
 /******************************************************************************/
 /*                               CREATE DATABASE                              */
 /******************************************************************************/
-CREATE DATABASE [%DB_NAME%] ON PRIMARY
- ( NAME = N'%DB_NAME%', FILENAME = N'%DB_PATH%\%DB_NAME%.MDF', SIZE = 5120KB, MAXSIZE = UNLIMITED, FILEGROWTH = 10%)
- LOG ON
- ( NAME = N'%DB_NAME%_Log', FILENAME = N'%DB_PATH%\%DB_NAME%.LDF', SIZE = 1024KB, MAXSIZE = UNLIMITED, FILEGROWTH = 10%)
+CREATE DATABASE [%DB_NAME%]
 GO
 ALTER DATABASE [%DB_NAME%] SET RECOVERY SIMPLE
 GO
