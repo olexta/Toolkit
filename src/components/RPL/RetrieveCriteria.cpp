@@ -73,7 +73,7 @@ void RetrieveCriteria::OnPerformComplete( void )
 			obj->Retrieve( !m_asProxies );
 		}
 		// retrieve operations was completed
-		// successfuly, now commit object changes 
+		// successfuly, now commit object changes
 		while( changes.Count > 0 ) changes.Pop()->Commit();
 	} catch( Exception^ ) {
 		// revert all modified objects to previous state

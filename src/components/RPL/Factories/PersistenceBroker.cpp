@@ -275,7 +275,7 @@ void PersistenceBroker::   \
 retrieve( HEADER %header )
 {
 	// check for disconnected state
-	if( s_storage == nullptr ) throw gcnew InvalidOperationException( 
+	if( s_storage == nullptr ) throw gcnew InvalidOperationException(
 		ERR_BROKER_DISCONNECTED);
 
 	// call to real storage
@@ -295,7 +295,7 @@ retrieve( HEADER %header,											 \
 		  [Out] array<LINK>^ %links, [Out] array<PROPERTY>^ %props )
 {
 	// check for disconnected state
-	if( s_storage == nullptr ) throw gcnew InvalidOperationException( 
+	if( s_storage == nullptr ) throw gcnew InvalidOperationException(
 		ERR_BROKER_DISCONNECTED);
 
 	// call to real storage
