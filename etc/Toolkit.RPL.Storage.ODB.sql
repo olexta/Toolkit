@@ -130,7 +130,7 @@ CREATE TRIGGER [properties_images] ON [dbo].[_properties]
        FOR INSERT, UPDATE
 AS
     -- check for unique property names
-    IF( EXISTS( SELECT *
+    IF( EXISTS( SELECT 1
                 FROM   [inserted] [i]
                        JOIN
                        [dbo].[_images] [img] ON
@@ -178,7 +178,7 @@ CREATE TRIGGER [images_properties] ON [dbo].[_images]
        FOR INSERT, UPDATE
 AS
     -- check for unique property names
-    IF( EXISTS( SELECT *
+    IF( EXISTS( SELECT 1
                 FROM   [inserted] [i]
                        JOIN
                        [dbo].[_properties] [p] ON
