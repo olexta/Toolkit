@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        "Toolkit.Remoting"
+    </assembly>
+    <members>
+        <member name="M:Toolkit.Remoting.CrossDomain.ContextAttribute.GetPropertiesForNewContext(System.Runtime.Remoting.Activation.IConstructionCallMessage)">
+            <summary>
+Adds the current context property to the given message.
+</summary>
+        </member>
+        <member name="M:Toolkit.Remoting.CrossDomain.ContextAttribute.IsContextOK(System.Runtime.Remoting.Contexts.Context,System.Runtime.Remoting.Activation.IConstructionCallMessage)">
+            <summary>
+Returns a Boolean value indicating whether the context parameter
+meets the context attribute's requirements.
+</summary>
+        </member>
+        <member name="M:Toolkit.Remoting.CrossDomain.ContextAttribute.#ctor">
+            <summary>
+Create instance of the CrossDomain::Context attribute and set
+it's name to "Interception".
+</summary>
+        </member>
+        <member name="M:Toolkit.Remoting.CrossDomainProxy`1.Invoke(System.Runtime.Remoting.Messaging.IMessage)">
+            <summary>
+Invokes the method that is specified in the provided IMessage on
+the remote object that is represented by the current instance.
+</summary>
+            <param name="msg"> A IMessage that contains a IDictionary of
+information about the method call.</param>
+            <remarks>
+In this implementation transmits, a unique client identifier with
+every method call.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Remoting.CrossDomainProxy`1.op_Implicit(Toolkit.Remoting.CrossDomainProxy`1)~`0">
+            <summary>
+Implicit cast operator from CrossDomainProxy to the generic proxy
+type.
+</summary>
+        </member>
+        <member name="M:Toolkit.Remoting.CrossDomainProxy`1.#ctor(System.String,System.String)">
+            <summary>
+Initializes a new instance of the CrossDomainProxy class that
+represents a remote object of the specified generic type.
+</summary>
+            <param name="URL">The service URL to which the proxy will deliver
+calls.</param>
+            <param name="clientID">String that will identify client on the
+server's side.</param>
+        </member>
+        <member name="T:Toolkit.Remoting.CrossDomainProxy`1">
+            <summary>
+This class represents client side of the cross domain communication.
+</summary>
+            <remarks>
+The CrossDomainProxy allows to create and then transmit a unique client
+identifier with every method call providing the means to identify each
+client on the server's side.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Remoting.CrossDomainMarshaler.InitializeLifetimeService">
+            <summary>
+Gives the instance an infinite lifetime by preventing a lease
+from being created.
+</summary>
+        </member>
+        <member name="M:Toolkit.Remoting.CrossDomainMarshaler.Dispose">
+            <summary>
+Class disposer.
+</summary>
+            <remarks>
+Clear marshaler object by deleting all services.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Remoting.CrossDomainMarshaler.#ctor(System.String,Toolkit.Remoting.CrossDomainMarshaler.SERVICE_FACTORY,System.TimeSpan)">
+            <summary>
+Creates new instance of the CrossDomainMarshaler class.
+</summary>
+            <param name="URI">The specified URI with which to initialize the
+new CrossDomainMarshaler.</param>
+            <param name="factory">Factory delegate that is used to create
+per client service.</param>
+            <param name="timeout">
+                <para>
+The amount of time by which a client domain will be unloaded in
+lack of service requests.</para>
+                <para>
+Specify negative one (-1) milliseconds to disable lifetime
+monitoring.
+</para>
+            </param>
+        </member>
+        <member name="M:Toolkit.Remoting.CrossDomain.MessageSink.#ctor(System.MarshalByRefObject,System.Runtime.Remoting.Messaging.IMessageSink)">
+            <summary>
+Creates new instance of the MessageSink class.
+</summary>
+            <remarks>
+I store next message sink in the sink chain here.
+</remarks>
+        </member>
+        <member name="T:Toolkit.Remoting.CrossDomain.MessageSink">
+            <summary>
+This class implements IMessageSink interface.
+</summary>
+            <remarks>
+Implementing a CrossDomainMarshaller as a ContextBoundObject requires me
+also to implement a MessageSink object. That offers me the opportunity to
+intercept the Message before it enters the point of reconstruction to the
+ultimate method call.
+</remarks>
+        </member>
+        <member name="M:Toolkit.Remoting.CrossDomain.Service.InitializeLifetimeService">
+            <summary>
+Gives the instance an infinite lifetime by preventing a lease
+from being created.
+</summary>
+        </member>
+        <member name="M:Toolkit.Remoting.CrossDomain.Service.#ctor(System.String,Toolkit.Remoting.CrossDomainMarshaler.SERVICE_FACTORY)">
+            <summary>
+Creates new instance of the CrossDomain::Service class.
+</summary>
+        </member>
+        <member name="T:Toolkit.Remoting.CrossDomain.Service">
+            <summary>
+The CrossDomain::Service implements the CrossDomain::IService interface
+method Marshal( IMessage^ msg ). The Message object is forwarded into a
+custom proxy which finally resolves the call to needed function. 
+</summary>
+        </member>
+        <member name="T:Toolkit.Remoting.CrossDomainMarshaler.SERVICE_FACTORY">
+            <summary>
+Represents the factory method that is used by CrossDomainMarshaler to
+create per client service.
+</summary>
+            <param name="clientID">Specify unique client name for wich new service
+has been created.</param>
+            <remarks>
+This function is called in per client domain.
+</remarks>
+        </member>
+        <member name="T:Toolkit.Remoting.CrossDomainMarshaler">
+            <summary>
+Implements cross domain marshaller that intercepts all messages send by all
+clients and redirects it to apropriated services.
+</summary>
+            <remarks>
+The clients can never directly connect to the actual service objects that
+are instantiated in separate AppDomains. The object they will connect to
+must be some sort of a cross domain marshaller that can intercept a method
+call and forward it to the appropriate AppDomain. A CrossDomainMarshaler
+that is a ContextBoundObject provide this feature and must be installed as
+an interceptor.
+</remarks>
+        </member>
+        <member name="T:Toolkit.Remoting.CrossDomain.ContextAttribute">
+            <summary>
+Define attribute that will provide new context creating for the new object
+request.
+</summary>
+            <remarks>
+This allows me intercept object creation on the server.
+</remarks>
+        </member>
+        <member name="T:Toolkit.Remoting.CrossDomain.IService">
+            <summary>
+This interface encapsulates	the behavior needed for cross domain
+communication.
+</summary>
+        </member>
+    </members>
+</doc>
