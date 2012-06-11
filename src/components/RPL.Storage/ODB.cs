@@ -190,35 +190,27 @@ public class ODB : IPersistenceStorage
 	// return query OrderBy part from OrderBy.Clause
 	private void orderby_to_cmd(OrderBy.Clause clause, out string join, out string orderby)
 	{
-        join = String.Empty;
-        // order by for proxy propetries
-		if( clause.OPD == "ID" || clause.OPD == "Name" || clause.OPD == "Stamp" ) {
-			string propName;
-			switch( clause.OPD ) {
-				case "Stamp":
-					propName = "TimeStamp";
-					break;
-				case "Name":
-					propName = "ObjectName";
-					break;
-				default:
-					propName = "ID";
-					break;
-			}
-			// part resposible for OrderBy definition
-			orderby = string.Format( "[{0}] {1}",
-									 propName,
-									 clause.Sort == OrderBy.Clause.SORT.ASC ? "ASC" : "DESC" );
+		join = String.Empty;
+		// format for proxy properties
+		string orderFormat = "[{0}] {1}";
+		// replace clause for proxy properties
+		if( clause.OPD == "ID" ) {
+		} else if( clause.OPD == "Name" ) {
+			clause = new OrderBy.Clause( "ObjectName", clause.Sort );
+		} else if( clause.OPD == "Stamp" ) {
+			clause = new OrderBy.Clause( "TimeStamp", clause.Sort );
 		} else {
+			// replace format for standard object properties
+			orderFormat = "[{0}].[Value] {1}";
 			// part that is responsible for joining Source table
 			// with specified property values from _properties table
 			join = string.Format( "\nLEFT JOIN [dbo].[_properties] AS {0} on [src].[ID] = [{0}].[ObjectID] AND [{0}].[Name] = '{0}'",
 								  clause.OPD );
-			// part resposible for OrderBy definition
-			orderby = string.Format( "[{0}].[Value] {1}",
-									 clause.OPD,
-									 (clause.Sort == OrderBy.Clause.SORT.ASC ? "ASC" : "DESC") );
 		}
+		// part resposible for OrderBy definition
+		orderby = string.Format( orderFormat,
+								 clause.OPD,
+								 clause.Sort == OrderBy.Clause.SORT.ASC ? "ASC" : "DESC" );
 	}
 
 
