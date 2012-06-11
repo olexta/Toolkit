@@ -54,8 +54,8 @@ public class ODB : IPersistenceStorage
 	private HEADER get_header( int id )
 	{
 		DbCommand cmd = new SqlCommand( string.Format(
-			"SELECT [ObjectName], [ObjectType], [TimeStamp] " +
-			"FROM [_objects] WHERE [ID] = {0}",
+			"SELECT [ObjectName], [ObjectType], [TimeStamp]\n" +
+			"FROM [dbo].[_objects] WHERE [ID] = {0}",
 			id) );
 		cmd.Connection = m_con;
 		cmd.Transaction = m_trans;
@@ -83,7 +83,7 @@ public class ODB : IPersistenceStorage
 		string column = "Value";
 
 		if( clause.Value.ToObject() == DBNull.Value ) {
-			bool isProxyProperty = ((clause.OPD == "ID") || (clause.OPD == "Name") || (clause.OPD == "Stamp"));
+			bool isProxyProperty = (clause.OPD == "ID" || clause.OPD == "Name" || clause.OPD == "Stamp");
 			
 			switch( clause.Operator ) {
 				case Where.Clause.OP.NE:
@@ -92,10 +92,12 @@ public class ODB : IPersistenceStorage
 						return "(0=0)";
 					} else {
 						return string.Format(
-								"( EXISTS( SELECT [ID] FROM [_properties] WHERE ([ObjectID] = [Source].[ID]) " +
-								"AND [Name] = '{0}') OR " +
-								"EXISTS( SELECT [ID] FROM [_images] WHERE ([ObjectID] = [Source].[ID]) " +
-								"AND [Name] = '{0}') )",
+								"( EXISTS(\n" +
+								"        SELECT [ID] FROM [dbo].[_properties]\n" +
+								"        WHERE [ObjectID] = [src].[ID] AND [Name] = '{0}') OR\n" +
+								"        EXISTS(\n" +
+								"                SELECT [ID] FROM [dbo].[_images]\n" +
+								"                WHERE [ObjectID] = [src].[ID] AND [Name] = '{0}') )\n",
 								clause.OPD );
 					}
 				case Where.Clause.OP.EQ:
@@ -104,10 +106,12 @@ public class ODB : IPersistenceStorage
 						return "(0=1)";
 					} else {
 						return string.Format(
-								"( NOT EXISTS(SELECT [ID] FROM [_properties] WHERE ([ObjectID] = [Source].[ID]) " +
-								"AND [Name] = '{0}') AND "+
-								"NOT EXISTS( SELECT [ID] FROM [_images] WHERE ([ObjectID] = [Source].[ID]) " +
-								"AND [Name] = '{0}') )",
+								"NOT EXISTS(\n" +
+								"             SELECT [ID] FROM [dbo].[_properties]\n" +
+								"             WHERE [ObjectID] = [src].[ID] AND [Name] = '{0}') AND\n"+
+								"NOT EXISTS(\n" +
+								"            SELECT [ID] FROM [dbo].[_images]\n" +
+								"            WHERE [ObjectID] = [src].[ID] AND [Name] = '{0}')",
 								clause.OPD );
 					}
 				default:
@@ -168,33 +172,53 @@ public class ODB : IPersistenceStorage
 					propName = "ID";
 					break;
 			}
-			result = string.Format( "([Source].[{0}] {1} {2}) ",
+			result = string.Format( "[src].[{0}] {1} {2} ",
 									propName, op, opd );
 		} else {
 			// query for non base properties
 			result = string.Format(
-					"(EXISTS(SELECT [ID] FROM [_properties] AS p " +
-							"WHERE ([ObjectID] = [Source].[ID]) " +
-								"AND " +
-								"([Name] = '{0}') " + // define property name
-								"AND " +
-								"({1} {2} {3}))) ",
+					"EXISTS(\n" +
+					"              SELECT [ID] FROM [dbo].[_properties] AS p\n" +
+					"              WHERE [ObjectID] = [src].[ID] AND " +
+										"[Name] = '{0}' AND " + // define property name
+										"{1} {2} {3})",
 					clause.OPD, column, op, opd ); // define property value
 		}
 		return result;
 	}
 
 	// return query OrderBy part from OrderBy.Clause
-	private void orderby_to_cmd(OrderBy.Clause orderClause, out string join, out string orderby)
+	private void orderby_to_cmd(OrderBy.Clause clause, out string join, out string orderby)
 	{
-		// part that is responsible for joining Source table
-		// with specified property values from _properties table
-		join = string.Format( "LEFT JOIN [_properties] AS {0} on [Source].[ID] = [{0}].[ObjectID] AND [{0}].[Name] = '{0}' ",
-							  orderClause.OPD );
-		// part resposible for OrderBy definition
-		orderby = string.Format( "[{0}].[Value] {1}",
-								 orderClause.OPD,
-								 (orderClause.Sort == OrderBy.Clause.SORT.ASC ? "ASC" : "DESC") );
+        join = String.Empty;
+        // order by for proxy propetries
+		if( clause.OPD == "ID" || clause.OPD == "Name" || clause.OPD == "Stamp" ) {
+			string propName;
+			switch( clause.OPD ) {
+				case "Stamp":
+					propName = "TimeStamp";
+					break;
+				case "Name":
+					propName = "ObjectName";
+					break;
+				default:
+					propName = "ID";
+					break;
+			}
+			// part resposible for OrderBy definition
+			orderby = string.Format( "[{0}] {1}",
+									 propName,
+									 clause.Sort == OrderBy.Clause.SORT.ASC ? "ASC" : "DESC" );
+		} else {
+			// part that is responsible for joining Source table
+			// with specified property values from _properties table
+			join = string.Format( "\nLEFT JOIN [dbo].[_properties] AS {0} on [src].[ID] = [{0}].[ObjectID] AND [{0}].[Name] = '{0}'",
+								  clause.OPD );
+			// part resposible for OrderBy definition
+			orderby = string.Format( "[{0}].[Value] {1}",
+									 clause.OPD,
+									 (clause.Sort == OrderBy.Clause.SORT.ASC ? "ASC" : "DESC") );
+		}
 	}
 
 
@@ -207,7 +231,7 @@ public class ODB : IPersistenceStorage
 			string leftCmd = "";
 			string rightCmd = "";
 			string resultCmd = "";
-			if( (where is Where.Operation.And) || (where is Where.Operation.Or) ) {
+			if( where is Where.Operation.And || where is Where.Operation.Or ) {
 				if( where is Where.Operation.And ) {
 					leftCmd = where_to_cmd(((Where.Operation.And)where).LeftWhere, parms);
 					rightCmd = where_to_cmd(((Where.Operation.And)where).RightWhere, parms);
@@ -219,7 +243,7 @@ public class ODB : IPersistenceStorage
 				resultCmd = string.Format(
 								"({0} {1} {2})",
 								leftCmd,
-								(where is Where.Operation.And)? "AND" : "OR",
+								where is Where.Operation.And ? "AND" : "OR",
 								rightCmd );
 			} else if( where is Where.Operation.Not ) {
 				Where.Operation.Not opNot = (Where.Operation.Not)where;
@@ -278,20 +302,15 @@ public class ODB : IPersistenceStorage
 
 		// command that creates new record or cleares existing
 		DbCommand cmd = new SqlCommand( string.Format(
-			"DECLARE @_id AS int; " +
-			"IF (EXISTS(SELECT [ID] FROM [_images] " +
-				"WHERE [ObjectID] = {0} AND [Name] ='{1}' )) BEGIN " +
-				"UPDATE [_images] SET [Value] = {2} " +
-				"WHERE [ObjectID] = {0} AND [Name] ='{1}'; " +
-				"SELECT @_id = [ID] FROM [_images] " +
-				"WHERE [ObjectID] = {0} AND [Name] ='{1}'; " +
-			"END ELSE BEGIN " +
-				"INSERT INTO [_images] " +
-				"([ObjectID], [Name], [Value]) " +
-				"VALUES ( {0}, '{1}', {2} ); " +
-				"SET @_id = SCOPE_IDENTITY() " +
-			"END;" +
-			"SELECT @Pointer = TEXTPTR([Value]) FROM [_images] WHERE [ID] = @_id",
+			"DECLARE @_id AS int;\n" +
+			"IF (EXISTS(SELECT [ID] FROM [dbo].[_images] WHERE [ObjectID] = {0} AND [Name] ='{1}' )) BEGIN\n" +
+			"    UPDATE [dbo].[_images] SET [Value] = {2} WHERE [ObjectID] = {0} AND [Name] ='{1}';\n" +
+			"    SELECT @_id = [ID] FROM [dbo].[_images] WHERE [ObjectID] = {0} AND [Name] ='{1}';\n" +
+			"END ELSE BEGIN\n" +
+			"    INSERT INTO [dbo].[_images] ([ObjectID], [Name], [Value]) VALUES ( {0}, '{1}', {2} );\n" +
+			"    SET @_id = SCOPE_IDENTITY()\n" +
+			"END;\n" +
+			"SELECT @Pointer = TEXTPTR([Value]) FROM [dbo].[_images] WHERE [ID] = @_id",
 			objID, propName, (stream.Length > 0) ? "0x0" : "NULL") );
 		cmd.Connection = m_con;
 		cmd.Transaction = m_trans;
@@ -299,14 +318,12 @@ public class ODB : IPersistenceStorage
 		DbParameter pointerParam  = new SqlParameter( "@Pointer", SqlDbType.Binary, 16 );
 		pointerParam.Direction = ParameterDirection.Output;
 		cmd.Parameters.Add( pointerParam );
-		
 		try {
 			// get pointer to image data
 			cmd.ExecuteNonQuery();
-			// set up UPDATETEXT command, parameters, and open BinaryReader.	
+			// set up UPDATETEXT command, parameters, and open BinaryReader.
 			cmd = new SqlCommand(
-				"UPDATETEXT [_images].Value @Pointer @Offset @Delete " +
-				"WITH LOG @Bytes");
+				"UPDATETEXT [dbo].[_images].[Value] @Pointer @Offset @Delete WITH LOG @Bytes");
 			cmd.Connection = m_con;
 			cmd.Transaction = m_trans;
 			// assign value of pointer previously recieved
@@ -379,9 +396,8 @@ public class ODB : IPersistenceStorage
 
 		// get pointer to BLOB field using TEXTPTR.
 		DbCommand cmd = new SqlCommand( string.Format(
-			"SELECT @Pointer = TEXTPTR([Value]), " +
-			"@Length = DataLength([Value]) " +
-			"FROM [_images] " +
+			"SELECT @Pointer = TEXTPTR([Value]), @Length = DataLength([Value])\n" +
+			"FROM [dbo].[_images]\n" +
 			"WHERE [ObjectID] = {0} AND [Name] ='{1}'",
 			objID, propName) );
 		cmd.Connection = m_con;
@@ -409,8 +425,7 @@ public class ODB : IPersistenceStorage
 			// parameters: @Pointer – pointer to blob, @Offset – number of bytes to
 			// skip before starting the read, @Size – number of bytes to read.
 			cmd = new SqlCommand(
-				"READTEXT [_images].Value " +
-				"@Pointer @Offset @Size HOLDLOCK");
+				"READTEXT [dbo].[_images].[Value] @Pointer @Offset @Size HOLDLOCK");
 			cmd.Connection = m_con;
 			cmd.Transaction = m_trans;
 			// temp buffer for read/write purposes
@@ -427,9 +442,9 @@ public class ODB : IPersistenceStorage
 			cmd.Parameters.Add( size );
 
 			while( Convert.ToInt32(offset.Value) < Convert.ToInt32( lengthParam.Value ) ) {
-				// calculate buffer size - may be less than BUFFER_LENGTH for last block.				
-				if( (Convert.ToInt32( offset.Value ) + buffer.GetUpperBound( 0 )) 
-					>= 
+				// calculate buffer size - may be less than BUFFER_LENGTH for last block.
+				if( (Convert.ToInt32( offset.Value ) + buffer.GetUpperBound( 0 ))
+					>=
 					Convert.ToInt32( lengthParam.Value ) )
 					// setting size parameter
 					size.Value =
@@ -527,9 +542,9 @@ public class ODB : IPersistenceStorage
 		try {
 			// check object stamp. If it is newer then current -> raise error
 			DbCommand cmd = new SqlCommand( string.Format(
-				"DECLARE @_id AS int; SET @_id = @ID;" +
-				"IF ((SELECT [TimeStamp] " +
-				"FROM [_objects] WHERE [ID] = @_id) > @Stamp) RAISERROR( '{0}', 11, 1 );",
+				"DECLARE @_id AS int; SET @_id = @ID;\n" +
+				"IF ((SELECT [TimeStamp] FROM [dbo].[_objects] WHERE [ID] = @_id) > @Stamp) " +
+				"RAISERROR( '{0}', 11, 1 );",
 				ERROR_CHANGED_OBJECT) );
 			cmd.Connection = m_con;
 			cmd.Transaction = m_trans;
@@ -537,7 +552,7 @@ public class ODB : IPersistenceStorage
 			cmd.Parameters.Add(new SqlParameter("@ID", header.ID));
 			cmd.Parameters.Add(new SqlParameter("@Stamp", header.Stamp));
 
-			cmd.CommandText += "DELETE FROM [_objects] WHERE [ID] = @_id";
+			cmd.CommandText += "DELETE FROM [dbo].[_objects] WHERE [ID] = @_id";
 
 			// proccess delete opearaton
 			cmd.ExecuteNonQuery();
@@ -594,7 +609,7 @@ public class ODB : IPersistenceStorage
 
 		#region debug info
 #if (DEBUG)
-		Debug.Print("-> ODB.ProcessSQL( '{0}' ) = {1}", sql, ds.Tables.Count);
+		Debug.Print("<- ODB.ProcessSQL( '{0}' ) = {1}", sql, ds.Tables.Count);
 #endif
 		#endregion
 
@@ -675,8 +690,7 @@ public class ODB : IPersistenceStorage
 
 			#region retrive props from _properties
 			cmd = new SqlCommand( string.Format(
-					"SELECT [Name], [Value] FROM [_properties] " +
-					"WHERE [ObjectID] = {0}",
+					"SELECT [Name], [Value] FROM [dbo].[_properties] WHERE [ObjectID] = {0}",
 					header.ID) );
 			cmd.Connection = m_con;
 			cmd.Transaction = m_trans;
@@ -705,8 +719,7 @@ public class ODB : IPersistenceStorage
 
 			#region retrive props from _images
 			cmd = new SqlCommand( string.Format(
-				"SELECT [Name] FROM [_images] " +
-				"WHERE [ObjectID] = {0}",
+				"SELECT [Name] FROM [dbo].[_images] WHERE [ObjectID] = {0}",
 				header.ID) );
 			cmd.Connection = m_con;
 			cmd.Transaction = m_trans;
@@ -723,7 +736,7 @@ public class ODB : IPersistenceStorage
 					PersistentStream stream = new PersistentStream();
 					read_image( header.ID, name, ref stream );
 					// save property in collection
-					_props.Add( 
+					_props.Add(
 						new PROPERTY(
 							name,
 							new ValueBox((Object) stream ), PROPERTY.STATE.New ));
@@ -735,10 +748,9 @@ public class ODB : IPersistenceStorage
 
 			#region retrive links
 			cmd = new SqlCommand( string.Format(
-				"SELECT [ID], [ObjectName], [ObjectType], [TimeStamp] FROM [_objects] " +
-				"WHERE [ID] IN ( " + 
-				"SELECT Child FROM [_links] " + 
-				"WHERE Parent = {0})",
+				"SELECT [ID], [ObjectName], [ObjectType], [TimeStamp]\n" +
+				"FROM [dbo].[_objects]\n" +
+				"WHERE [ID] IN (SELECT Child FROM [dbo].[_links] WHERE Parent = {0})",
 				header.ID) );
 			cmd.Connection = m_con;
 			cmd.Transaction = m_trans;
@@ -816,9 +828,9 @@ public class ODB : IPersistenceStorage
 			if( header.ID == 0 ) {
 				// this is new object. Creating script for insertion of object
 				cmd =
-					new SqlCommand( 
-						"INSERT INTO [_objects] ( [ObjectName], [ObjectType] ) " +
-						"VALUES ( @Name, @Type );" +
+					new SqlCommand(
+						"\nINSERT INTO [dbo].[_objects] ( [ObjectName], [ObjectType] ) " +
+						"VALUES ( @Name, @Type );\n" +
 						/*save inserted object ID*/
 						"SET @ID = SCOPE_IDENTITY();");
 				cmd.Connection = m_con;
@@ -834,8 +846,8 @@ public class ODB : IPersistenceStorage
 				// check object stamp. If it is newer then current -> raise error
 				cmd = new SqlCommand( string.Format(
 					"DECLARE @_id AS Int; SET @_id = @ID;\n" +
-					"IF ((SELECT [TimeStamp] FROM [_objects] WHERE [ID] = @_id) > @Stamp) " +
-					"\n\tRAISERROR( '{0}', 11, 1 );",
+					"IF ((SELECT [TimeStamp] FROM [dbo].[_objects] WHERE [ID] = @_id) > @Stamp) " +
+					"RAISERROR( '{0}', 11, 1 );",
 					ERROR_CHANGED_OBJECT ) );
 				cmd.Connection = m_con;
 				cmd.Transaction = m_trans;
@@ -844,7 +856,7 @@ public class ODB : IPersistenceStorage
 				// add proxy stamp parameter
 				cmd.Parameters.Add( new SqlParameter("@Stamp", header.Stamp));
 				// proxy name is always updated
-				cmd.CommandText += "UPDATE [_objects] SET [ObjectName] = @Name WHERE [ID] = @_id";
+				cmd.CommandText += "UPDATE [dbo].[_objects] SET [ObjectName] = @Name WHERE [ID] = @_id";
 
 				// add proxy name parameter
 				cmd.Parameters.Add( new SqlParameter( "@Name", header.Name) );
@@ -899,7 +911,7 @@ public class ODB : IPersistenceStorage
 						} else {
 							// adding new row to DB
 							cmd.CommandText += string.Format(
-								"INSERT INTO [_properties] ([ObjectID], [Name], [Value]) " +
+								"\nINSERT INTO [dbo].[_properties] ([ObjectID], [Name], [Value]) " +
 								"VALUES ( {0}, '{1}', @P{2} );",
 								objID, props[i].Name, i );
 							cmd.Parameters.Add( new SqlParameter( "@P" + i, value ) );
@@ -913,16 +925,15 @@ public class ODB : IPersistenceStorage
 							(((PersistentStream)props[i].Value.ToObject()).Length > 7900) ) {
 							// add query for delete property from _properties table (property may be there before)
 							cmd.CommandText += string.Format(
-								"DELETE FROM [_properties] " +
-								"WHERE [ObjectID]={0} AND [Name]='{1}';",
+								"DELETE FROM [dbo].[_properties] WHERE [ObjectID]={0} AND [Name]='{1}';",
 								objID, props[i].Name );
 							// saving stream property to _images table
 							save_image( objID, props[i].Name, (PersistentStream)props[i].Value );
 						} else {
 							// update row in DB
 							cmd.CommandText += string.Format(
-								"UPDATE [_properties] " +
-								"SET [Value] = @P{0} " +
+								"UPDATE [dbo].[_properties]\n" +
+								"SET [Value] = @P{0}\n" +
 								"WHERE [ObjectID]={1} AND [Name]='{2}';",
 								i, objID, props[i].Name );
 							cmd.Parameters.Add( new SqlParameter( "@P" + i, value ) );
@@ -930,8 +941,7 @@ public class ODB : IPersistenceStorage
 							// try to delete property from _images table if it is PersistentStream
 							if( props[i].Value.ToObject() is PersistentStream ) {
 								cmd.CommandText += string.Format(
-									"DELETE FROM [_images] " +
-									"WHERE [ObjectID]={0} AND [Name]='{1}';",
+									"DELETE FROM [dbo].[_images] WHERE [ObjectID]={0} AND [Name]='{1}';",
 									objID, props[i].Name );
 							}
 						}
@@ -939,10 +949,8 @@ public class ODB : IPersistenceStorage
 					case PROPERTY.STATE.Deleted:
 						// delete property from _properties table
 						cmd.CommandText += string.Format(
-							"DELETE FROM [_properties] " +
-							"WHERE [ObjectID]={0} AND [Name]='{1}';" +
-							"DELETE FROM [_images] " +
-							"WHERE [ObjectID]={0} AND [Name]='{1}';",
+							"DELETE FROM [dbo].[_properties] WHERE [ObjectID]={0} AND [Name]='{1}';" +
+							"DELETE FROM [dbo].[_images] WHERE [ObjectID]={0} AND [Name]='{1}';",
 							objID, props[i].Name );
 						break;
 				}
@@ -954,14 +962,13 @@ public class ODB : IPersistenceStorage
 				if( link.State == LINK.STATE.New ) {
 					// add new link to DB
 					cmd.CommandText += string.Format(
-						"INSERT INTO [_links] ([Parent], [Child]) " +
+						"\nINSERT INTO [dbo].[_links] ([Parent], [Child]) " +
 						"VALUES ({0}, {1});",
 						objID, link.Header.ID );
 				} else if( link.State == LINK.STATE.Deleted ) {
 					// delete link from DB
 					cmd.CommandText += string.Format(
-						"DELETE FROM [_links] " +
-						"WHERE [Parent]={0} AND [Child]={1};",
+						"DELETE FROM [dbo].[_links] WHERE [Parent]={0} AND [Child]={1};",
 						objID, link.Header.ID );
 				}
 			}
@@ -1015,128 +1022,129 @@ public class ODB : IPersistenceStorage
 #endif
 		#endregion
 		// init search command
-		DbCommand cmd = new SqlCommand();
-		// list for HEADERs return purpose
-		List<HEADER> objects = null;
+		using( DbCommand cmd = new SqlCommand() ) {
+			// list for HEADERs return purpose
+			List<HEADER> objects = null;
 
-		// for SqlParameter names and values
-		Dictionary<string, object> parms = new Dictionary<string, object>();
-		// create sql command text
-		string whereQuery = "";
-		if( where != null ) {
-			whereQuery = where_to_cmd(where, parms);
-		}
-
-		#region prepare OrderBy part
-		string orderJoin = "";
-		string orderBy = "";
-
-		if( order != null ) {
-			foreach( OrderBy.Clause clause in order ) {
-				string orderJoinOut;
-				string orderByOut;
-				orderby_to_cmd(clause, out orderJoinOut, out orderByOut);
-				orderJoin += orderJoinOut;
-				orderBy += orderByOut + ", ";
+			// for SqlParameter names and values
+			Dictionary<string, object> parms = new Dictionary<string, object>();
+			// create sql command text
+			string whereQuery = "";
+			if( where != null ) {
+				whereQuery = where_to_cmd(where, parms);
 			}
-			orderBy = orderBy.Trim().TrimEnd(',');
-		}
-		#endregion
 
-		// template for search query:
-		// - gets ids of object that meets {0},
-		// - skips @bottom rows
-		// - return only @count object HEADERs
-		cmd.CommandText="DECLARE @_counter as int\n" +
-						"DECLARE @_id as int\n" +
-						"DECLARE @_resultID TABLE ([ids] int)\n" +
-						"--Check for user rights and return requested count of items\n" +
-						"DECLARE cursor_Found CURSOR SCROLL FOR\n" +
-						"{0}\n" +
-						"OPEN cursor_Found\n" +
-						"    SET @countFound= @@CURSOR_ROWS\n" +
-						"    SET @_counter = 0\n" +
-						"    FETCH ABSOLUTE @bottom FROM cursor_Found INTO @_id\n" +
-						"    WHILE( (@@FETCH_STATUS = 0) AND (@_counter < @count) ) BEGIN\n" +
-						"        INSERT INTO @_resultID ([ids]) VALUES (@_id)\n" +
-						"        FETCH NEXT FROM cursor_Found INTO @_id\n" +
-						"        SET @_counter = @_counter + 1\n" +
-						"    END\n" +
-						"CLOSE cursor_Found\n" +
-						"DEALLOCATE cursor_Found\n" +
-						"--Make SQL request\n" +
-						"SELECT [ID], [ObjectName], [ObjectType], [TimeStamp]\n" +
-						"FROM _objects INNER JOIN @_resultID as resultID ON _objects.ID = resultID.ids";
+			#region prepare OrderBy part
+			string orderJoin = "";
+			string orderBy = "";
 
-		// search query part with ordering
-		string query = string.Format(
-						"SELECT Source.[ID]\n" +
-						"FROM (Select * FROM _objects WHERE ObjectType = '{0}') AS Source\n" + 
-						"{1}" + //orderJoin
-						"{2}" + //WHERE
-						"{3}", // ORDER BY
-						type, orderJoin,
-						string.IsNullOrEmpty(whereQuery) ? "" : "WHERE " + whereQuery,
-						orderBy == "" ? "" : "ORDER BY " + orderBy );
-		SqlParameter param = new SqlParameter( "@countFound", SqlDbType.Int );
-		param.Direction = ParameterDirection.Output;
-		cmd.Parameters.Add( param );
-		// setting query count limits
-		cmd.Parameters.Add( new SqlParameter( "@bottom", bottom + 1 ) );
-		cmd.Parameters.Add( new SqlParameter( "@count", count ) );
-		// creating SqlParameters for passed values
-		foreach( string parm in parms.Keys ) {
-			cmd.Parameters.Add( new SqlParameter(parm, parms[parm]));
-		}
-		// replacing parts in search query template
-		cmd.CommandText = string.Format( cmd.CommandText, query );
-#if (DEBUG)
-		Debug.Print("ODB.Search: sql search query = '{0}'", cmd.CommandText );
-#endif
-
-		// open connection and start new transaction if required
-		TransactionBegin();
-		try {
-			cmd.Connection = m_con;
-			cmd.Transaction = m_trans;
-			// search query will return table with the following columns:
-			// ID, ObjectName, ObjectType, TimeStamp
-			#region retrive data and create proxies
-			DbDataReader dr = cmd.ExecuteReader();
-			// create List for storing found objects
-			objects = new List<HEADER>();
-			try {
-				while( dr.Read() ) {
-					// save found proxy object
-					objects.Add(new HEADER((string)dr["ObjectType"],
-											Convert.ToInt32(dr["ID"]),
-											Convert.ToDateTime(dr["TimeStamp"]),
-											(string)dr["ObjectName"]));
+			if( order != null ) {
+				foreach( OrderBy.Clause clause in order ) {
+					string orderJoinOut;
+					string orderByOut;
+					orderby_to_cmd(clause, out orderJoinOut, out orderByOut);
+					orderJoin += orderJoinOut;
+					orderBy += orderByOut + ", ";
 				}
-			} finally { dr.Dispose(); }
+				orderBy = orderBy.Trim().TrimEnd(',');
+			}
 			#endregion
-		} catch( Exception ex ) {
-			#region debug info
-#if (DEBUG)
-			Debug.Print("[ERROR] @ ODB.Search: {0}", ex.ToString());
-#endif
-			#endregion
-			// rollback failed transaction
-			TransactionRollback();
-			throw;
-		}
-		// close connection and commit transaction if required
-		TransactionCommit();
 
-		// return objects found
-		headers = objects.ToArray();
-		#region debug info
-#if (DEBUG)
-		Debug.Print("<- ODB.Search( '{0}', '{1}') = {2}", type, where, objects.Count);
-#endif
-		#endregion
-		// return count objects found
-		return (int)cmd.Parameters["@countFound"].Value;
+			// template for search query:
+			// - gets ids of object that meets {0},
+			// - skips @bottom rows
+			// - return only @count object HEADERs
+			cmd.CommandText="DECLARE @_i as int\n" +
+							"DECLARE @_id as int\n" +
+							"DECLARE @_ids TABLE ([id] int)\n" +
+							"--return requested count of items\n" +
+							"DECLARE curs CURSOR SCROLL FOR\n" +
+							"{0}\n" +
+							"OPEN curs\n" +
+							"    SET @found = @@CURSOR_ROWS\n" +
+							"    SET @_i = 0\n" +
+							"    FETCH ABSOLUTE @bottom FROM curs INTO @_id\n" +
+							"    WHILE( @@FETCH_STATUS = 0 AND @_i < @count ) BEGIN\n" +
+							"        INSERT INTO @_ids ([id]) VALUES (@_id)\n" +
+							"        FETCH NEXT FROM curs INTO @_id\n" +
+							"        SET @_i = @_i + 1\n" +
+							"    END\n" +
+							"CLOSE curs\n" +
+							"DEALLOCATE curs\n" +
+							"--Make SQL request\n" +
+							"SELECT [o].[ID], [o].[ObjectName], [o].[ObjectType], [o].[TimeStamp]\n" +
+							"FROM [dbo].[_objects] [o] INNER JOIN @_ids AS [ids] ON [o].[ID] = [ids].[id]";
+
+			// search query part with ordering
+			string query = string.Format(
+							"SELECT [src].[ID]\n" +
+							"FROM (SELECT * FROM [dbo].[_objects] WHERE [ObjectType] = '{0}') AS [src]" + 
+							"{1}\n" + //orderJoin
+							"{2}\n" + //WHERE
+							"{3}", // ORDER BY
+							type, orderJoin,
+							string.IsNullOrEmpty(whereQuery) ? "" : "WHERE " + whereQuery,
+							orderBy == "" ? "" : "ORDER BY " + orderBy );
+			SqlParameter param = new SqlParameter( "@found", SqlDbType.Int );
+			param.Direction = ParameterDirection.Output;
+			cmd.Parameters.Add( param );
+			// setting query count limits
+			cmd.Parameters.Add( new SqlParameter( "@bottom", bottom + 1 ) );
+			cmd.Parameters.Add( new SqlParameter( "@count", count ) );
+			// creating SqlParameters for passed values
+			foreach( string parm in parms.Keys ) {
+				cmd.Parameters.Add( new SqlParameter(parm, parms[parm]));
+			}
+			// replacing parts in search query template
+			cmd.CommandText = string.Format( cmd.CommandText, query );
+	#if (DEBUG)
+			Debug.Print("ODB.Search: sql search query = '{0}'", cmd.CommandText );
+	#endif
+
+			// open connection and start new transaction if required
+			TransactionBegin();
+			try {
+				cmd.Connection = m_con;
+				cmd.Transaction = m_trans;
+				// search query will return table with the following columns:
+				// ID, ObjectName, ObjectType, TimeStamp
+				#region retrive data and create proxies
+				DbDataReader dr = cmd.ExecuteReader();
+				// create List for storing found objects
+				objects = new List<HEADER>();
+				try {
+					while( dr.Read() ) {
+						// save found proxy object
+						objects.Add(new HEADER((string)dr["ObjectType"],
+												Convert.ToInt32(dr["ID"]),
+												Convert.ToDateTime(dr["TimeStamp"]),
+												(string)dr["ObjectName"]));
+					}
+				} finally { dr.Dispose(); }
+				#endregion
+			} catch( Exception ex ) {
+				#region debug info
+	#if (DEBUG)
+				Debug.Print("[ERROR] @ ODB.Search: {0}", ex.ToString());
+	#endif
+				#endregion
+				// rollback failed transaction
+				TransactionRollback();
+				throw;
+			}
+			// close connection and commit transaction if required
+			TransactionCommit();
+
+			// return objects found
+			headers = objects.ToArray();
+			#region debug info
+	#if (DEBUG)
+			Debug.Print("<- ODB.Search( '{0}', '{1}') = {2}", type, where, objects.Count);
+	#endif
+			#endregion
+			// return count objects found
+			return (int)cmd.Parameters["@found"].Value;
+		}
 	}
 
 	/// <summary>
@@ -1144,11 +1152,11 @@ public class ODB : IPersistenceStorage
 	/// </summary>
 	public void TransactionBegin()
 	{
-		// if no opened transactions then 
+		// if no opened transactions then
 		// open connection and start new transaction
 		if( m_TransactionCount == 0 ) {
 			m_con.Open();
-			m_trans = m_con.BeginTransaction();
+			m_trans = m_con.BeginTransaction(IsolationLevel.ReadCommitted);
 		}
 		// increment number of requested new transaction
 		m_TransactionCount++;
