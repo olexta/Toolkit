@@ -5,12 +5,13 @@
 //*	Module		:	ODB.cs
 //*
 //*	Content		:	Implements object oriented DB manipulation
-//*	Author		:	Alexander Kurbatov
-//*	Copyright	:	Copyright © 2006-2008 Alexander Kurbatov
+//*	Author		:	Alexander Kurbatov, Oleksii Tkachuk
+//*	Copyright	:	Copyright © 2006-2013 Alexander Kurbatov, Oleksii Tkachuk
 //*
 //*	Implement Search, Retrive, Save, Delete of PersistentObject in MS SQL DB
 //*
 //****************************************************************************
+
 using System;
 using System.IO;
 using System.Data;
@@ -332,17 +333,19 @@ public class ODB : IPersistenceStorage
 			DbParameter bytesParam = new SqlParameter( "@Bytes", SqlDbType.Binary );
 			cmd.Parameters.Add( bytesParam );
 
+			// save current stream position and seek to begin
+			long pos = stream.Position;
 			stream.Seek( 0, SeekOrigin.Begin );
 
 			// read buffer full of data and execute UPDATETEXT statement.
-			Byte[] Buffer = new Byte[BUFFER_LENGTH];
+			Byte[] buffer = new Byte[BUFFER_LENGTH];
 			// make first read from stream
-			int ret = stream.Read( Buffer, 0, BUFFER_LENGTH );
+			int ret = stream.Read( buffer, 0, BUFFER_LENGTH );
 
 			// while something is read from stream, write to apend to BLOB field
 			while( ret > 0 ) {
 				// initing parameters for write
-				bytesParam.Value = Buffer;
+				bytesParam.Value = buffer;
 				bytesParam.Size = ret;
 				// write to BLOB field
 				cmd.ExecuteNonQuery(); // execute iteration
@@ -351,8 +354,10 @@ public class ODB : IPersistenceStorage
 				offsetParam.Value =
 					Convert.ToInt32( offsetParam.Value ) + ret;
 				// read from stream for next iteration
-				ret = stream.Read( Buffer, 0, BUFFER_LENGTH );
+				ret = stream.Read( buffer, 0, BUFFER_LENGTH );
 			}
+			// restore stream position after reading
+			stream.Position = pos;
 		} catch( Exception ex ) {
 			#region debug info
 #if (DEBUG)
@@ -377,14 +382,19 @@ public class ODB : IPersistenceStorage
 	/// </summary>
 	/// <param name="objID">Stream owner object ID</param>
 	/// <param name="propName">Name of stream property</param>
-	/// <param name="stream">Stream property</param>
-	private void read_image( int objID, string propName, ref PersistentStream stream )
+	/// <returns>
+	/// Persistent stream that contains BLOB data.
+	/// </returns>
+	private PersistentStream read_image( int objID, string propName )
 	{
 		#region debug info
 #if (DEBUG)
 		Debug.Print( "<- ODB.imageRead( {0}, '{1}' )", objID, propName );
 #endif
 		#endregion
+
+		// create stream to return as result
+		PersistentStream stream = new PersistentStream();
 
 		// get pointer to BLOB field using TEXTPTR.
 		DbCommand cmd = new SqlCommand( string.Format(
@@ -462,6 +472,8 @@ public class ODB : IPersistenceStorage
 					offset.Value = Convert.ToInt32( offset.Value ) + count;
 				} finally { dr.Dispose(); /*dispose DataReader*/}
 			}
+			// seek to begin of the stream after writing data
+			stream.Seek( 0, SeekOrigin.Begin );
 		} catch( Exception ex ) {
 			#region dubug info
 #if (DEBUG)
@@ -480,6 +492,9 @@ public class ODB : IPersistenceStorage
 		Debug.Print( "<- ODB.imageRead( {0}, '{1}' )", objID, propName );
 #endif
 		#endregion
+
+		// return filled with SQL BLOB stream
+		return stream;
 	}
 	#endregion
 
@@ -725,13 +740,10 @@ public class ODB : IPersistenceStorage
 				while( dtr.Read() ) {
 					// save data from SqlDataReader because we need non SequentialAccess in datarow
 					string name = (string) dtr["Name"];
-					PersistentStream stream = new PersistentStream();
-					read_image( header.ID, name, ref stream );
 					// save property in collection
-					_props.Add(
-						new PROPERTY(
-							name,
-							new ValueBox((Object) stream ), PROPERTY.STATE.New ));
+					_props.Add( new PROPERTY( name,
+											  new ValueBox( read_image( header.ID, name ) ),
+											  PROPERTY.STATE.New ));
 				}
 			} finally {
 				dtr.Dispose();
