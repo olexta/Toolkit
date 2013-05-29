@@ -282,8 +282,9 @@ public class ODB : IPersistenceStorage
 	/// </summary>
 	/// <param name="objID">Stream owner object ID</param>
 	/// <param name="propName">Name of stream property</param>
-	/// <param name="stream">Stream property</param>
-	private void save_image( int objID, string propName, PersistentStream stream )
+	/// <param name="stream">Stream property to save</param>
+	/// <param name="isnew">Flag to check property existance.</param>
+	private void save_blob( int objID, string propName, PersistentStream stream, bool isnew )
 	{
 		#region debug info
 #if (DEBUG)
@@ -293,18 +294,20 @@ public class ODB : IPersistenceStorage
 		// open connection and start new transaction if required
 		TransactionBegin();
 
-		// command that creates new record or cleares existing
-		DbCommand cmd = new SqlCommand( string.Format(
-			"DECLARE @_id AS int;\n" +
-			"IF (EXISTS(SELECT [ID] FROM [dbo].[_images] WHERE [ObjectID] = {0} AND [Name] ='{1}' )) BEGIN\n" +
-			"    UPDATE [dbo].[_images] SET [Value] = {2} WHERE [ObjectID] = {0} AND [Name] ='{1}';\n" +
-			"    SELECT @_id = [ID] FROM [dbo].[_images] WHERE [ObjectID] = {0} AND [Name] ='{1}';\n" +
-			"END ELSE BEGIN\n" +
-			"    INSERT INTO [dbo].[_images] ([ObjectID], [Name], [Value]) VALUES ( {0}, '{1}', {2} );\n" +
-			"    SET @_id = SCOPE_IDENTITY()\n" +
-			"END;\n" +
-			"SELECT @Pointer = TEXTPTR([Value]) FROM [dbo].[_images] WHERE [ID] = @_id",
-			objID, propName, (stream.Length > 0) ? "0x0" : "NULL") );
+		// create command text to create new or update existing record in th table
+		string sql = "DECLARE @_id as int;                                                                      \n";
+		if( !isnew ) {
+			sql +=   "DELETE  FROM [dbo].[_properties] WHERE [ObjectID]={0} AND [Name]='{1}';                   \n" +
+					 "UPDATE  [dbo].[_images] SET @_id = [ID], [Value] = {2}                                    \n" +
+					 "WHERE   @@ROWCOUNT = 0 AND [ObjectID] = {0} AND [Name] ='{1}';                            \n";
+		}
+		sql +=       "IF @_id IS NULL BEGIN                                                                     \n" +
+					 "    INSERT INTO [dbo].[_images] ([ObjectID], [Name], [Value]) VALUES ( {0}, '{1}', {2} ); \n" +
+					 "    SET @_id = SCOPE_IDENTITY();                                                          \n" +
+					 "END;                                                                                      \n" +
+					 "SELECT @Pointer = TEXTPTR([Value]) FROM [dbo].[_images] WHERE [ID] = @_id;                \n";
+		// command that executes previous sql statement
+		DbCommand cmd = new SqlCommand(string.Format( sql, objID, propName, (stream.Length > 0) ? "0x0" : "NULL"));
 		cmd.Connection = m_con;
 		cmd.Transaction = m_trans;
 
@@ -385,7 +388,7 @@ public class ODB : IPersistenceStorage
 	/// <returns>
 	/// Persistent stream that contains BLOB data.
 	/// </returns>
-	private PersistentStream read_image( int objID, string propName )
+	private PersistentStream read_blob( int objID, string propName )
 	{
 		#region debug info
 #if (DEBUG)
@@ -742,7 +745,7 @@ public class ODB : IPersistenceStorage
 					string name = (string) dtr["Name"];
 					// save property in collection
 					_props.Add( new PROPERTY( name,
-											  new ValueBox( read_image( header.ID, name ) ),
+											  new ValueBox( read_blob( header.ID, name ) ),
 											  PROPERTY.STATE.New ));
 				}
 			} finally {
@@ -816,9 +819,9 @@ public class ODB : IPersistenceStorage
 #endif
 		#endregion
 
-		DbCommand cmd = null;	// other puroses
+		DbCommand cmd = null;			// other puroses
 		List<PROPERTY> _props = null;	// list for collecting current object properties
-		int objID; // object ID
+		int objID;						// object ID
 
 		// initialize out parameters
 		mlinks = null;
@@ -873,90 +876,68 @@ public class ODB : IPersistenceStorage
 			#endregion
 
 			// create new command
-			cmd = new SqlCommand( "" );
+			cmd = new SqlCommand("");
 			cmd.Connection = m_con;
 			cmd.Transaction = m_trans;
 			_props = new List<PROPERTY>();
 
-			// iterate through recieved properties
+			// iterate through received properties
 			for( int i = 0; i < props.Length; i++ ) {
-				// strore propery value suitable for saving as sql_variant
-				object value;
-				// converting value to sql_variant capable type
-				if( props[i].Value.ToObject() is PersistentStream ) {
-					// reading stream value to byte array
-					PersistentStream ps = ((PersistentStream)props[i].Value.ToObject());
-					byte[] buffer = new byte[ps.Length];
-					ps.Seek(0, SeekOrigin.Begin);
-					ps.Read(buffer, 0, (int)ps.Length);
-					value = buffer;
-				} else if( (props[i].Value.ToObject().GetType() == typeof(DateTime)) &&
-						   (props[i].State == PROPERTY.STATE.Changed ||
-							props[i].State == PROPERTY.STATE.New) ) {
-
-					// DateTime Property must be converted to precision of sql server before sav
-					value = datetime_to_sql( (DateTime)props[i].Value );
-					// add to changed properies List
-					_props.Add( new PROPERTY(props[i].Name, new ValueBox(value), PROPERTY.STATE.Changed) );
+				// check for property state and type for different processing
+				if( props[i].State == PROPERTY.STATE.Deleted ) {
+					// just delete property from _properties/_images table
+					cmd.CommandText += string.Format(
+						"DELETE FROM [dbo].[_properties] WHERE [ObjectID] = {0} AND [Name] = '{1}'; \n" +
+						"IF @@ROWCOUNT = 0 BEGIN                                                    \n" + 
+						"    DELETE FROM [dbo].[_images] WHERE [ObjectID] = {0} AND [Name] = '{1}'; \n" +
+						"END;                                                                       \n",
+						objID, props[i].Name );
+				} else if( props[i].Value.ToObject() is PersistentStream &&
+						   (props[i].Value.ToObject() as PersistentStream).Length > 7900 ) {
+					// save large stream property: 7900 is maximum length of sql_variant field in
+					// _properties table because SQL Server limits maximum row size to 8060 bytes,
+					// so save stream property as blob
+					save_blob( objID, props[i].Name, (PersistentStream)props[i].Value,
+							   props[i].State == PROPERTY.STATE.New );
 				} else {
-					// no convertion is needed
-					value = props[i].Value.ToObject();
-				}
-				// check property action
-				switch( props[i].State ) {
-					case PROPERTY.STATE.New:
-						// saving large stream property. 7900 is maximum length of sql_variant field in _properties table because
-						// SQL Server 2000 limits maximum row size to 8060 bytes.
-						if( (props[i].Value.ToObject() is PersistentStream)
-							&&
-							(((PersistentStream)props[i].Value.ToObject()).Length > 7900) ) {
-							// saving stream property to _images table
-							save_image( objID, props[i].Name, (PersistentStream)props[i].Value );
-						} else {
-							// adding new row to DB
-							cmd.CommandText += string.Format(
-								"\nINSERT INTO [dbo].[_properties] ([ObjectID], [Name], [Value]) " +
-								"VALUES ( {0}, '{1}', @P{2} );",
-								objID, props[i].Name, i );
-							cmd.Parameters.Add( new SqlParameter( "@P" + i, value ) );
-						}
-						break;
-					case PROPERTY.STATE.Changed:
-						// saving large stream property. 7900 is maximum length of sql_variant field in _properties table because
-						// SQL Server 2000 limits maximum row size to 8060 bytes.
-						if( (props[i].Value.ToObject() is PersistentStream)
-							&&
-							(((PersistentStream)props[i].Value.ToObject()).Length > 7900) ) {
-							// add query for delete property from _properties table (property may be there before)
-							cmd.CommandText += string.Format(
-								"DELETE FROM [dbo].[_properties] WHERE [ObjectID]={0} AND [Name]='{1}';",
-								objID, props[i].Name );
-							// saving stream property to _images table
-							save_image( objID, props[i].Name, (PersistentStream)props[i].Value );
-						} else {
-							// update row in DB
-							cmd.CommandText += string.Format(
-								"UPDATE [dbo].[_properties]\n" +
-								"SET [Value] = @P{0}\n" +
-								"WHERE [ObjectID]={1} AND [Name]='{2}';",
-								i, objID, props[i].Name );
-							cmd.Parameters.Add( new SqlParameter( "@P" + i, value ) );
+					// convert property value to sql_variant capable type
+					object value;
+					if( props[i].Value.ToObject() is PersistentStream ) {
+						// this is a little stream, so convert stream value to byte array
+						PersistentStream s = props[i].Value.ToObject() as PersistentStream;
+						byte[] buffer = new byte[s.Length];
+						s.Seek( 0, SeekOrigin.Begin );
+						s.Read( buffer, 0, (int)s.Length );
+						value = buffer;
+					} else if( props[i].Value.ToObject().GetType() == typeof(DateTime) ) {
+						// DateTime property must be converted to precision of sql server before save
+						value = datetime_to_sql( (DateTime)props[i].Value );
+						// add to changed properies list to return to client
+						_props.Add( new PROPERTY(props[i].Name, new ValueBox(value), PROPERTY.STATE.Changed) );
+					} else {
+						// no convertion is needed
+						value = props[i].Value.ToObject();
+					}
 
-							// try to delete property from _images table if it is PersistentStream
-							if( props[i].Value.ToObject() is PersistentStream ) {
-								cmd.CommandText += string.Format(
-									"DELETE FROM [dbo].[_images] WHERE [ObjectID]={0} AND [Name]='{1}';",
-									objID, props[i].Name );
-							}
-						}
-						break;
-					case PROPERTY.STATE.Deleted:
-						// delete property from _properties table
+					// compose sql command to update/insert data into _properties table
+					if( props[i].State == PROPERTY.STATE.Changed ) {
+						// compose UPDATE command (if this is binary property change, add
+						// some extra processing: _images can contain this property already)
 						cmd.CommandText += string.Format(
-							"DELETE FROM [dbo].[_properties] WHERE [ObjectID]={0} AND [Name]='{1}';" +
-							"DELETE FROM [dbo].[_images] WHERE [ObjectID]={0} AND [Name]='{1}';",
-							objID, props[i].Name );
-						break;
+							"UPDATE [dbo].[_properties] SET [Value] = @P{2} WHERE [ObjectID] = {0} AND [Name] = '{1}';     \n" +
+							(!(props[i].Value.ToObject() is PersistentStream) ? "" :
+							"IF @@ROWCOUNT = 0 BEGIN                                                                       \n" +
+							"    DELETE FROM [dbo].[_images] WHERE [ObjectID] = {0} AND [Name] = '{1}';                    \n" +
+							"    INSERT INTO [dbo].[_properties] ([ObjectID], [Name], [Value]) VALUES ({0}, '{1}', @P{2}); \n" +
+							"END;                                                                                          \n"),
+							objID, props[i].Name, i );
+					} else {
+						// compose INSERT command
+						cmd.CommandText += string.Format(
+							"INSERT INTO [dbo].[_properties] ([ObjectID], [Name], [Value]) VALUES ({0}, '{1}', @P{2}); \n",
+							objID, props[i].Name, i );
+					}
+					cmd.Parameters.Add( new SqlParameter( "@P" + i, value ) );
 				}
 			}
 
@@ -966,21 +947,18 @@ public class ODB : IPersistenceStorage
 				if( link.State == LINK.STATE.New ) {
 					// add new link to DB
 					cmd.CommandText += string.Format(
-						"\nINSERT INTO [dbo].[_links] ([Parent], [Child]) " +
-						"VALUES ({0}, {1});",
+						"INSERT INTO [dbo].[_links] ([Parent], [Child]) VALUES ({0}, {1}); \n",
 						objID, link.Header.ID );
 				} else if( link.State == LINK.STATE.Deleted ) {
 					// delete link from DB
 					cmd.CommandText += string.Format(
-						"DELETE FROM [dbo].[_links] WHERE [Parent]={0} AND [Child]={1};",
+						"DELETE FROM [dbo].[_links] WHERE [Parent] = {0} AND [Child] = {1}; \n",
 						objID, link.Header.ID );
 				}
 			}
 
 			// executing batch
-			if( cmd.CommandText != "" ) {
-				cmd.ExecuteNonQuery();
-			}
+			if( cmd.CommandText != "" ) cmd.ExecuteNonQuery();
 
 			// return proxy properties
 			header = get_header( objID );
