@@ -1040,7 +1040,7 @@ public class ODB : IPersistenceStorage
 							"DECLARE @_id as int\n" +
 							"DECLARE @_ids TABLE ([id] int)\n" +
 							"--return requested count of items\n" +
-							"DECLARE curs CURSOR SCROLL FOR\n" +
+							"DECLARE curs CURSOR LOCAL STATIC READ_ONLY FOR\n" +
 							"{0}\n" +
 							"OPEN curs\n" +
 							"    SET @found = @@CURSOR_ROWS\n" +
