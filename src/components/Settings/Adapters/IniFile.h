@@ -80,7 +80,7 @@ namespace Adapters {
 		/// within the section, is deleted. If lpString is NULL, the key
 		/// pointed to by the lpKeyName parameter is deleted.
 		/// </remarks>
-		[DllImport("KERNEL32.DLL", CharSet=CharSet::Auto)]
+		[DllImport("kernel32.dll", CharSet=CharSet::Auto, SetLastError=true)]
 		static bool WritePrivateProfileString(
 											   String^ lpAppName,
 											   String^ lpKeyName,
