@@ -24,10 +24,6 @@ using namespace System::Runtime::InteropServices;
 //
 [assembly:AssemblyTitleAttribute("Toolkit.RPL")];
 [assembly:AssemblyDescriptionAttribute("Toolkit.RPL module provides persistence objects management")];
-[assembly:AssemblyProductAttribute("Robust Persistence Layer")];
-[assembly:AssemblyCopyrightAttribute("Copyright Â© Alexey Tkachuk 2007-2009")];
-[assembly:AssemblyInformationalVersionAttribute("1.0")];
-
 [assembly:ComVisible(false)];
 [assembly:CLSCompliantAttribute(true)];
 
@@ -42,4 +38,12 @@ using namespace System::Runtime::InteropServices;
 // You can specify all the value or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
 //
-[assembly:AssemblyVersionAttribute("1.0.*")];
+
+//
+// This is auto generated attributes for current 1.3.7.2801 version.
+//
+[assembly: AssemblyProduct("Toolkit")];
+[assembly: AssemblyInformationalVersion("1.3.7")];
+[assembly: AssemblyCompany("ABBYY Ukraine")];
+[assembly: AssemblyCopyright("Copyright © ABBYY Ukraine 2007-2012")];
+[assembly: AssemblyVersion("1.3.7.2801")];
